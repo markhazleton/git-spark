@@ -10,19 +10,19 @@ const logger = createLogger('cli');
 
 /**
  * Create and configure the main CLI application
- * 
+ *
  * Sets up the complete command-line interface for git-spark with all available
  * options, validation, and subcommands. Handles argument parsing, environment
  * setup, and error handling for the CLI application.
- * 
+ *
  * @returns Configured Commander.js program instance
- * 
+ *
  * @example
  * ```typescript
  * // Create and run CLI
  * const program = createCLI();
  * program.parse(process.argv);
- * 
+ *
  * // Example usage:
  * // git-spark --days 30 --format html --output ./reports
  * // git-spark --since 2024-01-01 --author john@example.com
