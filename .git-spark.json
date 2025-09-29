@@ -1,0 +1,54 @@
+{
+  "version": "1.0",
+  "analysis": {
+    "excludePaths": [
+      "node_modules/**",
+      "dist/**",
+      "build/**",
+      ".git/**",
+      "*.log",
+      "*.tmp",
+      "coverage/**",
+      ".nyc_output/**"
+    ],
+    "includeAuthors": [],
+    "excludeAuthors": ["dependabot[bot]", "renovate[bot]", "github-actions[bot]"],
+    "thresholds": {
+      "largeCommitLines": 500,
+      "smallCommitLines": 50,
+      "staleBranchDays": 30,
+      "largeFileKB": 300,
+      "hotspotAuthorThreshold": 3
+    },
+    "weights": {
+      "risk": {
+        "churn": 0.35,
+        "recency": 0.25,
+        "ownership": 0.2,
+        "entropy": 0.1,
+        "coupling": 0.1
+      },
+      "governance": {
+        "conventional": 0.4,
+        "traceability": 0.25,
+        "length": 0.15,
+        "wipPenalty": 0.1,
+        "revertPenalty": 0.05,
+        "shortPenalty": 0.05
+      }
+    }
+  },
+  "output": {
+    "defaultFormat": "html",
+    "outputDir": "./reports",
+    "includeCharts": true,
+    "redactEmails": false,
+    "theme": "default"
+  },
+  "performance": {
+    "maxBuffer": 200,
+    "enableCaching": true,
+    "cacheDir": ".git-spark-cache",
+    "chunkSize": 1000
+  }
+}

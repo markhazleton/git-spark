@@ -1,0 +1,108 @@
+{
+  "name": "git-spark",
+  "version": "1.0.0",
+  "description": "Enterprise-grade Git repository analytics and reporting tool",
+  "keywords": [
+    "git",
+    "analytics",
+    "repository",
+    "reporting",
+    "metrics",
+    "team",
+    "collaboration",
+    "code-quality",
+    "enterprise"
+  ],
+  "author": "Mark Hazleton <mark@markhazleton.com>",
+  "license": "MIT",
+  "homepage": "https://github.com/MarkHazleton/git-spark#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MarkHazleton/git-spark.git"
+  },
+  "bugs": {
+    "url": "https://github.com/MarkHazleton/git-spark/issues"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "git-spark": "bin/git-spark.js"
+  },
+  "files": [
+    "dist/",
+    "bin/",
+    "templates/",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "dev": "npm run build && node bin/git-spark.js",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts --fix",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "format:check": "prettier --check \"src/**/*.ts\"",
+    "clean": "rimraf dist",
+    "prepublishOnly": "npm run clean && npm run build && npm run test",
+    "benchmark": "node scripts/benchmark.js",
+    "docs": "typedoc src/index.ts"
+  },
+  "dependencies": {
+    "boxen": "^8.0.1",
+    "chalk": "^5.6.2",
+    "commander": "^14.0.1",
+    "date-fns": "^4.1.0",
+    "glob": "^11.0.3",
+    "ora": "^9.0.0",
+    "semver": "^7.7.2",
+    "table": "^6.9.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "@types/node": "^24.5.2",
+    "@types/semver": "^7.7.1",
+    "@typescript-eslint/eslint-plugin": "^8.44.1",
+    "@typescript-eslint/parser": "^8.44.1",
+    "eslint": "^9.36.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
+    "jest": "^30.2.0",
+    "prettier": "^3.6.2",
+    "rimraf": "^6.0.1",
+    "ts-jest": "^29.4.4",
+    "typedoc": "^0.28.13",
+    "typescript": "^5.9.2"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "roots": [
+      "<rootDir>/src",
+      "<rootDir>/test"
+    ],
+    "testMatch": [
+      "**/__tests__/**/*.ts",
+      "**/*.test.ts"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.ts",
+      "!src/**/*.d.ts",
+      "!src/types/**/*"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 80,
+        "functions": 80,
+        "lines": 80,
+        "statements": 80
+      }
+    }
+  }
+}

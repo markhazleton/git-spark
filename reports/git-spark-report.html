@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Git Spark Report - 2 commits analyzed</title>
+    <style>
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.1em;
+        }
+
+        section {
+            background: white;
+            margin-bottom: 30px;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            font-size: 1.4em;
+            margin: 20px 0 15px 0;
+            color: #34495e;
+        }
+
+        .health-card {
+            border-left: 4px solid #27ae60;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .metric {
+            text-align: center;
+        }
+
+        .metric-value {
+            display: block;
+            font-size: 2em;
+            font-weight: bold;
+            color: #3498db;
+        }
+
+        .metric-label {
+            display: block;
+            font-size: 0.9em;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .info-item {
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .language-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .language-tag {
+            background: #3498db;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.9em;
+        }
+
+        .risk-score {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .risk-low { background: #d4edda; color: #155724; }
+        .risk-medium { background: #fff3cd; color: #856404; }
+        .risk-high { background: #f8d7da; color: #721c24; }
+
+        .risk-level {
+            font-weight: bold;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin: 20px 0;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: #7f8c8d;
+            background: white;
+            border-radius: 8px;
+        }
+
+        .insights, .action-items, .recommendations {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 4px;
+        }
+
+        .insights {
+            background: #e8f4fd;
+            border-left: 4px solid #3498db;
+        }
+
+        .action-items {
+            background: #fdf2e9;
+            border-left: 4px solid #e67e22;
+        }
+
+        .recommendations {
+            background: #eafaf1;
+            border-left: 4px solid #27ae60;
+        }
+
+        ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+
+        li {
+            margin: 5px 0;
+        }
+
+        code {
+            background: #f8f9fa;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            table {
+                font-size: 0.9em;
+            }
+        }
+    
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🔥 Git Spark Report</h1>
+            <p class="subtitle">Repository Analysis Generated on 9/29/2025</p>
+        </header>
+
+        
+        <section class="summary">
+            <h2>📊 Executive Summary</h2>
+            <div class="health-card" style="border-left-color: #27ae60">
+                <h3>Repository Health: <span style="color: #27ae60">EXCELLENT</span></h3>
+                <div class="metrics-grid">
+                    <div class="metric">
+                        <span class="metric-value">2</span>
+                        <span class="metric-label">Total Commits</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-value">1</span>
+                        <span class="metric-label">Contributors</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-value">3</span>
+                        <span class="metric-label">Files Changed</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-value">95%</span>
+                        <span class="metric-label">Health Score</span>
+                    </div>
+                </div>
+            </div>
+            
+            
+            <div class="insights">
+                <h4>💡 Key Insights</h4>
+                <ul>
+                    <li>Low bus factor - knowledge is concentrated in few developers</li><li>Single developer dominates the codebase</li><li>Commit message quality needs improvement</li>
+                </ul>
+            </div>
+            
+            
+            
+            <div class="action-items">
+                <h4>🚨 Action Items</h4>
+                <ul>
+                    <li>Implement commit message standards</li>
+                </ul>
+            </div>
+            
+        </section>
+    
+        
+        <section class="repository">
+            <h2>📁 Repository Overview</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <strong>Active Period:</strong> 1 days
+                </div>
+                <div class="info-item">
+                    <strong>Average Commits/Day:</strong> 2.00
+                </div>
+                <div class="info-item">
+                    <strong>Bus Factor:</strong> 1
+                </div>
+                <div class="info-item">
+                    <strong>Total Code Churn:</strong> 304 lines
+                </div>
+            </div>
+            
+            <div class="languages">
+                <h3>💻 Languages</h3>
+                <div class="language-list">
+                    <span class="language-tag">Git: 1</span><span class="language-tag">Other: 1</span><span class="language-tag">Markdown: 1</span>
+                </div>
+            </div>
+        </section>
+    
+        
+        <section class="authors">
+            <h2>👥 Top Contributors</h2>
+            <div class="authors-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Author</th>
+                            <th>Commits</th>
+                            <th>Churn</th>
+                            <th>Files</th>
+                            <th>Avg Commit Size</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                            <tr>
+                                <td>Mark Hazleton</td>
+                                <td>2</td>
+                                <td>304</td>
+                                <td>4</td>
+                                <td>152</td>
+                            </tr>
+                        
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    
+        
+        <section class="files">
+            <h2>🔥 File Hotspots</h2>
+            <div class="files-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>File</th>
+                            <th>Commits</th>
+                            <th>Authors</th>
+                            <th>Churn</th>
+                            <th>Risk Score</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                            <tr>
+                                <td><code>.gitignore</code></td>
+                                <td>2</td>
+                                <td>1</td>
+                                <td>281</td>
+                                <td><span class="risk-score risk-low">20%</span></td>
+                            </tr>
+                        
+                            <tr>
+                                <td><code>LICENSE</code></td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>21</td>
+                                <td><span class="risk-score risk-low">18%</span></td>
+                            </tr>
+                        
+                            <tr>
+                                <td><code>README.md</code></td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>2</td>
+                                <td><span class="risk-score risk-low">18%</span></td>
+                            </tr>
+                        
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    
+        
+        <section class="risks">
+            <h2>⚠️ Risk Analysis</h2>
+            <div class="risk-overview">
+                <h3>Overall Risk Level: <span class="risk-level risk-low">LOW</span></h3>
+                
+                <div class="risk-factors">
+                    <h4>Risk Factors</h4>
+                    <ul>
+                        <li>High churn files: 0</li>
+                        <li>Files with many authors: 0</li>
+                        <li>Large commits: 0</li>
+                        <li>Recently changed files: 3</li>
+                    </ul>
+                </div>
+                
+                
+            </div>
+        </section>
+    
+        
+        <section class="governance">
+            <h2>📋 Governance Analysis</h2>
+            <div class="governance-score">
+                <h3>Governance Score: 30%</h3>
+                
+                <div class="governance-metrics">
+                    <div class="metric">
+                        <span class="metric-value">0</span>
+                        <span class="metric-label">Conventional Commits</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-value">0%</span>
+                        <span class="metric-label">Traceability</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-value">38</span>
+                        <span class="metric-label">Avg Message Length</span>
+                    </div>
+                </div>
+                
+                
+                <div class="recommendations">
+                    <h4>Recommendations</h4>
+                    <ul>
+                        <li>Adopt conventional commit message format</li><li>Link commits to issues for better traceability</li>
+                    </ul>
+                </div>
+                
+            </div>
+        </section>
+    
+        
+        <section class="timeline">
+            <h2>📈 Activity Timeline</h2>
+            <div class="chart-container">
+                <canvas id="timelineChart" width="800" height="400"></canvas>
+            </div>
+        </section>
+    
+        
+        <footer class="footer">
+            <p>Generated by git-spark v1.0.0 on 9/29/2025, 9:43:26 AM</p>
+            <p>Analysis completed in 105ms</p>
+        </footer>
+    
+    </div>
+
+    <script>
+        
+        // Timeline Chart
+        const ctx = document.getElementById('timelineChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                datasets: [{
+                    label: 'Commits per Day',
+                    data: [{"x":"2025-09-29T00:00:00.000Z","y":2}],
+                    borderColor: 'rgb(75, 192, 192)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        type: 'time',
+                        time: {
+                            unit: 'day'
+                        }
+                    }
+                }
+            }
+        });
+    
+    </script>
+</body>
+</html>
