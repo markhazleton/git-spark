@@ -15,7 +15,7 @@
  * - Custom output:    npx ts-node scripts/cli-html-demo.ts --output ./my-reports
  */
 
-import { GitSpark, GitSparkOptions } from '../src/index';
+import { GitSpark, GitSparkOptions, exportReport } from '../src/index';
 import chalk from 'chalk';
 import boxen from 'boxen';
 import { Command } from 'commander';
@@ -38,6 +38,8 @@ interface CLIOptions {
   open?: boolean;
   serve?: boolean;
   port?: number;
+  reuse?: boolean; // reuse existing analysis when exporting
+  noReanalyze?: boolean; // alias for reuse
 }
 
 /**
@@ -88,14 +90,19 @@ async function generateHTMLReport(options: CLIOptions): Promise<void> {
       }
     );
 
-    // Run analysis
+    // Run analysis (first and only unless user opts out of second pass)
     console.log(chalk.yellow('\n🔍 Analyzing repository...'));
     const report = await gitSpark.analyze();
     console.log(''); // New line after progress
 
-    // Export HTML report
+    // Export HTML report (optionally reuse existing analysis without a second run)
     console.log(chalk.yellow('📄 Generating HTML report...'));
-    await gitSpark.export('html', gitSparkOptions.output || './reports');
+    const outDir = gitSparkOptions.output || './reports';
+    if (options.reuse || options.noReanalyze) {
+      await exportReport(report, 'html', outDir);
+    } else {
+      await gitSpark.export('html', outDir);
+    }
 
     // Construct output path
     const outputPath = path.resolve(gitSparkOptions.output || './reports', 'git-spark-report.html');
@@ -134,10 +141,8 @@ async function generateHTMLReport(options: CLIOptions): Promise<void> {
     // Display usage instructions
     console.log(chalk.cyan('\n💡 What you can do next:'));
     console.log(chalk.cyan(`   📖 View Report: Open ${outputPath} in your browser`));
-    console.log(chalk.cyan(`   🌐 Start Server: npx ts-node scripts/cli-html-demo.ts --serve`));
-    console.log(
-      chalk.cyan(`   🔄 Regenerate: npx ts-node scripts/cli-html-demo.ts --days 60 --heavy`)
-    );
+    console.log(chalk.cyan(`   🌐 Start Server: npm run html-report:serve`));
+    console.log(chalk.cyan(`   🔄 Regenerate (heavy): npm run html-report:heavy -- --days 60`));
     console.log(
       chalk.cyan(`   📱 Share: The HTML file is self-contained and can be shared directly`)
     );
@@ -312,6 +317,8 @@ async function main() {
     .option('--open', 'automatically open the HTML report in browser')
     .option('--serve', 'start HTTP server to serve the report (includes --open)')
     .option('--port <number>', 'port for HTTP server (default: 3000)', parseNumber, 3000)
+    .option('--reuse', 'reuse first analysis when exporting (skip second analysis)')
+    .option('--no-reanalyze', 'alias of --reuse')
     .action(async options => {
       await generateHTMLReport(options);
     });
@@ -330,8 +337,8 @@ Examples:
   Generate report and open in browser:
     npx ts-node scripts/cli-html-demo.ts --open
 
-  Start server to serve report:
-    npx ts-node scripts/cli-html-demo.ts --serve --port 8080
+  Start server to serve report (after build):
+    npm run html-report:serve -- --port 8080
 
   Analyze specific branch with custom output:
     npx ts-node scripts/cli-html-demo.ts --branch main --output ./custom-reports
@@ -342,13 +349,14 @@ Examples:
   Analyze TypeScript files only:
     npx ts-node scripts/cli-html-demo.ts --path-pattern "**/*.ts"
 
-  Complete analysis with all options:
-    npx ts-node scripts/cli-html-demo.ts \\
+  Complete analysis with all options (single build reuse):
+    npm run html-report -- \\
       --repo /path/to/repo \\
       --days 60 \\
       --branch develop \\
       --heavy \\
       --output ./detailed-reports \\
+      --reuse \\
       --serve
 `
   );

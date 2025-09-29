@@ -3,162 +3,736 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Git Spark Analysis Report</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <meta name="generator" content="git-spark v1.0.0">
+  <meta name="report-date" content="2025-09-29T22:07:19.175Z">
+  <meta name="repository" content="git-spark">
+  <meta property="og:title" content="Git Activity Report - git-spark">
+  <meta property="og:type" content="article">
+  <meta property="og:description" content="12 commits • 1 contributors • Health 64% • Gov 49%">
+  <meta property="og:image" content="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPSc4MDAnIGhlaWdodD0nNDE4JyB2aWV3Qm94PScwIDAgODAwIDQxOCcgcm9sZT0naW1nJz48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9J2cnIHgxPScwJyB5MT0nMCcgeDI9JzEnIHkyPScxJz48c3RvcCBzdG9wLWNvbG9yPSclMjMwMDY2Y2MnIG9mZnNldD0nMCcvPjxzdG9wIHN0b3AtY29sb3I9JyUyMzI4YTc0NScgb2Zmc2V0PScxJy8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9JzgwMCcgaGVpZ2h0PSc0MTgnIGZpbGw9JyUyMzFlMjIyNycvPjx0ZXh0IHg9JzQwJyB5PSc4MCcgZm9udC1mYW1pbHk9J1NlZ29lIFVJLFJvYm90byxBcmlhbCxzYW5zLXNlcmlmJyBmb250LXNpemU9JzQyJyBmaWxsPSd3aGl0ZSc+R2l0IEFjdGl2aXR5IFJlcG9ydDwvdGV4dD48dGV4dCB4PSc0MCcgeT0nMTQwJyBmb250LXNpemU9JzI2JyBmaWxsPSd3aGl0ZSc+Z2l0LXNwYXJrPC90ZXh0Pjx0ZXh0IHg9JzQwJyB5PScyMDAnIGZvbnQtc2l6ZT0nMjAnIGZpbGw9J3doaXRlJz5Db21taXRzOiAxMjwvdGV4dD48dGV4dCB4PSc0MCcgeT0nMjM1JyBmb250LXNpemU9JzIwJyBmaWxsPSd3aGl0ZSc+QXV0aG9yczogMTwvdGV4dD48dGV4dCB4PSc0MCcgeT0nMjcwJyBmb250LXNpemU9JzIwJyBmaWxsPSd3aGl0ZSc+SGVhbHRoOiA2NCU8L3RleHQ+PHRleHQgeD0nNDAnIHk9JzMwNScgZm9udC1zaXplPScyMCcgZmlsbD0nd2hpdGUnPkdvdmVybmFuY2U6IDQ5JTwvdGV4dD48dGV4dCB4PSc0MCcgeT0nMzUwJyBmb250LXNpemU9JzE2JyBmaWxsPScjYmJiJz5HZW5lcmF0ZWQgMjAyNS0wOS0yOTwvdGV4dD48cmVjdCB4PSc2MDAnIHk9JzYwJyB3aWR0aD0nMTYwJyBoZWlnaHQ9JzE2MCcgcng9JzgnIGZpbGw9J3VybCgjZyknIG9wYWNpdHk9JzAuOCcvPjx0ZXh0IHg9JzY4MCcgeT0nMTYwJyB0ZXh0LWFuY2hvcj0nbWlkZGxlJyBmb250LXNpemU9JzU0JyBmaWxsPSd3aGl0ZScgZm9udC13ZWlnaHQ9JzcwMCc+NjQlPC90ZXh0Pjwvc3ZnPg==">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; base-uri 'none'; form-action 'none'; img-src 'self' data:; style-src 'self' 'sha256-SOwVvrJoytnJELKhCno/ZMxYN/T7l5T/9fNdmqdq/S0='; script-src 'self' 'nonce-706d2e92c83ed020'; font-src 'self'">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
+  <title>Git Activity Report - git-spark</title>
   <style>
-    
-      body {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        background-color: #f8f9fa;
+      :root {
+        --color-primary: #0066cc;
+        --color-success: #28a745;
+        --color-warning: #fd7e14;
+        --color-danger: #dc3545;
+        --color-bg: #f5f7fb;
+        --color-surface: #ffffff;
+        --color-border: #dde3ea;
+        --color-text: #222222;
+        --color-text-secondary: #6c757d;
+        --shadow-sm: 0 2px 4px rgba(0,0,0,0.08);
       }
-      .card {
-        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-        border: 1px solid rgba(0, 0, 0, 0.125);
+      :root.dark {
+        --color-bg: #121417;
+        --color-surface: #1e2227;
+        --color-border: #2c3239;
+        --color-text: #e6e8ea;
+        --color-text-secondary: #97a0ab;
       }
-      code {
-        font-size: 0.85em;
+      html { scroll-behavior: smooth; }
+      body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; background: var(--color-bg); color: var(--color-text); margin:0; }
+      .skip-link { position:absolute; left:-999px; top:auto; width:1px; height:1px; overflow:hidden; }
+      .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0; }
+      .skip-link:focus { position:static; width:auto; height:auto; padding:.5rem 1rem; background:#000; color:#fff; z-index:999; }
+      .theme-toggle-wrapper { position:fixed; top:.5rem; right:.5rem; z-index:150; }
+      .theme-toggle { background:var(--color-surface); color:var(--color-text); border:1px solid var(--color-border); padding:.4rem .6rem; border-radius:4px; cursor:pointer; box-shadow:var(--shadow-sm); font-size:.85rem; }
+      .theme-toggle:hover, .theme-toggle:focus { border-color: var(--color-primary); }
+      .site-header { position:sticky; top:0; background:var(--color-surface); border-bottom:1px solid var(--color-border); z-index:100; box-shadow:var(--shadow-sm); }
+      .header-inner { display:flex; align-items:center; justify-content:space-between; max-width:1200px; margin:0 auto; padding:.5rem 1rem; }
+      .branding { font-weight:600; font-size:1rem; }
+      .repo-name { color:var(--color-primary); font-weight:700; }
+      .main-nav ul { list-style:none; display:flex; gap:1rem; margin:0; padding:0; }
+      .main-nav a { text-decoration:none; color:var(--color-text-secondary); font-size:.9rem; }
+      .main-nav a:hover, .main-nav a:focus { color:var(--color-primary); }
+      .report { max-width:1200px; margin:0 auto; padding:1rem; }
+      .section { background:var(--color-surface); padding:1.2rem 1.4rem; margin:1.2rem 0; border:1px solid var(--color-border); border-radius:8px; box-shadow:var(--shadow-sm); }
+      h1 { font-size:2rem; margin:.2rem 0 1rem; }
+      h2 { font-size:1.4rem; margin:0 0 .75rem; }
+      h3 { font-size:1.15rem; margin:1rem 0 .5rem; }
+      .summary-grid { display:grid; gap:.75rem; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); margin-bottom:1rem; }
+      .metric-card { background:var(--color-surface); border:1px solid var(--color-border); border-radius:6px; padding:.6rem .75rem; text-align:center; display:flex; flex-direction:column; gap:.25rem; box-shadow:var(--shadow-sm); }
+      .metric-card:focus { outline:2px solid var(--color-primary); outline-offset:2px; }
+      .metric-value { font-size:1.2rem; font-weight:600; }
+      .metric-label { font-size:.7rem; text-transform:uppercase; letter-spacing:.05em; color:var(--color-text-secondary); }
+      .health-badges { display:flex; gap:1rem; align-items:center; flex-wrap:wrap; margin:.5rem 0 1rem; }
+      .health-score, .gov-score { padding:.6rem .9rem; border-radius:6px; font-weight:600; background:var(--color-primary); color:#fff; display:inline-flex; align-items:center; gap:.5rem; }
+      .health-score[data-rating='excellent'] { background:var(--color-success); }
+      .health-score[data-rating='good'] { background:var(--color-primary); }
+      .health-score[data-rating='fair'] { background:var(--color-warning); }
+      .health-score[data-rating='poor'] { background:var(--color-danger); }
+  .analysis-period { font-size:.8rem; margin:.25rem 0 1rem; color:var(--color-text-secondary); }
+      ul { padding-left:1.1rem; }
+      li { margin:.25rem 0; }
+      .table-wrapper { overflow:auto; border:1px solid var(--color-border); border-radius:6px; }
+      table.data-table { width:100%; border-collapse:collapse; font-size:.85rem; }
+      table.data-table th, table.data-table td { padding:.5rem .6rem; border-bottom:1px solid var(--color-border); text-align:left; }
+      table.data-table th.num, table.data-table td.num { text-align:right; }
+      table.data-table tbody tr:hover { background:#f2f6fa; }
+      code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; font-size:.75rem; }
+      .risk-badge { padding:.25rem .5rem; border-radius:4px; font-size:.65rem; font-weight:600; }
+      .risk-high { background:var(--color-danger); color:#fff; }
+      .risk-medium { background:var(--color-warning); color:#000; }
+      .risk-low { background:var(--color-success); color:#fff; }
+      .risk-minimal { background:#3b7ddd; color:#fff; }
+      .gov-grid { display:grid; gap:.5rem; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); margin-bottom:.75rem; }
+      .gov-card { background:var(--color-bg); border:1px solid var(--color-border); padding:.6rem .7rem; border-radius:4px; font-size:.7rem; font-weight:500; }
+      .meta-grid { display:grid; grid-template-columns: 120px 1fr; gap:.35rem .75rem; font-size:.75rem; }
+      .meta-grid dt { font-weight:600; }
+      .site-footer { text-align:center; padding:1.5rem .5rem 3rem; font-size:.7rem; color:var(--color-text-secondary); }
+      .back-to-top { position:fixed; bottom:1rem; right:1rem; background:var(--color-primary); color:#fff; border:none; padding:.55rem .7rem; border-radius:4px; font-size:.85rem; cursor:pointer; box-shadow:var(--shadow-sm); }
+      .back-to-top:hover, .back-to-top:focus { background:#004f99; }
+      .warnings { margin:0; padding-left:1rem; }
+      .warnings li { font-size:.7rem; }
+      @media (max-width: 760px) { .main-nav ul { flex-wrap:wrap; gap:.5rem; } .branding { font-size:.85rem; } }
+      @media print { .site-header, .back-to-top { display:none !important; } body { background:#fff; } .section { page-break-inside:avoid; } }
+      @media (prefers-reduced-motion: reduce) { * { animation-duration:0.01ms !important; transition-duration:0.01ms !important; } }
+      .export-actions { display:flex; gap:.6rem; flex-wrap:wrap; margin:.4rem 0 1rem; }
+      .btn, .show-more { background:var(--color-primary); color:#fff; border:1px solid var(--color-primary); padding:.4rem .7rem; border-radius:4px; cursor:pointer; font-size:.7rem; font-weight:500; box-shadow:var(--shadow-sm); }
+      .btn:hover, .btn:focus, .show-more:hover, .show-more:focus { background:#004f99; }
+      :root.dark .btn, :root.dark .show-more { background:#2489ff; border-color:#2489ff; }
+      .show-more { margin-top:.6rem; }
+      .hidden-row { display:none; }
+      
+      /* Author Profile Styles */
+      .author-link { color:var(--color-primary); text-decoration:none; font-weight:500; }
+      .author-link:hover { text-decoration:underline; }
+      .author-profiles { display:flex; flex-direction:column; gap:1.5rem; }
+      .author-profile-card { background:var(--color-surface); border:1px solid var(--color-border); border-radius:8px; padding:1.5rem; box-shadow:var(--shadow-sm); }
+      .author-header { margin-bottom:1rem; border-bottom:1px solid var(--color-border); padding-bottom:1rem; }
+      .author-header h3 { margin:0; font-size:1.4rem; color:var(--color-text); }
+      .author-email { color:var(--color-text-secondary); font-size:.85rem; font-family:ui-monospace, monospace; }
+      .author-period { color:var(--color-text-secondary); font-size:.8rem; margin-top:.25rem; }
+      
+      .contribution-overview, .work-patterns, .collaboration, .code-focus, .commit-distribution, .insights-section { margin-bottom:1.25rem; }
+      .contribution-overview h4, .work-patterns h4, .collaboration h4, .code-focus h4, .commit-distribution h4, .insights-section h4 { 
+        margin:0 0 .75rem; font-size:1.1rem; color:var(--color-text); border-bottom:1px solid var(--color-border); padding-bottom:.5rem; 
       }
-      .table-responsive {
-        max-height: 400px;
-        overflow-y: auto;
+      
+      .metrics-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(120px, 1fr)); gap:.75rem; margin-bottom:.75rem; }
+      .metric-box { background:var(--color-bg); border:1px solid var(--color-border); border-radius:6px; padding:.75rem; text-align:center; }
+      .metric-box .metric-value { font-size:1.2rem; font-weight:600; color:var(--color-primary); }
+      .metric-box .metric-label { font-size:.7rem; color:var(--color-text-secondary); text-transform:uppercase; margin-top:.25rem; }
+      
+      .summary-stats { font-size:.85rem; color:var(--color-text-secondary); text-align:center; padding:.5rem; background:var(--color-bg); border-radius:4px; }
+      .pattern-info, .collab-stats, .focus-info { font-size:.85rem; line-height:1.4; }
+      .pattern-info div, .collab-stats div, .focus-info div { margin:.25rem 0; }
+      
+      .size-distribution { background:var(--color-bg); padding:.75rem; border-radius:6px; border:1px solid var(--color-border); }
+      .size-bar { display:flex; align-items:center; margin:.5rem 0; gap:.75rem; }
+      .size-label { min-width:120px; font-size:.75rem; color:var(--color-text-secondary); }
+      .size-bar-container { flex:1; position:relative; background:var(--color-border); height:24px; border-radius:12px; overflow:hidden; }
+      .size-bar-fill { height:100%; border-radius:12px; transition:width 0.3s ease; min-width:0; }
+      .size-bar-fill.micro { background:#28a745; }
+      .size-bar-fill.small { background:#20c997; }
+      .size-bar-fill.medium { background:#ffc107; }
+      .size-bar-fill.large { background:#fd7e14; }
+      .size-bar-fill.very-large { background:#dc3545; }
+      .size-percentage { position:absolute; right:.5rem; top:50%; transform:translateY(-50%); font-size:.7rem; font-weight:500; color:var(--color-text); background:var(--color-surface); padding:.1rem .4rem; border-radius:10px; border:1px solid var(--color-border); }
+      .size-percentage.no-data { background:transparent; border:none; color:var(--color-text-secondary); }
+      
+      .insights-content { display:flex; flex-direction:column; gap:.5rem; }
+      .insight { padding:.5rem .75rem; border-radius:4px; font-size:.85rem; }
+      .insight.positive { background:#d4edda; color:#155724; border-left:4px solid #28a745; }
+      .insight.growth { background:#fff3cd; color:#856404; border-left:4px solid #ffc107; }
+      .largest-commit { background:var(--color-bg); padding:.75rem; border-radius:4px; font-size:.85rem; margin-top:.5rem; }
+      .largest-commit strong { color:var(--color-primary); }
+      .largest-commit em { color:var(--color-text-secondary); }
+      .no-data { text-align:center; color:var(--color-text-secondary); font-size:.85rem; padding:1rem; }
+      
+      /* Responsive design for author profiles */
+      @media (max-width: 768px) { 
+        .metrics-grid { grid-template-columns:repeat(2, 1fr); }
+        .size-bar { flex-direction:column; align-items:flex-start; gap:.25rem; }
+        .size-label { min-width:auto; }
+        .size-bar-container { width:100%; }
       }
-    
-  </style>
+    </style>
 </head>
 <body>
-  <div class="container-fluid">
-    <h1 class="text-center my-4">Git Spark Analysis Report</h1>
-    <p class="text-center text-muted">Generated on 9/29/2025, 10:35:40 AM</p>
-    
-    <div class="row">
-      <div class="col-md-12">
-        <div class="card">
-          <div class="card-body">
-            <h5 class="card-title">Repository Summary</h5>
-            <p>Total Commits: 4</p>
-            <p>Total Authors: 1</p>
-            <p>Total Files: 27</p>
-            <p>Health Score: 0.7/100</p>
-            <p>Governance Score: 0.4/100</p>
-            <p>Bus Factor: 1</p>
+  <div class="theme-toggle-wrapper"><button id="themeToggle" class="theme-toggle" aria-pressed="false" aria-label="Toggle dark mode">🌙</button></div>
+  <a class="skip-link" href="#summary">Skip to content</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="branding">Git Activity Report <span class="repo-name">git-spark</span></div>
+      <nav class="main-nav" aria-label="Section navigation">
+        <ul>
+          <li><a href="#summary">Summary</a></li>
+          <li><a href="#authors">Authors</a></li>
+          <li><a href="#author-details">Author Details</a></li>
+          <li><a href="#files">Files</a></li>
+          <li><a href="#risks">Risks</a></li>
+          <li><a href="#governance">Governance</a></li>
+          <li><a href="#meta">Metadata</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+  <main class="report" id="top">
+    <section id="summary" class="section">
+      <h1>Executive Summary</h1>
+      <p class="analysis-period" aria-label="Analysis date range">Analyzed Period: 2025-09-29 → 2025-09-29 (2 days)</p>
+      <div class="summary-grid">
+        <div class="metric-card" tabindex="0"><div class="metric-value">12</div><div class="metric-label">Commits</div></div><div class="metric-card" tabindex="0"><div class="metric-value">1</div><div class="metric-label">Contributors</div></div><div class="metric-card" tabindex="0"><div class="metric-value">47</div><div class="metric-label">Files Changed</div></div><div class="metric-card" tabindex="0"><div class="metric-value">20.8K</div><div class="metric-label">Code Churn</div></div><div class="metric-card" tabindex="0"><div class="metric-value">64%</div><div class="metric-label">Health</div></div><div class="metric-card" tabindex="0"><div class="metric-value">49%</div><div class="metric-label">Governance</div></div><div class="metric-card" tabindex="0"><div class="metric-value">1</div><div class="metric-label">Bus Factor</div></div>
+      </div>
+      <div class="export-actions" aria-label="Data export controls">
+        <button class="btn" data-export="json" aria-label="Download JSON summary">Download JSON</button>
+        <button class="btn" data-export="authors-csv" aria-label="Download authors CSV">Authors CSV</button>
+        <button class="btn" data-export="files-csv" aria-label="Download files CSV">Files CSV</button>
+      </div>
+      <div class="health-badges" aria-label="Health Scores">
+        <div class="health-score" data-rating="good" title="Repository health score">64% <span>Good</span></div>
+        <div class="gov-score" title="Governance score">49% Governance</div>
+      </div>
+      <div class="insights">
+        <h2>Key Insights</h2>
+        <ul>
+          <li>Low bus factor - knowledge is concentrated in few developers</li><li>Single developer dominates the codebase</li><li>Commit message quality needs improvement</li>
+        </ul>
+      </div>
+      <div class="actions">
+        <h2>Action Items</h2>
+        <ul><li>Implement commit message standards</li></ul>
+      </div>
+    </section>
+
+    <section id="authors" class="section">
+      <h2>Top Contributors</h2>
+      <div class="table-wrapper" role="region" aria-label="Top authors table">
+        <table class="data-table" data-sortable data-initial-limit="15" data-table="authors">
+          <thead><tr><th scope="col">Author</th><th class="num" scope="col">Commits</th><th class="num" scope="col">Churn</th><th class="num" scope="col">Avg Size</th><th class="num" scope="col">Files</th></tr></thead>
+          <tbody><tr>
+        <td><a href="#author-mark-hazleton-controlorigins-com" class="author-link">Mark Hazleton</a></td>
+        <td class="num" data-sort="12">12</td>
+        <td class="num" data-sort="20796" title="+18996 / -1800">+18,996 / -1,800</td>
+        <td class="num" data-sort="1733.00">1733.0</td>
+        <td class="num" data-sort="84">84</td>
+      </tr></tbody>
+        </table>
+      </div>
+      <button class="show-more" data-target-table="authors" hidden>Show more</button>
+    </section>
+
+    <section id="author-details" class="section">
+      <h2>Detailed Author Profiles</h2>
+      <div class="author-profiles">
+        
+    <div class="author-profile-card" id="author-mark-hazleton-controlorigins-com">
+      <div class="author-header">
+        <h3>Mark Hazleton</h3>
+        <span class="author-email">mark.hazleton@controlorigins.com</span>
+        <div class="author-period">Active: 2025-09-29 → 2025-09-29 (1 days)</div>
+      </div>
+
+      <div class="contribution-overview">
+        <h4>Contribution Overview</h4>
+        <div class="metrics-grid">
+          <div class="metric-box">
+            <div class="metric-value">12</div>
+            <div class="metric-label">Commits</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-value">47</div>
+            <div class="metric-label">Files</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-value">+18,996</div>
+            <div class="metric-label">Lines Added</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-value">-1,800</div>
+            <div class="metric-label">Lines Deleted</div>
+          </div>
+        </div>
+        <div class="summary-stats">
+          Avg: 1733.0 lines/commit • 
+          7.0 files/commit • 
+          12.00/day
+        </div>
+      </div>
+
+      <div class="work-patterns">
+        <h4>Work Patterns</h4>
+        <div class="pattern-info">
+          <div><strong>Monday</strong> Peak Day • 
+          <strong>Morning (9am-12pm)</strong> Peak Time</div>
+          <div><strong>weekday-focused</strong> 0.0% weekends</div>
+          <div>After hours: 0.0% • 
+          Consistency: 100/100</div>
+        </div>
+      </div>
+
+      <div class="collaboration">
+        <h4>Collaboration</h4>
+        <div class="collab-stats">
+          <div>PR Integration: 0.0% • 
+          Issue refs: 0.0% • 
+          Co-authored: 0.0%</div>
+          <div>Message Quality: 49/100</div>
+          <div>Knowledge sharing: 0.0%</div>
+        </div>
+      </div>
+
+      <div class="code-focus">
+        <h4>Code Focus</h4>
+        <div class="focus-info">
+          <div>Primary areas: src/ (283%), reports/ (92%), scripts/ (58%)</div>
+          <div>File diversity: 100.0% of codebase</div>
+          <div>Source: +5,859 / 
+          -1,661 
+          (10 commits)</div>
+        </div>
+      </div>
+
+      <div class="commit-distribution">
+        <h4>Commit Size Distribution</h4>
+        <div class="size-distribution">
+          
+        <div class="size-bar">
+          <div class="size-label">Micro (&lt;20)</div>
+          <div class="size-bar-container">
+            <div class="size-bar-fill micro" style="width: 0%" ></div>
+            <span class="size-percentage no-data">0 (0.0%)</span>
+          </div>
+        </div>
+        <div class="size-bar">
+          <div class="size-label">Small (20-50)</div>
+          <div class="size-bar-container">
+            <div class="size-bar-fill small" style="width: 0%" ></div>
+            <span class="size-percentage no-data">0 (0.0%)</span>
+          </div>
+        </div>
+        <div class="size-bar">
+          <div class="size-label">Medium (51-200)</div>
+          <div class="size-bar-container">
+            <div class="size-bar-fill medium" style="width: 25%" data-actual="25.0"></div>
+            <span class="size-percentage has-data">3 (25.0%)</span>
+          </div>
+        </div>
+        <div class="size-bar">
+          <div class="size-label">Large (201-500)</div>
+          <div class="size-bar-container">
+            <div class="size-bar-fill large" style="width: 33.33333333333333%" data-actual="33.3"></div>
+            <span class="size-percentage has-data">4 (33.3%)</span>
+          </div>
+        </div>
+        <div class="size-bar">
+          <div class="size-label">Very Large (&gt;500)</div>
+          <div class="size-bar-container">
+            <div class="size-bar-fill very-large" style="width: 41.66666666666667%" data-actual="41.7"></div>
+            <span class="size-percentage has-data">5 (41.7%)</span>
+          </div>
+        </div>
+        </div>
+      </div>
+
+      <div class="insights-section">
+        <h4>Insights & Details</h4>
+        <div class="insights-content">
+          <div class="insight positive">✓ Good work-life balance</div>
+          <div class="insight growth">→ Consider smaller, more focused commits</div><div class="insight growth">→ Opportunity for more pair programming</div>
+          
+          
+          <div class="largest-commit">
+            <strong>Biggest commit:</strong> 12,596 lines 
+            (84a54f4) on 
+            9/29/2025<br>
+            <em>"feat: implement HTML, JSON, and Markdown exporters for analysis reports"</em>
           </div>
         </div>
       </div>
     </div>
-
-    <div class="row mt-4">
-      <div class="col-md-6">
-        <div class="card">
-          <div class="card-body">
-            <h5 class="card-title">Top Authors</h5>
-            <div class="table-responsive">
-              <table class="table table-sm">
-                <thead>
-                  <tr>
-                    <th>Author</th>
-                    <th>Commits</th>
-                    <th>Lines</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  
-                    <tr>
-                      <td>Mark Hazleton</td>
-                      <td>4</td>
-                      <td>+12943 -47</td>
-                    </tr>
-                  
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
       </div>
+    </section>
 
-      <div class="col-md-6">
-        <div class="card">
-          <div class="card-body">
-            <h5 class="card-title">Hot Files</h5>
-            <div class="table-responsive">
-              <table class="table table-sm">
-                <thead>
-                  <tr>
-                    <th>File</th>
-                    <th>Changes</th>
-                    <th>Risk</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  
-                    <tr>
-                      <td><code>package-lock.json</code></td>
-                      <td>1</td>
-                      <td><span class="badge bg-success">0.5</span></td>
-                    </tr>
-                  
-                    <tr>
-                      <td><code>src/core/analyzer.ts</code></td>
-                      <td>2</td>
-                      <td><span class="badge bg-success">0.2</span></td>
-                    </tr>
-                  
-                    <tr>
-                      <td><code>README.md</code></td>
-                      <td>2</td>
-                      <td><span class="badge bg-success">0.2</span></td>
-                    </tr>
-                  
-                    <tr>
-                      <td><code>reports/git-spark-report.html</code></td>
-                      <td>1</td>
-                      <td><span class="badge bg-success">0.2</span></td>
-                    </tr>
-                  
-                    <tr>
-                      <td><code>src/cli/commands.ts</code></td>
-                      <td>2</td>
-                      <td><span class="badge bg-success">0.2</span></td>
-                    </tr>
-                  
-                    <tr>
-                      <td><code>src/core/collector.ts</code></td>
-                      <td>2</td>
-                      <td><span class="badge bg-success">0.2</span></td>
-                    </tr>
-                  
-                    <tr>
-                      <td><code>src/types/index.ts</code></td>
-                      <td>1</td>
-                      <td><span class="badge bg-success">0.2</span></td>
-                    </tr>
-                  
-                    <tr>
-                      <td><code>.gitignore</code></td>
-                      <td>2</td>
-                      <td><span class="badge bg-success">0.2</span></td>
-                    </tr>
-                  
-                    <tr>
-                      <td><code>src/index.ts</code></td>
-                      <td>2</td>
-                      <td><span class="badge bg-success">0.2</span></td>
-                    </tr>
-                  
-                    <tr>
-                      <td><code>src/utils/git.ts</code></td>
-                      <td>1</td>
-                      <td><span class="badge bg-success">0.2</span></td>
-                    </tr>
-                  
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
+    <section id="files" class="section">
+      <h2>File Hotspots (Top 10)</h2>
+      <div class="table-wrapper" role="region" aria-label="Top files table">
+        <table class="data-table" data-sortable data-initial-limit="25" data-table="files">
+          <thead><tr><th scope="col">File</th><th class="num" scope="col">Commits</th><th class="num" scope="col">Churn</th><th class="num" scope="col">Authors</th><th class="num" scope="col">Risk</th></tr></thead>
+          <tbody><tr>
+          <td><code title="package-lock.json">package-lock.json</code></td>
+          <td class="num" data-sort="2">2</td>
+          <td class="num" data-sort="7739">7,739</td>
+          <td class="num" data-sort="1">1</td>
+          <td class="num" data-sort="53"><span class="risk-badge risk-medium" title="Commits: 2
+Churn: 7739
+Authors: 1">53%</span></td>
+        </tr><tr>
+          <td><code title="reports/git-spark-report.html">reports/git-spark-report.html</code></td>
+          <td class="num" data-sort="9">9</td>
+          <td class="num" data-sort="2335">2,335</td>
+          <td class="num" data-sort="1">1</td>
+          <td class="num" data-sort="36"><span class="risk-badge risk-low" title="Commits: 9
+Churn: 2335
+Authors: 1">36%</span></td>
+        </tr><tr>
+          <td><code title="src/output/html.ts">src/output/html.ts</code></td>
+          <td class="num" data-sort="6">6</td>
+          <td class="num" data-sort="1053">1,053</td>
+          <td class="num" data-sort="1">1</td>
+          <td class="num" data-sort="26"><span class="risk-badge risk-minimal" title="Commits: 6
+Churn: 1053
+Authors: 1">26%</span></td>
+        </tr><tr>
+          <td><code title="src/core/analyzer.ts">src/core/analyzer.ts</code></td>
+          <td class="num" data-sort="5">5</td>
+          <td class="num" data-sort="857">857</td>
+          <td class="num" data-sort="1">1</td>
+          <td class="num" data-sort="25"><span class="risk-badge risk-minimal" title="Commits: 5
+Churn: 857
+Authors: 1">25%</span></td>
+        </tr><tr>
+          <td><code title="test/html-exporter.test.ts">test/html-exporter.test.ts</code></td>
+          <td class="num" data-sort="3">3</td>
+          <td class="num" data-sort="797">797</td>
+          <td class="num" data-sort="1">1</td>
+          <td class="num" data-sort="24"><span class="risk-badge risk-minimal" title="Commits: 3
+Churn: 797
+Authors: 1">24%</span></td>
+        </tr><tr>
+          <td><code title="src/core/collector.ts">src/core/collector.ts</code></td>
+          <td class="num" data-sort="6">6</td>
+          <td class="num" data-sort="721">721</td>
+          <td class="num" data-sort="1">1</td>
+          <td class="num" data-sort="24"><span class="risk-badge risk-minimal" title="Commits: 6
+Churn: 721
+Authors: 1">24%</span></td>
+        </tr><tr>
+          <td><code title="src/cli/commands.ts">src/cli/commands.ts</code></td>
+          <td class="num" data-sort="3">3</td>
+          <td class="num" data-sort="630">630</td>
+          <td class="num" data-sort="1">1</td>
+          <td class="num" data-sort="23"><span class="risk-badge risk-minimal" title="Commits: 3
+Churn: 630
+Authors: 1">23%</span></td>
+        </tr><tr>
+          <td><code title="README.md">README.md</code></td>
+          <td class="num" data-sort="3">3</td>
+          <td class="num" data-sort="572">572</td>
+          <td class="num" data-sort="1">1</td>
+          <td class="num" data-sort="22"><span class="risk-badge risk-minimal" title="Commits: 3
+Churn: 572
+Authors: 1">22%</span></td>
+        </tr><tr>
+          <td><code title="copilot/session-2025-09-29/analysis-documents.md">copilot/session-20...lysis-documents.md</code></td>
+          <td class="num" data-sort="1">1</td>
+          <td class="num" data-sort="423">423</td>
+          <td class="num" data-sort="1">1</td>
+          <td class="num" data-sort="21"><span class="risk-badge risk-minimal" title="Commits: 1
+Churn: 423
+Authors: 1">21%</span></td>
+        </tr><tr>
+          <td><code title="reports/git-spark-report.json">reports/git-spark-report.json</code></td>
+          <td class="num" data-sort="2">2</td>
+          <td class="num" data-sort="400">400</td>
+          <td class="num" data-sort="1">1</td>
+          <td class="num" data-sort="21"><span class="risk-badge risk-minimal" title="Commits: 2
+Churn: 400
+Authors: 1">21%</span></td>
+        </tr><tr>
+          <td><code title="scripts/cli-html-demo.ts">scripts/cli-html-demo.ts</code></td>
+          <td class="num" data-sort="1">1</td>
+          <td class="num" data-sort="368">368</td>
+          <td class="num" data-sort="1">1</td>
+          <td class="num" data-sort="20"><span class="risk-badge risk-minimal" title="Commits: 1
+Churn: 368
+Authors: 1">20%</span></td>
+        </tr><tr>
+          <td><code title="scripts/CLI-README.md">scripts/CLI-README.md</code></td>
+          <td class="num" data-sort="1">1</td>
+          <td class="num" data-sort="336">336</td>
+          <td class="num" data-sort="1">1</td>
+          <td class="num" data-sort="20"><span class="risk-badge risk-minimal" title="Commits: 1
+Churn: 336
+Authors: 1">20%</span></td>
+        </tr><tr>
+          <td><code title="src/types/index.ts">src/types/index.ts</code></td>
+          <td class="num" data-sort="2">2</td>
+          <td class="num" data-sort="325">325</td>
+          <td class="num" data-sort="1">1</td>
+          <td class="num" data-sort="20"><span class="risk-badge risk-minimal" title="Commits: 2
+Churn: 325
+Authors: 1">20%</span></td>
+        </tr><tr>
+          <td><code title="scripts/git-spark-html.ps1">scripts/git-spark-html.ps1</code></td>
+          <td class="num" data-sort="1">1</td>
+          <td class="num" data-sort="297">297</td>
+          <td class="num" data-sort="1">1</td>
+          <td class="num" data-sort="20"><span class="risk-badge risk-minimal" title="Commits: 1
+Churn: 297
+Authors: 1">20%</span></td>
+        </tr><tr>
+          <td><code title=".gitignore">.gitignore</code></td>
+          <td class="num" data-sort="2">2</td>
+          <td class="num" data-sort="281">281</td>
+          <td class="num" data-sort="1">1</td>
+          <td class="num" data-sort="20"><span class="risk-badge risk-minimal" title="Commits: 2
+Churn: 281
+Authors: 1">20%</span></td>
+        </tr><tr>
+          <td><code title="src/index.ts">src/index.ts</code></td>
+          <td class="num" data-sort="2">2</td>
+          <td class="num" data-sort="274">274</td>
+          <td class="num" data-sort="1">1</td>
+          <td class="num" data-sort="20"><span class="risk-badge risk-minimal" title="Commits: 2
+Churn: 274
+Authors: 1">20%</span></td>
+        </tr><tr>
+          <td><code title="src/utils/git.ts">src/utils/git.ts</code></td>
+          <td class="num" data-sort="1">1</td>
+          <td class="num" data-sort="247">247</td>
+          <td class="num" data-sort="1">1</td>
+          <td class="num" data-sort="19"><span class="risk-badge risk-minimal" title="Commits: 1
+Churn: 247
+Authors: 1">19%</span></td>
+        </tr><tr>
+          <td><code title="src/utils/validation.ts">src/utils/validation.ts</code></td>
+          <td class="num" data-sort="2">2</td>
+          <td class="num" data-sort="240">240</td>
+          <td class="num" data-sort="1">1</td>
+          <td class="num" data-sort="20"><span class="risk-badge risk-minimal" title="Commits: 2
+Churn: 240
+Authors: 1">20%</span></td>
+        </tr><tr>
+          <td><code title="src/output/console.ts">src/output/console.ts</code></td>
+          <td class="num" data-sort="1">1</td>
+          <td class="num" data-sort="240">240</td>
+          <td class="num" data-sort="1">1</td>
+          <td class="num" data-sort="19"><span class="risk-badge risk-minimal" title="Commits: 1
+Churn: 240
+Authors: 1">19%</span></td>
+        </tr><tr>
+          <td><code title=".github/copilot-instructions.md">.github/copilot-instructions.md</code></td>
+          <td class="num" data-sort="1">1</td>
+          <td class="num" data-sort="238">238</td>
+          <td class="num" data-sort="1">1</td>
+          <td class="num" data-sort="19"><span class="risk-badge risk-minimal" title="Commits: 1
+Churn: 238
+Authors: 1">19%</span></td>
+        </tr><tr>
+          <td><code title="CLI-IMPLEMENTATION-COMPLETE.md">CLI-IMPLEMENTATION-COMPLETE.md</code></td>
+          <td class="num" data-sort="1">1</td>
+          <td class="num" data-sort="203">203</td>
+          <td class="num" data-sort="1">1</td>
+          <td class="num" data-sort="19"><span class="risk-badge risk-minimal" title="Commits: 1
+Churn: 203
+Authors: 1">19%</span></td>
+        </tr><tr>
+          <td><code title="scripts/test-html-comprehensive.ts">scripts/test-html-comprehensive.ts</code></td>
+          <td class="num" data-sort="1">1</td>
+          <td class="num" data-sort="186">186</td>
+          <td class="num" data-sort="1">1</td>
+          <td class="num" data-sort="19"><span class="risk-badge risk-minimal" title="Commits: 1
+Churn: 186
+Authors: 1">19%</span></td>
+        </tr><tr>
+          <td><code title="scripts/git-spark-html.bat">scripts/git-spark-html.bat</code></td>
+          <td class="num" data-sort="1">1</td>
+          <td class="num" data-sort="183">183</td>
+          <td class="num" data-sort="1">1</td>
+          <td class="num" data-sort="19"><span class="risk-badge risk-minimal" title="Commits: 1
+Churn: 183
+Authors: 1">19%</span></td>
+        </tr><tr>
+          <td><code title="copilot/session-2025-09-29/feature-grid.md">copilot/session-20...29/feature-grid.md</code></td>
+          <td class="num" data-sort="1">1</td>
+          <td class="num" data-sort="168">168</td>
+          <td class="num" data-sort="1">1</td>
+          <td class="num" data-sort="19"><span class="risk-badge risk-minimal" title="Commits: 1
+Churn: 168
+Authors: 1">19%</span></td>
+        </tr><tr>
+          <td><code title="cli-test-reports/git-spark-report.html">cli-test-reports/git-spark-report.html</code></td>
+          <td class="num" data-sort="1">1</td>
+          <td class="num" data-sort="164">164</td>
+          <td class="num" data-sort="1">1</td>
+          <td class="num" data-sort="19"><span class="risk-badge risk-minimal" title="Commits: 1
+Churn: 164
+Authors: 1">19%</span></td>
+        </tr></tbody>
+        </table>
       </div>
-    </div>
-  </div>
-  
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+      <button class="show-more" data-target-table="files" hidden>Show more</button>
+    </section>
+
+    <section id="risks" class="section">
+      <h2>Risk Overview</h2>
+      <p class="risk-level-label">Overall Risk: <strong>Low</strong></p>
+      <ul class="risk-factors">
+        <li>High Churn Files: 3</li>
+        <li>Many Author Files: 0</li>
+        <li>Large Commits: 5</li>
+        <li>Recent Changes: 47</li>
+      </ul>
+      <div class="recommendations">
+        <h3>Recommendations</h3>
+        <ul><li>No recommendations</li></ul>
+      </div>
+    </section>
+
+    <section id="governance" class="section">
+      <h2>Governance & Code Quality</h2>
+      <div class="gov-grid">
+        <div class="gov-card">Conventional Commits: 9</div>
+        <div class="gov-card">Traceability: 0.0%</div>
+        <div class="gov-card">Avg Message Length: 352.8</div>
+        <div class="gov-card">WIP Commits: 0</div>
+        <div class="gov-card">Reverts: 0</div>
+        <div class="gov-card">Short Messages: 0</div>
+      </div>
+      <h3>Governance Recommendations</h3>
+      <ul><li>Link commits to issues for better traceability</li></ul>
+    </section>
+
+    <section id="meta" class="section">
+      <h2>Report Metadata</h2>
+      <dl class="meta-grid">
+        <dt>Generated</dt><dd>9/29/2025, 5:07:19 PM</dd>
+        <dt>Version</dt><dd>1.0.0</dd>
+        <dt>Branch</dt><dd>main</dd>
+        <dt>Commit</dt><dd><code>5ed3262f</code></dd>
+        <dt>Processing Time</dt><dd>0.13s</dd>
+        <dt>Repo Path</dt><dd>C:\GitHub\MarkHazleton\git-spark</dd>
+        
+      </dl>
+    </section>
+  </main>
+  <footer class="site-footer" role="contentinfo">Generated by git-spark v1.0.0 • 9/29/2025, 5:07:19 PM</footer>
+  <button id="backToTop" class="back-to-top" aria-label="Back to top" hidden>▲</button>
+  <div id="liveRegion" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+  <script nonce="706d2e92c83ed020">(() => {
+      const exportData = {
+        repository: {
+          totalCommits: "TODO",
+          totalAuthors: "TODO",
+          totalFiles: "TODO",
+          healthScore: "TODO",
+          governanceScore: "TODO",
+          busFactor: "TODO",
+        },
+        authors: [],
+        files: [],
+        risks: {},
+        governance: {},
+      };
+      
+      const backBtn = document.getElementById('backToTop');
+      const root = document.documentElement;
+      const themeToggle = document.getElementById('themeToggle');
+      const savedTheme = localStorage.getItem('gitSparkTheme');
+      
+      if (savedTheme === 'dark') {
+        root.classList.add('dark');
+        themeToggle?.setAttribute('aria-pressed','true');
+        if (themeToggle) themeToggle.textContent = '☀️';
+      }
+      
+      themeToggle?.addEventListener('click', () => {
+        const isDark = root.classList.toggle('dark');
+        themeToggle?.setAttribute('aria-pressed', isDark ? 'true' : 'false');
+        if (themeToggle) themeToggle.textContent = isDark ? '☀️' : '🌙';
+        localStorage.setItem('gitSparkTheme', isDark ? 'dark' : 'light');
+      });
+      
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 300) backBtn?.removeAttribute('hidden'); 
+        else backBtn?.setAttribute('hidden','');
+      });
+      
+      backBtn?.addEventListener('click', () => window.scrollTo({ top:0, behavior:'smooth' }));
+      
+      function makeSortable(){
+        document.querySelectorAll('table[data-sortable]')?.forEach(table => {
+          table.querySelectorAll('th')?.forEach((th, idx) => {
+            th.addEventListener('click', () => {
+              const tbody = table.querySelector('tbody');
+              if(!tbody) return;
+              const rows = Array.from(tbody.querySelectorAll('tr'));
+              const dir = th.getAttribute('data-sort-dir') === 'asc' ? 'desc' : 'asc';
+              table.querySelectorAll('th').forEach(h => h.removeAttribute('aria-sort'));
+              th.setAttribute('aria-sort', dir === 'asc' ? 'ascending' : 'descending');
+              th.setAttribute('data-sort-dir', dir);
+              rows.sort((a,b) => {
+                const av = (a.querySelectorAll('td')[idx] || {}).getAttribute?.('data-sort') || '0';
+                const bv = (b.querySelectorAll('td')[idx] || {}).getAttribute?.('data-sort') || '0';
+                const na = parseFloat(av); const nb = parseFloat(bv);
+                if(!isNaN(na) && !isNaN(nb)) return dir==='asc'? na-nb : nb-na;
+                return dir==='asc'? av.localeCompare(bv) : bv.localeCompare(av);
+              });
+              rows.forEach(r => tbody.appendChild(r));
+              const live = document.getElementById('liveRegion');
+              if(live) live.textContent = 'Sorted column ' + th.innerText + ' ' + dir;
+            });
+          });
+        });
+      }
+      
+      function initPagination(){
+        document.querySelectorAll('table[data-initial-limit]')?.forEach(table => {
+          const limit = parseInt(table.dataset.initialLimit || '0');
+          if(!limit) return;
+          const rows = Array.from(table.querySelectorAll('tbody tr'));
+          if(rows.length <= limit) return;
+          rows.slice(limit).forEach(r => r.classList.add('hidden-row'));
+          const name = table.dataset.table;
+          const btn = document.querySelector('button.show-more[data-target-table="' + name + '"]');
+          if(btn){
+            btn.hidden = false;
+            btn?.addEventListener('click', () => {
+              rows.slice(limit).forEach(r => r.classList.toggle('hidden-row'));
+              const expanded = rows.slice(limit)[0].classList.contains('hidden-row') === false;
+              btn.textContent = expanded ? 'Show less' : 'Show more';
+            });
+          }
+        });
+      }
+      
+      function initExport(){
+        document.querySelectorAll('.export-actions button[data-export]')?.forEach(btn => {
+          btn.addEventListener('click', () => {
+            const kind = btn.getAttribute('data-export');
+            if(kind === 'json') {
+              const blob = new Blob([JSON.stringify(exportData, null, 2)], { type:'application/json' });
+              triggerDownload(blob, 'git-spark-summary.json');
+            } else if (kind === 'authors-csv') {
+              const header = 'name,commits,churn,files_changed,avg_commit_size,largest_commit\n';
+              const rows = (exportData.authors||[]).map((a)=> [a.name,a.commits,a.churn,a.filesChanged,a.avgCommitSize,a.largestCommit].join(','));
+              const blob = new Blob([ header + rows.join('\n') ], { type:'text/csv' });
+              triggerDownload(blob, 'git-spark-authors.csv');
+            } else if (kind === 'files-csv') {
+              const header = 'path,commits,authors,churn,riskScore\n';
+              const rows = (exportData.files||[]).map((f)=> [f.path,f.commits,f.authors,f.churn,f.riskScore].join(','));
+              const blob = new Blob([ header + rows.join('\n') ], { type:'text/csv' });
+              triggerDownload(blob, 'git-spark-files.csv');
+            }
+          });
+        });
+      }
+      
+      function triggerDownload(blob, filename){
+        const url = URL.createObjectURL(blob); 
+        const a = document.createElement('a'); 
+        a.href = url; 
+        a.download = filename; 
+        document.body.appendChild(a); 
+        a.click(); 
+        setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 200); 
+      }
+      
+      if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        setTimeout(() => { makeSortable(); }, 0); 
+      } else {
+        document.addEventListener('DOMContentLoaded', () => { makeSortable(); });
+      }
+      
+      document.addEventListener('DOMContentLoaded', () => { 
+        initPagination(); 
+        initExport(); 
+      });
+    })();</script>
 </body>
 </html>
