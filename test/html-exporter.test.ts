@@ -1,6 +1,6 @@
 import { HTMLExporter } from '../src/output/html';
 import { AnalysisReport } from '../src/types';
-import { existsSync, readFileSync } from 'fs';
+import { existsSync, readFileSync, unlinkSync, rmSync } from 'fs';
 import { resolve } from 'path';
 
 describe('HTMLExporter (Phase 3)', () => {
@@ -107,8 +107,8 @@ describe('HTMLExporter (Phase 3)', () => {
 
   afterEach(() => {
     const f = resolve(outDir, 'git-spark-report.html');
-    if (existsSync(f)) require('fs').unlinkSync(f);
-    if (existsSync(outDir)) require('fs').rmdirSync(outDir, { recursive: true });
+    if (existsSync(f)) unlinkSync(f);
+    if (existsSync(outDir)) rmSync(outDir, { recursive: true });
   });
 
   it('renders required meta tags & navigation', async () => {

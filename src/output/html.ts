@@ -289,6 +289,13 @@ export class HTMLExporter {
         <li>Large Commits: ${report.risks.riskFactors.largeCommits}</li>
         <li>Recent Changes: ${report.risks.riskFactors.recentChanges}</li>
       </ul>
+      <div class="dataset-toggles">
+        <button class="dataset-toggle active" data-toggle="risk-overview">Overview</button>
+        <button class="dataset-toggle" data-toggle="risk-details">Details</button>
+      </div>
+      <div id="riskFactorsChart" class="chart-container">
+        <!-- Risk factors chart placeholder -->
+      </div>
       <div class="recommendations">
         <h3>Recommendations</h3>
         <ul>${report.risks.recommendations.map(r => `<li>${this.escapeHtml(r)}</li>`).join('') || '<li>No recommendations</li>'}</ul>
@@ -304,6 +311,9 @@ export class HTMLExporter {
         <div class="gov-card">WIP Commits: ${numberFmt(report.governance.wipCommits)}</div>
         <div class="gov-card">Reverts: ${numberFmt(report.governance.revertCommits)}</div>
         <div class="gov-card">Short Messages: ${numberFmt(report.governance.shortMessages)}</div>
+      </div>
+      <div id="governanceChart" class="chart-container">
+        <!-- Governance chart placeholder -->
       </div>
       <h3>Governance Recommendations</h3>
       <ul>${report.governance.recommendations.map(r => `<li>${this.escapeHtml(r)}</li>`).join('') || '<li>No governance recommendations</li>'}</ul>
@@ -467,6 +477,11 @@ export class HTMLExporter {
       .largest-commit strong { color:var(--color-primary); }
       .largest-commit em { color:var(--color-text-secondary); }
       .no-data { text-align:center; color:var(--color-text-secondary); font-size:.85rem; padding:1rem; }
+      
+      /* Dataset toggle functionality */
+      .dataset-toggles { display:flex; gap:.5rem; margin:.5rem 0; }
+      .dataset-toggle { background:var(--color-surface); border:1px solid var(--color-border); padding:.3rem .6rem; border-radius:4px; cursor:pointer; font-size:.75rem; }
+      .dataset-toggle.active { background:var(--color-primary); color:#fff; }
       
       /* Responsive design for author profiles */
       @media (max-width: 768px) { 
@@ -804,6 +819,19 @@ export class HTMLExporter {
         });
       }
       
+      function initDatasetToggles(){
+        document.querySelectorAll('.dataset-toggles')?.forEach(container => {
+          const toggles = container.querySelectorAll('.dataset-toggle');
+          toggles.forEach(toggle => {
+            toggle.addEventListener('click', () => {
+              toggles.forEach(t => t.classList.remove('active'));
+              toggle.classList.add('active');
+              // Dataset toggle functionality can be expanded here
+            });
+          });
+        });
+      }
+      
       function triggerDownload(blob, filename){
         const url = URL.createObjectURL(blob); 
         const a = document.createElement('a'); 
@@ -823,6 +851,7 @@ export class HTMLExporter {
       document.addEventListener('DOMContentLoaded', () => { 
         initPagination(); 
         initExport(); 
+        initDatasetToggles(); 
       });
     })();`;
   }
