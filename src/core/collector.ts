@@ -102,6 +102,14 @@ export class DataCollector {
 
     const warnings: string[] = [];
 
+    // Derive since date from --days if user supplied days but not an explicit since
+    if (!options.since && options.days && options.days > 0) {
+      const d = new Date();
+      d.setDate(d.getDate() - options.days);
+      // Use ISO date (no time) to let git interpret midnight boundary
+      options.since = d.toISOString().split('T')[0];
+    }
+
     const gitOptions: { since?: string; until?: string; branch?: string; author?: string } = {};
     if (options.since) gitOptions.since = options.since;
     if (options.until) gitOptions.until = options.until;
@@ -113,11 +121,13 @@ export class DataCollector {
 
     // Build streaming git log command with safe delimiters
     // Use unit separator (0x1F) for fields and record separator (0x1E) for commits
+    // We prefix each commit with a record separator so we can split reliably even for large bodies.
+    // Format: \x1e<fields...> then numstat lines, then the next commit begins with \x1e
     const args: string[] = [
       'log',
       '--no-merges',
       '--numstat',
-      `--pretty=format:%H%x1f%h%x1f%an%x1f%ae%x1f%ai%x1f%s%x1f%b%x1f%P%x1e`,
+      `--pretty=format:%x1e%H%x1f%h%x1f%an%x1f%ae%x1f%ai%x1f%s%x1f%b%x1f%P`,
     ];
     if (gitOptions.since) args.push(`--since=${gitOptions.since}`);
     if (gitOptions.until) args.push(`--until=${gitOptions.until}`);
@@ -143,13 +153,12 @@ export class DataCollector {
 
     child.stdout.on('data', (chunk: Buffer) => {
       buffer += chunk.toString();
-      // Split on record separator (0x1E)
-      let idx;
-      while ((idx = buffer.indexOf('\x1e')) !== -1) {
-        const record = buffer.slice(0, idx);
-        buffer = buffer.slice(idx + 1);
+      // Each commit starts with a record separator. We skip leading empty fragment.
+      const records = buffer.split('\x1e');
+      // Keep the last partial (not yet complete) in buffer
+      buffer = records.pop() || '';
+      for (const record of records) {
         if (!record.trim()) continue;
-        // A commit record begins with header line then numstat lines until blank line
         const lines = record.split('\n');
         const header = lines.shift();
         if (!header) continue;
@@ -159,7 +168,6 @@ export class DataCollector {
           continue;
         }
         currentCommit = this.parseCommitHeader(parts);
-        // Remaining lines could contain numstat entries
         for (const l of lines) {
           if (!l.trim()) continue;
           const fileChange = this.parseFileStats(l);
@@ -180,25 +188,24 @@ export class DataCollector {
     await new Promise<void>((resolve, reject) => {
       child.on('error', (e: Error) => reject(e));
       child.on('close', () => {
-        // Flush remaining buffer (rare, if no trailing separator)
+        // Process any remaining buffered (partial) record
         if (buffer.trim()) {
-          const tailRecords = buffer.split('\x1e').filter(Boolean);
-          for (const rec of tailRecords) {
-            const lines = rec.split('\n');
-            const header = lines.shift();
-            if (!header) continue;
+          const lines = buffer.split('\n');
+          const header = lines.shift();
+          if (header) {
             const parts = header.split('\x1f');
-            if (parts.length < 8) continue;
-            currentCommit = this.parseCommitHeader(parts);
-            for (const l of lines) {
-              if (!l.trim()) continue;
-              const fc = this.parseFileStats(l);
-              if (fc) {
-                currentCommit.files = currentCommit.files || [];
-                currentCommit.files.push(fc);
+            if (parts.length >= 8) {
+              currentCommit = this.parseCommitHeader(parts);
+              for (const l of lines) {
+                if (!l.trim()) continue;
+                const fc = this.parseFileStats(l);
+                if (fc) {
+                  currentCommit.files = currentCommit.files || [];
+                  currentCommit.files.push(fc);
+                }
               }
+              finalizeCurrent();
             }
-            finalizeCurrent();
           }
         }
         resolve();
