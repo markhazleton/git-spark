@@ -154,42 +154,72 @@ export class DataCollector {
 
     child.stdout.on('data', (chunk: Buffer) => {
       buffer += chunk.toString();
-      // Each commit starts with a record separator. We skip leading empty fragment.
+      // Split on record separator (each commit starts with \x1e)
       const records = buffer.split('\x1e');
-      // Keep the last partial (not yet complete) in buffer
       buffer = records.pop() || '';
       for (const record of records) {
         if (!record.trim()) continue;
-        // Header completeness resilience: ensure we have a newline (end of header)
-        // and the expected number of field separators before attempting to parse.
-        const newlineIdx = record.indexOf('\n');
-        if (newlineIdx === -1) {
-          // Incomplete header (chunk boundary) - push back to buffer (re-prepend record sep)
-          buffer = '\x1e' + record + buffer;
-          continue;
+
+        // We need 7 field separators (\x1f) to yield 8 header fields (hash..parents)
+        // The commit body (%b) may contain newlines, so the header can span multiple lines
+        // until the parents field is encountered. Only after the parents field do file
+        // change (numstat) lines begin on subsequent lines.
+        // Count field separators (0x1F) without regex to satisfy lint (no-control-regex)
+        let fieldSepCount = 0;
+        for (let i = 0; i < record.length; i++) {
+          if (record.charCodeAt(i) === 0x1f) fieldSepCount++;
         }
-        const headerLine = record.slice(0, newlineIdx);
-        const fieldSepCount = (headerLine.match(/\x1f/g) || []).length;
         if (fieldSepCount < 7) {
-          // need 7 separators to yield 8 fields
+          // Incomplete header (body truncated across chunk) - re-buffer
           buffer = '\x1e' + record + buffer;
           continue;
         }
-        const remainder = record.slice(newlineIdx + 1);
+
+        // Find the index of the 7th separator to know where parents field starts
+        let sepCount = 0;
+        let idx = -1;
+        for (let i = 0; i < record.length; i++) {
+          if (record[i] === '\x1f') {
+            sepCount++;
+            if (sepCount === 7) {
+              // after this comes the parents field value
+              // Find newline ending the parents field
+              const newlineAfterParents = record.indexOf('\n', i + 1);
+              if (newlineAfterParents === -1) {
+                // Parents field not terminated yet; wait for more data
+                buffer = '\x1e' + record + buffer;
+                idx = -1;
+              } else {
+                idx = newlineAfterParents; // header ends here
+              }
+              break;
+            }
+          }
+        }
+
+        if (idx === -1) {
+          continue; // wait for more data
+        }
+
+        const headerLine = record.slice(0, idx);
         const parts = headerLine.split('\x1f');
         if (parts.length < 8) {
-          // Truly malformed (very rare) - log one warning but skip.
           warnings.push('Malformed commit header encountered (insufficient fields)');
           continue;
         }
         currentCommit = this.parseCommitHeader(parts);
-        const lines = remainder ? remainder.split('\n') : [];
-        for (const l of lines) {
-          if (!l.trim()) continue;
-          const fileChange = this.parseFileStats(l);
-          if (fileChange) {
-            currentCommit.files = currentCommit.files || [];
-            currentCommit.files.push(fileChange);
+
+        // Remainder after header newline are numstat lines (may contain blank line at end)
+        const remainder = record.slice(idx + 1);
+        if (remainder) {
+          const lines = remainder.split('\n');
+          for (const l of lines) {
+            if (!l.trim()) continue;
+            const fileChange = this.parseFileStats(l.replace(/\r$/, ''));
+            if (fileChange) {
+              currentCommit.files = currentCommit.files || [];
+              currentCommit.files.push(fileChange);
+            }
           }
         }
         finalizeCurrent();
@@ -209,7 +239,10 @@ export class DataCollector {
           const newlineIdx = buffer.indexOf('\n');
           if (newlineIdx !== -1) {
             const headerLine = buffer.slice(0, newlineIdx);
-            const fieldSepCount = (headerLine.match(/\x1f/g) || []).length;
+            let fieldSepCount = 0;
+            for (let i = 0; i < headerLine.length; i++) {
+              if (headerLine.charCodeAt(i) === 0x1f) fieldSepCount++;
+            }
             if (fieldSepCount >= 7) {
               const parts = headerLine.split('\x1f');
               if (parts.length >= 8) {
