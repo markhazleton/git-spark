@@ -389,7 +389,7 @@ async function executeAnalysis(options: any): Promise<void> {
     }
 
     // Dynamic import to avoid circular dependencies
-    const GitSpark = require('../../dist/index').GitSpark || require('../index').GitSpark;
+    const GitSpark = require('../index').GitSpark || require('../../dist/src/index').GitSpark;
 
     spinner.text = 'Starting analysis';
     const gitSpark = new GitSpark(
