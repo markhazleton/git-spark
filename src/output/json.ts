@@ -7,27 +7,27 @@ const logger = createLogger('json-exporter');
 
 /**
  * Exports analysis reports as formatted JSON files
- * 
+ *
  * The JSONExporter provides structured data export suitable for:
  * - Integration with external tools and systems
  * - Data processing and transformation pipelines
  * - API responses and web applications
  * - Backup and archival of analysis results
  * - Custom visualization and reporting tools
- * 
+ *
  * Features:
  * - Pretty-printed JSON with 2-space indentation
  * - Date serialization handling for temporal data
  * - Large number formatting for statistical accuracy
  * - Error handling with detailed logging
  * - Atomic file operations for data integrity
- * 
+ *
  * @example
  * ```typescript
  * const exporter = new JSONExporter();
  * await exporter.export(analysisReport, './reports');
  * // Creates: ./reports/git-spark-report.json
- * 
+ *
  * // Load back the data
  * const jsonData = JSON.parse(fs.readFileSync('./reports/git-spark-report.json', 'utf-8'));
  * ```
@@ -35,20 +35,20 @@ const logger = createLogger('json-exporter');
 export class JSONExporter {
   /**
    * Export analysis report as formatted JSON file
-   * 
+   *
    * Creates a pretty-printed JSON file with proper formatting and error handling.
    * The output includes all analysis data with dates and numbers properly serialized.
-   * 
+   *
    * @param report - Complete analysis report to export
    * @param outputPath - Directory path where JSON file will be created
    * @throws {Error} When output directory cannot be created or file cannot be written
    * @returns Promise that resolves when export is complete
-   * 
+   *
    * @example
    * ```typescript
    * const exporter = new JSONExporter();
    * await exporter.export(report, './output');
-   * 
+   *
    * // Verify the file was created
    * const exists = fs.existsSync('./output/git-spark-report.json');
    * console.log('Export successful:', exists);

@@ -20,31 +20,31 @@ const logger = createLogger('analyzer');
 
 /**
  * Core Git repository analysis engine
- * 
+ *
  * The GitAnalyzer is the primary engine for analyzing Git repositories and generating
  * comprehensive reports. It orchestrates data collection, statistical analysis, risk
  * assessment, and governance evaluation to provide enterprise-grade insights.
- * 
+ *
  * Key capabilities:
  * - Commit history analysis with author attribution
- * - File change tracking and hot spot identification  
+ * - File change tracking and hot spot identification
  * - Risk assessment for code quality and maintenance
  * - Governance scoring based on best practices
  * - Timeline analysis for project velocity tracking
  * - Comprehensive reporting with multiple export formats
- * 
+ *
  * @example
  * ```typescript
  * const analyzer = new GitAnalyzer('/path/to/repo', (progress) => {
  *   console.log(`Analysis ${progress.percentage}% complete`);
  * });
- * 
+ *
  * const report = await analyzer.analyze({
  *   includeFileDetails: true,
  *   analyzeRisk: true,
  *   dateRange: { since: '2024-01-01', until: '2024-12-31' }
  * });
- * 
+ *
  * console.log(`Found ${report.summary.totalCommits} commits by ${report.summary.totalAuthors} authors`);
  * ```
  */
@@ -54,16 +54,16 @@ export class GitAnalyzer {
 
   /**
    * Create a new GitAnalyzer instance
-   * 
+   *
    * @param repoPath - Absolute path to the Git repository to analyze
    * @param progressCallback - Optional callback for tracking analysis progress
    * @throws {Error} When repository path is invalid or inaccessible
-   * 
+   *
    * @example
    * ```typescript
    * // Basic usage
    * const analyzer = new GitAnalyzer('/path/to/repo');
-   * 
+   *
    * // With progress tracking
    * const analyzer = new GitAnalyzer('/path/to/repo', (progress) => {
    *   console.log(`${progress.stage}: ${progress.percentage}%`);
@@ -77,24 +77,24 @@ export class GitAnalyzer {
 
   /**
    * Perform comprehensive Git repository analysis
-   * 
+   *
    * Executes full analysis pipeline including:
    * - Commit data collection and author statistics
    * - File change analysis and hot spot identification
    * - Risk assessment for maintenance and quality concerns
    * - Governance evaluation based on industry best practices
    * - Timeline generation for velocity and trend analysis
-   * 
+   *
    * @param options - Analysis configuration options
    * @param options.includeFileDetails - Whether to include detailed file-level statistics
    * @param options.analyzeRisk - Whether to perform risk assessment analysis
    * @param options.dateRange - Optional date range filter for commits
    * @param options.maxCommits - Maximum number of commits to analyze (for performance)
    * @param options.excludePatterns - File patterns to exclude from analysis
-   * 
+   *
    * @returns Promise resolving to comprehensive analysis report
    * @throws {Error} When repository access fails or analysis encounters critical errors
-   * 
+   *
    * @example
    * ```typescript
    * // Full analysis with all features
@@ -104,7 +104,7 @@ export class GitAnalyzer {
    *   dateRange: { since: '2024-01-01' },
    *   excludePatterns: ['node_modules/**', '*.log']
    * });
-   * 
+   *
    * // Quick analysis for large repositories
    * const report = await analyzer.analyze({
    *   includeFileDetails: false,

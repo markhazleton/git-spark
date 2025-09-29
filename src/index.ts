@@ -25,11 +25,11 @@ const logger = createLogger('git-spark');
 
 /**
  * Main GitSpark class for enterprise-grade Git repository analysis
- * 
+ *
  * Provides a high-level interface for analyzing Git repositories and generating
  * comprehensive reports. Handles the complete analysis pipeline from data
  * collection through export in multiple formats.
- * 
+ *
  * Key features:
  * - Comprehensive commit and author analysis
  * - Risk assessment and governance scoring
@@ -37,7 +37,7 @@ const logger = createLogger('git-spark');
  * - Progress tracking for long-running operations
  * - Extensive configuration options and validation
  * - Enterprise-grade error handling and logging
- * 
+ *
  * @example
  * ```typescript
  * // Basic analysis
@@ -45,10 +45,10 @@ const logger = createLogger('git-spark');
  *   repoPath: '/path/to/repo',
  *   since: '2024-01-01'
  * });
- * 
+ *
  * const report = await gitSpark.analyze();
  * await gitSpark.export('html', './reports');
- * 
+ *
  * // With progress tracking
  * const gitSpark = new GitSpark({
  *   repoPath: '/path/to/repo'

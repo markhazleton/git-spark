@@ -7,11 +7,11 @@ const logger = createLogger('collector');
 
 /**
  * Git repository data collection engine
- * 
+ *
  * The DataCollector is responsible for efficiently extracting raw data from Git repositories
  * using git commands. It handles commit history traversal, file change analysis, and progress
  * tracking for large repositories.
- * 
+ *
  * Key features:
  * - Efficient batch processing of git log data
  * - Comprehensive file change tracking with diff statistics
@@ -19,19 +19,19 @@ const logger = createLogger('collector');
  * - Robust error handling and validation
  * - Progress reporting for long-running operations
  * - Flexible filtering by date, author, branch, and file patterns
- * 
+ *
  * @example
  * ```typescript
  * const collector = new DataCollector('/path/to/repo', (progress) => {
  *   console.log(`${progress.stage}: ${progress.percentage}%`);
  * });
- * 
+ *
  * const commits = await collector.collectCommits({
  *   since: '2024-01-01',
  *   author: 'john@example.com',
  *   maxCommits: 1000
  * });
- * 
+ *
  * console.log(`Collected ${commits.length} commits`);
  * ```
  */
@@ -41,16 +41,16 @@ export class DataCollector {
 
   /**
    * Create a new DataCollector instance
-   * 
+   *
    * @param repoPath - Absolute path to the Git repository
    * @param progressCallback - Optional callback for progress updates during collection
    * @throws {Error} When repository path is invalid or git is not accessible
-   * 
+   *
    * @example
    * ```typescript
    * // Basic usage
    * const collector = new DataCollector('/path/to/repo');
-   * 
+   *
    * // With progress tracking
    * const collector = new DataCollector('/path/to/repo', (progress) => {
    *   console.log(`${progress.stage}: ${progress.current}/${progress.total}`);
@@ -64,24 +64,24 @@ export class DataCollector {
 
   /**
    * Collect commit data from Git repository with comprehensive metadata
-   * 
+   *
    * Efficiently processes git log to extract commit information including:
    * - Basic commit metadata (hash, author, date, message)
    * - File change statistics (additions, deletions, modifications)
    * - Diff analysis for each changed file
    * - Merge commit handling and parent tracking
-   * 
+   *
    * @param options - Collection options and filters
    * @param options.since - Start date for commit range (ISO string or git date format)
-   * @param options.until - End date for commit range (ISO string or git date format)  
+   * @param options.until - End date for commit range (ISO string or git date format)
    * @param options.branch - Specific branch to analyze (default: current branch)
    * @param options.author - Filter commits by author email or name
    * @param options.maxCommits - Maximum number of commits to collect (for performance)
    * @param options.excludePatterns - File patterns to exclude from analysis
-   * 
+   *
    * @returns Promise resolving to array of processed commit data
    * @throws {Error} When git operations fail or repository is inaccessible
-   * 
+   *
    * @example
    * ```typescript
    * // Collect all commits from last 6 months
@@ -89,7 +89,7 @@ export class DataCollector {
    *   since: '2024-06-01',
    *   maxCommits: 5000
    * });
-   * 
+   *
    * // Collect commits from specific author
    * const commits = await collector.collectCommits({
    *   author: 'developer@company.com',
