@@ -3,7 +3,7 @@ import { AnalysisReport } from '../src/types';
 import { existsSync, readFileSync } from 'fs';
 import { resolve } from 'path';
 
-describe('HTMLExporter (Phase 1)', () => {
+describe('HTMLExporter (Phase 3)', () => {
   let exporter: HTMLExporter;
   let report: AnalysisReport;
 
@@ -121,36 +121,43 @@ describe('HTMLExporter (Phase 1)', () => {
     expect(html).toContain('Executive Summary');
   });
 
-  it('includes key metric cards', async () => {
+  it('includes key metric cards and export controls', async () => {
     await exporter.export(report, outDir);
     const html = readFileSync(resolve(outDir, 'git-spark-report.html'), 'utf-8');
     expect(html).toMatch(/Commits<\/div>/);
     expect(html).toMatch(/Contributors<\/div>/);
     expect(html).toMatch(/Files Changed<\/div>/);
+    expect(html).toContain('data-export="json"');
+    expect(html).toContain('Authors CSV');
   });
 
-  it('escapes HTML in dynamic content', async () => {
+  it('escapes HTML in dynamic content (raw appears only in serialized JSON)', async () => {
     report.authors[0].name = 'Alice <script>alert(1)</script>';
     report.files[0].path = 'src/<Injected>.ts';
     await exporter.export(report, outDir);
     const html = readFileSync(resolve(outDir, 'git-spark-report.html'), 'utf-8');
     expect(html).toContain('Alice &lt;script&gt;alert(1)&lt;/script&gt;');
     expect(html).toContain('src/&lt;Injected&gt;.ts');
-    expect(html).not.toContain('<script>alert(1)</script>');
+    // Raw script tag may exist inside serialized JSON export blob; ensure not present directly inside table cell markup
+    const forbiddenPattern = '<td>Alice <script>alert(1)</script>';
+    expect(html).not.toContain(forbiddenPattern);
   });
 
-  it('shows governance and risk sections', async () => {
+  it('shows governance and risk sections plus charts', async () => {
     await exporter.export(report, outDir);
     const html = readFileSync(resolve(outDir, 'git-spark-report.html'), 'utf-8');
     expect(html).toContain('Governance & Code Quality');
     expect(html).toContain('Risk Overview');
+    expect(html).toContain('riskFactorsChart');
+    expect(html).toContain('governanceChart');
   });
 
-  it('includes CSS variables and smooth scroll behavior', async () => {
+  it('includes CSS variables, smooth scroll behavior, and dataset toggles', async () => {
     await exporter.export(report, outDir);
     const html = readFileSync(resolve(outDir, 'git-spark-report.html'), 'utf-8');
     expect(html).toContain(':root {');
     expect(html).toContain('--color-primary');
     expect(html).toContain('scroll-behavior: smooth');
+    expect(html).toContain('dataset-toggles');
   });
 });

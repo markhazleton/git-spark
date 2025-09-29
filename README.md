@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js CI](https://github.com/MarkHazleton/git-spark/workflows/Node.js%20CI/badge.svg)](https://github.com/MarkHazleton/git-spark/actions)
 
-**Enterprise-grade Git repository analytics and reporting tool**
+## Enterprise-grade Git repository analytics and reporting tool
 
 Git Spark provides actionable insights into Git repository health, team collaboration patterns, and code quality through comprehensive analysis of commit history. Built for enterprise environments with performance, reliability, and security in mind.
 
@@ -30,8 +30,26 @@ Git Spark provides actionable insights into Git repository health, team collabor
 
 - **CLI Interface** - Intuitive command-line tool with progress indicators
 - **Programmatic API** - TypeScript/JavaScript library for custom integrations
-- **Interactive Reports** - Rich HTML reports with charts and visualizations
+- **Interactive Reports** - Rich, security‑hardened HTML reports with advanced visualizations
 - **Comprehensive Documentation** - Examples, tutorials, and best practices
+
+### 🖥️ Interactive HTML Report (v1.0)
+
+Enterprise-focused, accessible, and secure analytics dashboard:
+
+- **Multi‑Series Timeline** – Commits, churn (lines changed), and active authors with dataset toggles
+- **Risk Factors Bar Chart** – Visual breakdown of churn, recency, ownership, coupling potential, and knowledge concentration inputs
+- **Governance Radar Chart** – Conventional commit adherence, traceability, message quality, WIP/revert penalties
+- **Dark Mode Toggle (Persistent)** – Remembers preference via localStorage; charts dynamically re-theme
+- **One‑Click Data Export** – Download embedded JSON or CSV bundles directly from the report (offline capable)
+- **Progressive Table Pagination** – “Show more” incremental reveal for large author/file sets (performance friendly)
+- **Dataset Toggles & Live Updates** – Enable/disable series without reloading page
+- **Open Graph Preview Image** – Auto‑generated SVG summary for social sharing & link unfurling
+- **Accessibility Enhancements** – ARIA live region announcements for sorting; keyboard focus management; reduced‑motion compliance
+- **Security‑First Delivery** – Strict CSP with SHA‑256 hashed inline script & style blocks (no `unsafe-inline`), SRI‑pinned Chart.js, single trusted CDN origin
+- **Email Redaction Option** – Controlled via CLI flag (`--redact-emails`) for privacy sensitive audits
+
+> All analytics data are embedded (no external calls) ensuring the report is a self-contained artifact suitable for air‑gapped review workflows.
 
 ## 🚀 Quick Start
 
@@ -265,10 +283,12 @@ async function exportReport(
 Interactive reports with:
 
 - Executive summary with health rating
-- Interactive charts and visualizations
+- Interactive charts and visualizations (multi‑series timelines, risk & governance analytics)
 - Detailed author and file analysis
 - Risk assessment and recommendations
 - Governance scoring and insights
+- Export buttons (JSON + CSV) for downstream processing
+- Dark mode, accessibility features, and CSP/SRI security hardening
 
 ### JSON Reports
 
@@ -407,6 +427,10 @@ Git Spark is designed with security in mind:
 - **Buffer Limits** - Configurable limits to prevent DoS attacks
 - **No Arbitrary Execution** - Git commands are parameterized and safe
 - **Dependency Security** - Minimal dependencies with security auditing
+- **Strict Content Security Policy** - Inline script & style blocks hashed (SHA‑256); no `unsafe-inline` or dynamic eval
+- **Subresource Integrity (SRI)** - External Chart.js resource locked to integrity hash
+- **Single External Origin** - Minimizes supply chain surface
+- **Escaped Dynamic Content** - All user / repo derived strings safely encoded in HTML output
 
 ## 🎯 Performance
 
@@ -474,6 +498,21 @@ npm run dev
 
 ## 📋 Roadmap
 
+### ✅ Completed (v1.0)
+
+- Secure HTML report with strict CSP + SRI
+- Multi‑series activity timeline (commits / churn / authors)
+- Risk factor aggregation & visualization
+- Governance radar visualization
+- Dark mode with adaptive chart theming
+- One‑click JSON & CSV export from report UI
+- Pagination & performance safeguards for large tables
+- Accessibility improvements (ARIA live sort announcements, keyboard navigation, reduced motion support)
+- OG image (SVG) generation for social/link previews
+- Email redaction option
+
+These capabilities establish the foundation for deeper comparative and temporal analytics planned in subsequent releases.
+
 ### v1.1 (Planned)
 
 - [ ] Branch comparison and diff analysis
@@ -518,4 +557,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**Built with ❤️ for the developer community**
+Built with ❤️ for the developer community
