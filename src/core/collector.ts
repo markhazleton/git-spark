@@ -38,6 +38,7 @@ const logger = createLogger('collector');
 export class DataCollector {
   private git: GitExecutor;
   private progressCallback?: ProgressCallback | undefined;
+  private lastWarnings: string[] = [];
 
   /**
    * Create a new DataCollector instance
@@ -159,15 +160,30 @@ export class DataCollector {
       buffer = records.pop() || '';
       for (const record of records) {
         if (!record.trim()) continue;
-        const lines = record.split('\n');
-        const header = lines.shift();
-        if (!header) continue;
-        const parts = header.split('\x1f');
+        // Header completeness resilience: ensure we have a newline (end of header)
+        // and the expected number of field separators before attempting to parse.
+        const newlineIdx = record.indexOf('\n');
+        if (newlineIdx === -1) {
+          // Incomplete header (chunk boundary) - push back to buffer (re-prepend record sep)
+          buffer = '\x1e' + record + buffer;
+          continue;
+        }
+        const headerLine = record.slice(0, newlineIdx);
+        const fieldSepCount = (headerLine.match(/\x1f/g) || []).length;
+        if (fieldSepCount < 7) {
+          // need 7 separators to yield 8 fields
+          buffer = '\x1e' + record + buffer;
+          continue;
+        }
+        const remainder = record.slice(newlineIdx + 1);
+        const parts = headerLine.split('\x1f');
         if (parts.length < 8) {
-          warnings.push('Malformed commit header encountered');
+          // Truly malformed (very rare) - log one warning but skip.
+          warnings.push('Malformed commit header encountered (insufficient fields)');
           continue;
         }
         currentCommit = this.parseCommitHeader(parts);
+        const lines = remainder ? remainder.split('\n') : [];
         for (const l of lines) {
           if (!l.trim()) continue;
           const fileChange = this.parseFileStats(l);
@@ -190,21 +206,26 @@ export class DataCollector {
       child.on('close', () => {
         // Process any remaining buffered (partial) record
         if (buffer.trim()) {
-          const lines = buffer.split('\n');
-          const header = lines.shift();
-          if (header) {
-            const parts = header.split('\x1f');
-            if (parts.length >= 8) {
-              currentCommit = this.parseCommitHeader(parts);
-              for (const l of lines) {
-                if (!l.trim()) continue;
-                const fc = this.parseFileStats(l);
-                if (fc) {
-                  currentCommit.files = currentCommit.files || [];
-                  currentCommit.files.push(fc);
+          const newlineIdx = buffer.indexOf('\n');
+          if (newlineIdx !== -1) {
+            const headerLine = buffer.slice(0, newlineIdx);
+            const fieldSepCount = (headerLine.match(/\x1f/g) || []).length;
+            if (fieldSepCount >= 7) {
+              const parts = headerLine.split('\x1f');
+              if (parts.length >= 8) {
+                currentCommit = this.parseCommitHeader(parts);
+                const remainder = buffer.slice(newlineIdx + 1);
+                const lines = remainder ? remainder.split('\n') : [];
+                for (const l of lines) {
+                  if (!l.trim()) continue;
+                  const fc = this.parseFileStats(l);
+                  if (fc) {
+                    currentCommit.files = currentCommit.files || [];
+                    currentCommit.files.push(fc);
+                  }
                 }
+                finalizeCurrent();
               }
-              finalizeCurrent();
             }
           }
         }
@@ -228,6 +249,7 @@ export class DataCollector {
     if (warnings.length) {
       logger.warn(`Completed with ${warnings.length} warnings`);
     }
+    this.lastWarnings = warnings.slice();
     return commits;
   }
 
@@ -365,5 +387,12 @@ export class DataCollector {
     if (this.progressCallback) {
       this.progressCallback(phase, current, total);
     }
+  }
+
+  /**
+   * Get warnings from the most recent collection run
+   */
+  getWarnings(): string[] {
+    return this.lastWarnings.slice();
   }
 }

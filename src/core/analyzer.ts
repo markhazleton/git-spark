@@ -172,6 +172,16 @@ export class GitAnalyzer {
       summary,
     };
 
+    // Attach any warnings emitted during collection for downstream exporters (HTML etc.)
+    try {
+      const collectorWarnings = (this.collector as any).getWarnings?.() || [];
+      if (collectorWarnings.length) {
+        (report as any).warnings = collectorWarnings;
+      }
+    } catch {
+      // non-fatal
+    }
+
     this.reportProgress('Analysis complete', 100, 100);
     logger.info('Analysis completed successfully', {
       commits: commits.length,
