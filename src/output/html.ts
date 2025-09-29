@@ -1,14 +1,13 @@
 import { AnalysisReport } from '../types';
 import { writeFileSync, mkdirSync } from 'fs';
-import { resolve, dirname } from       `;
-  }
-}t { createLogger } from '../utils/logger';
+import { resolve, dirname } from 'path';
+import { createLogger } from '../utils/logger';
 
 const logger = createLogger('html-exporter');
 
 /**
  * Exports analysis reports as interactive HTML with charts and visualizations
- * 
+ *
  * The HTMLExporter generates comprehensive HTML reports featuring:
  * - Executive summary with health metrics
  * - Interactive charts using Chart.js
@@ -16,7 +15,7 @@ const logger = createLogger('html-exporter');
  * - Risk assessment with color-coded indicators
  * - Governance scoring and recommendations
  * - Responsive design with modern CSS styling
- * 
+ *
  * @example
  * ```typescript
  * const exporter = new HTMLExporter();
@@ -27,11 +26,11 @@ const logger = createLogger('html-exporter');
 export class HTMLExporter {
   /**
    * Export analysis report as interactive HTML file
-   * 
+   *
    * Creates a self-contained HTML file with embedded CSS and JavaScript
    * for interactive charts and visualizations. The file includes all
    * necessary dependencies via CDN links.
-   * 
+   *
    * @param report - The complete analysis report to export
    * @param outputPath - Directory path where HTML file will be created
    * @throws {Error} When output directory cannot be created or file cannot be written
@@ -59,19 +58,19 @@ export class HTMLExporter {
 
   /**
    * Generate complete HTML document with embedded styles and scripts
-   * 
+   *
    * Creates a self-contained HTML file with:
    * - Bootstrap CSS for responsive layout
    * - Chart.js for interactive visualizations
    * - Custom CSS for git-spark branding
    * - JavaScript for chart rendering and interactions
-   * 
+   *
    * @param report - Analysis report data to render
    * @returns Complete HTML document as string
    * @private
    */
   private generateHTML(report: AnalysisReport): string {
-    return `<!DOCTYPE html>
+    const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -97,6 +96,75 @@ export class HTMLExporter {
             <p>Total Files: ${report.repository.totalFiles}</p>
             <p>Health Score: ${report.repository.healthScore.toFixed(1)}/100</p>
             <p>Governance Score: ${report.repository.governanceScore.toFixed(1)}/100</p>
+            <p>Bus Factor: ${report.repository.busFactor}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mt-4">
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Top Authors</h5>
+            <div class="table-responsive">
+              <table class="table table-sm">
+                <thead>
+                  <tr>
+                    <th>Author</th>
+                    <th>Commits</th>
+                    <th>Lines</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${report.authors
+                    .slice(0, 10)
+                    .map(
+                      author => `
+                    <tr>
+                      <td>${this.escapeHtml(author.name)}</td>
+                      <td>${author.commits}</td>
+                      <td>+${author.insertions} -${author.deletions}</td>
+                    </tr>
+                  `
+                    )
+                    .join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Hot Files</h5>
+            <div class="table-responsive">
+              <table class="table table-sm">
+                <thead>
+                  <tr>
+                    <th>File</th>
+                    <th>Changes</th>
+                    <th>Risk</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${report.files
+                    .slice(0, 10)
+                    .map(
+                      file => `
+                    <tr>
+                      <td><code>${this.escapeHtml(file.path)}</code></td>
+                      <td>${file.commits}</td>
+                      <td><span class="badge bg-${this.getRiskColor(file.riskScore)}">${file.riskScore.toFixed(1)}</span></td>
+                    </tr>
+                  `
+                    )
+                    .join('')}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
@@ -106,11 +174,13 @@ export class HTMLExporter {
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>`;
+
+    return html;
   }
 
   /**
    * Get custom CSS styles for the HTML report
-   * 
+   *
    * @returns CSS styles as string
    * @private
    */
@@ -124,17 +194,44 @@ export class HTMLExporter {
         box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
         border: 1px solid rgba(0, 0, 0, 0.125);
       }
+      code {
+        font-size: 0.85em;
+      }
+      .table-responsive {
+        max-height: 400px;
+        overflow-y: auto;
+      }
     `;
   }
 
   /**
-   * Copy static assets to output directory
-   * 
-   * @param outputPath - Directory to copy assets to
+   * Escape HTML special characters
+   *
+   * @param text - Text to escape
+   * @returns Escaped HTML text
    * @private
    */
-  private async copyAssets(outputPath: string): Promise<void> {
-    // Implementation for copying any static assets if needed
-    logger.debug('Copying static assets', { outputPath });
+  private escapeHtml(text: string): string {
+    // Simple escape for server-side rendering - no DOM available
+    return text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  /**
+   * Get Bootstrap color class for risk score
+   *
+   * @param riskScore - Risk score from 0-100
+   * @returns Bootstrap color class
+   * @private
+   */
+  private getRiskColor(riskScore: number): string {
+    if (riskScore >= 80) return 'danger';
+    if (riskScore >= 60) return 'warning';
+    if (riskScore >= 40) return 'info';
+    return 'success';
   }
 }

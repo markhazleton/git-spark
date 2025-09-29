@@ -52,7 +52,10 @@
     "clean": "rimraf dist",
     "prepublishOnly": "npm run clean && npm run build && npm run test",
     "benchmark": "node scripts/benchmark.js",
-    "docs": "typedoc src/index.ts"
+    "docs": "typedoc src/index.ts",
+    "html-report": "npx ts-node scripts/cli-html-demo.ts",
+    "html-report:serve": "npx ts-node scripts/cli-html-demo.ts --serve",
+    "html-report:heavy": "npx ts-node scripts/cli-html-demo.ts --heavy"
   },
   "dependencies": {
     "boxen": "^8.0.1",
