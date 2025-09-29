@@ -75,39 +75,65 @@ export class HTMLExporter {
     const healthPct = Math.round(report.repository.healthScore * 100);
     const governancePct = Math.round(report.governance.score * 100);
     const numberFmt = (n: number) => new Intl.NumberFormat().format(n);
+    const compactFmt = (n: number) =>
+      new Intl.NumberFormat(undefined, { notation: 'compact', maximumFractionDigits: 1 }).format(n);
     const pctFmt = (n: number) => `${n.toFixed(1)}%`;
+    const warnings: string[] = (report as any).warnings || [];
 
     const keyMetrics = [
-      { label: 'Commits', value: numberFmt(report.repository.totalCommits) },
-      { label: 'Contributors', value: numberFmt(report.repository.totalAuthors) },
-      { label: 'Files Changed', value: numberFmt(report.repository.totalFiles) },
-      { label: 'Code Churn', value: numberFmt(report.repository.totalChurn) },
-      { label: 'Health', value: `${healthPct}%` },
-      { label: 'Governance', value: `${governancePct}%` },
-      { label: 'Bus Factor', value: numberFmt(report.repository.busFactor) },
+      {
+        label: 'Commits',
+        value: numberFmt(report.repository.totalCommits),
+        raw: report.repository.totalCommits,
+      },
+      {
+        label: 'Contributors',
+        value: numberFmt(report.repository.totalAuthors),
+        raw: report.repository.totalAuthors,
+      },
+      {
+        label: 'Files Changed',
+        value: numberFmt(report.repository.totalFiles),
+        raw: report.repository.totalFiles,
+      },
+      {
+        label: 'Code Churn',
+        value: compactFmt(report.repository.totalChurn),
+        raw: report.repository.totalChurn,
+      },
+      { label: 'Health', value: `${healthPct}%`, raw: healthPct },
+      { label: 'Governance', value: `${governancePct}%`, raw: governancePct },
+      {
+        label: 'Bus Factor',
+        value: numberFmt(report.repository.busFactor),
+        raw: report.repository.busFactor,
+      },
     ];
 
     const riskRows = report.files
-      .slice(0, 10)
+      .slice(0, 25)
       .map(f => {
         const riskPercent = Math.round(f.riskScore * 100);
+        const authors = f.authors.length;
         return `<tr>
           <td><code title="${this.escapeHtml(f.path)}">${this.escapeHtml(this.truncatePath(f.path))}</code></td>
           <td class="num" data-sort="${f.commits}">${numberFmt(f.commits)}</td>
           <td class="num" data-sort="${f.churn}">${numberFmt(f.churn)}</td>
-          <td class="num" data-sort="${riskPercent}"><span class="risk-badge risk-${this.getRiskBand(riskPercent)}">${riskPercent}%</span></td>
+          <td class="num" data-sort="${authors}">${authors}</td>
+          <td class="num" data-sort="${riskPercent}"><span class="risk-badge risk-${this.getRiskBand(riskPercent)}" title="Commits: ${f.commits}\nChurn: ${f.churn}\nAuthors: ${authors}">${riskPercent}%</span></td>
         </tr>`;
       })
       .join('');
 
     const authorRows = report.authors
-      .slice(0, 10)
+      .slice(0, 15)
       .map(
         a => `<tr>
         <td>${this.escapeHtml(a.name)}</td>
         <td class="num" data-sort="${a.commits}">${numberFmt(a.commits)}</td>
-        <td class="num" data-sort="${a.churn}">+${numberFmt(a.insertions)} / -${numberFmt(a.deletions)}</td>
+        <td class="num" data-sort="${a.churn}" title="+${a.insertions} / -${a.deletions}">+${numberFmt(a.insertions)} / -${numberFmt(a.deletions)}</td>
         <td class="num" data-sort="${a.avgCommitSize.toFixed(2)}">${a.avgCommitSize.toFixed(1)}</td>
+        <td class="num" data-sort="${a.filesChanged}">${a.filesChanged}</td>
       </tr>`
       )
       .join('');
@@ -129,9 +155,10 @@ export class HTMLExporter {
   <meta property="og:description" content="${this.escapeHtml(`${report.repository.totalCommits} commits • ${report.repository.totalAuthors} contributors • Health ${healthPct}% • Gov ${governancePct}%`)}">
   <title>Git Activity Report - ${this.escapeHtml(repoName)}</title>
   <style>${this.getCustomStyles()}</style>
-  <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" crossorigin="anonymous" integrity="sha384-QZ2d5E1hLN7FQErJg4InENcy+XUG6uHgnIY7qDpiRnwZ0wOYAV/QXpVZl8vGeO3O"></script>
 </head>
 <body>
+  <div class="theme-toggle-wrapper"><button id="themeToggle" class="theme-toggle" aria-pressed="false" aria-label="Toggle dark mode">🌙</button></div>
   <a class="skip-link" href="#summary">Skip to content</a>
   <header class="site-header">
     <div class="header-inner">
@@ -180,7 +207,7 @@ export class HTMLExporter {
       <h2>Top Contributors</h2>
       <div class="table-wrapper" role="region" aria-label="Top authors table">
         <table class="data-table" data-sortable>
-          <thead><tr><th>Author</th><th class="num">Commits</th><th class="num">Churn</th><th class="num">Avg Size</th></tr></thead>
+          <thead><tr><th scope="col">Author</th><th class="num" scope="col">Commits</th><th class="num" scope="col">Churn</th><th class="num" scope="col">Avg Size</th><th class="num" scope="col">Files</th></tr></thead>
           <tbody>${authorRows}</tbody>
         </table>
       </div>
@@ -190,7 +217,7 @@ export class HTMLExporter {
       <h2>File Hotspots (Top 10)</h2>
       <div class="table-wrapper" role="region" aria-label="Top files table">
         <table class="data-table" data-sortable>
-          <thead><tr><th>File</th><th class="num">Commits</th><th class="num">Churn</th><th class="num">Risk</th></tr></thead>
+          <thead><tr><th scope="col">File</th><th class="num" scope="col">Commits</th><th class="num" scope="col">Churn</th><th class="num" scope="col">Authors</th><th class="num" scope="col">Risk</th></tr></thead>
           <tbody>${riskRows}</tbody>
         </table>
       </div>
@@ -242,6 +269,7 @@ export class HTMLExporter {
         <dt>Commit</dt><dd><code>${this.escapeHtml((report.metadata.commit || '').slice(0, 8))}</code></dd>
         <dt>Processing Time</dt><dd>${(report.metadata.processingTime / 1000).toFixed(2)}s</dd>
         <dt>Repo Path</dt><dd>${this.escapeHtml(report.metadata.repoPath)}</dd>
+        ${warnings.length ? `<dt>Warnings</dt><dd><ul class="warnings">${warnings.map(w => `<li>${this.escapeHtml(w)}</li>`).join('')}</ul></dd>` : ''}
       </dl>
     </section>
   </main>
@@ -274,10 +302,20 @@ export class HTMLExporter {
         --color-text-secondary: #6c757d;
         --shadow-sm: 0 2px 4px rgba(0,0,0,0.08);
       }
+      :root.dark {
+        --color-bg: #121417;
+        --color-surface: #1e2227;
+        --color-border: #2c3239;
+        --color-text: #e6e8ea;
+        --color-text-secondary: #97a0ab;
+      }
       html { scroll-behavior: smooth; }
       body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; background: var(--color-bg); color: var(--color-text); margin:0; }
       .skip-link { position:absolute; left:-999px; top:auto; width:1px; height:1px; overflow:hidden; }
       .skip-link:focus { position:static; width:auto; height:auto; padding:.5rem 1rem; background:#000; color:#fff; z-index:999; }
+      .theme-toggle-wrapper { position:fixed; top:.5rem; right:.5rem; z-index:150; }
+      .theme-toggle { background:var(--color-surface); color:var(--color-text); border:1px solid var(--color-border); padding:.4rem .6rem; border-radius:4px; cursor:pointer; box-shadow:var(--shadow-sm); font-size:.85rem; }
+      .theme-toggle:hover, .theme-toggle:focus { border-color: var(--color-primary); }
       .site-header { position:sticky; top:0; background:var(--color-surface); border-bottom:1px solid var(--color-border); z-index:100; box-shadow:var(--shadow-sm); }
       .header-inner { display:flex; align-items:center; justify-content:space-between; max-width:1200px; margin:0 auto; padding:.5rem 1rem; }
       .branding { font-weight:600; font-size:1rem; }
@@ -323,6 +361,8 @@ export class HTMLExporter {
       .site-footer { text-align:center; padding:1.5rem .5rem 3rem; font-size:.7rem; color:var(--color-text-secondary); }
       .back-to-top { position:fixed; bottom:1rem; right:1rem; background:var(--color-primary); color:#fff; border:none; padding:.55rem .7rem; border-radius:4px; font-size:.85rem; cursor:pointer; box-shadow:var(--shadow-sm); }
       .back-to-top:hover, .back-to-top:focus { background:#004f99; }
+      .warnings { margin:0; padding-left:1rem; }
+      .warnings li { font-size:.7rem; }
       @media (max-width: 760px) { .main-nav ul { flex-wrap:wrap; gap:.5rem; } .branding { font-size:.85rem; } }
       @media print { .site-header, .back-to-top { display:none !important; } body { background:#fff; } .section { page-break-inside:avoid; } }
       @media (prefers-reduced-motion: reduce) { * { animation-duration:0.01ms !important; transition-duration:0.01ms !important; } }
@@ -373,6 +413,20 @@ export class HTMLExporter {
     return `(() => {
       const data = window.__GIT_SPARK_TIMELINE__ || [];
       const backBtn = document.getElementById('backToTop');
+      const root = document.documentElement;
+      const themeToggle = document.getElementById('themeToggle');
+      const savedTheme = localStorage.getItem('gitSparkTheme');
+      if (savedTheme === 'dark') {
+        root.classList.add('dark');
+        themeToggle?.setAttribute('aria-pressed','true');
+        (themeToggle as any).textContent = '☀️';
+      }
+      themeToggle?.addEventListener('click', () => {
+        const isDark = root.classList.toggle('dark');
+        themeToggle?.setAttribute('aria-pressed', isDark ? 'true' : 'false');
+        (themeToggle as any).textContent = isDark ? '☀️' : '🌙';
+        localStorage.setItem('gitSparkTheme', isDark ? 'dark' : 'light');
+      });
       window.addEventListener('scroll', () => {
         if (window.scrollY > 300) backBtn?.removeAttribute('hidden'); else backBtn?.setAttribute('hidden','');
       });
@@ -391,7 +445,30 @@ export class HTMLExporter {
           });
         } catch(e){ document.getElementById('timelineFallback')?.removeAttribute('hidden'); }
       }
-      if (document.readyState === 'complete' || document.readyState === 'interactive') setTimeout(initTimeline, 0); else document.addEventListener('DOMContentLoaded', initTimeline);
+      function makeSortable(){
+        document.querySelectorAll('table[data-sortable]')?.forEach(table => {
+          table.querySelectorAll('th')?.forEach((th, idx) => {
+            th.addEventListener('click', () => {
+              const tbody = table.querySelector('tbody');
+              if(!tbody) return;
+              const rows = Array.from(tbody.querySelectorAll('tr'));
+              const dir = th.getAttribute('data-sort-dir') === 'asc' ? 'desc' : 'asc';
+              table.querySelectorAll('th').forEach(h => h.removeAttribute('aria-sort'));
+              th.setAttribute('aria-sort', dir === 'asc' ? 'ascending' : 'descending');
+              th.setAttribute('data-sort-dir', dir);
+              rows.sort((a,b) => {
+                const av = (a.querySelectorAll('td')[idx] || {}).getAttribute?.('data-sort') || '0';
+                const bv = (b.querySelectorAll('td')[idx] || {}).getAttribute?.('data-sort') || '0';
+                const na = parseFloat(av); const nb = parseFloat(bv);
+                if(!isNaN(na) && !isNaN(nb)) return dir==='asc'? na-nb : nb-na;
+                return dir==='asc'? av.localeCompare(bv) : bv.localeCompare(av);
+              });
+              rows.forEach(r => tbody.appendChild(r));
+            });
+          });
+        });
+      }
+      if (document.readyState === 'complete' || document.readyState === 'interactive') setTimeout(() => { initTimeline(); makeSortable(); }, 0); else document.addEventListener('DOMContentLoaded', () => { initTimeline(); makeSortable(); });
     })();`;
   }
 }
