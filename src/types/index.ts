@@ -80,6 +80,8 @@ export interface GitSparkOptions {
   noCache?: boolean;
   compare?: string;
   watch?: boolean;
+  /** Redact author emails in all outputs */
+  redactEmails?: boolean;
 }
 
 export type LogLevel = 'error' | 'warn' | 'info' | 'debug' | 'verbose';
@@ -186,6 +188,10 @@ export interface ReportMetadata {
   gitVersion: string;
   commit: string;
   branch: string;
+  /** Non-fatal issues encountered during analysis */
+  warnings?: string[];
+  /** Derived configuration snapshot (after resolution/merge) */
+  resolvedConfig?: Partial<GitSparkConfig>;
 }
 
 export interface TimelineData {

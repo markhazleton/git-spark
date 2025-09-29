@@ -80,6 +80,8 @@ export function validateOptions(options: GitSparkOptions): ValidationResult {
     }
   }
 
+  // redaction flag requires no validation now; future: ensure not combined with raw mode exports
+
   // Validate author pattern
   if (options.author) {
     if (options.author.length < 2) {

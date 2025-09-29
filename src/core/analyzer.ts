@@ -14,7 +14,9 @@ import {
 } from '../types';
 import { DataCollector } from './collector';
 import { createLogger } from '../utils/logger';
-import { validateCommitMessage } from '../utils/validation';
+import { validateCommitMessage, sanitizeEmail } from '../utils/validation';
+import { readFileSync } from 'fs';
+import { resolve } from 'path';
 
 const logger = createLogger('analyzer');
 
@@ -186,6 +188,23 @@ export class GitAnalyzer {
     _options: GitSparkOptions
   ): Promise<RepositoryStats> {
     const totalCommits = commits.length;
+    if (totalCommits === 0) {
+      const now = new Date();
+      return {
+        totalCommits: 0,
+        totalAuthors: 0,
+        totalFiles: 0,
+        totalChurn: 0,
+        firstCommit: now,
+        lastCommit: now,
+        activeDays: 0,
+        avgCommitsPerDay: 0,
+        languages: {},
+        busFactor: 0,
+        healthScore: 0,
+        governanceScore: 0,
+      };
+    }
     const totalAuthors = new Set(commits.map(c => c.authorEmail)).size;
     const totalFiles = new Set(commits.flatMap(c => c.files.map(f => f.path))).size;
     const totalChurn = commits.reduce((sum, c) => sum + c.insertions + c.deletions, 0);
@@ -230,7 +249,9 @@ export class GitAnalyzer {
     const authorMap = new Map<string, AuthorStats>();
 
     for (const commit of commits) {
-      const email = commit.authorEmail;
+      const email = (this as any).options?.redactEmails
+        ? sanitizeEmail(commit.authorEmail, true)
+        : commit.authorEmail;
 
       if (!authorMap.has(email)) {
         authorMap.set(email, {
@@ -344,12 +365,16 @@ export class GitAnalyzer {
         }
 
         // Track authors
-        if (!fileStats.authors.includes(commit.author)) {
-          fileStats.authors.push(commit.author);
+        const authorDisplay = (this as any).options?.redactEmails
+          ? sanitizeEmail(commit.authorEmail, true)
+          : commit.author;
+        if (!fileStats.authors.includes(authorDisplay)) {
+          fileStats.authors.push(authorDisplay);
         }
 
         // Track ownership
-        fileStats.ownership[commit.author] = (fileStats.ownership[commit.author] || 0) + 1;
+        const ownershipKey = authorDisplay;
+        fileStats.ownership[ownershipKey] = (fileStats.ownership[ownershipKey] || 0) + 1;
       }
     }
 
@@ -726,16 +751,35 @@ export class GitAnalyzer {
     processingTime: number
   ): Promise<ReportMetadata> {
     const branch = await this.collector.getCurrentBranch();
+    let version = '0.0.0';
+    try {
+      const pkgPath = resolve(process.cwd(), 'package.json');
+      const pkg = JSON.parse(readFileSync(pkgPath, 'utf-8'));
+      version = pkg.version || version;
+    } catch {}
+
+    let gitVersion = '';
+    try {
+      gitVersion = await (this.collector as any).git.getVersion();
+    } catch {}
+
+    let commit = '';
+    try {
+      const { spawnSync } = require('child_process');
+      const r = spawnSync('git', ['rev-parse', 'HEAD'], { cwd: options.repoPath || process.cwd() });
+      if (r.status === 0) commit = String(r.stdout).trim();
+    } catch {}
 
     return {
       generatedAt: new Date(),
-      version: '1.0.0', // This should come from package.json
+      version,
       repoPath: options.repoPath || process.cwd(),
       analysisOptions: options,
       processingTime,
-      gitVersion: '', // This should be populated from git --version
-      commit: '', // This should be the current commit hash
+      gitVersion,
+      commit,
       branch,
+      warnings: [],
     };
   }
 

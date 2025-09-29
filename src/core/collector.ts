@@ -100,94 +100,131 @@ export class DataCollector {
   async collectCommits(options: GitSparkOptions): Promise<CommitData[]> {
     this.reportProgress('Collecting commit data', 0, 100);
 
-    // Filter out undefined values
+    const warnings: string[] = [];
+
     const gitOptions: { since?: string; until?: string; branch?: string; author?: string } = {};
     if (options.since) gitOptions.since = options.since;
     if (options.until) gitOptions.until = options.until;
     if (options.branch) gitOptions.branch = options.branch;
     if (options.author) gitOptions.author = options.author;
 
-    // Get total commit count for progress tracking
     const totalCommits = await this.git.getCommitCount(gitOptions);
+    logger.info(`Collecting up to ${totalCommits} commits (streaming)`, { options });
 
-    logger.info(`Collecting ${totalCommits} commits`, { options });
+    // Build streaming git log command with safe delimiters
+    // Use unit separator (0x1F) for fields and record separator (0x1E) for commits
+    const args: string[] = [
+      'log',
+      '--no-merges',
+      '--numstat',
+      `--pretty=format:%H%x1f%h%x1f%an%x1f%ae%x1f%ai%x1f%s%x1f%b%x1f%P%x1e`,
+    ];
+    if (gitOptions.since) args.push(`--since=${gitOptions.since}`);
+    if (gitOptions.until) args.push(`--until=${gitOptions.until}`);
+    if (gitOptions.author) args.push(`--author=${gitOptions.author}`);
+    if (options.path) args.push('--', options.path);
+    if (gitOptions.branch) args.push(gitOptions.branch);
 
-    // Get commit log
-    const logOptions: {
-      since?: string;
-      until?: string;
-      branch?: string;
-      author?: string;
-      path?: string;
-    } = { ...gitOptions };
-    if (options.path) logOptions.path = options.path;
+    const spawn = require('child_process').spawn;
+    const child = spawn('git', args, { cwd: (this.git as any).repoPath });
 
-    const logOutput = await this.git.getCommitLog(logOptions);
-
-    this.reportProgress('Parsing commit data', 25, 100);
-
-    const commits = this.parseCommitLog(logOutput);
-
-    this.reportProgress('Processing commit metadata', 50, 100);
-
-    // Enhance commits with additional metadata
-    for (let i = 0; i < commits.length; i++) {
-      commits[i] = await this.enhanceCommit(commits[i]);
-
-      if (i % 100 === 0) {
-        const progress = 50 + Math.floor((i / commits.length) * 50);
-        this.reportProgress('Processing commit metadata', progress, 100);
-      }
-    }
-
-    this.reportProgress('Commit collection complete', 100, 100);
-    logger.info(`Collected ${commits.length} commits successfully`);
-
-    return commits;
-  }
-
-  private parseCommitLog(logOutput: string): CommitData[] {
     const commits: CommitData[] = [];
-    const lines = logOutput.split('\n');
+    let buffer = '';
+    let processed = 0;
     let currentCommit: Partial<CommitData> | null = null;
-    let inFileStats = false;
 
-    for (const line of lines) {
-      if (!line.trim()) {
-        if (currentCommit && currentCommit.hash) {
-          commits.push(this.finalizeCommit(currentCommit));
-          currentCommit = null;
-          inFileStats = false;
-        }
-        continue;
+    const finalizeCurrent = () => {
+      if (currentCommit && currentCommit.hash) {
+        const finalized = this.finalizeCommit(currentCommit);
+        commits.push(finalized);
+        currentCommit = null;
       }
+    };
 
-      // Parse commit header
-      if (line.includes('|') && !inFileStats) {
-        const parts = line.split('|');
-        if (parts.length >= 7) {
-          currentCommit = this.parseCommitHeader(parts);
-          inFileStats = false;
+    child.stdout.on('data', (chunk: Buffer) => {
+      buffer += chunk.toString();
+      // Split on record separator (0x1E)
+      let idx;
+      while ((idx = buffer.indexOf('\x1e')) !== -1) {
+        const record = buffer.slice(0, idx);
+        buffer = buffer.slice(idx + 1);
+        if (!record.trim()) continue;
+        // A commit record begins with header line then numstat lines until blank line
+        const lines = record.split('\n');
+        const header = lines.shift();
+        if (!header) continue;
+        const parts = header.split('\x1f');
+        if (parts.length < 8) {
+          warnings.push('Malformed commit header encountered');
+          continue;
+        }
+        currentCommit = this.parseCommitHeader(parts);
+        // Remaining lines could contain numstat entries
+        for (const l of lines) {
+          if (!l.trim()) continue;
+          const fileChange = this.parseFileStats(l);
+          if (fileChange) {
+            currentCommit.files = currentCommit.files || [];
+            currentCommit.files.push(fileChange);
+          }
+        }
+        finalizeCurrent();
+        processed++;
+        if (processed % 200 === 0 || processed === totalCommits) {
+          const pct = totalCommits ? Math.min(100, Math.round((processed / totalCommits) * 70)) : 0;
+          this.reportProgress('Streaming commit collection', pct, 100);
         }
       }
-      // Parse file statistics
-      else if (currentCommit && line.match(/^\d+\s+\d+\s+/)) {
-        inFileStats = true;
-        const fileChange = this.parseFileStats(line);
-        if (fileChange) {
-          currentCommit.files = currentCommit.files || [];
-          currentCommit.files.push(fileChange);
+    });
+
+    await new Promise<void>((resolve, reject) => {
+      child.on('error', (e: Error) => reject(e));
+      child.on('close', () => {
+        // Flush remaining buffer (rare, if no trailing separator)
+        if (buffer.trim()) {
+          const tailRecords = buffer.split('\x1e').filter(Boolean);
+          for (const rec of tailRecords) {
+            const lines = rec.split('\n');
+            const header = lines.shift();
+            if (!header) continue;
+            const parts = header.split('\x1f');
+            if (parts.length < 8) continue;
+            currentCommit = this.parseCommitHeader(parts);
+            for (const l of lines) {
+              if (!l.trim()) continue;
+              const fc = this.parseFileStats(l);
+              if (fc) {
+                currentCommit.files = currentCommit.files || [];
+                currentCommit.files.push(fc);
+              }
+            }
+            finalizeCurrent();
+          }
         }
+        resolve();
+      });
+    });
+
+    this.reportProgress('Enhancing commits', 80, 100);
+    for (let i = 0; i < commits.length; i++) {
+      try {
+        commits[i] = await this.enhanceCommit(commits[i]);
+      } catch (e: any) {
+        warnings.push(`Enhancement failed for ${commits[i].hash}: ${e.message || 'unknown'}`);
+      }
+      if (i % 250 === 0) {
+        const pct = 80 + Math.min(15, Math.round((i / commits.length) * 15));
+        this.reportProgress('Enhancing commits', pct, 100);
       }
     }
-
-    // Handle last commit
-    if (currentCommit && currentCommit.hash) {
-      commits.push(this.finalizeCommit(currentCommit));
+    this.reportProgress('Commit collection complete', 100, 100);
+    if (warnings.length) {
+      logger.warn(`Completed with ${warnings.length} warnings`);
     }
-
     return commits;
   }
+
+  // Legacy parseCommitLog removed in favor of streaming parser above
 
   private parseCommitHeader(parts: string[]): Partial<CommitData> {
     const [hash, shortHash, author, authorEmail, date, subject, body, parents] = parts;
