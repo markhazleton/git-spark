@@ -160,4 +160,200 @@ describe('HTMLExporter (Phase 3)', () => {
     expect(html).toContain('scroll-behavior: smooth');
     expect(html).toContain('dataset-toggles');
   });
+
+  // Test detailed author metrics and edge cases
+  it('handles detailed author metrics with fallbacks', async () => {
+    // Add detailed metrics to first author
+    (report.authors[0] as any).detailed = {
+      contribution: {
+        totalLines: 10000,
+        productivity: { commitsPerDay: 2.5, linesPerCommit: 400 },
+        impact: { impactScore: 0.85, reach: 0.7 },
+        largestCommitDetails: {
+          size: 1500,
+          hash: 'abc123def456',
+          date: new Date('2024-01-15'),
+          message: 'Major refactoring of core module',
+        },
+        filesAndScope: {
+          uniqueFiles: 10,
+          avgFilesPerCommit: 2.5,
+          fileDiversityScore: 0.6,
+          directoryFocus: [
+            { directory: 'src/core', percentage: 60 },
+            { directory: 'src/utils', percentage: 25 },
+            { directory: 'test', percentage: 15 },
+          ],
+          sourceVsPublishedRatio: {
+            sourceLines: { insertions: 8000, deletions: 2000 },
+            sourceCommits: 20,
+          },
+        },
+      },
+      collaboration: {
+        filesSharedWithOthers: 5,
+        reviewParticipation: 0.8,
+      },
+      patterns: {
+        commitSizeDistribution: {
+          micro: 5,
+          small: 10,
+          medium: 8,
+          large: 4,
+          veryLarge: 1,
+        },
+      },
+      insights: {
+        strengths: ['Consistent contributor', 'Good test coverage'],
+        growthAreas: ['Could reduce commit size', 'More code reviews'],
+      },
+    };
+
+    await exporter.export(report, outDir);
+    const html = readFileSync(resolve(outDir, 'git-spark-report.html'), 'utf-8');
+
+    // Test detailed author profile generation
+    expect(html).toContain('Major refactoring of core module');
+    expect(html).toContain('abc123d'); // shortened hash
+    // The insights may not render in the expected format, so let's check for the data
+    expect(html).toContain('Could reduce commit size');
+    expect(html).toContain('src/core/ (60%)');
+  });
+
+  it('handles commit size distribution edge cases', async () => {
+    // Test with zero total commits
+    (report.authors[0] as any).detailed = {
+      patterns: {
+        commitSizeDistribution: {
+          micro: 0,
+          small: 0,
+          medium: 0,
+          large: 0,
+          veryLarge: 0,
+        },
+      },
+    };
+
+    await exporter.export(report, outDir);
+    const html = readFileSync(resolve(outDir, 'git-spark-report.html'), 'utf-8');
+    expect(html).toContain('No data available');
+  });
+
+  it('handles missing detailed metrics gracefully', async () => {
+    // Test with minimal detailed data
+    (report.authors[0] as any).detailed = {
+      contribution: {},
+      collaboration: {},
+      patterns: {},
+      insights: {},
+    };
+
+    await exporter.export(report, outDir);
+    const html = readFileSync(resolve(outDir, 'git-spark-report.html'), 'utf-8');
+    // Should not crash and should generate valid HTML
+    expect(html).toContain('<html');
+    expect(html).toContain('</html>');
+  });
+
+  it('tests risk band calculations', async () => {
+    // Add files with different risk scores to test risk band logic
+    report.files = [
+      {
+        path: 'high-risk.ts',
+        commits: 10,
+        authors: ['alice@example.com'],
+        churn: 5000,
+        insertions: 4000,
+        deletions: 1000,
+        firstChange: new Date('2024-01-05'),
+        lastChange: new Date('2024-01-30'),
+        riskScore: 0.85, // high risk (>=70%)
+        hotspotScore: 0.8,
+        ownership: { 'alice@example.com': 10 },
+        language: 'TypeScript',
+      },
+      {
+        path: 'medium-risk.ts',
+        commits: 5,
+        authors: ['alice@example.com'],
+        churn: 2000,
+        insertions: 1500,
+        deletions: 500,
+        firstChange: new Date('2024-01-10'),
+        lastChange: new Date('2024-01-25'),
+        riskScore: 0.6, // medium risk (>=50%)
+        hotspotScore: 0.6,
+        ownership: { 'alice@example.com': 5 },
+        language: 'TypeScript',
+      },
+      {
+        path: 'low-risk.ts',
+        commits: 2,
+        authors: ['alice@example.com'],
+        churn: 500,
+        insertions: 400,
+        deletions: 100,
+        firstChange: new Date('2024-01-20'),
+        lastChange: new Date('2024-01-22'),
+        riskScore: 0.4, // low risk (>=30%)
+        hotspotScore: 0.3,
+        ownership: { 'alice@example.com': 2 },
+        language: 'TypeScript',
+      },
+      {
+        path: 'minimal-risk.ts',
+        commits: 1,
+        authors: ['alice@example.com'],
+        churn: 100,
+        insertions: 100,
+        deletions: 0,
+        firstChange: new Date('2024-01-25'),
+        lastChange: new Date('2024-01-25'),
+        riskScore: 0.15, // minimal risk (<30%)
+        hotspotScore: 0.1,
+        ownership: { 'alice@example.com': 1 },
+        language: 'TypeScript',
+      },
+    ];
+
+    await exporter.export(report, outDir);
+    const html = readFileSync(resolve(outDir, 'git-spark-report.html'), 'utf-8');
+
+    // Test risk band CSS classes are applied
+    expect(html).toContain('risk-high');
+    expect(html).toContain('risk-medium');
+    expect(html).toContain('risk-low');
+    expect(html).toContain('risk-minimal');
+  });
+
+  it('tests health rating calculations', async () => {
+    // Test different health score ranges
+    const testCases = [
+      { healthScore: 0.95, expected: 'excellent' },
+      { healthScore: 0.75, expected: 'good' },
+      { healthScore: 0.55, expected: 'fair' },
+      { healthScore: 0.25, expected: 'poor' },
+    ];
+
+    for (const testCase of testCases) {
+      report.repository.healthScore = testCase.healthScore;
+      await exporter.export(report, outDir);
+      const html = readFileSync(resolve(outDir, 'git-spark-report.html'), 'utf-8');
+      // The health rating appears in the data-rating attribute
+      expect(html).toContain(`data-rating="${testCase.expected}"`);
+    }
+  });
+
+  it('handles path truncation for long file paths', async () => {
+    report.files[0].path =
+      'src/very/long/path/that/should/be/truncated/because/it/is/too/long/for/display/file.ts';
+
+    await exporter.export(report, outDir);
+    const html = readFileSync(resolve(outDir, 'git-spark-report.html'), 'utf-8');
+
+    // Should contain truncated path with ellipsis
+    expect(html).toContain('...');
+    // The path might still appear in the title attribute, so check for truncation in the display text
+    expect(html).toMatch(/src\/very\/long\/path.*\.\.\..*display\/file\.ts/);
+  });
 });
