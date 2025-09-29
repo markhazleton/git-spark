@@ -766,19 +766,25 @@ export class GitAnalyzer {
       const pkgPath = resolve(process.cwd(), 'package.json');
       const pkg = JSON.parse(readFileSync(pkgPath, 'utf-8'));
       version = pkg.version || version;
-    } catch {}
+    } catch {
+      // Intentionally ignore: package.json may not be present when used as a library
+    }
 
     let gitVersion = '';
     try {
       gitVersion = await (this.collector as any).git.getVersion();
-    } catch {}
+    } catch {
+      // Ignore git version retrieval errors (non-fatal metadata)
+    }
 
     let commit = '';
     try {
       const { spawnSync } = require('child_process');
       const r = spawnSync('git', ['rev-parse', 'HEAD'], { cwd: options.repoPath || process.cwd() });
       if (r.status === 0) commit = String(r.stdout).trim();
-    } catch {}
+    } catch {
+      // Ignore inability to resolve current commit hash
+    }
 
     return {
       generatedAt: new Date(),

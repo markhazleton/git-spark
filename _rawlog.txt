@@ -1,0 +1,131 @@
+bf7f3e5916fe094668c133acfe606d62eb969ce9bf7f3e5Mark Hazletonmark.hazleton@controlorigins.com2025-09-29 13:44:46 -0500feat: Enhance HTML report with export options, charts, and accessibility improvements- Added export controls for JSON and CSV formats in the HTML report.
+- Implemented risk factors and governance metrics visualizations using charts.
+- Introduced dataset toggles for timeline data visualization.
+- Enhanced accessibility features including live regions and improved keyboard navigation.
+- Updated tests to cover new features and ensure proper rendering of export options and charts.
+- Improved overall UX with responsive design adjustments and dark mode support.
+452c6fe3196ef060d0f42084350188640402cc1f
+43	4	README.md
+168	0	copilot/session-2025-09-29/feature-grid.md
+198	38	reports/git-spark-report.html
+216	11	src/output/html.ts
+13	6	test/html-exporter.test.ts
+
+452c6fe3196ef060d0f42084350188640402cc1f452c6feMark Hazletonmark.hazleton@controlorigins.com2025-09-29 13:17:15 -0500feat: enhance HTML report with analysis period display and improve content security policyff3ee9117cd1a1a3a73e23dc5b052c4ad1063591
+30	75	reports/git-spark-report.html
+10	0	src/core/analyzer.ts
+47	18	src/core/collector.ts
+43	3	src/output/html.ts
+
+ff3ee9117cd1a1a3a73e23dc5b052c4ad1063591ff3ee91Mark Hazletonmark.hazleton@controlorigins.com2025-09-29 12:44:42 -0500feat: enhance HTML report with dark mode toggle and improved metrics display44327f93dcca0a9a137b68dcdf15600eb1c85a95
+122	30	reports/git-spark-report.html
+92	15	src/output/html.ts
+
+44327f93dcca0a9a137b68dcdf15600eb1c85a9544327f9Mark Hazletonmark.hazleton@controlorigins.com2025-09-29 12:25:33 -0500feat: update report generation logic and remove JSON report file3405558d379b4f603e2ec03989d14a74154bb23b
+62	17	reports/git-spark-report.html
+0	200	reports/git-spark-report.json
+30	23	src/core/collector.ts
+
+3405558d379b4f603e2ec03989d14a74154bb23b3405558Mark Hazletonmark.hazleton@controlorigins.com2025-09-29 12:21:59 -0500feat: add redactEmails option and enhance report metadata- Introduced `redactEmails` option in `GitSparkOptions` to control email redaction in outputs.
+- Enhanced `ReportMetadata` to include `warnings` and `resolvedConfig` for better reporting.
+- Updated validation logic to accommodate the new redaction flag.
+- Refactored HTMLExporter tests to streamline mock report creation and improve test coverage.
+- Added ambient module declarations for dynamically imported exporters to satisfy TypeScript resolver.
+- Created a comprehensive analysis document outlining architecture, risks, and recommendations for future improvements.
+4bdde529e22b0d8027a21eea127154a1fbb8ce5c
+423	0	copilot/session-2025-09-29/analysis-documents.md
+201	148	reports/git-spark-report.html
+52	8	src/core/analyzer.ts
+105	68	src/core/collector.ts
+280	120	src/output/html.ts
+5	0	src/types/ambient.d.ts
+6	0	src/types/index.ts
+2	0	src/utils/validation.ts
+126	311	test/html-exporter.test.ts
+
+4bdde529e22b0d8027a21eea127154a1fbb8ce5c4bdde52Mark Hazletonmark.hazleton@controlorigins.com2025-09-29 11:01:06 -0500Refactor Git Spark documentation and reports- Updated git-spark-report.html with new commit and file statistics.
+- Deleted obsolete CLI-README.md file and organized CLI documentation into dedicated session folders.
+- Added comprehensive Copilot instructions for documentation organization.
+- Created session summary for Copilot activities on September 29, 2025, detailing repository cleanup and organization benefits.
+f23d3764b7981072bf1445911ca1db8d529b6ca7
+238	0	.github/copilot-instructions.md
+0	0	CLI-IMPLEMENTATION-COMPLETE.md => copilot/session-2025-09-29/cli-implementation-complete.md
+0	0	scripts/CLI-README.md => copilot/session-2025-09-29/cli-readme.md
+54	0	copilot/session-2025-09-29/session-summary.md
+21	21	reports/git-spark-report.html
+
+f23d3764b7981072bf1445911ca1db8d529b6ca7f23d376Mark Hazletonmark.hazleton@controlorigins.com2025-09-29 10:50:02 -0500feat: Add Git Spark HTML Report Generator and associated scripts- Implemented `git-spark-html.ps1` for generating HTML reports from Git repositories.
+- Created `serve-report.ts` to serve the generated HTML report via a simple HTTP server.
+- Developed `test-html-comprehensive.ts` for comprehensive testing of HTML report generation.
+- Added `test-html-report.ts` to validate the generation of HTML reports from the current repository.
+- Introduced `git-spark-report.html` as a sample output for testing and demonstration purposes.
+- Implemented unit tests for `HTMLExporter` to ensure correct HTML structure and content.
+- Enhanced HTML report with Bootstrap for improved styling and responsiveness.
+- Included error handling and graceful shutdown for the HTTP server.
+71093be846f4fdc962461397d1c019c0c6fda8ae
+203	0	CLI-IMPLEMENTATION-COMPLETE.md
+164	0	cli-test-reports/git-spark-report.html
+4	1	package.json
+152	479	reports/git-spark-report.html
+336	0	scripts/CLI-README.md
+368	0	scripts/cli-html-demo.ts
+183	0	scripts/git-spark-html.bat
+297	0	scripts/git-spark-html.ps1
+95	0	scripts/serve-report.ts
+186	0	scripts/test-html-comprehensive.ts
+52	0	scripts/test-html-report.ts
+263	2	src/cli/commands.ts
+115	18	src/output/html.ts
+164	0	test-output/git-spark-report.html
+341	0	test/html-exporter.test.ts
+
+71093be846f4fdc962461397d1c019c0c6fda8ae71093beMark Hazletonmark.hazleton@controlorigins.com2025-09-29 10:17:45 -0500refactor: clean up comments and formatting in CLI, analyzer, collector, and JSON exporter files84a54f4ebd37403e27576eecae355a81b31d5c1b
+4	4	src/cli/commands.ts
+14	14	src/core/analyzer.ts
+14	14	src/core/collector.ts
+5	5	src/index.ts
+8	8	src/output/json.ts
+
+84a54f4ebd37403e27576eecae355a81b31d5c1b84a54f4Mark Hazletonmark.hazleton@controlorigins.com2025-09-29 10:17:34 -0500feat: implement HTML, JSON, and Markdown exporters for analysis reports- Added HTMLExporter class to generate interactive HTML reports with charts and visualizations.
+- Introduced JSONExporter class for exporting analysis reports as formatted JSON files.
+- Created MarkdownExporter class to generate Markdown reports with structured data.
+- Defined core types and interfaces in index.ts for better type safety and structure.
+- Implemented GitExecutor class for executing Git commands and handling output.
+- Developed a Logger utility for consistent logging across the application.
+- Added validation utilities to ensure correct options and configurations.
+- Created comprehensive tests for GitSpark functionality and validation utilities.
+- Configured TypeScript with strict settings for improved code quality and maintainability.
+93ac54d3dd52d1bae8c52ad34721dd396c5bb349
+54	0	.git-spark.json
+10	0	.prettierrc
+3	0	.vscode/settings.json
+521	2	README.md
+61	0	eslint.config.js
+7611	0	package-lock.json
+108	0	package.json
+491	0	reports/git-spark-report.html
+200	0	reports/git-spark-report.json
+357	0	src/cli/commands.ts
+747	0	src/core/analyzer.ts
+325	0	src/core/collector.ts
+264	0	src/index.ts
+240	0	src/output/console.ts
+139	0	src/output/csv.ts
+140	0	src/output/html.ts
+95	0	src/output/json.ts
+149	0	src/output/markdown.ts
+319	0	src/types/index.ts
+247	0	src/utils/git.ts
+102	0	src/utils/logger.ts
+238	0	src/utils/validation.ts
+60	0	test/index.test.ts
+87	0	test/validation.test.ts
+26	0	tsconfig.json
+
+93ac54d3dd52d1bae8c52ad34721dd396c5bb34993ac54dMark Hazletonmark.hazleton@controlorigins.com2025-09-29 09:15:25 -0500Update .gitignore to include Visual Studio and ReSharper filesbfcd1228a72e40c645a9cfa054964f293a210883
+142	0	.gitignore
+
+bfcd1228a72e40c645a9cfa054964f293a210883bfcd122Mark Hazletonmark.hazleton@controlorigins.com2025-09-29 09:12:08 -0500Initial commit
+139	0	.gitignore
+21	0	LICENSE
+2	0	README.md
