@@ -505,11 +505,13 @@ export class HTMLExporter {
         <ul>
           <li><a href="#summary">Summary</a></li>
           <li><a href="#authors">Authors</a></li>
+          <li><a href="#team-score">Team Score</a></li>
           <li><a href="#files">Files</a></li>
           <li><a href="#risks">Risks</a></li>
           <li><a href="#governance">Governance</a></li>
           <li><a href="#author-details">Author Details</a></li>
           <li><a href="#meta">Metadata</a></li>
+          <li><a href="#documentation">Documentation</a></li>
         </ul>
       </nav>
     </div>
@@ -552,6 +554,157 @@ export class HTMLExporter {
         </table>
       </div>
       <button class="show-more" data-target-table="authors" hidden>Show more</button>
+    </section>
+
+    <section id="team-score" class="section">
+      <h2>Team Effectiveness Score</h2>
+      <div class="team-score-overview">
+        <div class="team-score-main">
+          <div class="score-circle">
+            <div class="score-value">${report.teamScore.overall}</div>
+            <div class="score-label">Overall Score</div>
+          </div>
+          <div class="score-rating">
+            <span class="rating-label">${this.getTeamScoreRating(report.teamScore.overall)}</span>
+            <div class="rating-description">${this.getTeamScoreDescription(report.teamScore.overall)}</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="team-metrics-grid">
+        <div class="metric-card">
+          <h3>Collaboration</h3>
+          <div class="metric-score">${report.teamScore.collaboration.score}</div>
+          <div class="metric-details">
+            <div class="metric-item">
+              <span class="metric-name">Review Workflow Participation</span>
+              <span class="metric-value">${report.teamScore.collaboration.reviewWorkflowParticipation.toFixed(1)}%</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-name">Knowledge Distribution</span>
+              <span class="metric-value">${report.teamScore.collaboration.knowledgeDistribution.toFixed(1)}%</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-name">Cross-Team Interaction</span>
+              <span class="metric-value">${report.teamScore.collaboration.crossTeamInteraction.toFixed(1)}%</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-name">Co-Authorship</span>
+              <span class="metric-value">${report.teamScore.collaboration.coAuthorshipRate.toFixed(1)}%</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <h3>Consistency</h3>
+          <div class="metric-score">${report.teamScore.consistency.score}</div>
+          <div class="metric-details">
+            <div class="metric-item">
+              <span class="metric-name">Bus Factor</span>
+              <span class="metric-value">${report.teamScore.consistency.busFactor}</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-name">Active Contributors</span>
+              <span class="metric-value">${report.teamScore.consistency.activeContributorRatio.toFixed(1)}%</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-name">Velocity Consistency</span>
+              <span class="metric-value">${report.teamScore.consistency.velocityConsistency.toFixed(1)}%</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-name">Delivery Cadence</span>
+              <span class="metric-value">${report.teamScore.consistency.deliveryCadence.toFixed(1)}%</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <h3>Quality</h3>
+          <div class="metric-score">${report.teamScore.quality.score}</div>
+          <div class="metric-details">
+            <div class="metric-item">
+              <span class="metric-name">Governance Score</span>
+              <span class="metric-value">${report.teamScore.quality.teamGovernanceScore.toFixed(1)}</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-name">Refactoring Activity</span>
+              <span class="metric-value">${report.teamScore.quality.refactoringActivity.toFixed(1)}%</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-name">Documentation</span>
+              <span class="metric-value">${report.teamScore.quality.documentationContribution.toFixed(1)}%</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-name">Merge Workflow Usage</span>
+              <span class="metric-value">${report.teamScore.quality.mergeWorkflowUsage.toFixed(1)}%</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <h3>Work-Life Balance</h3>
+          <div class="metric-score">${report.teamScore.workLifeBalance.score}</div>
+          <div class="metric-details">
+            <div class="metric-item">
+              <span class="metric-name">Commit Time Patterns</span>
+              <span class="metric-value">${report.teamScore.workLifeBalance.commitTimePatterns.toFixed(1)}%</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-name">After-Hours Commits</span>
+              <span class="metric-value">${report.teamScore.workLifeBalance.afterHoursCommitFrequency.toFixed(1)}%</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-name">Weekend Commits</span>
+              <span class="metric-value">${report.teamScore.workLifeBalance.weekendCommitActivity.toFixed(1)}%</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-name">Team Coverage</span>
+              <span class="metric-value">${report.teamScore.workLifeBalance.teamActiveCoverage.coveragePercentage.toFixed(1)}%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="team-insights">
+        <div class="insights-section">
+          <h3>Team Dynamics</h3>
+          <div class="dynamic-badges">
+            <span class="dynamic-badge">${this.capitalize(report.teamScore.insights.teamDynamics.replace('-', ' '))}</span>
+            <span class="dynamic-badge">${this.capitalize(report.teamScore.insights.maturityLevel)}</span>
+            <span class="dynamic-badge">${this.capitalize(report.teamScore.insights.sustainabilityRating)}</span>
+          </div>
+        </div>
+
+        <div class="insights-grid">
+          <div class="insight-category">
+            <h4>Strengths</h4>
+            <ul>
+              ${report.teamScore.insights.strengths.map(s => `<li>${this.escapeHtml(s)}</li>`).join('') || '<li>No specific strengths identified</li>'}
+            </ul>
+          </div>
+          
+          <div class="insight-category">
+            <h4>Improvement Areas</h4>
+            <ul>
+              ${report.teamScore.insights.improvements.map(i => `<li>${this.escapeHtml(i)}</li>`).join('') || '<li>No improvement areas identified</li>'}
+            </ul>
+          </div>
+          
+          <div class="insight-category">
+            <h4>Risk Areas</h4>
+            <ul>
+              ${report.teamScore.insights.risks.map(r => `<li>${this.escapeHtml(r)}</li>`).join('') || '<li>No risk areas identified</li>'}
+            </ul>
+          </div>
+        </div>
+
+        <div class="recommendations">
+          <h4>Recommendations</h4>
+          <ul>
+            ${report.teamScore.recommendations.map(r => `<li>${this.escapeHtml(r)}</li>`).join('') || '<li>No specific recommendations</li>'}
+          </ul>
+        </div>
+      </div>
     </section>
 
     <section id="files" class="section">
@@ -619,6 +772,229 @@ export class HTMLExporter {
         ${report.metadata.cliArguments?.length ? `<dt>CLI Arguments</dt><dd><code>${this.escapeHtml(report.metadata.cliArguments.join(' '))}</code></dd>` : ''}
         ${warnings.length ? `<dt>Warnings</dt><dd><ul class="warnings">${warnings.map(w => `<li>${this.escapeHtml(w)}</li>`).join('')}</ul></dd>` : ''}
       </dl>
+    </section>
+
+    <section id="documentation" class="section">
+      <h2>Calculation Documentation</h2>
+      <p class="doc-intro">This section provides detailed explanations of the metrics and formulas used in team and author evaluations.</p>
+      
+      <div class="measurement-limitations">
+        <h3>⚠️ Important: Measurement Limitations</h3>
+        <p><strong>What Git Stores vs. What Platforms Store:</strong></p>
+        <ul>
+          <li><strong>✅ Available from Git:</strong> Commit data, merge commits, co-authorship, file changes, commit messages, timestamps</li>
+          <li><strong>❌ NOT Available from Git:</strong> PR/MR approvers, reviewers, review comments, approval policies, CI/CD results</li>
+        </ul>
+        <p><strong>Code Review Metrics:</strong> All "code review" and "review workflow" metrics are <em>estimated</em> from Git commit patterns (merge commits, commit message patterns) and may not reflect actual review practices, especially in teams using squash merges, rebase workflows, or manual reviews.</p>
+        <p><strong>Platform Differences:</strong> Detection accuracy varies between GitHub, GitLab, Azure DevOps, and other Git platforms based on their merge commit patterns and message formats.</p>
+      </div>
+      
+      <div class="doc-section">
+        <h3>Team Effectiveness Score</h3>
+        <p>The Team Effectiveness Score is a comprehensive metric that evaluates team performance across four key dimensions, providing insights into collaboration patterns, consistency, code quality, and work-life balance.</p>
+        
+        <div class="formula-box">
+          <h4>Overall Team Score Formula</h4>
+          <code class="formula">
+            Team Score = (Collaboration × 0.30) + (Consistency × 0.25) + (Quality × 0.25) + (Work-Life Balance × 0.20)
+          </code>
+        </div>
+
+        <div class="metric-docs">
+          <div class="metric-category">
+            <h4>Collaboration (30% Weight)</h4>
+            <div class="limitation-notice">
+              <strong>⚠️ Measurement Limitations:</strong> Git stores commit data but not PR reviewers/approvers. 
+              Metrics are estimated from available Git data (merge commits, co-authorship, file patterns).
+            </div>
+            <ul>
+              <li><strong>Review Workflow Participation:</strong> Estimated percentage of commits made through merge workflows vs direct commits. Based on merge commit detection and commit message patterns. <em>Note: May underestimate teams using squash merges or rebase workflows.</em></li>
+              <li><strong>Cross-Team Interaction:</strong> Percentage of files modified by multiple authors. Directly measurable from Git history and indicates knowledge sharing across the team.</li>
+              <li><strong>Knowledge Distribution:</strong> Distribution of file ownership patterns across the team. Directly measurable and indicates better knowledge distribution.</li>
+              <li><strong>Co-Authorship Rate:</strong> Percentage of commits with multiple authors (Co-authored-by: tags). Directly measurable and indicates pair programming and collaborative development.</li>
+            </ul>
+            <div class="formula-box">
+              <code class="formula">
+                Collaboration Score = (Review Workflow Participation + Cross-Team Interaction + Knowledge Distribution + Co-Authorship × 2) ÷ 4
+              </code>
+            </div>
+          </div>
+
+          <div class="metric-category">
+            <h4>Consistency & Velocity (25% Weight)</h4>
+            <ul>
+              <li><strong>Bus Factor:</strong> Number of top contributors needed to account for 50% of commits. Higher values indicate better knowledge distribution.</li>
+              <li><strong>Active Contributor Ratio:</strong> Percentage of team members with commits in the last 30 days. Measures current team engagement.</li>
+              <li><strong>Velocity Consistency:</strong> Inverse of coefficient of variation in daily commits. Higher values indicate steadier development pace.</li>
+              <li><strong>Delivery Cadence:</strong> Regularity of commits over time, calculated using coefficient of variation of commit intervals.</li>
+            </ul>
+            <div class="formula-box">
+              <code class="formula">
+                Consistency Score = (Bus Factor Score × 0.25) + (Active Contributors × 0.25) + (Velocity Consistency × 0.25) + (Delivery Cadence × 0.25)
+              </code>
+            </div>
+          </div>
+
+          <div class="metric-category">
+            <h4>Code Quality & Governance (25% Weight)</h4>
+            <ul>
+              <li><strong>Team Governance Score:</strong> Average commit message quality across all team members, based on conventional commits, traceability, and descriptiveness.</li>
+              <li><strong>Refactoring Activity:</strong> Percentage of commits containing refactoring keywords (refactor, cleanup, restructure).</li>
+              <li><strong>Bug Fix Ratio:</strong> Percentage of commits addressing bugs vs feature development.</li>
+              <li><strong>Documentation Contribution:</strong> Percentage of commits that modify documentation files or contain documentation keywords.</li>
+              <li><strong>Merge Workflow Usage:</strong> Percentage of commits that went through merge workflows (estimated from merge commits). <em>Note: This detects merge patterns, not actual code review coverage which requires platform API access.</em></li>
+              <li><strong>Test File Detection:</strong> Analysis of test file presence and ratios. <em>Note: This detects test files by naming patterns, not actual test execution coverage.</em></li>
+            </ul>
+            <div class="formula-box">
+              <code class="formula">
+                Quality Score = (Governance × 0.30) + (Refactoring × 0.20) + (Documentation × 0.20) + (Merge Workflow × 0.20) + (Test File Detection × 0.10)
+              </code>
+            </div>
+          </div>
+
+          <div class="metric-category">
+            <h4>Work-Life Balance & Sustainability (20% Weight)</h4>
+            <div class="limitation-notice">
+              <strong>⚠️ Important Limitations:</strong> Work patterns are estimated from commit timing only. 
+              Cannot detect actual working hours, time zones, or real work-life balance.
+            </div>
+            <ul>
+              <li><strong>Commit Time Patterns:</strong> Health score based on commit timing patterns. Higher values indicate commits during standard business hours.</li>
+              <li><strong>After-Hours Commit Frequency:</strong> Percentage of commits made outside business hours (before 8 AM or after 6 PM). <em>Note: Based on commit timestamps, not actual working hours.</em></li>
+              <li><strong>Weekend Commit Activity:</strong> Percentage of commits made on weekends (Saturday and Sunday).</li>
+              <li><strong>Team Active Coverage:</strong> Estimated team coverage patterns from commit authoring. <em>Note: Based on commit patterns, not actual vacation or availability data.</em></li>
+              <li><strong>Burnout Risk Indicators:</strong> Detection of high-velocity days, consecutive commit periods, and excessive after-hours activity patterns.</li>
+            </ul>
+            <div class="formula-box">
+              <code class="formula">
+                Balance Score = (Commit Time Patterns × 0.40) + ((100 - After-Hours Frequency) × 0.30) + ((100 - Weekend Activity) × 0.20) + (Team Active Coverage × 0.10)
+              </code>
+            </div>
+          </div>
+        </div>
+
+        <div class="score-thresholds">
+          <h4>Team Score Interpretation</h4>
+          <ul>
+            <li><strong>90-100 (Excellent):</strong> High-performing team with outstanding practices and sustainable workflow</li>
+            <li><strong>75-89 (Good):</strong> Healthy team dynamics with opportunities for optimization</li>
+            <li><strong>60-74 (Fair):</strong> Functional team with specific improvement areas identified</li>
+            <li><strong>40-59 (Poor):</strong> Team showing concerning patterns requiring attention</li>
+            <li><strong>0-39 (Critical):</strong> Team requires immediate intervention and process changes</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="doc-section">
+        <h3>Author Evaluation Metrics</h3>
+        <p>Individual author metrics provide detailed insights into contribution patterns, code quality, collaboration style, and work habits.</p>
+
+        <div class="metric-docs">
+          <div class="metric-category">
+            <h4>Core Contribution Metrics</h4>
+            <ul>
+              <li><strong>Commit Frequency:</strong> Average commits per active day. Calculated as total commits divided by number of unique days with commits.</li>
+              <li><strong>Commit Size Distribution:</strong> Classification of commits into categories (micro: &lt;20 lines, small: 20-50, medium: 51-200, large: 201-500, very large: &gt;500 lines).</li>
+              <li><strong>Churn Rate:</strong> Total lines added plus lines deleted. Indicates volume of code changes.</li>
+              <li><strong>File Diversity Score:</strong> Percentage of total repository files modified by the author.</li>
+            </ul>
+            <div class="formula-box">
+              <code class="formula">
+                Average Commit Size = Total Lines Changed ÷ Total Commits
+              </code>
+              <code class="formula">
+                File Diversity = (Author's Unique Files ÷ Total Repository Files) × 100
+              </code>
+            </div>
+          </div>
+
+          <div class="metric-category">
+            <h4>Collaboration Assessment</h4>
+            <ul>
+              <li><strong>Co-Authorship Rate:</strong> Percentage of commits with multiple authors, indicating pair programming and collaborative work.</li>
+              <li><strong>Pull Request Integration:</strong> Ratio of merge commits to direct commits, showing adherence to review processes.</li>
+              <li><strong>Knowledge Sharing Index:</strong> Ratio of shared files to exclusive files, measuring willingness to work on others' code.</li>
+              <li><strong>File Ownership Style:</strong> Classification as collaborative, specialized, or balanced based on file sharing patterns.</li>
+            </ul>
+          </div>
+
+          <div class="metric-category">
+            <h4>Code Quality Indicators</h4>
+            <ul>
+              <li><strong>Commit Message Quality:</strong> Composite score based on conventional commit format, traceability references, adequate length, and descriptiveness.</li>
+              <li><strong>Revert Rate:</strong> Percentage of author's commits that were later reverted, indicating code stability.</li>
+              <li><strong>Refactoring Activity:</strong> Percentage of commits dedicated to code improvement and cleanup.</li>
+              <li><strong>Documentation Contribution:</strong> Percentage of commits that include documentation changes.</li>
+            </ul>
+            <div class="formula-box">
+              <code class="formula">
+                Message Quality = (Conventional × 0.25) + (Traceability × 0.25) + (Length × 0.20) + (Descriptive × 0.20) + (Capitalization × 0.10)
+              </code>
+            </div>
+          </div>
+
+          <div class="metric-category">
+            <h4>Work Pattern Analysis</h4>
+            <ul>
+              <li><strong>Activity Distribution:</strong> Analysis of commit timing across hours and days to identify work patterns.</li>
+              <li><strong>Consistency Score:</strong> Regularity of contributions over time, calculated using coefficient of variation of daily activity.</li>
+              <li><strong>Burst Detection:</strong> Identification of periods with unusually high activity that may indicate deadline pressure.</li>
+              <li><strong>Work-Life Balance:</strong> Assessment of after-hours and weekend activity relative to total contributions.</li>
+            </ul>
+            <div class="formula-box">
+              <code class="formula">
+                Consistency Score = 100 - (Standard Deviation of Daily Commits ÷ Average Daily Commits) × 100
+              </code>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="doc-section">
+        <h3>Statistical Methods</h3>
+        <div class="metric-docs">
+          <div class="metric-category">
+            <h4>Advanced Calculations</h4>
+            <ul>
+              <li><strong>Gini Coefficient:</strong> Measures inequality in contribution distribution. Values close to 0 indicate equal distribution, values close to 1 indicate high inequality.</li>
+              <li><strong>Coefficient of Variation:</strong> Standard deviation divided by mean, used to measure relative variability in commit patterns.</li>
+              <li><strong>Percentile Rankings:</strong> Authors are ranked against team members across multiple dimensions (commits, lines changed, files touched, message quality).</li>
+              <li><strong>Temporal Coupling:</strong> Analysis of files frequently changed together, indicating architectural dependencies.</li>
+            </ul>
+            <div class="formula-box">
+              <code class="formula">
+                Gini Coefficient = (2 × Σ(rank × value)) ÷ (n × Σ(value)) - (n + 1) ÷ n
+              </code>
+              <code class="formula">
+                Coefficient of Variation = (Standard Deviation ÷ Mean) × 100
+              </code>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="doc-section">
+        <h3>Risk Assessment Framework</h3>
+        <div class="metric-docs">
+          <div class="metric-category">
+            <h4>Repository Health Indicators</h4>
+            <ul>
+              <li><strong>Bus Factor:</strong> Minimum number of team members who must be unavailable before project knowledge becomes critically compromised.</li>
+              <li><strong>Hotspot Analysis:</strong> Files with high churn and multiple authors, indicating potential maintenance challenges.</li>
+              <li><strong>Code Ownership Distribution:</strong> Analysis of how knowledge and responsibility are distributed across the team.</li>
+              <li><strong>Technical Debt Indicators:</strong> Patterns suggesting accumulating maintenance burden (large commits, frequent reverts, WIP commits).</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="methodology-note">
+        <h4>Methodology Notes</h4>
+        <p><strong>Data Source:</strong> All metrics are calculated from Git commit history, including commit metadata, file changes, and authorship information.</p>
+        <p><strong>Time Window:</strong> Analysis covers the specified date range with temporal weighting for recent activity when applicable.</p>
+        <p><strong>Normalization:</strong> Scores are normalized to 0-100 scale for consistency and interpretability across different team sizes and project characteristics.</p>
+        <p><strong>Statistical Confidence:</strong> Metrics are most reliable with sufficient data points (recommended minimum: 30 days of activity, 50+ commits).</p>
+      </div>
     </section>
   </main>
   <footer class="site-footer" role="contentinfo">Generated by git-spark v${this.escapeHtml(report.metadata.version)} • ${this.escapeHtml(new Date(report.metadata.generatedAt).toLocaleString())}</footer>
@@ -737,6 +1113,196 @@ export class HTMLExporter {
       
       .metrics-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(120px, 1fr)); gap:.75rem; margin-bottom:.75rem; }
       .metric-box { background:var(--color-bg); border:1px solid var(--color-border); border-radius:6px; padding:.75rem; text-align:center; }
+
+      /* Team Score Styles */
+      .team-score-overview { margin-bottom:2rem; }
+      .team-score-main { display:flex; align-items:center; gap:2rem; flex-wrap:wrap; justify-content:center; }
+      .score-circle { 
+        display:flex; flex-direction:column; align-items:center; justify-content:center; 
+        width:120px; height:120px; border-radius:50%; 
+        background:linear-gradient(135deg, var(--color-primary), #0056b3);
+        color:#fff; box-shadow:0 4px 12px rgba(0,102,204,0.3);
+      }
+      .score-value { font-size:2.5rem; font-weight:700; line-height:1; }
+      .score-label { font-size:.8rem; text-transform:uppercase; letter-spacing:.05em; opacity:.9; }
+      
+      .score-rating { text-align:center; }
+      .rating-label { 
+        font-size:1.5rem; font-weight:600; color:var(--color-primary);
+        display:block; margin-bottom:.5rem;
+      }
+      .rating-description { font-size:.9rem; color:var(--color-text-secondary); max-width:300px; }
+      
+      .team-metrics-grid { 
+        display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); 
+        gap:1.5rem; margin-bottom:2rem; 
+      }
+      .team-metrics-grid .metric-card { 
+        background:var(--color-surface); border:1px solid var(--color-border); 
+        border-radius:8px; padding:1.5rem; box-shadow:var(--shadow-sm);
+        text-align:left; display:block;
+      }
+      .team-metrics-grid .metric-card h3 { 
+        margin:0 0 1rem; font-size:1.2rem; color:var(--color-text);
+        border-bottom:2px solid var(--color-primary); padding-bottom:.5rem;
+      }
+      .team-metrics-grid .metric-score { 
+        font-size:2rem; font-weight:700; color:var(--color-primary);
+        margin-bottom:1rem; text-align:center;
+      }
+      
+      .metric-details { display:flex; flex-direction:column; gap:.75rem; }
+      .metric-item { 
+        display:flex; justify-content:space-between; align-items:center;
+        padding:.5rem; background:var(--color-bg); border-radius:4px;
+      }
+      .metric-name { font-size:.85rem; color:var(--color-text-secondary); }
+      .metric-value { 
+        font-weight:600; color:var(--color-text); 
+        background:var(--color-primary); color:#fff; 
+        padding:.25rem .5rem; border-radius:4px; font-size:.8rem;
+      }
+      
+      .team-insights { margin-top:2rem; }
+      .insights-section h3 { margin:0 0 1rem; font-size:1.3rem; }
+      .dynamic-badges { display:flex; gap:.75rem; flex-wrap:wrap; margin-bottom:1.5rem; }
+      .dynamic-badge { 
+        padding:.5rem 1rem; background:var(--color-primary); color:#fff; 
+        border-radius:20px; font-size:.85rem; font-weight:500;
+        text-transform:capitalize;
+      }
+      
+      .insights-grid { 
+        display:grid; grid-template-columns:repeat(auto-fit, minmax(250px, 1fr)); 
+        gap:1.5rem; margin-bottom:2rem; 
+      }
+      .insight-category { 
+        background:var(--color-bg); border:1px solid var(--color-border); 
+        border-radius:6px; padding:1rem; 
+      }
+      .insight-category h4 { 
+        margin:0 0 .75rem; font-size:1rem; 
+        color:var(--color-text); border-bottom:1px solid var(--color-border); 
+        padding-bottom:.5rem; 
+      }
+      .insight-category ul { margin:0; padding-left:1.2rem; }
+      .insight-category li { font-size:.85rem; margin:.5rem 0; }
+      
+      .recommendations { 
+        background:var(--color-bg); border-left:4px solid var(--color-primary); 
+        padding:1rem 1.5rem; border-radius:0 6px 6px 0; 
+      }
+      .recommendations h4 { 
+        margin:0 0 .75rem; font-size:1.1rem; color:var(--color-primary); 
+      }
+      .recommendations ul { margin:0; padding-left:1.2rem; }
+      .recommendations li { font-size:.9rem; margin:.5rem 0; }
+
+      /* Documentation Section Styles */
+      .doc-intro { font-style:italic; color:var(--color-text-secondary); margin-bottom:2rem; }
+      
+      .measurement-limitations {
+        background:#fff3cd; border:1px solid #ffeaa7; border-radius:8px; 
+        padding:1.5rem; margin-bottom:2rem; border-left:4px solid #fdcb6e;
+      }
+      :root.dark .measurement-limitations {
+        background:#2d2419; border-color:#635a3e; border-left-color:#fdcb6e;
+      }
+      .measurement-limitations h3 {
+        color:#856404; margin:0 0 1rem; font-size:1.2rem;
+      }
+      :root.dark .measurement-limitations h3 { color:#ffeaa7; }
+      .measurement-limitations p { margin:.75rem 0; }
+      .measurement-limitations ul { margin:.5rem 0; padding-left:1.5rem; }
+      .measurement-limitations li { margin:.25rem 0; }
+      .limitation-notice {
+        background:#fff3cd; border:1px solid #ffeaa7; border-radius:4px;
+        padding:.75rem; margin:.75rem 0; font-size:.9rem;
+        border-left:3px solid #fd7e14;
+      }
+      :root.dark .limitation-notice {
+        background:#2d2419; border-color:#635a3e; color:#ffeaa7;
+      }
+      
+      .doc-section { 
+        margin-bottom:2.5rem; padding-bottom:1.5rem; 
+        border-bottom:1px solid var(--color-border); 
+      }
+      .doc-section:last-child { border-bottom:none; }
+      .doc-section h3 { 
+        color:var(--color-primary); font-size:1.4rem; 
+        margin-bottom:1rem; border-bottom:2px solid var(--color-primary); 
+        padding-bottom:.5rem; 
+      }
+      .doc-section h4 { 
+        color:var(--color-text); font-size:1.1rem; 
+        margin:1.5rem 0 .75rem; 
+      }
+      
+      .formula-box { 
+        background:var(--color-bg); border:1px solid var(--color-border); 
+        border-radius:6px; padding:1rem; margin:1rem 0; 
+        border-left:4px solid var(--color-primary); 
+      }
+      .formula-box h4 { 
+        margin:0 0 .75rem; font-size:1rem; 
+        color:var(--color-primary); 
+      }
+      .formula { 
+        font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; 
+        font-size:.9rem; display:block; 
+        background:var(--color-surface); padding:.75rem; 
+        border-radius:4px; border:1px solid var(--color-border); 
+        margin:.5rem 0; color:var(--color-text); 
+        overflow-x:auto; 
+      }
+      
+      .metric-docs { margin-top:1.5rem; }
+      .metric-category { 
+        margin-bottom:2rem; background:var(--color-surface); 
+        border:1px solid var(--color-border); border-radius:6px; 
+        padding:1.5rem; 
+      }
+      .metric-category h4 { 
+        margin-top:0; color:var(--color-primary); 
+        border-bottom:1px solid var(--color-border); 
+        padding-bottom:.5rem; 
+      }
+      .metric-category ul { margin:.75rem 0; }
+      .metric-category li { 
+        margin:.75rem 0; line-height:1.5; 
+        font-size:.9rem; 
+      }
+      .metric-category strong { color:var(--color-text); }
+      
+      .score-thresholds { 
+        background:var(--color-bg); border:1px solid var(--color-border); 
+        border-radius:6px; padding:1.5rem; margin-top:1.5rem; 
+        border-left:4px solid var(--color-success); 
+      }
+      .score-thresholds h4 { 
+        margin-top:0; color:var(--color-success); 
+      }
+      .score-thresholds ul { margin:.75rem 0; }
+      .score-thresholds li { 
+        margin:.5rem 0; font-size:.9rem; 
+        line-height:1.4; 
+      }
+      
+      .methodology-note { 
+        background:var(--color-bg); border:1px solid var(--color-border); 
+        border-radius:6px; padding:1.5rem; margin-top:2rem; 
+        border-left:4px solid var(--color-warning); 
+      }
+      .methodology-note h4 { 
+        margin-top:0; color:var(--color-warning); 
+        margin-bottom:1rem; 
+      }
+      .methodology-note p { 
+        margin:.75rem 0; font-size:.9rem; 
+        line-height:1.5; 
+      }
+      .methodology-note strong { color:var(--color-text); }
       .metric-box .metric-value { font-size:1.2rem; font-weight:600; color:var(--color-primary); }
       .metric-box .metric-label { font-size:.7rem; color:var(--color-text-secondary); text-transform:uppercase; margin-top:.25rem; }
       
@@ -836,6 +1402,22 @@ export class HTMLExporter {
     if (scorePercent >= 60) return 'good';
     if (scorePercent >= 40) return 'fair';
     return 'poor';
+  }
+
+  private getTeamScoreRating(score: number): string {
+    if (score >= 90) return 'Excellent';
+    if (score >= 75) return 'Good';
+    if (score >= 60) return 'Fair';
+    if (score >= 40) return 'Poor';
+    return 'Critical';
+  }
+
+  private getTeamScoreDescription(score: number): string {
+    if (score >= 90) return 'High-performing team with excellent practices';
+    if (score >= 75) return 'Healthy team dynamics with room for optimization';
+    if (score >= 60) return 'Functional team with improvement opportunities';
+    if (score >= 40) return 'Team showing concerning patterns';
+    return 'Team requires immediate attention';
   }
 
   private generateDetailedAuthorProfiles(authors: any[]): string {

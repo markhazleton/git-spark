@@ -375,6 +375,7 @@ export interface AnalysisReport {
   hotspots: FileStats[];
   risks: RiskAnalysis;
   governance: GovernanceAnalysis;
+  teamScore: TeamScore;
   summary: ReportSummary;
 }
 
@@ -419,6 +420,109 @@ export interface GovernanceAnalysis {
   shortMessages: number;
   score: number;
   recommendations: string[];
+}
+
+export interface TeamScore {
+  overall: number;
+  collaboration: TeamCollaborationMetrics;
+  consistency: TeamConsistencyMetrics;
+  quality: TeamQualityMetrics;
+  workLifeBalance: TeamWorkLifeBalanceMetrics;
+  insights: TeamInsights;
+  recommendations: string[];
+}
+
+export interface TeamCollaborationMetrics {
+  score: number;
+  reviewWorkflowParticipation: number; // Estimated from merge commit patterns only
+  crossTeamInteraction: number; // Files touched by multiple authors
+  knowledgeDistribution: number; // Distribution of file ownership
+  coAuthorshipRate: number;
+  fileOwnershipDistribution: {
+    exclusive: number;
+    shared: number;
+    collaborative: number;
+  };
+  limitations: {
+    reviewerDataAvailable: boolean; // Git doesn't store actual reviewers/approvers
+    estimationMethod: 'merge-commit-analysis' | 'git-patterns-only';
+    dataSource: 'git-commits-only';
+    platformSpecific: {
+      detected: string;
+      accuracy: 'high' | 'medium' | 'low';
+      notes: string;
+    };
+    knownLimitations: string[];
+  };
+}
+
+export interface TeamConsistencyMetrics {
+  score: number;
+  velocityConsistency: number;
+  busFactor: number;
+  activeContributorRatio: number;
+  deliveryCadence: number;
+  contributionDistribution: {
+    giniCoefficient: number;
+    topContributorDominance: number;
+  };
+}
+
+export interface TeamQualityMetrics {
+  score: number;
+  teamGovernanceScore: number;
+  refactoringActivity: number;
+  bugFixRatio: number;
+  documentationContribution: number;
+  mergeWorkflowUsage: number; // Percentage of commits via merge (not actual review coverage)
+  testFileDetection: {
+    hasTestFiles: boolean;
+    testFiles: number;
+    testFileToSourceRatio: number; // File count ratio, not execution coverage
+    limitations: {
+      note: string;
+      recommendedTools: string[];
+    };
+  };
+  limitations: {
+    qualityMeasurement: 'pattern-based-estimation';
+    testCoverageNote: 'File detection only, not execution coverage';
+    knownLimitations: string[];
+  };
+}
+
+export interface TeamWorkLifeBalanceMetrics {
+  score: number;
+  commitTimePatterns: number; // Health score based on commit timing patterns
+  afterHoursCommitFrequency: number; // Commits outside standard hours
+  weekendCommitActivity: number; // Weekend commit percentage
+  commitTimingIndicators: {
+    highVelocityDays: number;
+    consecutiveCommitDays: number; // Days with commits in sequence
+    afterHoursCommits: number;
+  };
+  teamActiveCoverage: {
+    multiContributorDays: number;
+    soloContributorDays: number;
+    coveragePercentage: number;
+    note: string;
+  };
+  limitations: {
+    timezoneWarning: string;
+    workPatternNote: string;
+    burnoutDetection: string;
+    recommendedApproach: string;
+    knownLimitations: string[];
+  };
+}
+
+export interface TeamInsights {
+  strengths: string[];
+  improvements: string[];
+  risks: string[];
+  teamDynamics: 'highly-collaborative' | 'balanced' | 'siloed' | 'fragmented';
+  maturityLevel: 'nascent' | 'developing' | 'mature' | 'optimized';
+  sustainabilityRating: 'excellent' | 'good' | 'concerning' | 'critical';
 }
 
 export interface ReportSummary {

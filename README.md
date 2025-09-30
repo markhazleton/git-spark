@@ -6,17 +6,19 @@
 
 ## Enterprise-grade Git repository analytics and reporting tool
 
-Git Spark provides actionable insights into Git repository health, team collaboration patterns, and code quality through comprehensive analysis of commit history. Built for enterprise environments with performance, reliability, and security in mind.
+Git Spark provides transparent, honest insights into Git repository health, team collaboration patterns, and code quality through comprehensive analysis of commit history. **We are committed to reporting only what can be accurately derived from Git repository data alone** - never guessing, estimating, or fabricating metrics from unavailable data sources. Built for enterprise environments with performance, reliability, security, and analytical integrity in mind.
 
 ## ✨ Features
 
 ### 📊 Comprehensive Analytics
 
 - **Repository Health Scoring** - Overall health assessment with actionable recommendations
-- **Team Collaboration Analysis** - Contribution patterns, work distribution, and team dynamics
+- **Team Collaboration Analysis** - Git workflow patterns, file ownership distribution, and commit collaboration
 - **Code Quality Metrics** - Risk assessment, hotspot identification, and governance scoring
 - **Timeline Visualization** - Activity patterns and trend analysis
 - **Bus Factor Calculation** - Knowledge concentration and team resilience metrics
+
+> **🔍 Analytical Integrity Promise**: All metrics are transparently calculated from Git repository data only. We clearly document what each metric measures, its limitations, and what it cannot determine. No guesswork, no extrapolation beyond available data.
 
 ### 🎯 Enterprise-Ready
 
@@ -50,8 +52,9 @@ Enterprise-focused, accessible, and secure analytics dashboard:
 - **Accessibility Enhancements** – ARIA live region announcements for sorting; keyboard focus management; reduced‑motion compliance
 - **Security‑First Delivery** – Strict CSP with SHA‑256 hashed inline script & style blocks (no `unsafe-inline`), SRI‑pinned Chart.js, single trusted CDN origin
 - **Email Redaction Option** – Controlled via CLI flag (`--redact-emails`) for privacy sensitive audits
+- **Transparent Metrics Documentation** – Every team metric includes comprehensive limitations and data source explanations
 
-> All analytics data are embedded (no external calls) ensuring the report is a self-contained artifact suitable for air‑gapped review workflows.
+> **Analytical Integrity**: All analytics data are embedded (no external calls) ensuring the report is a self-contained artifact suitable for air‑gapped review workflows. Every metric includes honest explanations of what Git data can and cannot reveal.
 
 ## 🚀 Quick Start
 
@@ -279,19 +282,63 @@ async function exportReport(
 ): Promise<void>
 ```
 
-## 📊 Report Formats
+## � Analytical Integrity & Data Limitations
+
+### Our Commitment to Honest Analytics
+
+Git Spark is built on a foundation of **complete transparency** about what can and cannot be determined from Git repository data alone. We never guess, estimate, or fabricate metrics from unavailable data sources.
+
+### What Git Data CAN Provide
+
+✅ **Commit metadata**: Author, committer, timestamp, message  
+✅ **File changes**: Additions, deletions, modifications  
+✅ **Branch and merge history**: Repository structure and workflow patterns  
+✅ **Temporal patterns**: When changes occurred based on commit timing  
+✅ **Contribution patterns**: Who worked on what files and when  
+
+### What Git Data CANNOT Provide
+
+❌ **Code review data**: No reviewer information, approval status, or review comments  
+❌ **Pull/merge request metadata**: No PR numbers, descriptions, or review workflows  
+❌ **Issue tracking**: No bug reports, feature requests, or issue relationships  
+❌ **Deployment information**: No production deployments, rollbacks, or environment data  
+❌ **Team structure**: No organizational hierarchy, roles, or responsibilities  
+❌ **Work hours/timezone**: No actual working hours, vacation schedules, or availability  
+❌ **Performance metrics**: No build times, test results, or runtime performance  
+
+### Our Honest Metric Approach
+
+- **Transparent Naming**: Metric names clearly indicate data source limitations
+- **Comprehensive Documentation**: Every metric includes limitation warnings
+- **Platform Detection**: We identify hosting platforms but acknowledge Git data is fundamentally the same
+- **Educational Focus**: We help users understand what metrics do and don't measure
+- **No False Claims**: We never imply Git data provides complete team performance insights
+
+### User Education & Responsible Usage
+
+All team-related metrics include detailed explanations of:
+
+- What the metric actually measures from Git data
+- Known limitations and potential misinterpretations  
+- Recommended approaches for supplementing Git analytics
+- Warnings against using metrics for performance reviews without context
+
+## �📊 Report Formats
 
 ### HTML Reports
 
-Interactive reports with:
+Interactive reports with transparent analytics and comprehensive limitations documentation:
 
-- Executive summary with health rating
+- Executive summary with health rating and data source explanations
 - Interactive charts and visualizations (multi‑series timelines, risk & governance analytics)
-- Detailed author and file analysis
-- Risk assessment and recommendations
-- Governance scoring and insights
+- Detailed author and file analysis with clear metric definitions
+- Risk assessment and recommendations with calculation transparency
+- Governance scoring with methodology explanations
+- **Comprehensive limitations documentation** for all team metrics
 - Export buttons (JSON + CSV) for downstream processing
 - Dark mode, accessibility features, and CSP/SRI security hardening
+
+> **Transparency First**: Every metric in the HTML report includes clear explanations of what it measures, its data sources, and its limitations. Users receive honest, educational information about Git analytics capabilities.
 
 ### JSON Reports
 
@@ -361,13 +408,15 @@ Code quality metrics including:
 
 ### Team Analytics
 
-Collaboration insights covering:
+Git workflow and collaboration insights covering:
 
-- **Contribution Patterns** - Individual and team metrics
-- **Work Distribution** - Balanced vs concentrated effort
-- **Temporal Patterns** - Work timing and consistency
-- **Bus Factor** - Knowledge concentration risks
-- **Collaboration Networks** - Team interaction patterns
+- **Review Workflow Participation** - Merge commit pattern analysis (estimated from Git data only)
+- **Cross-Team Interaction** - Files touched by multiple team members
+- **Knowledge Distribution** - File ownership distribution patterns
+- **Commit Time Patterns** - Work timing analysis based on commit timestamps
+- **Team Active Coverage** - Days with multiple contributors (not actual vacation coverage)
+
+> **⚠️ Important Limitations**: Team metrics are estimated from Git commit data only. We cannot detect actual code reviews, real working hours, vacation schedules, or team performance without platform-specific APIs. All metrics include comprehensive limitation documentation to prevent misinterpretation.
 
 ## 🏗️ CI/CD Integration
 
@@ -503,6 +552,9 @@ npm run dev
 
 ### ✅ Completed (v1.0)
 
+- **Transparent Team Metrics**: Honest metric terminology with comprehensive limitations documentation
+- **Analytical Integrity Framework**: Clear separation between what Git data can and cannot provide
+- **Enhanced User Education**: Comprehensive warnings and guidance about metric interpretation
 - Secure HTML report with strict CSP + SRI
 - Multi‑series activity timeline (commits / churn / authors)
 - Risk factor aggregation & visualization
@@ -514,7 +566,7 @@ npm run dev
 - OG image (SVG) generation for social/link previews
 - Email redaction option
 
-These capabilities establish the foundation for deeper comparative and temporal analytics planned in subsequent releases.
+These capabilities establish a foundation of **analytical honesty and transparency** that will guide all future development, ensuring users have accurate expectations about Git repository analytics.
 
 ### v1.1 (Planned)
 
@@ -561,4 +613,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-Built with ❤️ for the developer community
+Built with ❤️ and unwavering commitment to analytical honesty for the developer community
+
+> Git Spark prioritizes transparency, accuracy, and user education above all else. We believe developers deserve honest, reliable analytics that clearly communicate both capabilities and limitations.

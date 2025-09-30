@@ -94,6 +94,108 @@ describe('HTMLExporter (Phase 3)', () => {
         score: 0.55,
         recommendations: ['Adopt conventional commit format'],
       },
+      teamScore: {
+        overall: 78,
+        collaboration: {
+          score: 80,
+          reviewWorkflowParticipation: 65,
+          crossTeamInteraction: 72,
+          knowledgeDistribution: 72,
+          coAuthorshipRate: 15,
+          fileOwnershipDistribution: {
+            exclusive: 40,
+            shared: 45,
+            collaborative: 15,
+          },
+          limitations: {
+            reviewerDataAvailable: false,
+            estimationMethod: 'merge-commit-analysis' as const,
+            dataSource: 'git-commits-only' as const,
+            platformSpecific: {
+              detected: 'github',
+              accuracy: 'medium' as const,
+              notes: 'Merge commit patterns detected',
+            },
+            knownLimitations: [
+              'Cannot distinguish between actual code reviews and merge commits',
+              'Merge commit patterns may not reflect true review culture',
+            ],
+          },
+        },
+        consistency: {
+          score: 75,
+          velocityConsistency: 70,
+          busFactor: 2,
+          activeContributorRatio: 85,
+          deliveryCadence: 75,
+          contributionDistribution: {
+            giniCoefficient: 0.3,
+            topContributorDominance: 45,
+          },
+        },
+        quality: {
+          score: 82,
+          teamGovernanceScore: 75,
+          refactoringActivity: 12,
+          bugFixRatio: 25,
+          documentationContribution: 18,
+          mergeWorkflowUsage: 65,
+          testFileDetection: {
+            hasTests: true,
+            testFiles: 5,
+            testToCodeRatio: 28,
+          },
+          limitations: {
+            reviewerDataAvailable: false,
+            estimationMethod: 'pattern-detection' as const,
+            platformSpecific: false,
+            knownLimitations: [
+              'Cannot measure actual test coverage percentage',
+              'Test file detection based on naming patterns only',
+            ],
+          },
+        },
+        workLifeBalance: {
+          score: 76,
+          commitTimePatterns: 78,
+          afterHoursCommitFrequency: 22,
+          weekendCommitActivity: 15,
+          commitTimingIndicators: {
+            highVelocityDays: 3,
+            consecutiveCommitDays: 8,
+            afterHoursCommits: 45,
+          },
+          teamActiveCoverage: {
+            multiContributorDays: 60,
+            soloContributorDays: 40,
+            coveragePercentage: 60,
+            note: 'Estimated from commit authoring patterns',
+          },
+          limitations: {
+            timezoneWarning:
+              'Commit times may not reflect actual working hours due to timezone differences',
+            workPatternNote: 'Work patterns based on commit timing only',
+            burnoutDetection: 'Cannot detect actual burnout, only commit patterns',
+            recommendedApproach: 'Use as indicator only, supplement with team feedback',
+            knownLimitations: [
+              'Work patterns based on commit times only',
+              'Cannot detect actual working hours or time zones',
+            ],
+          },
+        },
+        insights: {
+          strengths: ['Strong code review culture', 'Good knowledge sharing'],
+          improvements: ['Reduce overtime frequency', 'Improve documentation'],
+          risks: ['Weekend work detected'],
+          teamDynamics: 'balanced' as const,
+          maturityLevel: 'mature' as const,
+          sustainabilityRating: 'good' as const,
+        },
+        recommendations: [
+          'Consider implementing pair programming sessions',
+          'Establish clear boundaries for weekend work',
+        ],
+      },
       summary: {
         healthRating: 'good',
         keyMetrics: { commits: 42, authors: 3, files: 18, healthScore: 71 },
@@ -203,6 +305,11 @@ describe('HTMLExporter (Phase 3)', () => {
       collaboration: {
         filesSharedWithOthers: 5,
         reviewParticipation: 0.8,
+        limitations: {
+          reviewerDataAvailable: false,
+          estimationMethod: 'merge-commits' as const,
+          platformSpecific: true,
+        },
       },
       patterns: {},
       insights: {
@@ -259,7 +366,13 @@ describe('HTMLExporter (Phase 3)', () => {
     // Test with minimal detailed data
     (report.authors[0] as any).detailed = {
       contribution: {},
-      collaboration: {},
+      collaboration: {
+        limitations: {
+          reviewerDataAvailable: false,
+          estimationMethod: 'merge-commits' as const,
+          platformSpecific: true,
+        },
+      },
       patterns: {},
       insights: {},
     };

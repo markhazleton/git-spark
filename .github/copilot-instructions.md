@@ -119,6 +119,100 @@ npm run lint          # ESLint + Prettier code quality
 - **Markdown**: Documentation-friendly format
 - **CSV**: Separate files for authors, files, timeline data
 
+## Git Repository Analytics Accuracy & Limitations
+
+**CRITICAL PRINCIPLE**: Git Spark MUST maintain complete honesty and transparency about what can and cannot be determined from Git repository data alone. Never guess, estimate, or fabricate metrics that cannot be accurately derived from a standalone Git repository.
+
+### Fundamental Git Data Limitations
+
+#### What Git DOES Store:
+
+- Commit metadata (author, committer, timestamp, message)
+- File changes (additions, deletions, modifications)
+- Branch and merge history
+- Tag information
+- Commit relationships and ancestry
+
+#### What Git DOES NOT Store:
+
+- **Code review data**: No reviewer information, approval status, or review comments
+- **Pull/merge request metadata**: No PR numbers, descriptions, or review workflows
+- **Issue tracking**: No bug reports, feature requests, or issue relationships
+- **Deployment information**: No production deployments, rollbacks, or environment data
+- **Team structure**: No organizational hierarchy, roles, or responsibilities
+- **Work hours/timezone**: No actual working hours, time zones, or availability
+- **Performance metrics**: No build times, test results, or runtime performance
+- **External tool data**: No CI/CD results, monitoring data, or third-party integrations
+
+### Honest Metric Naming & Reporting
+
+#### ✅ CORRECT Approach:
+
+- Use descriptive, limitation-aware naming: `reviewWorkflowParticipation` not `codeReviewCoverage`
+- Include comprehensive limitations documentation for all metrics
+- Clearly state estimation methods and data sources
+- Provide warnings about metric reliability and interpretation
+- Use qualifiers like "pattern", "workflow", "detected", "estimated"
+
+#### ❌ INCORRECT Approach:
+
+- Never claim to measure actual code review participation without platform API data
+- Never report "test coverage" when only detecting test file patterns
+- Never claim to measure "overtime" or "burnout" from commit timing alone
+- Never report "vacation coverage" without actual HR/calendar data
+- Never imply Git data provides complete team performance insights
+
+### Required Transparency Features
+
+#### Limitations Objects
+
+All team metrics MUST include comprehensive limitations metadata:
+
+```typescript
+limitations: {
+  dataSource: 'git-commits-only';
+  estimationMethod: string;
+  platformSpecific?: {
+    detected: string;
+    accuracy: 'high' | 'medium' | 'low';
+    notes: string;
+  };
+  knownLimitations: string[];
+  recommendedApproach: string;
+}
+```
+
+#### User Education
+
+- Clearly explain what each metric actually measures
+- Provide context about Git data constraints
+- Offer guidance on supplementing Git data with other sources
+- Include warnings about misinterpretation risks
+
+#### Platform Detection
+
+- Recognize different Git hosting platforms (GitHub, GitLab, Azure DevOps)
+- Acknowledge that Git data is fundamentally the same across platforms
+- Explain that platform-specific features require API integration
+- Provide accuracy indicators based on detected patterns
+
+### Implementation Guidelines
+
+#### When Adding New Metrics:
+
+1. **Validate Data Availability**: Ensure the metric can be accurately calculated from Git data alone
+2. **Honest Naming**: Use descriptive names that reflect actual capabilities
+3. **Document Limitations**: Include comprehensive limitation warnings
+4. **Provide Context**: Explain what the metric does and doesn't measure
+5. **Test Accuracy**: Validate metric calculations against known repositories
+
+#### When Reviewing Existing Metrics:
+
+1. **Audit Accuracy**: Verify metrics don't overstate capabilities
+2. **Update Names**: Change misleading names to honest descriptions
+3. **Add Warnings**: Include limitation documentation where missing
+4. **Enhance Education**: Improve user understanding of metric constraints
+
 ## Git Integration Patterns
 
 ### Safe Git Operations
@@ -135,6 +229,45 @@ npm run lint          # ESLint + Prettier code quality
 - Temporal coupling analysis (expensive, requires `--heavy` flag)
 - Branch comparison and diff analysis
 - Governance scoring based on commit message patterns
+
+### Ethical Analytics Principles
+
+#### Transparency First
+
+- Always declare data sources and limitations upfront
+- Never obscure or minimize metric constraints
+- Provide clear guidance on appropriate metric usage
+- Educate users about Git analytics capabilities and boundaries
+
+#### Prevent Misuse
+
+- Include warnings against using metrics for performance reviews without context
+- Emphasize that Git data reflects workflow patterns, not team performance
+- Recommend supplementing Git analytics with other data sources
+- Discourage drawing conclusions beyond what the data supports
+
+#### Honest Communication
+
+- Use precise language that reflects actual measurement capabilities
+- Avoid marketing-speak or inflated claims about metric accuracy
+- Acknowledge uncertainty and estimation in all derived metrics
+- Provide confidence levels where applicable
+
+### User Education Requirements
+
+#### Documentation Standards
+
+- Every metric must include clear explanation of calculation method
+- Provide examples of what the metric does and doesn't indicate
+- Include common misinterpretation warnings
+- Offer guidance on combining metrics for better insights
+
+#### Error Prevention
+
+- Clear naming conventions that prevent confusion
+- Prominent limitation warnings in user interfaces
+- Educational tooltips and help text
+- Examples of appropriate and inappropriate metric usage
 
 ## Configuration & Extensibility
 
@@ -235,4 +368,4 @@ npm run lint          # ESLint + Prettier code quality
 - Test all output formats with sample data
 - Performance testing with large datasets
 
-Remember: Git Spark prioritizes enterprise reliability, performance at scale, and comprehensive analytics. All code should reflect these values with proper error handling, type safety, and thorough testing.
+Remember: Git Spark prioritizes enterprise reliability, performance at scale, comprehensive analytics, and **absolute honesty about data limitations**. All code should reflect these values with proper error handling, type safety, thorough testing, and transparent reporting of what can and cannot be determined from Git repository data alone. Never guess, estimate, or fabricate metrics that cannot be accurately derived from a standalone Git repository.

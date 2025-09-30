@@ -11,6 +11,12 @@ import {
   GovernanceAnalysis,
   ReportSummary,
   ProgressCallback,
+  TeamScore,
+  TeamCollaborationMetrics,
+  TeamConsistencyMetrics,
+  TeamQualityMetrics,
+  TeamWorkLifeBalanceMetrics,
+  TeamInsights,
 } from '../types';
 import { DataCollector } from './collector';
 import { createLogger } from '../utils/logger';
@@ -149,6 +155,9 @@ export class GitAnalyzer {
     this.reportProgress('Analyzing governance', 80, 100);
     const governance = this.analyzeGovernance(commits);
 
+    this.reportProgress('Calculating team score', 85, 100);
+    const teamScore = this.calculateTeamScore(commits, authors, files);
+
     this.reportProgress('Generating report', 90, 100);
 
     // Generate metadata
@@ -169,6 +178,7 @@ export class GitAnalyzer {
       hotspots,
       risks,
       governance,
+      teamScore,
       summary,
     };
 
@@ -1730,5 +1740,678 @@ export class GitAnalyzer {
     if (this.progressCallback) {
       this.progressCallback(phase, current, total);
     }
+  }
+
+  /**
+   * Calculate comprehensive team effectiveness score
+   *
+   * Evaluates team performance across four key dimensions:
+   * - Collaboration (30%): Code review, knowledge sharing, cross-pollination
+   * - Consistency (25%): Velocity consistency, bus factor, active contributors
+   * - Quality (25%): Governance, refactoring, documentation, testing
+   * - Work-Life Balance (20%): Work patterns, overtime, sustainability
+   *
+   * @param commits All commits in the analysis
+   * @param authors Author statistics
+   * @param files File statistics
+   * @returns Comprehensive team score with detailed metrics
+   */
+  private calculateTeamScore(
+    commits: CommitData[],
+    authors: AuthorStats[],
+    files: FileStats[]
+  ): TeamScore {
+    const collaboration = this.calculateTeamCollaboration(commits, authors, files);
+    const consistency = this.calculateTeamConsistency(commits, authors);
+    const quality = this.calculateTeamQuality(commits, authors, files);
+    const workLifeBalance = this.calculateTeamWorkLifeBalance(commits, authors);
+
+    // Calculate overall score with weighted components
+    const overall = Math.round(
+      collaboration.score * 0.3 +
+        consistency.score * 0.25 +
+        quality.score * 0.25 +
+        workLifeBalance.score * 0.2
+    );
+
+    const insights = this.generateTeamInsights(
+      overall,
+      collaboration,
+      consistency,
+      quality,
+      workLifeBalance
+    );
+    const recommendations = this.generateTeamRecommendations(
+      collaboration,
+      consistency,
+      quality,
+      workLifeBalance
+    );
+
+    return {
+      overall,
+      collaboration,
+      consistency,
+      quality,
+      workLifeBalance,
+      insights,
+      recommendations,
+    };
+  }
+
+  /**
+   * Calculate team collaboration metrics
+   */
+  private calculateTeamCollaboration(
+    commits: CommitData[],
+    _authors: AuthorStats[],
+    files: FileStats[]
+  ): TeamCollaborationMetrics {
+    // Review workflow participation (merge commits vs direct commits)
+    const mergeCommits = commits.filter(c => c.isMerge).length;
+    const reviewWorkflowParticipation =
+      commits.length > 0 ? (mergeCommits / commits.length) * 100 : 0;
+
+    // Co-authorship rate
+    const coAuthoredCommits = commits.filter(c => c.isCoAuthored).length;
+    const coAuthorshipRate = commits.length > 0 ? (coAuthoredCommits / commits.length) * 100 : 0;
+
+    // Cross-team interaction (files touched by multiple authors)
+    const multiAuthorFiles = files.filter(f => f.authors.length > 1).length;
+    const crossTeamInteraction = files.length > 0 ? (multiAuthorFiles / files.length) * 100 : 0;
+
+    // File ownership distribution
+    const exclusiveFiles = files.filter(f => f.authors.length === 1).length;
+    const sharedFiles = files.filter(f => f.authors.length >= 2 && f.authors.length <= 3).length;
+    const collaborativeFiles = files.filter(f => f.authors.length > 3).length;
+
+    const fileOwnershipDistribution = {
+      exclusive: files.length > 0 ? (exclusiveFiles / files.length) * 100 : 0,
+      shared: files.length > 0 ? (sharedFiles / files.length) * 100 : 0,
+      collaborative: files.length > 0 ? (collaborativeFiles / files.length) * 100 : 0,
+    };
+
+    // Knowledge distribution (inverse of file exclusivity)
+    const knowledgeDistribution = 100 - fileOwnershipDistribution.exclusive;
+
+    // Calculate collaboration score
+    const collaborationFactors = [
+      Math.min(reviewWorkflowParticipation, 80), // Cap at 80% (some direct commits are normal)
+      Math.min(coAuthorshipRate * 2, 40), // Weight co-authorship more heavily
+      crossTeamInteraction,
+      knowledgeDistribution,
+    ];
+
+    const score =
+      collaborationFactors.reduce((sum, factor) => sum + factor, 0) / collaborationFactors.length;
+
+    // Detect platform-specific patterns for better estimation
+    const platformPatterns = {
+      detected: 'generic-git',
+      accuracy: 'low' as 'high' | 'medium' | 'low',
+      notes: 'No platform-specific patterns detected',
+    };
+
+    // Check for platform-specific merge patterns
+    const githubPattern = /Merge pull request #\d+/i;
+    const gitlabPattern = /Merge branch '.*' into/i;
+    const azureDevOpsPattern = /Merged PR \d+:/i;
+
+    const githubMerges = commits.filter(c => githubPattern.test(c.message)).length;
+    const gitlabMerges = commits.filter(c => gitlabPattern.test(c.message)).length;
+    const azureDevOpsMerges = commits.filter(c => azureDevOpsPattern.test(c.message)).length;
+
+    if (githubMerges > 0) {
+      platformPatterns.detected = 'github';
+      platformPatterns.accuracy = githubMerges > mergeCommits * 0.7 ? 'high' : 'medium';
+      platformPatterns.notes = `${githubMerges} GitHub-style merge commits detected`;
+    } else if (gitlabMerges > 0) {
+      platformPatterns.detected = 'gitlab';
+      platformPatterns.accuracy = gitlabMerges > mergeCommits * 0.7 ? 'high' : 'medium';
+      platformPatterns.notes = `${gitlabMerges} GitLab-style merge commits detected`;
+    } else if (azureDevOpsMerges > 0) {
+      platformPatterns.detected = 'azure-devops';
+      platformPatterns.accuracy = azureDevOpsMerges > mergeCommits * 0.7 ? 'high' : 'medium';
+      platformPatterns.notes = `${azureDevOpsMerges} Azure DevOps-style merge commits detected`;
+    }
+
+    return {
+      score: Math.round(score),
+      reviewWorkflowParticipation,
+      crossTeamInteraction,
+      knowledgeDistribution,
+      coAuthorshipRate,
+      fileOwnershipDistribution,
+      limitations: {
+        reviewerDataAvailable: false,
+        estimationMethod: 'merge-commit-analysis' as const,
+        dataSource: 'git-commits-only' as const,
+        platformSpecific: platformPatterns,
+        knownLimitations: [
+          'Cannot identify actual code reviewers or approvers',
+          'Merge commits may not represent code reviews',
+          'Direct commits may still have been reviewed via other means',
+          'Cross-team interaction based on file co-authorship only',
+        ],
+      },
+    };
+  }
+
+  /**
+   * Calculate team consistency and velocity metrics
+   */
+  private calculateTeamConsistency(
+    commits: CommitData[],
+    authors: AuthorStats[]
+  ): TeamConsistencyMetrics {
+    // Bus factor (how many top contributors make up 50% of commits)
+    const sortedAuthors = authors.sort((a, b) => b.commits - a.commits);
+    const totalCommits = commits.length;
+    let cumulativeCommits = 0;
+    let busFactor = 0;
+
+    for (const author of sortedAuthors) {
+      cumulativeCommits += author.commits;
+      busFactor++;
+      if (cumulativeCommits >= totalCommits * 0.5) {
+        break;
+      }
+    }
+
+    // Active contributor ratio (contributors with commits in last 30 days)
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    const recentCommits = commits.filter(c => c.date >= thirtyDaysAgo);
+    const recentContributors = new Set(recentCommits.map(c => c.authorEmail)).size;
+    const activeContributorRatio =
+      authors.length > 0 ? (recentContributors / authors.length) * 100 : 0;
+
+    // Velocity consistency (inverse of coefficient of variation in daily commits)
+    const dailyCommits = this.calculateDailyCommitCounts(commits);
+    const avgDaily = dailyCommits.reduce((sum, count) => sum + count, 0) / dailyCommits.length;
+    const variance =
+      dailyCommits.reduce((sum, count) => sum + Math.pow(count - avgDaily, 2), 0) /
+      dailyCommits.length;
+    const stdDev = Math.sqrt(variance);
+    const coefficientOfVariation = avgDaily > 0 ? stdDev / avgDaily : 0;
+    const velocityConsistency = Math.max(0, 100 - coefficientOfVariation * 100);
+
+    // Delivery cadence (regularity of commits over time)
+    const deliveryCadence = this.calculateDeliveryCadence(commits);
+
+    // Contribution distribution (Gini coefficient for inequality)
+    const commitCounts = authors.map(a => a.commits).sort((a, b) => a - b);
+    const giniCoefficient = this.calculateGiniCoefficient(commitCounts);
+    const topContributorDominance =
+      sortedAuthors.length > 0 ? (sortedAuthors[0].commits / totalCommits) * 100 : 0;
+
+    // Calculate consistency score
+    const consistencyScore = Math.round(
+      Math.min(busFactor * 20, 100) * 0.25 + // Bus factor (capped at 5 for 100%)
+        activeContributorRatio * 0.25 +
+        velocityConsistency * 0.25 +
+        deliveryCadence * 0.25
+    );
+
+    return {
+      score: consistencyScore,
+      velocityConsistency,
+      busFactor,
+      activeContributorRatio,
+      deliveryCadence,
+      contributionDistribution: {
+        giniCoefficient,
+        topContributorDominance,
+      },
+    };
+  }
+
+  /**
+   * Calculate team quality metrics
+   */
+  private calculateTeamQuality(
+    commits: CommitData[],
+    authors: AuthorStats[],
+    files: FileStats[]
+  ): TeamQualityMetrics {
+    // Team governance score (average of all author governance scores)
+    const totalGovernanceScore = authors.reduce((sum, author) => {
+      if (author.detailed?.quality?.commitMessageQuality?.overallScore) {
+        return sum + author.detailed.quality.commitMessageQuality.overallScore;
+      }
+      return sum;
+    }, 0);
+    const teamGovernanceScore = authors.length > 0 ? totalGovernanceScore / authors.length : 0;
+
+    // Refactoring activity (commits with refactor keywords)
+    const refactorKeywords = ['refactor', 'refactoring', 'cleanup', 'restructure', 'reorganize'];
+    const refactorCommits = commits.filter(c =>
+      refactorKeywords.some(keyword => c.message.toLowerCase().includes(keyword))
+    ).length;
+    const refactoringActivity = commits.length > 0 ? (refactorCommits / commits.length) * 100 : 0;
+
+    // Bug fix ratio (fix/bug commits vs feature commits)
+    const bugKeywords = ['fix', 'bug', 'hotfix', 'patch', 'resolve'];
+    const bugFixCommits = commits.filter(c =>
+      bugKeywords.some(keyword => c.message.toLowerCase().includes(keyword))
+    ).length;
+    const bugFixRatio = commits.length > 0 ? (bugFixCommits / commits.length) * 100 : 0;
+
+    // Documentation contribution
+    const docKeywords = ['doc', 'docs', 'documentation', 'readme', 'comment'];
+    const docCommits = commits.filter(
+      c =>
+        docKeywords.some(keyword => c.message.toLowerCase().includes(keyword)) ||
+        c.files.some(
+          f =>
+            f.path.toLowerCase().includes('readme') ||
+            f.path.toLowerCase().includes('doc') ||
+            f.path.endsWith('.md')
+        )
+    ).length;
+    const documentationContribution = commits.length > 0 ? (docCommits / commits.length) * 100 : 0;
+
+    // Merge workflow usage (estimated from merge commits)
+    const mergeCommits = commits.filter(c => c.isMerge).length;
+    const mergeWorkflowUsage = commits.length > 0 ? (mergeCommits / commits.length) * 100 : 0;
+
+    // Test file detection
+    const testFiles = files.filter(
+      f =>
+        f.path.includes('test') ||
+        f.path.includes('spec') ||
+        f.path.includes('__tests__') ||
+        f.path.endsWith('.test.js') ||
+        f.path.endsWith('.test.ts') ||
+        f.path.endsWith('.spec.js') ||
+        f.path.endsWith('.spec.ts')
+    );
+    const testFileToSourceRatio = files.length > 0 ? (testFiles.length / files.length) * 100 : 0;
+
+    // Calculate quality score
+    const qualityScore = Math.round(
+      teamGovernanceScore * 0.3 +
+        Math.min(refactoringActivity * 5, 100) * 0.2 + // Weight refactoring activity
+        Math.min(documentationContribution * 2, 100) * 0.2 +
+        mergeWorkflowUsage * 0.2 +
+        Math.min(testFileToSourceRatio * 2, 100) * 0.1
+    );
+
+    return {
+      score: qualityScore,
+      teamGovernanceScore,
+      refactoringActivity,
+      bugFixRatio,
+      documentationContribution,
+      mergeWorkflowUsage,
+      testFileDetection: {
+        hasTestFiles: testFiles.length > 0,
+        testFiles: testFiles.length,
+        testFileToSourceRatio,
+        limitations: {
+          note: 'Detects test files only, not actual test execution coverage',
+          recommendedTools: ['Jest', 'nyc', 'c8', 'Istanbul', 'Mocha with coverage'],
+        },
+      },
+      limitations: {
+        qualityMeasurement: 'pattern-based-estimation',
+        testCoverageNote: 'File detection only, not execution coverage',
+        knownLimitations: [
+          'Cannot measure actual test execution coverage',
+          'Merge workflow usage ≠ code review coverage',
+          'Quality patterns based on commit message analysis only',
+          'Refactoring detection based on keywords only',
+        ],
+      },
+    };
+  }
+
+  /**
+   * Calculate team work-life balance metrics
+   */
+  private calculateTeamWorkLifeBalance(
+    commits: CommitData[],
+    _authors: AuthorStats[]
+  ): TeamWorkLifeBalanceMetrics {
+    // Analyze commit time patterns
+    const afterHoursCommits = commits.filter(c => {
+      const hour = c.date.getHours();
+      return hour < 8 || hour > 18; // Before 8 AM or after 6 PM
+    }).length;
+
+    const weekendCommits = commits.filter(c => {
+      const day = c.date.getDay();
+      return day === 0 || day === 6; // Sunday or Saturday
+    }).length;
+
+    const afterHoursCommitFrequency =
+      commits.length > 0 ? (afterHoursCommits / commits.length) * 100 : 0;
+    const weekendCommitActivity = commits.length > 0 ? (weekendCommits / commits.length) * 100 : 0;
+
+    // High velocity days analysis
+    const highVelocityDays = this.calculateHighVelocityDays(commits);
+
+    // Commit time patterns health (inverse of concerning patterns)
+    const commitTimePatterns = Math.max(0, 100 - afterHoursCommitFrequency - weekendCommitActivity);
+
+    // Team active coverage (estimate from daily contributor diversity)
+    const teamActiveCoverage = this.calculateTeamActiveCoverage(commits);
+
+    // Calculate work-life balance score
+    const balanceScore = Math.round(
+      commitTimePatterns * 0.4 +
+        Math.max(0, 100 - afterHoursCommitFrequency) * 0.3 +
+        Math.max(0, 100 - weekendCommitActivity) * 0.2 +
+        teamActiveCoverage.coveragePercentage * 0.1
+    );
+
+    return {
+      score: balanceScore,
+      commitTimePatterns,
+      afterHoursCommitFrequency,
+      weekendCommitActivity,
+      commitTimingIndicators: {
+        highVelocityDays,
+        consecutiveCommitDays: this.calculateConsecutiveWorkDays(commits),
+        afterHoursCommits: afterHoursCommits,
+      },
+      teamActiveCoverage,
+      limitations: {
+        timezoneWarning:
+          'Commit timestamps may not reflect actual work hours due to timezone differences',
+        workPatternNote:
+          'Git commits ≠ work hours (CI commits, batched commits, scheduled deployments)',
+        burnoutDetection: 'Cannot accurately assess burnout from Git data alone',
+        recommendedApproach: 'Use for general patterns only, not individual performance assessment',
+        knownLimitations: [
+          'Commit times affected by timezones and CI/CD systems',
+          'Weekend/after-hours commits may be maintenance or urgent fixes',
+          'Does not account for flexible work schedules',
+          'Cannot distinguish between work and personal commits',
+          'Team coverage estimates collaboration, not vacation planning',
+        ],
+      },
+    };
+  }
+
+  /**
+   * Generate team insights based on calculated metrics
+   */
+  private generateTeamInsights(
+    overall: number,
+    collaboration: TeamCollaborationMetrics,
+    consistency: TeamConsistencyMetrics,
+    quality: TeamQualityMetrics,
+    workLifeBalance: TeamWorkLifeBalanceMetrics
+  ): TeamInsights {
+    const strengths: string[] = [];
+    const improvements: string[] = [];
+    const risks: string[] = [];
+
+    // Collaboration insights
+    if (collaboration.reviewWorkflowParticipation > 60) {
+      strengths.push('Strong review workflow adoption');
+    } else if (collaboration.reviewWorkflowParticipation < 30) {
+      improvements.push('Increase review workflow participation');
+    }
+
+    if (collaboration.knowledgeDistribution > 70) {
+      strengths.push('Excellent knowledge distribution');
+    } else if (collaboration.knowledgeDistribution < 40) {
+      risks.push('Knowledge concentration detected');
+    }
+
+    // Consistency insights
+    if (consistency.busFactor >= 3) {
+      strengths.push('Good knowledge distribution');
+    } else if (consistency.busFactor <= 1) {
+      risks.push('Critical bus factor - knowledge concentration risk');
+    }
+
+    // Quality insights
+    if (quality.teamGovernanceScore > 80) {
+      strengths.push('Excellent commit message quality');
+    } else if (quality.teamGovernanceScore < 50) {
+      improvements.push('Improve commit message standards');
+    }
+
+    // Work-life balance insights
+    if (workLifeBalance.afterHoursCommitFrequency > 30) {
+      risks.push('High after-hours commit activity detected');
+    }
+    if (workLifeBalance.weekendCommitActivity > 20) {
+      risks.push('Significant weekend commit activity detected');
+    }
+
+    // Determine team dynamics
+    let teamDynamics: 'highly-collaborative' | 'balanced' | 'siloed' | 'fragmented';
+    if (collaboration.score > 80) {
+      teamDynamics = 'highly-collaborative';
+    } else if (collaboration.score > 60) {
+      teamDynamics = 'balanced';
+    } else if (collaboration.score > 40) {
+      teamDynamics = 'siloed';
+    } else {
+      teamDynamics = 'fragmented';
+    }
+
+    // Determine maturity level
+    let maturityLevel: 'nascent' | 'developing' | 'mature' | 'optimized';
+    if (overall > 85) {
+      maturityLevel = 'optimized';
+    } else if (overall > 70) {
+      maturityLevel = 'mature';
+    } else if (overall > 55) {
+      maturityLevel = 'developing';
+    } else {
+      maturityLevel = 'nascent';
+    }
+
+    // Determine sustainability rating
+    let sustainabilityRating: 'excellent' | 'good' | 'concerning' | 'critical';
+    if (workLifeBalance.score > 80) {
+      sustainabilityRating = 'excellent';
+    } else if (workLifeBalance.score > 65) {
+      sustainabilityRating = 'good';
+    } else if (workLifeBalance.score > 45) {
+      sustainabilityRating = 'concerning';
+    } else {
+      sustainabilityRating = 'critical';
+    }
+
+    return {
+      strengths,
+      improvements,
+      risks,
+      teamDynamics,
+      maturityLevel,
+      sustainabilityRating,
+    };
+  }
+
+  /**
+   * Generate team recommendations based on metrics
+   */
+  private generateTeamRecommendations(
+    collaboration: TeamCollaborationMetrics,
+    consistency: TeamConsistencyMetrics,
+    quality: TeamQualityMetrics,
+    workLifeBalance: TeamWorkLifeBalanceMetrics
+  ): string[] {
+    const recommendations: string[] = [];
+
+    // Collaboration recommendations
+    if (collaboration.reviewWorkflowParticipation < 50) {
+      recommendations.push('Implement consistent review workflow for all changes');
+    }
+    if (collaboration.knowledgeDistribution < 60) {
+      recommendations.push('Encourage cross-team collaboration and knowledge sharing');
+    }
+    if (collaboration.coAuthorshipRate < 5) {
+      recommendations.push('Consider implementing pair programming or mob programming sessions');
+    }
+
+    // Consistency recommendations
+    if (consistency.busFactor <= 2) {
+      recommendations.push(
+        'Critical: Implement knowledge sharing initiatives to reduce bus factor risk'
+      );
+    }
+    if (consistency.activeContributorRatio < 70) {
+      recommendations.push('Engage inactive team members or consider team composition changes');
+    }
+
+    // Quality recommendations
+    if (quality.teamGovernanceScore < 60) {
+      recommendations.push('Establish and enforce commit message conventions');
+    }
+    if (quality.testFileDetection.testFileToSourceRatio < 20) {
+      recommendations.push('Invest in automated testing infrastructure and practices');
+    }
+    if (quality.documentationContribution < 10) {
+      recommendations.push('Encourage documentation contributions alongside code changes');
+    }
+
+    // Work-life balance recommendations
+    if (workLifeBalance.afterHoursCommitFrequency > 25) {
+      recommendations.push('Review commit timing patterns and consider workflow optimization');
+    }
+    if (workLifeBalance.weekendCommitActivity > 15) {
+      recommendations.push(
+        'Establish clear boundaries for weekend commits and emergency procedures'
+      );
+    }
+
+    return recommendations;
+  }
+
+  /**
+   * Helper method to calculate daily commit counts
+   */
+  private calculateDailyCommitCounts(commits: CommitData[]): number[] {
+    const dailyCounts = new Map<string, number>();
+
+    for (const commit of commits) {
+      const dateKey = commit.date.toISOString().split('T')[0];
+      dailyCounts.set(dateKey, (dailyCounts.get(dateKey) || 0) + 1);
+    }
+
+    return Array.from(dailyCounts.values());
+  }
+
+  /**
+   * Helper method to calculate delivery cadence
+   */
+  private calculateDeliveryCadence(commits: CommitData[]): number {
+    if (commits.length < 2) return 100;
+
+    const sortedCommits = commits.sort((a, b) => a.date.getTime() - b.date.getTime());
+    const gaps: number[] = [];
+
+    for (let i = 1; i < sortedCommits.length; i++) {
+      const gap = sortedCommits[i].date.getTime() - sortedCommits[i - 1].date.getTime();
+      gaps.push(gap / (1000 * 60 * 60 * 24)); // Convert to days
+    }
+
+    const avgGap = gaps.reduce((sum, gap) => sum + gap, 0) / gaps.length;
+    const gapVariance = gaps.reduce((sum, gap) => sum + Math.pow(gap - avgGap, 2), 0) / gaps.length;
+    const gapStdDev = Math.sqrt(gapVariance);
+
+    // Lower coefficient of variation means more consistent delivery
+    const consistencyScore = avgGap > 0 ? Math.max(0, 100 - (gapStdDev / avgGap) * 100) : 100;
+    return Math.min(100, consistencyScore);
+  }
+
+  /**
+   * Helper method to calculate Gini coefficient for contribution inequality
+   */
+  private calculateGiniCoefficient(values: number[]): number {
+    if (values.length === 0) return 0;
+
+    const sortedValues = values.slice().sort((a, b) => a - b);
+    const n = sortedValues.length;
+    const sum = sortedValues.reduce((acc, val) => acc + val, 0);
+
+    if (sum === 0) return 0;
+
+    let numerator = 0;
+    for (let i = 0; i < n; i++) {
+      numerator += (2 * i - n + 1) * sortedValues[i];
+    }
+
+    return numerator / (n * sum);
+  }
+
+  /**
+   * Helper method to calculate high velocity days
+   */
+  private calculateHighVelocityDays(commits: CommitData[]): number {
+    const dailyCounts = this.calculateDailyCommitCounts(commits);
+    const avgDaily = dailyCounts.reduce((sum, count) => sum + count, 0) / dailyCounts.length;
+    const threshold = avgDaily * 2; // Days with more than 2x average commits
+
+    return dailyCounts.filter(count => count > threshold).length;
+  }
+
+  /**
+   * Helper method to calculate consecutive work days
+   */
+  private calculateConsecutiveWorkDays(commits: CommitData[]): number {
+    const workDays = new Set(commits.map(c => c.date.toISOString().split('T')[0]));
+
+    const sortedDays = Array.from(workDays).sort();
+    let maxConsecutive = 0;
+    let currentConsecutive = 1;
+
+    for (let i = 1; i < sortedDays.length; i++) {
+      const prevDate = new Date(sortedDays[i - 1]);
+      const currDate = new Date(sortedDays[i]);
+      const diffTime = currDate.getTime() - prevDate.getTime();
+      const diffDays = diffTime / (1000 * 60 * 60 * 24);
+
+      if (diffDays === 1) {
+        currentConsecutive++;
+      } else {
+        maxConsecutive = Math.max(maxConsecutive, currentConsecutive);
+        currentConsecutive = 1;
+      }
+    }
+
+    return Math.max(maxConsecutive, currentConsecutive);
+  }
+
+  /**
+   * Helper method to calculate vacation coverage
+   */
+  private calculateTeamActiveCoverage(commits: CommitData[]): {
+    multiContributorDays: number;
+    soloContributorDays: number;
+    coveragePercentage: number;
+    note: string;
+  } {
+    // Analyze daily contributor diversity
+    const dailyAuthors = new Map<string, Set<string>>();
+
+    for (const commit of commits) {
+      const dateKey = commit.date.toISOString().split('T')[0];
+      if (!dailyAuthors.has(dateKey)) {
+        dailyAuthors.set(dateKey, new Set());
+      }
+      dailyAuthors.get(dateKey)!.add(commit.authorEmail);
+    }
+
+    const multiContributorDays = Array.from(dailyAuthors.values()).filter(
+      authors => authors.size > 1
+    ).length;
+    const soloContributorDays = dailyAuthors.size - multiContributorDays;
+    const coveragePercentage =
+      dailyAuthors.size > 0 ? (multiContributorDays / dailyAuthors.size) * 100 : 0;
+
+    return {
+      multiContributorDays,
+      soloContributorDays,
+      coveragePercentage,
+      note: 'Measures daily contributor diversity, not vacation coverage or work scheduling',
+    };
   }
 }
