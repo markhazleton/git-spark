@@ -245,7 +245,8 @@ describe('JSONExporter', () => {
 
   it('creates directories for non-existent path', async () => {
     // The exporter creates directories recursively, so this should succeed
-    const invalidPath = '/invalid/path/that/should/not/exist';
+    // Use a path within the project directory to avoid permission issues
+    const invalidPath = './test-json-output/deeply/nested/path/that/should/not/exist';
 
     await expect(jsonExporter.export(mockReport, invalidPath)).resolves.not.toThrow();
   });

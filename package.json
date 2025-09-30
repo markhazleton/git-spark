@@ -44,6 +44,7 @@
     "build": "tsc",
     "build:watch": "tsc --watch",
     "dev": "npm run build && node bin/git-spark.js",
+    "pretest": "node scripts/generate-version.js",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
