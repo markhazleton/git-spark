@@ -90,7 +90,16 @@ export class GitSpark {
 
       return report;
     } catch (error) {
-      logger.error('Analysis failed', { error });
+      logger.error('Analysis failed', {
+        error:
+          error instanceof Error
+            ? {
+                message: error.message,
+                name: error.name,
+                stack: error.stack,
+              }
+            : error,
+      });
       throw error;
     }
   }

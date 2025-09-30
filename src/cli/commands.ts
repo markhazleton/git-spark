@@ -236,7 +236,16 @@ async function executeHTMLReport(options: any): Promise<void> {
       logger.error('HTML report generation failed', { error: error.message, stack: error.stack });
     } else {
       console.error(chalk.red('Unknown error occurred'));
-      logger.error('Unknown error occurred', { error });
+      logger.error('Unknown error occurred', {
+        error:
+          error instanceof Error
+            ? {
+                message: error.message,
+                name: error.name,
+                stack: error.stack,
+              }
+            : error,
+      });
     }
     process.exit(1);
   }
@@ -416,7 +425,16 @@ async function executeAnalysis(options: any): Promise<void> {
       logger.error('Analysis failed', { error: error.message, stack: error.stack });
     } else {
       console.error(chalk.red('Unknown error occurred'));
-      logger.error('Unknown error occurred', { error });
+      logger.error('Unknown error occurred', {
+        error:
+          error instanceof Error
+            ? {
+                message: error.message,
+                name: error.name,
+                stack: error.stack,
+              }
+            : error,
+      });
     }
     process.exit(1);
   }

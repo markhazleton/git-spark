@@ -21,7 +21,17 @@ export class MarkdownExporter {
 
       logger.info('Markdown report exported successfully', { path: fullPath });
     } catch (error) {
-      logger.error('Failed to export Markdown report', { error, outputPath });
+      logger.error('Failed to export Markdown report', {
+        error:
+          error instanceof Error
+            ? {
+                message: error.message,
+                name: error.name,
+                stack: error.stack,
+              }
+            : error,
+        outputPath,
+      });
       throw error;
     }
   }

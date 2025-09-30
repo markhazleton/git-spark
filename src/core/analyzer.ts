@@ -17,6 +17,7 @@ import { createLogger } from '../utils/logger';
 import { validateCommitMessage, sanitizeEmail } from '../utils/validation';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
+import { VERSION } from '../version';
 
 const logger = createLogger('analyzer');
 
@@ -1656,8 +1657,7 @@ export class GitAnalyzer {
     try {
       // Method 1: Try to use the generated version file (most reliable)
       try {
-        const versionModule = await import('../version');
-        version = versionModule.VERSION;
+        version = VERSION;
       } catch {
         // Method 2: Try to find git-spark package.json via require.resolve or known paths
         let gitSparkPkgPath: string | null = null;
