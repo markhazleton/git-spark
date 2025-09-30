@@ -119,14 +119,7 @@ describe('Input Validation', () => {
 
   describe('validateNumericString', () => {
     it('should accept valid numbers', () => {
-      const validNumbers = [
-        '100',
-        '0',
-        '999999',
-        100,
-        0,
-        999999,
-      ];
+      const validNumbers = ['100', '0', '999999', 100, 0, 999999];
 
       validNumbers.forEach(num => {
         const result = validateNumericString(num);
@@ -293,7 +286,7 @@ describe('Input Validation', () => {
       expect(result.isValid).toBe(false);
       expect(result.sanitized).toBeUndefined();
       expect(result.errors.length).toBeGreaterThan(0);
-      
+
       // Check that each field has an error
       expect(result.errors.some(err => err.startsWith('since:'))).toBe(true);
       expect(result.errors.some(err => err.startsWith('until:'))).toBe(true);

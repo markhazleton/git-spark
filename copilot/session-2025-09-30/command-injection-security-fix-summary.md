@@ -7,6 +7,7 @@ Fixed a critical **command injection** security vulnerability in Git Spark that 
 ## Vulnerability Details
 
 ### Root Cause
+
 The application was using string interpolation to construct Git command arguments:
 
 ```typescript
@@ -17,18 +18,22 @@ if (options.author) args.push(`--author=${options.author}`);
 ```
 
 This pattern allowed for command injection through unvalidated user input, where malicious input like:
-- `"2023-01-01; rm -rf /"` 
+
+- `"2023-01-01; rm -rf /"`
 - `"author\`touch /tmp/pwned\`"`
 - `"value$(whoami)"`
 
 Could potentially escape the intended parameter and execute arbitrary commands.
 
 ### Affected Files
+
 - `src/utils/git.ts` - Git command execution utilities
 - `src/core/collector.ts` - Commit data collection
 
 ### Vulnerability Scope
+
 The vulnerability affected all Git operations that accepted user-controlled parameters:
+
 - Date filtering (`--since`, `--until`)
 - Author filtering (`--author`)
 - Branch specification
@@ -38,6 +43,7 @@ The vulnerability affected all Git operations that accepted user-controlled para
 ## Security Fix Implementation
 
 ### 1. Input Validation Module
+
 Created a comprehensive input validation module (`src/utils/input-validation.ts`) with functions:
 
 - `validateDateString()` - Validates date formats and rejects dangerous characters
@@ -48,6 +54,7 @@ Created a comprehensive input validation module (`src/utils/input-validation.ts`
 - `validateGitOptions()` - Comprehensive validation for all Git command options
 
 ### 2. Secure Argument Construction
+
 Changed from string interpolation to separate argument arrays:
 
 ```typescript
@@ -60,6 +67,7 @@ if (safeOptions.author) args.push('--author', safeOptions.author);
 This prevents command injection by treating each value as a separate, isolated argument.
 
 ### 3. Character Validation
+
 Implemented strict character validation to reject dangerous patterns:
 
 ```typescript
@@ -70,6 +78,7 @@ if (/[;&|`$(){}[\]\\<>]/.test(input) || input.includes('\x00') || /[\n\r\t]/.tes
 ```
 
 ### 4. Path Traversal Protection
+
 Added specific protection against path traversal attacks:
 
 ```typescript
@@ -82,16 +91,19 @@ if (path.includes('..') || path.includes('//')) {
 ## Security Measures Implemented
 
 ### Input Sanitization
+
 - **Character Filtering**: Blocks shell metacharacters (`;`, `&`, `|`, `` ` ``, `$`, `()`, `{}`, `[]`, `\`, `<`, `>`)
 - **Control Character Detection**: Rejects null bytes (`\x00`) and control characters (`\n`, `\r`, `\t`)
 - **Format Validation**: Enforces proper formats for dates, emails, branch names, etc.
 
 ### Argument Security
+
 - **Separate Arguments**: Uses array-based argument construction instead of string interpolation
 - **No Shell Execution**: Arguments are passed directly to `spawn()` without shell interpretation
 - **Parameter Isolation**: Each user input becomes an isolated command argument
 
 ### Additional Protections
+
 - **Range Validation**: Numeric inputs are bounded to reasonable limits
 - **Path Traversal Prevention**: Blocks `..` sequences and suspicious path patterns
 - **Git Branch Rules**: Validates branch names according to Git naming conventions
@@ -100,6 +112,7 @@ if (path.includes('..') || path.includes('//')) {
 ## Comprehensive Testing
 
 ### Security Test Suite
+
 Created extensive security tests (`test/input-validation.test.ts`) covering:
 
 - **Command Injection Prevention**: Tests for shell metacharacters and injection patterns
@@ -109,6 +122,7 @@ Created extensive security tests (`test/input-validation.test.ts`) covering:
 - **Edge Cases**: Tests for boundary conditions and malformed inputs
 
 ### Test Coverage
+
 - 21 comprehensive test cases
 - Tests for all validation functions
 - Security-focused test scenarios
@@ -118,12 +132,14 @@ Created extensive security tests (`test/input-validation.test.ts`) covering:
 ## Risk Assessment
 
 ### Before Fix
+
 - **Risk Level**: Critical
 - **Attack Vector**: User-controlled input in Git command parameters
 - **Potential Impact**: Remote code execution, file system access, data exfiltration
 - **Exploitability**: High (if user input reaches Git command construction)
 
 ### After Fix
+
 - **Risk Level**: Low
 - **Mitigation**: Comprehensive input validation and secure argument construction
 - **Defense in Depth**: Multiple layers of protection (validation, sanitization, argument isolation)
@@ -142,16 +158,19 @@ This fix should resolve the GitHub CodeQL security alert by:
 ## Deployment Considerations
 
 ### Backward Compatibility
+
 - API interfaces remain unchanged
 - Error handling is improved with more descriptive error messages
 - No breaking changes to existing functionality
 
 ### Performance Impact
+
 - Minimal performance overhead from input validation
 - Validation is performed once per Git operation
 - No impact on normal operation flow
 
 ### Monitoring
+
 - Failed validation attempts are logged for security monitoring
 - Clear error messages help with legitimate troubleshooting
 - No sensitive information leaked in error messages
@@ -168,8 +187,9 @@ This fix should resolve the GitHub CodeQL security alert by:
 ## Verification
 
 All security measures have been verified through:
+
 - ✅ Comprehensive test suite (21 security tests passing)
-- ✅ Full application test suite (180 tests passing) 
+- ✅ Full application test suite (180 tests passing)
 - ✅ Manual testing of edge cases
 - ✅ Code review of all security-critical paths
 - ✅ Validation of argument construction patterns
