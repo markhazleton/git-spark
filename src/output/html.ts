@@ -1,4 +1,4 @@
-import { AnalysisReport } from '../types';
+import { AnalysisReport, FileFilteringConfig } from '../types';
 import { writeFileSync, mkdirSync } from 'fs';
 import { resolve, dirname, basename } from 'path';
 import { createLogger } from '../utils/logger';
@@ -34,10 +34,15 @@ export class HTMLExporter {
    *
    * @param report - The complete analysis report to export
    * @param outputPath - Directory path where HTML file will be created
+   * @param fileFilteringConfig - Optional configuration for file filtering in hotspots
    * @throws {Error} When output directory cannot be created or file cannot be written
    * @returns Promise that resolves when export is complete
    */
-  async export(report: AnalysisReport, outputPath: string): Promise<void> {
+  async export(
+    report: AnalysisReport,
+    outputPath: string,
+    fileFilteringConfig?: FileFilteringConfig
+  ): Promise<void> {
     try {
       const fullPath = resolve(outputPath, 'git-spark-report.html');
 
@@ -45,7 +50,7 @@ export class HTMLExporter {
       mkdirSync(dirname(fullPath), { recursive: true });
 
       // Generate HTML content
-      const htmlContent = this.generateHTML(report);
+      const htmlContent = this.generateHTML(report, fileFilteringConfig);
 
       // Write to file
       writeFileSync(fullPath, htmlContent, 'utf-8');
@@ -58,6 +63,254 @@ export class HTMLExporter {
   }
 
   /**
+   * Check if a file path represents a source code file that should be included in hotspots
+   * Uses the provided configuration to determine what constitutes source code vs config files
+   *
+   * @param filePath - The file path to check
+   * @param config - File filtering configuration
+   * @returns True if the file should be considered a source code hotspot
+   * @private
+   */
+  private isSourceCodeFile(filePath: string, config: FileFilteringConfig): boolean {
+    const path = filePath.toLowerCase();
+
+    // Check exclusion patterns first
+    for (const pattern of config.excludePatterns) {
+      if (path.includes(pattern)) {
+        return false;
+      }
+    }
+
+    // Check if file has a config extension (excluded from hotspots)
+    const hasConfigExtension = config.configExtensions.some(ext => path.endsWith(ext));
+    if (hasConfigExtension) {
+      return false;
+    }
+
+    // Check if file has a source code extension
+    const hasSourceExtension = config.sourceCodeExtensions.some(ext => path.endsWith(ext));
+
+    return hasSourceExtension;
+  }
+
+  /**
+   * Get default file filtering configuration
+   * @returns Default FileFilteringConfig
+   * @private
+   */
+  private getDefaultFileFilteringConfig(): FileFilteringConfig {
+    return {
+      sourceCodeExtensions: [
+        // Web languages
+        '.js',
+        '.jsx',
+        '.ts',
+        '.tsx',
+        '.vue',
+        '.svelte',
+        '.css',
+        '.scss',
+        '.sass',
+        '.less',
+
+        // Backend/System languages
+        '.cs',
+        '.vb',
+        '.fs', // .NET
+        '.java',
+        '.kt',
+        '.scala', // JVM
+        '.py',
+        '.pyx', // Python
+        '.rb',
+        '.rake', // Ruby
+        '.php',
+        '.php3',
+        '.php4',
+        '.php5',
+        '.php7',
+        '.php8', // PHP
+        '.go', // Go
+        '.rs', // Rust
+        '.cpp',
+        '.cxx',
+        '.cc',
+        '.c', // C/C++
+        '.h',
+        '.hpp',
+        '.hxx', // C/C++ headers
+        '.swift', // Swift
+        '.m',
+        '.mm', // Objective-C
+        '.dart', // Dart
+        '.ex',
+        '.exs', // Elixir
+        '.erl',
+        '.hrl', // Erlang
+        '.clj',
+        '.cljs',
+        '.cljc', // Clojure
+        '.hs',
+        '.lhs', // Haskell
+        '.ml',
+        '.mli', // OCaml/F#
+        '.elm', // Elm
+        '.lua', // Lua
+        '.r',
+        '.rmd', // R
+        '.jl', // Julia
+        '.zig', // Zig
+        '.nim', // Nim
+        '.cr', // Crystal
+
+        // Database and query languages
+        '.sql',
+        '.plsql',
+        '.psql',
+
+        // Scripting
+        '.sh',
+        '.bash',
+        '.zsh',
+        '.fish',
+        '.ps1',
+        '.bat',
+        '.cmd',
+        '.pl',
+        '.pm', // Perl
+        '.tcl', // Tcl
+
+        // Graphics and markup languages (source code context)
+        '.xml',
+        '.xaml',
+        '.graphql',
+        '.gql',
+
+        // Template languages
+        '.mustache',
+        '.hbs',
+        '.handlebars',
+        '.pug',
+        '.jade',
+        '.ejs',
+        '.erb',
+        '.twig',
+        '.liquid',
+        '.jinja',
+        '.jinja2',
+      ],
+      configExtensions: [
+        // Configuration and data files
+        '.html',
+        '.htm', // Often templates/config in backends
+        '.json', // Config files, package files
+        '.yaml',
+        '.yml', // Config files
+        '.toml', // Config files
+        '.ini',
+        '.conf',
+        '.config', // Config files
+        '.env', // Environment files
+        '.properties', // Java properties
+        '.plist', // macOS property lists
+
+        // Documentation and markdown
+        '.md',
+        '.markdown',
+        '.mdx',
+        '.txt',
+        '.rst',
+        '.adoc',
+        '.asciidoc',
+
+        // Build and project files
+        '.gradle',
+        '.maven',
+        '.gemfile',
+        '.podfile',
+        '.dockerfile',
+        '.containerfile',
+      ],
+      excludePatterns: [
+        // Lock files and package files that change frequently but aren't source
+        'package-lock.json',
+        'yarn.lock',
+        'pnpm-lock.yaml',
+        'composer.lock',
+        'pipfile.lock',
+        'poetry.lock',
+        'requirements.txt',
+
+        // Build outputs and artifacts
+        '/dist/',
+        '/build/',
+        '/out/',
+        '/target/',
+        '/bin/',
+        '/obj/',
+        '.min.js',
+        '.min.css',
+        '.bundle.js',
+        '.bundle.css',
+        '.map',
+
+        // Node modules and dependencies
+        'node_modules/',
+        'vendor/',
+
+        // Configuration files that change frequently
+        '.gitignore',
+        '.gitattributes',
+        '.editorconfig',
+        '.eslintrc',
+        '.prettierrc',
+        'tsconfig.json',
+        'jsconfig.json',
+        'webpack.config',
+        'vite.config',
+        'rollup.config',
+        'babel.config',
+        '.babelrc',
+        'jest.config',
+        'vitest.config',
+        'karma.conf',
+        'cypress.config',
+        'playwright.config',
+
+        // Documentation directories
+        '/docs/',
+        'changelog',
+        'license',
+        'readme',
+
+        // IDE and editor files
+        '.vscode/',
+        '.idea/',
+        '.vs/',
+        '*.sln',
+        '*.csproj',
+        '*.vcxproj',
+        '*.proj',
+
+        // Generated files
+        '.generated.',
+        '.g.cs',
+        '.g.ts',
+        '.designer.cs',
+        'assemblyinfo.cs',
+
+        // Test files (focus on production code)
+        '.test.',
+        '.spec.',
+        '__tests__/',
+        '/tests/',
+        '/test/',
+      ],
+      maxHotspots: 10,
+    };
+  }
+
+  /**
    * Generate complete HTML document with embedded styles and scripts
    *
    * Creates a self-contained HTML file with:
@@ -67,10 +320,11 @@ export class HTMLExporter {
    * - JavaScript for chart rendering and interactions
    *
    * @param report - Analysis report data to render
+   * @param fileFilteringConfig - Optional configuration for file filtering in hotspots
    * @returns Complete HTML document as string
    * @private
    */
-  private generateHTML(report: AnalysisReport): string {
+  private generateHTML(report: AnalysisReport, fileFilteringConfig?: FileFilteringConfig): string {
     const repoName = basename(report.metadata.repoPath || '.') || 'repository';
     const generatedAt = report.metadata.generatedAt.toISOString();
     const healthPct = Math.round(report.repository.healthScore * 100);
@@ -111,8 +365,14 @@ export class HTMLExporter {
       },
     ];
 
-    const riskRows = report.files
-      .slice(0, 25)
+    // Get file filtering configuration with defaults
+    const config = fileFilteringConfig || this.getDefaultFileFilteringConfig();
+
+    // Filter for source code files only, excluding common non-source files
+    const sourceCodeFiles = report.files.filter(f => this.isSourceCodeFile(f.path, config));
+
+    const riskRows = sourceCodeFiles
+      .slice(0, config.maxHotspots)
       .map(f => {
         const riskPercent = Math.round(f.riskScore * 100);
         const authors = f.authors.length;
@@ -270,8 +530,8 @@ export class HTMLExporter {
     </section>
 
     <section id="files" class="section">
-      <h2>File Hotspots (Top 10)</h2>
-      <div class="table-wrapper" role="region" aria-label="Top files table">
+      <h2>Source Code Hotspots (Top 10)</h2>
+      <div class="table-wrapper" role="region" aria-label="Top source code files table">
         <table class="data-table" data-sortable data-initial-limit="25" data-table="files">
           <thead><tr><th scope="col">File</th><th class="num" scope="col">Commits</th><th class="num" scope="col">Churn</th><th class="num" scope="col">Authors</th><th class="num" scope="col">Risk</th></tr></thead>
           <tbody>${riskRows}</tbody>
