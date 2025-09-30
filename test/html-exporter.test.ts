@@ -189,20 +189,20 @@ describe('HTMLExporter (Phase 3)', () => {
             sourceCommits: 20,
           },
         },
+        // Test case: Very uneven distribution to verify proportionality
+        commitSizeDistribution: {
+          micro: 1, // 3.6% - Very narrow bar
+          small: 15, // 53.6% - Very wide bar (dominant)
+          medium: 8, // 28.6% - Medium width bar
+          large: 3, // 10.7% - Narrow bar
+          veryLarge: 1, // 3.6% - Very narrow bar
+        },
       },
       collaboration: {
         filesSharedWithOthers: 5,
         reviewParticipation: 0.8,
       },
-      patterns: {
-        commitSizeDistribution: {
-          micro: 5,
-          small: 10,
-          medium: 8,
-          large: 4,
-          veryLarge: 1,
-        },
-      },
+      patterns: {},
       insights: {
         strengths: ['Consistent contributor', 'Good test coverage'],
         growthAreas: ['Could reduce commit size', 'More code reviews'],
@@ -210,6 +210,20 @@ describe('HTMLExporter (Phase 3)', () => {
     };
 
     await exporter.export(report, outDir);
+
+    // Also create a demo report for user to see proportional bars
+    const demoOutDir = './demo-proportional-bars';
+    await exporter.export(report, demoOutDir);
+    console.log('\n🎯 PROPORTIONAL BARS DEMO REPORT CREATED!');
+    console.log(`📍 Location: ${demoOutDir}/git-spark-report.html`);
+    console.log('📊 Commit Size Distribution:');
+    console.log('   • Micro (1 commit, 3.6%): Very narrow bar');
+    console.log('   • Small (15 commits, 53.6%): Very wide bar (dominant)');
+    console.log('   • Medium (8 commits, 28.6%): Medium width bar');
+    console.log('   • Large (3 commits, 10.7%): Narrow bar');
+    console.log('   • Very Large (1 commit, 3.6%): Very narrow bar');
+    console.log('📖 Open the HTML file to see proportional bars in action!\n');
+
     const html = readFileSync(resolve(outDir, 'git-spark-report.html'), 'utf-8');
 
     // Test detailed author profile generation
