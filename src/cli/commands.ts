@@ -28,13 +28,31 @@ const logger = createLogger('cli');
  * // git-spark --since 2024-01-01 --author john@example.com
  * ```
  */
-export function createCLI(): Command {
+export async function createCLI(): Promise<Command> {
   const program = new Command();
+
+  // Get version dynamically
+  let version = '1.0.0';
+  try {
+    const versionModule = await import('../version');
+    version = versionModule.VERSION;
+  } catch {
+    // Try to read from package.json as fallback
+    try {
+      const { readFileSync } = await import('fs');
+      const { resolve } = await import('path');
+      const pkgPath = resolve(__dirname, '../../package.json');
+      const pkg = JSON.parse(readFileSync(pkgPath, 'utf-8'));
+      version = pkg.version || version;
+    } catch {
+      // Use default version if all else fails
+    }
+  }
 
   program
     .name('git-spark')
     .description('Enterprise-grade Git repository analytics and reporting tool')
-    .version('1.0.0')
+    .version(version)
     .option('-d, --days <number>', 'analyze last N days', parseNumber)
     .option('-s, --since <date>', 'start date (YYYY-MM-DD)')
     .option('-u, --until <date>', 'end date (YYYY-MM-DD)')
@@ -82,7 +100,7 @@ export function createCLI(): Command {
     .command('html')
     .description('Generate comprehensive HTML report')
     .option('-r, --repo <path>', 'repository path', process.cwd())
-    .option('-d, --days <number>', 'analyze last N days', parseNumber)
+    .option('-d, --days <number>', 'analyze last N days')
     .option('-s, --since <date>', 'start date (YYYY-MM-DD)')
     .option('-u, --until <date>', 'end date (YYYY-MM-DD)')
     .option('-o, --output <path>', 'output directory', './reports')
@@ -93,8 +111,12 @@ export function createCLI(): Command {
     .option('--serve', 'start HTTP server to serve the report')
     .option('--port <number>', 'port for HTTP server (default: 3000)', parseNumber, 3000)
     .option('--heavy', 'enable expensive analyses for detailed insights')
-    .action(async options => {
-      await executeHTMLReport(options);
+    .action(async (options, command) => {
+      // Merge options from parent command (where global options like --days and --heavy are stored)
+      const parentOptions = command.parent?.opts() || {};
+      const mergedOptions = { ...parentOptions, ...options };
+
+      await executeHTMLReport(mergedOptions);
     });
 
   return program;
@@ -105,11 +127,12 @@ async function executeHTMLReport(options: any): Promise<void> {
 
   try {
     // Parse and validate options
+    const parsedDays = options.days ? parseInt(options.days, 10) : undefined;
     const gitSparkOptions: GitSparkOptions = {
       repoPath: options.repo || process.cwd(),
       since: options.since,
       until: options.until,
-      days: options.days,
+      ...(parsedDays && { days: parsedDays }),
       branch: options.branch,
       author: options.author,
       path: options.path,
@@ -140,37 +163,8 @@ async function executeHTMLReport(options: any): Promise<void> {
     // Dynamic import to load GitSpark
     spinner.text = 'Loading git-spark analysis engine';
 
-    // Use require for now to avoid module resolution issues
-    let GitSpark: any;
-    try {
-      // Try to import from built dist first
-      GitSpark = require('../../dist/index').GitSpark;
-    } catch {
-      // Create a minimal analyzer directly
-      const { GitAnalyzer } = require('../core/analyzer');
-      const { HTMLExporter } = require('../output/html');
-
-      // Create a simple wrapper class
-      GitSpark = class {
-        private analyzer: any;
-
-        constructor(options: any, progressCallback?: any) {
-          this.analyzer = new GitAnalyzer(options.repoPath || process.cwd(), progressCallback);
-        }
-
-        async analyze() {
-          return await this.analyzer.analyze(gitSparkOptions);
-        }
-
-        async export(format: string, outputPath: string) {
-          const report = await this.analyze();
-          if (format === 'html') {
-            const exporter = new HTMLExporter();
-            await exporter.export(report, outputPath);
-          }
-        }
-      };
-    }
+    // Import GitSpark properly
+    const { GitSpark } = await import('../index');
 
     spinner.text = 'Starting repository analysis';
     const gitSpark = new GitSpark(

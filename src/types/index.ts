@@ -387,6 +387,8 @@ export interface ReportMetadata {
   gitVersion: string;
   commit: string;
   branch: string;
+  /** CLI arguments used to generate this report */
+  cliArguments?: string[];
   /** Non-fatal issues encountered during analysis */
   warnings?: string[];
   /** Derived configuration snapshot (after resolution/merge) */

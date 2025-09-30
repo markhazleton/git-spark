@@ -1721,6 +1721,7 @@ export class GitAnalyzer {
       gitVersion,
       commit,
       branch,
+      cliArguments: process.argv.slice(2), // Capture CLI arguments (excluding node and script path)
       warnings: [],
     };
   }
