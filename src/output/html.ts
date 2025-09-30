@@ -469,10 +469,10 @@ export class HTMLExporter {
         <ul>
           <li><a href="#summary">Summary</a></li>
           <li><a href="#authors">Authors</a></li>
-          <li><a href="#author-details">Author Details</a></li>
           <li><a href="#files">Files</a></li>
           <li><a href="#risks">Risks</a></li>
           <li><a href="#governance">Governance</a></li>
+          <li><a href="#author-details">Author Details</a></li>
           <li><a href="#meta">Metadata</a></li>
         </ul>
       </nav>
@@ -490,11 +490,7 @@ export class HTMLExporter {
           )
           .join('')}
       </div>
-      <div class="export-actions" aria-label="Data export controls">
-        <button class="btn" data-export="json" aria-label="Download JSON summary">Download JSON</button>
-        <button class="btn" data-export="authors-csv" aria-label="Download authors CSV">Authors CSV</button>
-        <button class="btn" data-export="files-csv" aria-label="Download files CSV">Files CSV</button>
-      </div>
+
       <div class="health-badges" aria-label="Health Scores">
         <div class="health-score" data-rating="${this.getHealthRating(healthPct)}" title="Repository health score">${healthPct}% <span>${this.capitalize(this.getHealthRating(healthPct))}</span></div>
         <div class="gov-score" title="Governance score">${governancePct}% Governance</div>
@@ -522,13 +518,6 @@ export class HTMLExporter {
       <button class="show-more" data-target-table="authors" hidden>Show more</button>
     </section>
 
-    <section id="author-details" class="section">
-      <h2>Detailed Author Profiles</h2>
-      <div class="author-profiles">
-        ${this.generateDetailedAuthorProfiles(report.authors.slice(0, 10))}
-      </div>
-    </section>
-
     <section id="files" class="section">
       <h2>Source Code Hotspots (Top 10)</h2>
       <div class="table-wrapper" role="region" aria-label="Top source code files table">
@@ -549,10 +538,6 @@ export class HTMLExporter {
         <li>Large Commits: ${report.risks.riskFactors.largeCommits}</li>
         <li>Recent Changes: ${report.risks.riskFactors.recentChanges}</li>
       </ul>
-      <div class="dataset-toggles">
-        <button class="dataset-toggle active" data-toggle="risk-overview">Overview</button>
-        <button class="dataset-toggle" data-toggle="risk-details">Details</button>
-      </div>
       <div id="riskFactorsChart" class="chart-container">
         <!-- Risk factors chart placeholder -->
       </div>
@@ -577,6 +562,13 @@ export class HTMLExporter {
       </div>
       <h3>Governance Recommendations</h3>
       <ul>${report.governance.recommendations.map(r => `<li>${this.escapeHtml(r)}</li>`).join('') || '<li>No governance recommendations</li>'}</ul>
+    </section>
+
+    <section id="author-details" class="section">
+      <h2>Detailed Author Profiles</h2>
+      <div class="author-profiles">
+        ${this.generateDetailedAuthorProfiles(report.authors.slice(0, 10))}
+      </div>
     </section>
 
     <section id="meta" class="section">
@@ -685,10 +677,9 @@ export class HTMLExporter {
       @media (max-width: 760px) { .main-nav ul { flex-wrap:wrap; gap:.5rem; } .branding { font-size:.85rem; } }
       @media print { .site-header, .back-to-top { display:none !important; } body { background:#fff; } .section { page-break-inside:avoid; } }
       @media (prefers-reduced-motion: reduce) { * { animation-duration:0.01ms !important; transition-duration:0.01ms !important; } }
-      .export-actions { display:flex; gap:.6rem; flex-wrap:wrap; margin:.4rem 0 1rem; }
-      .btn, .show-more { background:var(--color-primary); color:#fff; border:1px solid var(--color-primary); padding:.4rem .7rem; border-radius:4px; cursor:pointer; font-size:.7rem; font-weight:500; box-shadow:var(--shadow-sm); }
-      .btn:hover, .btn:focus, .show-more:hover, .show-more:focus { background:#004f99; }
-      :root.dark .btn, :root.dark .show-more { background:#2489ff; border-color:#2489ff; }
+      .show-more { background:var(--color-primary); color:#fff; border:1px solid var(--color-primary); padding:.4rem .7rem; border-radius:4px; cursor:pointer; font-size:.7rem; font-weight:500; box-shadow:var(--shadow-sm); }
+      .show-more:hover, .show-more:focus { background:#004f99; }
+      :root.dark .show-more { background:#2489ff; border-color:#2489ff; }
       .show-more { margin-top:.6rem; }
       .hidden-row { display:none; }
       
@@ -763,11 +754,6 @@ export class HTMLExporter {
       .largest-commit strong { color:var(--color-primary); }
       .largest-commit em { color:var(--color-text-secondary); }
       .no-data { text-align:center; color:var(--color-text-secondary); font-size:.85rem; padding:1rem; }
-      
-      /* Dataset toggle functionality */
-      .dataset-toggles { display:flex; gap:.5rem; margin:.5rem 0; }
-      .dataset-toggle { background:var(--color-surface); border:1px solid var(--color-border); padding:.3rem .6rem; border-radius:4px; cursor:pointer; font-size:.75rem; }
-      .dataset-toggle.active { background:var(--color-primary); color:#fff; }
       
       /* Responsive design for author profiles */
       @media (max-width: 768px) { 
@@ -1028,21 +1014,6 @@ export class HTMLExporter {
 
   private getBasicScript(): string {
     return `(() => {
-      const exportData = {
-        repository: {
-          totalCommits: ${JSON.stringify('TODO')},
-          totalAuthors: ${JSON.stringify('TODO')},
-          totalFiles: ${JSON.stringify('TODO')},
-          healthScore: ${JSON.stringify('TODO')},
-          governanceScore: ${JSON.stringify('TODO')},
-          busFactor: ${JSON.stringify('TODO')},
-        },
-        authors: [],
-        files: [],
-        risks: {},
-        governance: {},
-      };
-      
       const backBtn = document.getElementById('backToTop');
       const root = document.documentElement;
       const themeToggle = document.getElementById('themeToggle');
@@ -1114,51 +1085,6 @@ export class HTMLExporter {
         });
       }
       
-      function initExport(){
-        document.querySelectorAll('.export-actions button[data-export]')?.forEach(btn => {
-          btn.addEventListener('click', () => {
-            const kind = btn.getAttribute('data-export');
-            if(kind === 'json') {
-              const blob = new Blob([JSON.stringify(exportData, null, 2)], { type:'application/json' });
-              triggerDownload(blob, 'git-spark-summary.json');
-            } else if (kind === 'authors-csv') {
-              const header = 'name,commits,churn,files_changed,avg_commit_size,largest_commit\\n';
-              const rows = (exportData.authors||[]).map((a)=> [a.name,a.commits,a.churn,a.filesChanged,a.avgCommitSize,a.largestCommit].join(','));
-              const blob = new Blob([ header + rows.join('\\n') ], { type:'text/csv' });
-              triggerDownload(blob, 'git-spark-authors.csv');
-            } else if (kind === 'files-csv') {
-              const header = 'path,commits,authors,churn,riskScore\\n';
-              const rows = (exportData.files||[]).map((f)=> [f.path,f.commits,f.authors,f.churn,f.riskScore].join(','));
-              const blob = new Blob([ header + rows.join('\\n') ], { type:'text/csv' });
-              triggerDownload(blob, 'git-spark-files.csv');
-            }
-          });
-        });
-      }
-      
-      function initDatasetToggles(){
-        document.querySelectorAll('.dataset-toggles')?.forEach(container => {
-          const toggles = container.querySelectorAll('.dataset-toggle');
-          toggles.forEach(toggle => {
-            toggle.addEventListener('click', () => {
-              toggles.forEach(t => t.classList.remove('active'));
-              toggle.classList.add('active');
-              // Dataset toggle functionality can be expanded here
-            });
-          });
-        });
-      }
-      
-      function triggerDownload(blob, filename){
-        const url = URL.createObjectURL(blob); 
-        const a = document.createElement('a'); 
-        a.href = url; 
-        a.download = filename; 
-        document.body.appendChild(a); 
-        a.click(); 
-        setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 200); 
-      }
-      
       if (document.readyState === 'complete' || document.readyState === 'interactive') {
         setTimeout(() => { makeSortable(); }, 0); 
       } else {
@@ -1167,8 +1093,6 @@ export class HTMLExporter {
       
       document.addEventListener('DOMContentLoaded', () => { 
         initPagination(); 
-        initExport(); 
-        initDatasetToggles(); 
       });
     })();`;
   }

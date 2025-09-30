@@ -65,6 +65,9 @@ web_modules/
 # Yarn Integrity file
 .yarn-integrity
 
+# Auto-generated files
+src/version.ts
+
 # Git Spark demo and test output directories
 reports/
 test-output/
