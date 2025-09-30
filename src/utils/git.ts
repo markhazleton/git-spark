@@ -1,6 +1,7 @@
 import { spawn, ChildProcess } from 'child_process';
 import { GitCommand, GitError } from '../types';
 import { createLogger } from './logger';
+import { validateGitOptions } from './input-validation';
 
 const logger = createLogger('git');
 
@@ -84,14 +85,24 @@ export class GitExecutor {
       maxCount?: number;
     } = {}
   ): Promise<string> {
+    // Validate and sanitize all input parameters
+    const validation = validateGitOptions(options);
+    if (!validation.isValid) {
+      throw new GitError(
+        `Invalid parameters: ${validation.errors.join(', ')}`,
+        'log'
+      );
+    }
+    
+    const safeOptions = validation.sanitized!;
     const args = ['log', '--numstat', '--pretty=format:%H|%h|%an|%ae|%ai|%s|%b|%P', '--no-merges'];
 
-    if (options.since) args.push(`--since=${options.since}`);
-    if (options.until) args.push(`--until=${options.until}`);
-    if (options.author) args.push(`--author=${options.author}`);
-    if (options.maxCount) args.push(`--max-count=${options.maxCount}`);
-    if (options.branch) args.push(options.branch);
-    if (options.path) args.push('--', options.path);
+    if (safeOptions.since) args.push('--since', safeOptions.since);
+    if (safeOptions.until) args.push('--until', safeOptions.until);
+    if (safeOptions.author) args.push('--author', safeOptions.author);
+    if (safeOptions.maxCount) args.push('--max-count', safeOptions.maxCount.toString());
+    if (safeOptions.branch) args.push(safeOptions.branch);
+    if (safeOptions.path) args.push('--', safeOptions.path);
 
     return this.execute({ command: 'log', args: args.slice(1) });
   }
@@ -173,13 +184,23 @@ export class GitExecutor {
       author?: string;
     } = {}
   ): Promise<number> {
+    // Validate and sanitize all input parameters
+    const validation = validateGitOptions(options);
+    if (!validation.isValid) {
+      throw new GitError(
+        `Invalid parameters: ${validation.errors.join(', ')}`,
+        'rev-list'
+      );
+    }
+    
+    const safeOptions = validation.sanitized!;
     const args = ['rev-list', '--count'];
 
-    if (options.since) args.push(`--since=${options.since}`);
-    if (options.until) args.push(`--until=${options.until}`);
-    if (options.author) args.push(`--author=${options.author}`);
+    if (safeOptions.since) args.push('--since', safeOptions.since);
+    if (safeOptions.until) args.push('--until', safeOptions.until);
+    if (safeOptions.author) args.push('--author', safeOptions.author);
 
-    args.push(options.branch || 'HEAD');
+    args.push(safeOptions.branch || 'HEAD');
 
     const output = await this.execute({ command: 'rev-list', args: args.slice(1) });
     return parseInt(output.trim(), 10);
