@@ -88,12 +88,9 @@ export class GitExecutor {
     // Validate and sanitize all input parameters
     const validation = validateGitOptions(options);
     if (!validation.isValid) {
-      throw new GitError(
-        `Invalid parameters: ${validation.errors.join(', ')}`,
-        'log'
-      );
+      throw new GitError(`Invalid parameters: ${validation.errors.join(', ')}`, 'log');
     }
-    
+
     const safeOptions = validation.sanitized!;
     const args = ['log', '--numstat', '--pretty=format:%H|%h|%an|%ae|%ai|%s|%b|%P', '--no-merges'];
 
@@ -187,12 +184,9 @@ export class GitExecutor {
     // Validate and sanitize all input parameters
     const validation = validateGitOptions(options);
     if (!validation.isValid) {
-      throw new GitError(
-        `Invalid parameters: ${validation.errors.join(', ')}`,
-        'rev-list'
-      );
+      throw new GitError(`Invalid parameters: ${validation.errors.join(', ')}`, 'rev-list');
     }
-    
+
     const safeOptions = validation.sanitized!;
     const args = ['rev-list', '--count'];
 

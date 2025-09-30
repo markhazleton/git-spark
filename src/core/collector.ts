@@ -130,13 +130,13 @@ export class DataCollector {
     if (gitOptions.author) gitParams.author = gitOptions.author;
     if (gitOptions.branch) gitParams.branch = gitOptions.branch;
     if (options.path) gitParams.path = options.path;
-    
+
     const validation = validateGitOptions(gitParams);
-    
+
     if (!validation.isValid) {
       throw new Error(`Invalid Git parameters: ${validation.errors.join(', ')}`);
     }
-    
+
     const safeOptions = validation.sanitized!;
 
     // We prefix each commit with a record separator so we can split reliably even for large bodies.
@@ -147,7 +147,7 @@ export class DataCollector {
       '--numstat',
       `--pretty=format:%x1e%H%x1f%h%x1f%an%x1f%ae%x1f%ai%x1f%s%x1f%b%x1f%P`,
     ];
-    
+
     if (safeOptions.since) args.push('--since', safeOptions.since);
     if (safeOptions.until) args.push('--until', safeOptions.until);
     if (safeOptions.author) args.push('--author', safeOptions.author);

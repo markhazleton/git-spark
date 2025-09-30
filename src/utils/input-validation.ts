@@ -24,7 +24,7 @@ export function validateDateString(date: string): ValidationResult {
 
   // Remove any potentially dangerous characters
   const sanitized = date.replace(/[;&|`$(){}[\]\\]/g, '');
-  
+
   // Validate common date formats - be more strict
   const dateFormats = [
     /^\d{4}-\d{2}-\d{2}$/, // YYYY-MM-DD
@@ -34,7 +34,7 @@ export function validateDateString(date: string): ValidationResult {
   ];
 
   const isValidFormat = dateFormats.some(format => format.test(sanitized));
-  
+
   // Additional validation for specific formats
   if (sanitized.match(/^\d{4}-\d{2}-\d{2}$/)) {
     const [year, month, day] = sanitized.split('-').map(Number);
@@ -42,7 +42,7 @@ export function validateDateString(date: string): ValidationResult {
       return { isValid: false, error: 'Invalid date values' };
     }
   }
-  
+
   // Additional validation for ISO 8601 times
   if (sanitized.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/)) {
     const timePart = sanitized.split('T')[1];
@@ -51,11 +51,11 @@ export function validateDateString(date: string): ValidationResult {
       return { isValid: false, error: 'Invalid time values' };
     }
   }
-  
+
   if (!isValidFormat) {
-    return { 
-      isValid: false, 
-      error: 'Invalid date format. Use YYYY-MM-DD, ISO 8601, or relative dates like "1 week ago"' 
+    return {
+      isValid: false,
+      error: 'Invalid date format. Use YYYY-MM-DD, ISO 8601, or relative dates like "1 week ago"',
     };
   }
 
@@ -77,7 +77,7 @@ export function validateAuthorString(author: string): ValidationResult {
 
   // Remove potentially dangerous characters but preserve valid email/name characters
   const sanitized = author.replace(/[;&|`$(){}[\]\\]/g, '');
-  
+
   // Basic validation for author format (name, email, or both)
   const authorFormats = [
     /^[^<>]*$/, // Just a name (no angle brackets)
@@ -86,11 +86,11 @@ export function validateAuthorString(author: string): ValidationResult {
   ];
 
   const isValidFormat = authorFormats.some(format => format.test(sanitized));
-  
+
   if (!isValidFormat) {
-    return { 
-      isValid: false, 
-      error: 'Invalid author format. Use "Name", "email@domain.com", or "Name <email@domain.com>"' 
+    return {
+      isValid: false,
+      error: 'Invalid author format. Use "Name", "email@domain.com", or "Name <email@domain.com>"',
     };
   }
 
@@ -123,7 +123,8 @@ export function validateNumericString(value: string | number): ValidationResult 
   }
 
   const num = parseInt(value, 10);
-  if (num < 0 || num > 1000000) { // Reasonable upper limit
+  if (num < 0 || num > 1000000) {
+    // Reasonable upper limit
     return { isValid: false, error: 'Value must be between 0 and 1,000,000' };
   }
 
@@ -145,7 +146,10 @@ export function validatePathString(path: string): ValidationResult {
 
   // Check for path traversal and other suspicious patterns
   if (path.includes('..') || path.includes('//')) {
-    return { isValid: false, error: 'Invalid path: contains directory traversal or suspicious patterns' };
+    return {
+      isValid: false,
+      error: 'Invalid path: contains directory traversal or suspicious patterns',
+    };
   }
 
   // Remove potentially dangerous characters for final validation
@@ -169,22 +173,24 @@ export function validateBranchString(branch: string): ValidationResult {
 
   // Remove potentially dangerous characters
   const sanitized = branch.replace(/[;&|`$(){}[\]\\]/g, '');
-  
+
   // Git branch name validation rules
   const hasControlChars = sanitized.split('').some(char => {
     const code = char.charCodeAt(0);
     return code < 32 || code === 127; // Control characters
   });
-  
-  if (sanitized !== branch || 
-      sanitized.startsWith('-') || 
-      sanitized.includes('..') || 
-      sanitized.includes(' ') ||
-      hasControlChars ||
-      /[~^:]/.test(sanitized)) {
-    return { 
-      isValid: false, 
-      error: 'Invalid branch name: contains invalid characters or patterns' 
+
+  if (
+    sanitized !== branch ||
+    sanitized.startsWith('-') ||
+    sanitized.includes('..') ||
+    sanitized.includes(' ') ||
+    hasControlChars ||
+    /[~^:]/.test(sanitized)
+  ) {
+    return {
+      isValid: false,
+      error: 'Invalid branch name: contains invalid characters or patterns',
     };
   }
 
@@ -262,6 +268,6 @@ export function validateGitOptions(options: {
   return {
     isValid: errors.length === 0,
     ...(errors.length === 0 ? { sanitized } : {}),
-    errors
+    errors,
   };
 }
