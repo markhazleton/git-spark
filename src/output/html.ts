@@ -466,6 +466,32 @@ export class HTMLExporter {
       .size-bar-fill.medium { background:#ffc107; }
       .size-bar-fill.large { background:#fd7e14; }
       .size-bar-fill.very-large { background:#dc3545; }
+      /* Width classes for commit size bars - CSP compliant */
+      .size-bar-fill.w-0 { width: 0%; }
+      .size-bar-fill.w-1 { width: 1%; }
+      .size-bar-fill.w-2 { width: 2%; }
+      .size-bar-fill.w-3 { width: 3%; }
+      .size-bar-fill.w-4 { width: 4%; }
+      .size-bar-fill.w-5 { width: 5%; }
+      .size-bar-fill.w-10 { width: 10%; }
+      .size-bar-fill.w-15 { width: 15%; }
+      .size-bar-fill.w-20 { width: 20%; }
+      .size-bar-fill.w-25 { width: 25%; }
+      .size-bar-fill.w-30 { width: 30%; }
+      .size-bar-fill.w-35 { width: 35%; }
+      .size-bar-fill.w-40 { width: 40%; }
+      .size-bar-fill.w-45 { width: 45%; }
+      .size-bar-fill.w-50 { width: 50%; }
+      .size-bar-fill.w-55 { width: 55%; }
+      .size-bar-fill.w-60 { width: 60%; }
+      .size-bar-fill.w-65 { width: 65%; }
+      .size-bar-fill.w-70 { width: 70%; }
+      .size-bar-fill.w-75 { width: 75%; }
+      .size-bar-fill.w-80 { width: 80%; }
+      .size-bar-fill.w-85 { width: 85%; }
+      .size-bar-fill.w-90 { width: 90%; }
+      .size-bar-fill.w-95 { width: 95%; }
+      .size-bar-fill.w-100 { width: 100%; }
       .size-percentage { position:absolute; right:.5rem; top:50%; transform:translateY(-50%); font-size:.7rem; font-weight:500; color:var(--color-text); background:var(--color-surface); padding:.1rem .4rem; border-radius:10px; border:1px solid var(--color-border); }
       .size-percentage.no-data { background:transparent; border:none; color:var(--color-text-secondary); }
       
@@ -691,18 +717,49 @@ export class HTMLExporter {
       .map(bar => {
         const percentage = total > 0 ? (bar.count / total) * 100 : 0;
         const hasData = bar.count > 0;
-        const minWidth = hasData ? Math.max(percentage, 5) : 0; // Minimum 5% width for visibility when there's data
+        // Use actual percentage for width, with minimum 1% for very small but visible values
+        const barWidth = hasData ? Math.max(percentage, 1) : 0;
+        // Map percentage to CSS width class for CSP compliance
+        const widthClass = this.getWidthClass(barWidth);
 
         return `
         <div class="size-bar">
           <div class="size-label">${bar.label}</div>
           <div class="size-bar-container">
-            <div class="size-bar-fill ${bar.class}" style="width: ${minWidth}%" ${hasData ? `data-actual="${percentage.toFixed(1)}"` : ''}></div>
+            <div class="size-bar-fill ${bar.class} ${widthClass}" ${hasData ? `data-actual="${percentage.toFixed(1)}"` : ''}></div>
             <span class="size-percentage ${hasData ? 'has-data' : 'no-data'}">${bar.count} (${percentage.toFixed(1)}%)</span>
           </div>
         </div>`;
       })
       .join('');
+  }
+
+  private getWidthClass(percentage: number): string {
+    if (percentage <= 0) return 'w-0';
+    if (percentage <= 1) return 'w-1';
+    if (percentage <= 2) return 'w-2';
+    if (percentage <= 3) return 'w-3';
+    if (percentage <= 4) return 'w-4';
+    if (percentage <= 5) return 'w-5';
+    if (percentage <= 10) return 'w-10';
+    if (percentage <= 15) return 'w-15';
+    if (percentage <= 20) return 'w-20';
+    if (percentage <= 25) return 'w-25';
+    if (percentage <= 30) return 'w-30';
+    if (percentage <= 35) return 'w-35';
+    if (percentage <= 40) return 'w-40';
+    if (percentage <= 45) return 'w-45';
+    if (percentage <= 50) return 'w-50';
+    if (percentage <= 55) return 'w-55';
+    if (percentage <= 60) return 'w-60';
+    if (percentage <= 65) return 'w-65';
+    if (percentage <= 70) return 'w-70';
+    if (percentage <= 75) return 'w-75';
+    if (percentage <= 80) return 'w-80';
+    if (percentage <= 85) return 'w-85';
+    if (percentage <= 90) return 'w-90';
+    if (percentage <= 95) return 'w-95';
+    return 'w-100';
   }
 
   private capitalize(s: string): string {
