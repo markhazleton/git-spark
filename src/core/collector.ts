@@ -1,5 +1,6 @@
 import { CommitData, FileChange, GitSparkOptions, ProgressCallback } from '../types';
 import { GitExecutor } from '../utils/git';
+import { validateGitOptions } from '../utils/input-validation';
 import { createLogger } from '../utils/logger';
 // import { validateCommitMessage } from '../utils/validation';
 
@@ -122,6 +123,22 @@ export class DataCollector {
 
     // Build streaming git log command with safe delimiters
     // Use unit separator (0x1F) for fields and record separator (0x1E) for commits
+    // Validate and sanitize all input parameters to prevent command injection
+    const gitParams: Record<string, string> = {};
+    if (gitOptions.since) gitParams.since = gitOptions.since;
+    if (gitOptions.until) gitParams.until = gitOptions.until;
+    if (gitOptions.author) gitParams.author = gitOptions.author;
+    if (gitOptions.branch) gitParams.branch = gitOptions.branch;
+    if (options.path) gitParams.path = options.path;
+    
+    const validation = validateGitOptions(gitParams);
+    
+    if (!validation.isValid) {
+      throw new Error(`Invalid Git parameters: ${validation.errors.join(', ')}`);
+    }
+    
+    const safeOptions = validation.sanitized!;
+
     // We prefix each commit with a record separator so we can split reliably even for large bodies.
     // Format: \x1e<fields...> then numstat lines, then the next commit begins with \x1e
     const args: string[] = [
@@ -130,11 +147,12 @@ export class DataCollector {
       '--numstat',
       `--pretty=format:%x1e%H%x1f%h%x1f%an%x1f%ae%x1f%ai%x1f%s%x1f%b%x1f%P`,
     ];
-    if (gitOptions.since) args.push(`--since=${gitOptions.since}`);
-    if (gitOptions.until) args.push(`--until=${gitOptions.until}`);
-    if (gitOptions.author) args.push(`--author=${gitOptions.author}`);
-    if (options.path) args.push('--', options.path);
-    if (gitOptions.branch) args.push(gitOptions.branch);
+    
+    if (safeOptions.since) args.push('--since', safeOptions.since);
+    if (safeOptions.until) args.push('--until', safeOptions.until);
+    if (safeOptions.author) args.push('--author', safeOptions.author);
+    if (safeOptions.path) args.push('--', safeOptions.path);
+    if (safeOptions.branch) args.push(safeOptions.branch);
 
     const spawn = require('child_process').spawn;
     const child = spawn('git', args, { cwd: (this.git as any).repoPath });
