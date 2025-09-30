@@ -32,11 +32,11 @@
     "git-spark": "bin/git-spark.js"
   },
   "files": [
-    "dist/",
+    "dist/src/",
     "bin/",
-    "templates/",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "CHANGELOG.md"
   ],
   "scripts": {
     "build": "tsc",
@@ -51,6 +51,12 @@
     "format:check": "prettier --check \"src/**/*.ts\"",
     "clean": "rimraf dist",
     "prepublishOnly": "npm run clean && npm run build && npm run test",
+    "postpublish": "git push && git push --tags",
+    "release:patch": "npm version patch && npm publish",
+    "release:minor": "npm version minor && npm publish",
+    "release:major": "npm version major && npm publish",
+    "prepack": "npm run build",
+    "pack:test": "npm pack && tar -tf git-spark-1.0.0.tgz | head -20",
     "benchmark": "node scripts/benchmark.js",
     "docs": "typedoc src/index.ts",
     "html-report": "node scripts/html-report-runner.js",
