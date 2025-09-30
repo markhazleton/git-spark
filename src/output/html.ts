@@ -412,19 +412,46 @@ export class HTMLExporter {
     const ogSvg = `<svg xmlns='http://www.w3.org/2000/svg' width='800' height='418' viewBox='0 0 800 418' role='img'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop stop-color='%230066cc' offset='0'/><stop stop-color='%2328a745' offset='1'/></linearGradient></defs><rect width='800' height='418' fill='%231e2227'/><text x='40' y='80' font-family='Segoe UI,Roboto,Arial,sans-serif' font-size='42' fill='white'>Git Activity Report</text><text x='40' y='140' font-size='26' fill='white'>${this.escapeHtml(repoName)}</text><text x='40' y='200' font-size='20' fill='white'>Commits: ${report.repository.totalCommits}</text><text x='40' y='235' font-size='20' fill='white'>Authors: ${report.repository.totalAuthors}</text><text x='40' y='270' font-size='20' fill='white'>Health: ${healthPct}%</text><text x='40' y='305' font-size='20' fill='white'>Governance: ${governancePct}%</text><text x='40' y='350' font-size='16' fill='#bbb'>Generated ${new Date(report.metadata.generatedAt).toISOString().split('T')[0]}</text><rect x='600' y='60' width='160' height='160' rx='8' fill='url(#g)' opacity='0.8'/><text x='680' y='160' text-anchor='middle' font-size='54' fill='white' font-weight='700'>${healthPct}%</text></svg>`;
     const ogImage = 'data:image/svg+xml;base64,' + Buffer.from(ogSvg).toString('base64');
 
-    // Analysis period (based on repository stats)
+    // Analysis period (based on analysis options, not just commit range)
     let analysisPeriod = '';
     try {
-      const first = report.repository.firstCommit;
-      const last = report.repository.lastCommit;
-      if (first && last) {
-        const firstStr = first.toISOString().split('T')[0];
-        const lastStr = last.toISOString().split('T')[0];
+      const options = report.metadata.analysisOptions;
+
+      let startDate: Date;
+      let endDate: Date;
+
+      if (options.since && options.until) {
+        // Use explicit date range
+        startDate = new Date(options.since);
+        endDate = new Date(options.until);
+      } else if (options.since) {
+        // From specific date to now
+        startDate = new Date(options.since);
+        endDate = new Date();
+      } else if (options.until) {
+        // From beginning to specific date
+        startDate = report.repository.firstCommit || new Date(0);
+        endDate = new Date(options.until);
+      } else if (options.days) {
+        // Last N days from now
+        endDate = new Date();
+        startDate = new Date(endDate.getTime() - options.days * 24 * 60 * 60 * 1000);
+      } else {
+        // Fallback to actual commit range if no specific options
+        startDate = report.repository.firstCommit;
+        endDate = report.repository.lastCommit;
+      }
+
+      if (startDate && endDate) {
+        const firstStr = startDate.toISOString().split('T')[0];
+        const lastStr = endDate.toISOString().split('T')[0];
         const days = Math.max(
           1,
-          Math.ceil((last.getTime() - first.getTime()) / (1000 * 60 * 60 * 24)) + 1
+          Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1
         );
-        analysisPeriod = `Analyzed Period: ${firstStr} → ${lastStr} (${days} day${days !== 1 ? 's' : ''})`;
+        // Show commits within the analyzed period
+        const commitsInPeriod = report.repository.totalCommits;
+        analysisPeriod = `Analyzed Period: ${firstStr} → ${lastStr} (${days} day${days !== 1 ? 's' : ''}, ${commitsInPeriod} commit${commitsInPeriod !== 1 ? 's' : ''})`;
       }
     } catch {
       /* ignore */
@@ -589,6 +616,7 @@ export class HTMLExporter {
         <dt>Commit</dt><dd><code>${this.escapeHtml((report.metadata.commit || '').slice(0, 8))}</code></dd>
         <dt>Processing Time</dt><dd>${(report.metadata.processingTime / 1000).toFixed(2)}s</dd>
         <dt>Repo Path</dt><dd>${this.escapeHtml(report.metadata.repoPath)}</dd>
+        ${report.metadata.cliArguments?.length ? `<dt>CLI Arguments</dt><dd><code>${this.escapeHtml(report.metadata.cliArguments.join(' '))}</code></dd>` : ''}
         ${warnings.length ? `<dt>Warnings</dt><dd><ul class="warnings">${warnings.map(w => `<li>${this.escapeHtml(w)}</li>`).join('')}</ul></dd>` : ''}
       </dl>
     </section>

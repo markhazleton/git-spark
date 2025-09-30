@@ -20,5 +20,14 @@ process.on('unhandledRejection', (reason) => {
 setGlobalLogLevel('info');
 
 // Create and run CLI
-const program = createCLI();
-program.parse(process.argv);
+async function main() {
+  try {
+    const program = await createCLI();
+    program.parse(process.argv);
+  } catch (error) {
+    console.error('Failed to initialize CLI:', error);
+    process.exit(1);
+  }
+}
+
+main();
