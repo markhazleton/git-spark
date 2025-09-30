@@ -1,6 +1,6 @@
 {
   "name": "git-spark",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Enterprise-grade Git repository analytics and reporting tool",
   "keywords": [
     "git",
