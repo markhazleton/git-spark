@@ -57,11 +57,7 @@
     "release:major": "npm version major && npm publish",
     "prepack": "npm run build",
     "pack:test": "npm pack && tar -tf git-spark-1.0.0.tgz | head -20",
-    "benchmark": "node scripts/benchmark.js",
     "docs": "typedoc src/index.ts",
-    "html-report": "node scripts/html-report-runner.js",
-    "html-report:serve": "node scripts/html-report-runner.js --serve",
-    "html-report:heavy": "node scripts/html-report-runner.js --heavy",
     "prepare": "husky"
   },
   "dependencies": {
