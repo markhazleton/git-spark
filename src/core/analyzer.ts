@@ -1654,11 +1654,46 @@ export class GitAnalyzer {
     const branch = await this.collector.getCurrentBranch();
     let version = '0.0.0';
     try {
-      const pkgPath = resolve(process.cwd(), 'package.json');
-      const pkg = JSON.parse(readFileSync(pkgPath, 'utf-8'));
-      version = pkg.version || version;
+      // Method 1: Try to use the generated version file (most reliable)
+      try {
+        const versionModule = await import('../version');
+        version = versionModule.VERSION;
+      } catch {
+        // Method 2: Try to find git-spark package.json via require.resolve or known paths
+        let gitSparkPkgPath: string | null = null;
+
+        // Try to resolve the git-spark package
+        try {
+          const gitSparkModulePath = require.resolve('git-spark/package.json');
+          gitSparkPkgPath = gitSparkModulePath;
+        } catch {
+          // Try relative path from compiled dist
+          try {
+            gitSparkPkgPath = resolve(__dirname, '../../../package.json');
+            if (!require('fs').existsSync(gitSparkPkgPath)) {
+              gitSparkPkgPath = null;
+            }
+          } catch {
+            // Try from current working directory if we're in the git-spark repo
+            try {
+              const cwdPkgPath = resolve(process.cwd(), 'package.json');
+              const pkg = JSON.parse(readFileSync(cwdPkgPath, 'utf-8'));
+              if (pkg.name === 'git-spark') {
+                gitSparkPkgPath = cwdPkgPath;
+              }
+            } catch {
+              gitSparkPkgPath = null;
+            }
+          }
+        }
+
+        if (gitSparkPkgPath) {
+          const pkg = JSON.parse(readFileSync(gitSparkPkgPath, 'utf-8'));
+          version = pkg.version || version;
+        }
+      }
     } catch {
-      // Intentionally ignore: package.json may not be present when used as a library
+      // Intentionally ignore: use default version if package.json cannot be found
     }
 
     let gitVersion = '';

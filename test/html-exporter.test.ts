@@ -127,8 +127,9 @@ describe('HTMLExporter (Phase 3)', () => {
     expect(html).toMatch(/Commits<\/div>/);
     expect(html).toMatch(/Contributors<\/div>/);
     expect(html).toMatch(/Files Changed<\/div>/);
-    expect(html).toContain('data-export="json"');
-    expect(html).toContain('Authors CSV');
+    // Export functionality has been removed for standalone reports
+    expect(html).not.toContain('data-export="json"');
+    expect(html).not.toContain('Authors CSV');
   });
 
   it('escapes HTML in dynamic content (raw appears only in serialized JSON)', async () => {
@@ -158,7 +159,8 @@ describe('HTMLExporter (Phase 3)', () => {
     expect(html).toContain(':root {');
     expect(html).toContain('--color-primary');
     expect(html).toContain('scroll-behavior: smooth');
-    expect(html).toContain('dataset-toggles');
+    // Dataset toggles have been removed from Risk Overview section
+    expect(html).not.toContain('dataset-toggles');
   });
 
   // Test detailed author metrics and edge cases

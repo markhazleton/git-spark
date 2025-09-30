@@ -1,6 +1,6 @@
 {
   "name": "git-spark",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Enterprise-grade Git repository analytics and reporting tool",
   "keywords": [
     "git",
@@ -39,6 +39,7 @@
     "CHANGELOG.md"
   ],
   "scripts": {
+    "prebuild": "npm version patch --no-git-tag-version && node scripts/generate-version.js",
     "build": "tsc",
     "build:watch": "tsc --watch",
     "dev": "npm run build && node bin/git-spark.js",
