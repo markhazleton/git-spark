@@ -33,6 +33,8 @@ Git Spark provides actionable insights into Git repository health, team collabor
 - **Interactive Reports** - Rich, security‑hardened HTML reports with advanced visualizations
 - **Comprehensive Documentation** - Examples, tutorials, and best practices
 
+> **Note**: This is version 1.0 with core analytics features fully implemented. Advanced features like branch comparison, watch mode, and API server are planned for future releases (see [Roadmap](#-roadmap) section).
+
 ### 🖥️ Interactive HTML Report (v1.0)
 
 Enterprise-focused, accessible, and secure analytics dashboard:
@@ -80,6 +82,9 @@ git-spark health
 
 # Validate environment
 git-spark validate
+
+# Enable heavy analysis for detailed insights  
+git-spark --heavy --format=html
 ```
 
 ### Programmatic Usage
@@ -123,11 +128,9 @@ Options:
   -b, --branch <name>        analyze specific branch
   -a, --author <name>        filter by author
   -p, --path <glob>          filter by file path pattern
-  --heavy                    enable expensive analyses (coupling)
+  --heavy                    enable expensive analyses
   --log-level <level>        logging verbosity (error|warn|info|debug|verbose)
   --no-cache                 disable caching
-  --compare <branch>         compare with another branch
-  --watch                    continuous monitoring mode
   --redact-emails            redact email addresses in reports
   -h, --help                 display help for command
 ```
@@ -166,6 +169,8 @@ git-spark validate
 ### Configuration
 
 Create a `.git-spark.json` configuration file to customize analysis:
+
+> **Note**: Configuration file support is implemented for basic options. Advanced configuration features may be expanded in future versions.
 
 ```json
 {
@@ -254,8 +259,6 @@ interface GitSparkOptions {
   heavy?: boolean;             // Enable expensive analyses
   logLevel?: LogLevel;         // Log level
   noCache?: boolean;           // Disable caching
-  compare?: string;            // Comparison branch
-  watch?: boolean;             // Watch mode
 }
 ```
 
@@ -344,7 +347,7 @@ File-level risk assessment considering:
 - **Author Count** - Number of different contributors
 - **Recency** - How recently files were modified
 - **Ownership Distribution** - Knowledge concentration
-- **Temporal Coupling** - Files that change together (with --heavy option)
+- **Temporal Coupling** - Files that change together (planned for v1.1)
 
 ### Governance Scoring
 
@@ -466,7 +469,7 @@ npm run test:integration
 
 ## 🤝 Contributing
 
-We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+We welcome contributions! Please see our [GitHub Issues](https://github.com/MarkHazleton/git-spark/issues) to get started or open a new issue to discuss your ideas.
 
 ### Development Setup
 
@@ -515,14 +518,15 @@ These capabilities establish the foundation for deeper comparative and temporal 
 
 ### v1.1 (Planned)
 
-- [ ] Branch comparison and diff analysis
+- [ ] Branch comparison and diff analysis (`--compare` option)
+- [ ] Continuous monitoring mode (`--watch` option)
 - [ ] Historical trend analysis and forecasting
 - [ ] Advanced temporal coupling analysis
 - [ ] Custom risk scoring models
-- [ ] API server mode for remote analysis
 
 ### v1.2 (Future)
 
+- [ ] API server mode for remote analysis
 - [ ] Machine learning-based anomaly detection
 - [ ] Integration with code quality tools (SonarQube, CodeClimate)
 - [ ] Real-time monitoring and alerting

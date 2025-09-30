@@ -128,7 +128,8 @@ export class GitSpark {
   private async exportHTML(report: AnalysisReport, outputPath: string): Promise<void> {
     const { HTMLExporter } = await import('./output/html');
     const exporter = new HTMLExporter();
-    await exporter.export(report, outputPath);
+    const defaultConfig = GitSpark.getDefaultConfig();
+    await exporter.export(report, outputPath, defaultConfig.output.fileFiltering);
     logger.info('HTML report exported', { outputPath });
   }
 
@@ -213,6 +214,215 @@ export class GitSpark {
         includeCharts: true,
         redactEmails: false,
         theme: 'default',
+        fileFiltering: {
+          sourceCodeExtensions: [
+            // Web languages
+            '.js',
+            '.jsx',
+            '.ts',
+            '.tsx',
+            '.vue',
+            '.svelte',
+            '.css',
+            '.scss',
+            '.sass',
+            '.less',
+
+            // Backend/System languages
+            '.cs',
+            '.vb',
+            '.fs', // .NET
+            '.java',
+            '.kt',
+            '.scala', // JVM
+            '.py',
+            '.pyx', // Python
+            '.rb',
+            '.rake', // Ruby
+            '.php',
+            '.php3',
+            '.php4',
+            '.php5',
+            '.php7',
+            '.php8', // PHP
+            '.go', // Go
+            '.rs', // Rust
+            '.cpp',
+            '.cxx',
+            '.cc',
+            '.c', // C/C++
+            '.h',
+            '.hpp',
+            '.hxx', // C/C++ headers
+            '.swift', // Swift
+            '.m',
+            '.mm', // Objective-C
+            '.dart', // Dart
+            '.ex',
+            '.exs', // Elixir
+            '.erl',
+            '.hrl', // Erlang
+            '.clj',
+            '.cljs',
+            '.cljc', // Clojure
+            '.hs',
+            '.lhs', // Haskell
+            '.ml',
+            '.mli', // OCaml/F#
+            '.elm', // Elm
+            '.lua', // Lua
+            '.r',
+            '.rmd', // R
+            '.jl', // Julia
+            '.zig', // Zig
+            '.nim', // Nim
+            '.cr', // Crystal
+
+            // Database and query languages
+            '.sql',
+            '.plsql',
+            '.psql',
+
+            // Scripting
+            '.sh',
+            '.bash',
+            '.zsh',
+            '.fish',
+            '.ps1',
+            '.bat',
+            '.cmd',
+            '.pl',
+            '.pm', // Perl
+            '.tcl', // Tcl
+
+            // Graphics and markup languages (source code context)
+            '.xml',
+            '.xaml',
+            '.graphql',
+            '.gql',
+
+            // Template languages
+            '.mustache',
+            '.hbs',
+            '.handlebars',
+            '.pug',
+            '.jade',
+            '.ejs',
+            '.erb',
+            '.twig',
+            '.liquid',
+            '.jinja',
+            '.jinja2',
+          ],
+          configExtensions: [
+            // Configuration and data files
+            '.html',
+            '.htm', // Often templates/config in backends
+            '.json', // Config files, package files
+            '.yaml',
+            '.yml', // Config files
+            '.toml', // Config files
+            '.ini',
+            '.conf',
+            '.config', // Config files
+            '.env', // Environment files
+            '.properties', // Java properties
+            '.plist', // macOS property lists
+
+            // Documentation and markdown
+            '.md',
+            '.markdown',
+            '.mdx',
+            '.txt',
+            '.rst',
+            '.adoc',
+            '.asciidoc',
+
+            // Build and project files
+            '.gradle',
+            '.maven',
+            '.gemfile',
+            '.podfile',
+            '.dockerfile',
+            '.containerfile',
+          ],
+          excludePatterns: [
+            // Lock files and package files that change frequently but aren't source
+            'package-lock.json',
+            'yarn.lock',
+            'pnpm-lock.yaml',
+            'composer.lock',
+            'pipfile.lock',
+            'poetry.lock',
+            'requirements.txt',
+
+            // Build outputs and artifacts
+            '/dist/',
+            '/build/',
+            '/out/',
+            '/target/',
+            '/bin/',
+            '/obj/',
+            '.min.js',
+            '.min.css',
+            '.bundle.js',
+            '.bundle.css',
+            '.map',
+
+            // Node modules and dependencies
+            'node_modules/',
+            'vendor/',
+
+            // Configuration files that change frequently
+            '.gitignore',
+            '.gitattributes',
+            '.editorconfig',
+            '.eslintrc',
+            '.prettierrc',
+            'tsconfig.json',
+            'jsconfig.json',
+            'webpack.config',
+            'vite.config',
+            'rollup.config',
+            'babel.config',
+            '.babelrc',
+            'jest.config',
+            'vitest.config',
+            'karma.conf',
+            'cypress.config',
+            'playwright.config',
+
+            // Documentation directories
+            '/docs/',
+            'changelog',
+            'license',
+            'readme',
+
+            // IDE and editor files
+            '.vscode/',
+            '.idea/',
+            '.vs/',
+            '*.sln',
+            '*.csproj',
+            '*.vcxproj',
+            '*.proj',
+
+            // Generated files
+            '.generated.',
+            '.g.cs',
+            '.g.ts',
+            '.designer.cs',
+            'assemblyinfo.cs',
+
+            // Test files (focus on production code)
+            '.test.',
+            '.spec.',
+            '__tests__/',
+            '/tests/',
+            '/test/',
+          ],
+          maxHotspots: 10,
+        },
       },
       performance: {
         maxBuffer: 200,
@@ -252,7 +462,8 @@ export async function exportReport(
   switch (format) {
     case 'html':
       const { HTMLExporter } = await import('./output/html');
-      await new HTMLExporter().export(report, outputPath);
+      const defaultConfig = GitSpark.getDefaultConfig();
+      await new HTMLExporter().export(report, outputPath, defaultConfig.output.fileFiltering);
       break;
     case 'json':
       const { JSONExporter } = await import('./output/json');

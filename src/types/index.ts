@@ -53,6 +53,18 @@ export interface OutputConfig {
   includeCharts: boolean;
   redactEmails: boolean;
   theme: string;
+  fileFiltering: FileFilteringConfig;
+}
+
+export interface FileFilteringConfig {
+  /** Extensions considered source code files for hotspot analysis */
+  sourceCodeExtensions: string[];
+  /** Extensions considered configuration/output files (excluded from hotspots) */
+  configExtensions: string[];
+  /** File patterns to exclude from hotspot analysis */
+  excludePatterns: string[];
+  /** Maximum number of files to show in hotspots */
+  maxHotspots: number;
 }
 
 export interface PerformanceConfig {
