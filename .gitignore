@@ -153,19 +153,27 @@ dist
 *.userosscache
 *.sln.docstates
 *.userprefs
-bin/
+# Note: Don't ignore bin/ globally as it's needed for Node.js CLI binaries
+# Instead, ignore specific .NET/VS binary patterns
+**/bin/Debug/
+**/bin/Release/
+**/bin/x64/
+**/bin/x86/
+**/bin/AnyCPU/
+**/*.dll
+**/*.exe
+**/*.pdb
 obj/
+**/*.dll
+**/*.exe
+**/*.pdb
 *.cache
-*.dll
-*.exe
-*.pdb
 *.idb
 *.ilk
 *.meta
 *.obj
 *.iobj
 *.pch
-*.pdb
 *.ipdb
 *.pgc
 *.pgd
