@@ -18,7 +18,17 @@ export class CSVExporter {
 
       logger.info('CSV reports exported successfully', { outputPath });
     } catch (error) {
-      logger.error('Failed to export CSV reports', { error, outputPath });
+      logger.error('Failed to export CSV reports', {
+        error:
+          error instanceof Error
+            ? {
+                message: error.message,
+                name: error.name,
+                stack: error.stack,
+              }
+            : error,
+        outputPath,
+      });
       throw error;
     }
   }

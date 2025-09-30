@@ -30,6 +30,7 @@ export class GitExecutor {
         stdout += data.toString();
         if (stdout.length > options.maxBuffer) {
           child.kill();
+          clearTimeout(timeoutId);
           reject(new GitError('Output buffer exceeded maximum size', args.join(' ')));
         }
       });

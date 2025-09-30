@@ -57,7 +57,16 @@ export class HTMLExporter {
 
       logger.info('HTML report exported successfully', { path: fullPath });
     } catch (error) {
-      logger.error('Failed to export HTML report', { error });
+      logger.error('Failed to export HTML report', {
+        error:
+          error instanceof Error
+            ? {
+                message: error.message,
+                name: error.name,
+                stack: error.stack,
+              }
+            : error,
+      });
       throw error;
     }
   }
