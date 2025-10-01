@@ -122,15 +122,6 @@ ${files
 - Large commits: ${risks.riskFactors.largeCommits}
 - Recently changed files: ${risks.riskFactors.recentChanges}
 
-${
-  risks.recommendations.length > 0
-    ? `
-### Recommendations
-${risks.recommendations.map(rec => `- ${rec}`).join('\n')}
-`
-    : ''
-}
-
 ## 📋 Governance Analysis
 
 **Governance Score: ${Math.round(governance.score * 100)}%**
@@ -142,14 +133,7 @@ ${risks.recommendations.map(rec => `- ${rec}`).join('\n')}
 - **Revert Commits:** ${governance.revertCommits}
 - **Short Messages:** ${governance.shortMessages}
 
-${
-  governance.recommendations.length > 0
-    ? `
-### Recommendations
-${governance.recommendations.map(rec => `- ${rec}`).join('\n')}
-`
-    : ''
-}
+
 
 ---
 

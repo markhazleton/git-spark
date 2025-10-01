@@ -261,58 +261,27 @@ describe('exportReport function', () => {
       overall: 78,
       collaboration: {
         score: 80,
-        reviewWorkflowParticipation: 65,
         crossTeamInteraction: 72,
         knowledgeDistribution: 68,
-        coAuthorshipRate: 15,
         fileOwnershipDistribution: {
           exclusive: 40,
           shared: 45,
           collaborative: 15,
         },
         limitations: {
-          reviewerDataAvailable: false,
-          estimationMethod: 'merge-commit-analysis' as const,
-          dataSource: 'git-commits-only' as const,
-          platformSpecific: {
-            detected: 'github',
-            accuracy: 'high' as const,
-            notes: 'GitHub-style merge patterns detected',
-          },
-          knownLimitations: ['Cannot identify actual reviewers'],
+          dataSource: 'git-file-authorship-only' as const,
+          knownLimitations: ['Based only on Git commit authorship, not actual collaboration'],
         },
       },
       consistency: {
         score: 75,
         velocityConsistency: 70,
-        busFactor: 2,
+        busFactorPercentage: 35,
         activeContributorRatio: 85,
         deliveryCadence: 75,
         contributionDistribution: {
           giniCoefficient: 0.3,
           topContributorDominance: 45,
-        },
-      },
-      quality: {
-        score: 82,
-        teamGovernanceScore: 75,
-        refactoringActivity: 12,
-        bugFixRatio: 25,
-        documentationContribution: 18,
-        mergeWorkflowUsage: 65,
-        testFileDetection: {
-          hasTestFiles: true,
-          testFiles: 5,
-          testFileToSourceRatio: 28,
-          limitations: {
-            note: 'Detects test files only, not actual test execution coverage',
-            recommendedTools: ['Jest', 'nyc', 'c8'],
-          },
-        },
-        limitations: {
-          qualityMeasurement: 'pattern-based-estimation',
-          testCoverageNote: 'File detection only, not execution coverage',
-          knownLimitations: ['Cannot measure actual test execution coverage'],
         },
       },
       workLifeBalance: {
