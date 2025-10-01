@@ -13,6 +13,8 @@ Git Spark provides transparent, honest insights into Git repository health, team
 ### 📊 Comprehensive Analytics
 
 - **Repository Health Scoring** - Overall health assessment with actionable recommendations
+- **Daily Activity Trends** - Comprehensive day-by-day analysis including all days in the specified range (not just active days)
+- **GitHub-style Contributions Calendar** - Visual activity heatmap with GitHub-style color coding and intensity levels
 - **Team Organization Analysis** - File ownership patterns, developer specialization, and team structure
 - **Code Quality Metrics** - Risk assessment, hotspot identification, and governance scoring
 - **Timeline Visualization** - Activity patterns and trend analysis
@@ -35,13 +37,15 @@ Git Spark provides transparent, honest insights into Git repository health, team
 - **Interactive Reports** - Rich, security‑hardened HTML reports with advanced visualizations
 - **Comprehensive Documentation** - Examples, tutorials, and best practices
 
-> **Note**: This is version 1.0 with core analytics features fully implemented. Advanced features like branch comparison, watch mode, and API server are planned for future releases (see [Roadmap](#-roadmap) section).
+> **Current Version**: Git Spark v1.0.90 includes comprehensive daily trends analysis and GitHub-style contributions calendar alongside all core analytics features. Advanced features like branch comparison, watch mode, and API server are planned for future releases (see [Roadmap](#-roadmap) section).
 
 ### 🖥️ Interactive HTML Report (v1.0)
 
 Enterprise-focused, accessible, and secure analytics dashboard:
 
 - **Multi‑Series Timeline** – Commits, churn (lines changed), and active authors with dataset toggles
+- **Daily Activity Trends** – Comprehensive daily analysis showing all days in the specified range with activity summaries
+- **GitHub-style Contributions Calendar** – Visual activity heatmap with color-coded intensity levels and interactive tooltips
 - **Risk Factors Bar Chart** – Visual breakdown of churn, recency, ownership, coupling potential, and knowledge concentration inputs
 - **Governance Radar Chart** – Conventional commit adherence, traceability, message quality, WIP/revert penalties
 - **Dark Mode Toggle (Persistent)** – Remembers preference via localStorage; charts dynamically re-theme
@@ -88,6 +92,9 @@ git-spark validate
 
 # Enable heavy analysis for detailed insights  
 git-spark --heavy --format=html
+
+# Analyze with comprehensive daily trends (shows all days, not just active days)
+git-spark --days=60 --format=html --output=./reports
 ```
 
 ### Programmatic Usage
@@ -167,6 +174,22 @@ Environment and requirements validation:
 
 ```bash
 git-spark validate
+```
+
+#### Daily Trends Analysis Examples
+
+```bash
+# Analyze last 7 days with comprehensive daily trends
+git-spark --days=7 --format=html
+
+# Extended 60-day analysis with contributions calendar
+git-spark --days=60 --format=html --output=./reports
+
+# Generate JSON with complete daily trends data for external processing
+git-spark --days=30 --format=json --output=./data
+
+# Heavy analysis with all features including detailed daily patterns
+git-spark --days=30 --heavy --format=html
 ```
 
 ### Configuration
@@ -331,6 +354,8 @@ Interactive reports with transparent analytics and comprehensive limitations doc
 
 - Executive summary with health rating and data source explanations
 - Interactive charts and visualizations (multi‑series timelines, risk & governance analytics)
+- **Daily Activity Trends** - Comprehensive day-by-day analysis covering all days in the specified range (including zero-activity days)
+- **GitHub-style Contributions Calendar** - Interactive activity heatmap with color-coded intensity levels and hover tooltips
 - Detailed author and file analysis with clear metric definitions
 - Risk assessment and recommendations with calculation transparency
 - Governance scoring with methodology explanations
@@ -373,7 +398,7 @@ Spreadsheet-compatible format with separate files for:
 
 - `authors.csv` - Author statistics and metrics
 - `files.csv` - File-level analysis and risk scores
-- `timeline.csv` - Daily activity and trends
+- `timeline.csv` - Daily activity and trends (includes all days in analysis period)
 
 ## 🔍 Analysis Details
 
@@ -385,6 +410,19 @@ Composite metric based on:
 - **Author Diversity** - Distributed knowledge and contributions
 - **Commit Size Distribution** - Balanced change patterns
 - **Governance Adherence** - Code quality and standards compliance
+
+### Daily Activity Trends
+
+Comprehensive daily analysis providing:
+
+- **Complete Date Range Coverage** - Shows all days in the specified period, including days with zero activity
+- **Activity Metrics** - Commits, authors, file changes, and code volume per day
+- **GitHub-style Contributions Calendar** - Visual heatmap with intensity levels (0-4) matching GitHub's color scheme
+- **Interactive Tooltips** - Hover to see exact commit counts and dates
+- **Week-based Organization** - Calendar view organized by weeks for easy pattern recognition
+- **JSON Export Support** - All daily trends data available for external processing and analysis
+
+> **Enhanced Coverage**: Unlike traditional analytics that only show active days, Git Spark's daily trends include every day in your analysis period, providing complete visibility into work patterns and identifying both active and quiet periods.
 
 ### Risk Analysis
 
@@ -555,6 +593,8 @@ npm run dev
 - **Transparent Team Metrics**: Honest metric terminology with comprehensive limitations documentation
 - **Analytical Integrity Framework**: Clear separation between what Git data can and cannot provide
 - **Enhanced User Education**: Comprehensive warnings and guidance about metric interpretation
+- **Daily Activity Trends**: Comprehensive daily analysis showing all days in specified range (including zero-activity days)
+- **GitHub-style Contributions Calendar**: Interactive activity heatmap with color-coded intensity levels and tooltips
 - Secure HTML report with strict CSP + SRI
 - Multi‑series activity timeline (commits / churn / authors)
 - Risk factor aggregation & visualization

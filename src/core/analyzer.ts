@@ -18,6 +18,7 @@ import {
   TeamInsights,
 } from '../types';
 import { DataCollector } from './collector';
+import { DailyTrendsAnalyzer } from './daily-trends';
 import { createLogger } from '../utils/logger';
 import { validateCommitMessage, sanitizeEmail } from '../utils/validation';
 import { readFileSync } from 'fs';
@@ -157,6 +158,11 @@ export class GitAnalyzer {
     this.reportProgress('Calculating team score', 85, 100);
     const teamScore = this.calculateTeamScore(commits, authors, files);
 
+    // Calculate daily trends if there are commits
+    this.reportProgress('Analyzing daily trends', 88, 100);
+    const dailyTrends =
+      commits.length > 0 ? await this.analyzeDailyTrends(commits, options) : undefined;
+
     this.reportProgress('Generating report', 90, 100);
 
     // Generate metadata
@@ -179,6 +185,7 @@ export class GitAnalyzer {
       governance,
       teamScore,
       summary,
+      dailyTrends,
     };
 
     // Attach any warnings emitted during collection for downstream exporters (HTML etc.)
@@ -2131,5 +2138,53 @@ export class GitAnalyzer {
       coveragePercentage,
       note: 'Measures daily contributor diversity, not vacation coverage or work scheduling',
     };
+  }
+
+  /**
+   * Analyze daily trends from commit data
+   *
+   * Computes comprehensive daily trending metrics exclusively from Git commit data.
+   * All metrics are objective, observable patterns with no speculation about
+   * team performance, code quality, or individual productivity.
+   *
+   * @param commits - All commits to analyze for trends
+   * @returns Daily trends data or undefined if no commits
+   */
+  private async analyzeDailyTrends(commits: CommitData[], options: GitSparkOptions) {
+    if (commits.length === 0) {
+      return undefined;
+    }
+
+    logger.info('Analyzing daily trends', { totalCommits: commits.length });
+
+    // Create trends analyzer with default timezone (could be configurable)
+    const trendsAnalyzer = new DailyTrendsAnalyzer('America/Chicago', {
+      start: 8, // 8am
+      end: 18, // 6pm
+      weekdays: true,
+    });
+
+    // Calculate analysis range if days is specified
+    let analysisRange: { startDate: Date; endDate: Date } | undefined;
+    if (options.days && options.days > 0) {
+      const endDate = new Date();
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - options.days + 1); // +1 to include today
+      analysisRange = { startDate, endDate };
+    }
+
+    // Analyze trends with progress reporting
+    const trendsData = await trendsAnalyzer.analyzeDailyTrends(
+      commits,
+      this.progressCallback,
+      analysisRange
+    );
+
+    logger.info('Daily trends analysis completed', {
+      daysAnalyzed: trendsData.analysisMetadata.activeDays,
+      totalDays: trendsData.analysisMetadata.totalDays,
+    });
+
+    return trendsData;
   }
 }

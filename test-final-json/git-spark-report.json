@@ -1,0 +1,3102 @@
+{
+  "metadata": {
+    "generatedAt": "2025-10-01T03:20:36.043Z",
+    "version": "1.0.89",
+    "repoPath": "C:\\GitHub\\MarkHazleton\\git-spark",
+    "analysisOptions": {
+      "repoPath": "C:\\GitHub\\MarkHazleton\\git-spark",
+      "since": "2025-09-24",
+      "days": 7,
+      "format": "json",
+      "output": "test-final-json",
+      "logLevel": "info",
+      "noCache": false
+    },
+    "processingTime": 220,
+    "gitVersion": "git version 2.50.1.windows.1",
+    "commit": "0cf5add88f95569bc2c78849c0d9b4f803ec5abb",
+    "branch": "main",
+    "cliArguments": [
+      "--days",
+      "7",
+      "--format",
+      "json",
+      "--output",
+      "test-final-json"
+    ],
+    "warnings": []
+  },
+  "repository": {
+    "totalCommits": 36,
+    "totalAuthors": 1,
+    "totalFiles": 118,
+    "totalChurn": 50767,
+    "firstCommit": "2025-09-29T14:12:08.000Z",
+    "lastCommit": "2025-10-01T00:21:47.000Z",
+    "activeDays": 2,
+    "avgCommitsPerDay": 18,
+    "languages": {
+      "JSON": 5,
+      "Markdown": 50,
+      "YAML": 3,
+      "Git": 1,
+      "Other": 5,
+      "JavaScript": 2,
+      "PowerShell": 1,
+      "TypeScript": 27
+    },
+    "busFactor": 1,
+    "healthScore": 0.5641887117904886,
+    "governanceScore": 0.505555555555556
+  },
+  "timeline": [
+    {
+      "date": "2025-09-29T00:00:00.000Z",
+      "commits": 18,
+      "authors": 1,
+      "churn": 27278,
+      "files": 123
+    },
+    {
+      "date": "2025-09-30T00:00:00.000Z",
+      "commits": 17,
+      "authors": 1,
+      "churn": 19150,
+      "files": 130
+    },
+    {
+      "date": "2025-10-01T00:00:00.000Z",
+      "commits": 1,
+      "authors": 1,
+      "churn": 4339,
+      "files": 31
+    }
+  ],
+  "authors": [
+    {
+      "name": "Mark Hazleton",
+      "email": "mark.hazleton@controlorigins.com",
+      "commits": 36,
+      "insertions": 40167,
+      "deletions": 10600,
+      "churn": 50767,
+      "filesChanged": 284,
+      "firstCommit": "2025-09-29T14:12:08.000Z",
+      "lastCommit": "2025-10-01T00:21:47.000Z",
+      "activeDays": 2,
+      "avgCommitSize": 1410.1944444444443,
+      "largestCommit": 12596,
+      "workPatterns": {
+        "hourDistribution": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          2,
+          2,
+          4,
+          4,
+          4,
+          2,
+          3,
+          3,
+          0,
+          2,
+          1,
+          2,
+          4,
+          3,
+          0,
+          0,
+          0,
+          0
+        ],
+        "dayDistribution": [
+          0,
+          20,
+          16,
+          0,
+          0,
+          0,
+          0
+        ],
+        "burstDays": 0,
+        "afterHours": 7,
+        "weekends": 0
+      },
+      "detailed": {
+        "contribution": {
+          "totalCommits": 36,
+          "commitFrequency": 18,
+          "activeDaysCount": 2,
+          "longestStreak": 2,
+          "commitSizeDistribution": {
+            "micro": 5,
+            "small": 2,
+            "medium": 6,
+            "large": 6,
+            "veryLarge": 17
+          },
+          "largestCommitDetails": {
+            "size": 12596,
+            "hash": "84a54f4ebd37403e27576eecae355a81b31d5c1b",
+            "date": "2025-09-29T15:17:34.000Z",
+            "message": "feat: implement HTML, JSON, and Markdown exporters for analysis reports",
+            "filesCount": 25
+          },
+          "codeVolumeMetrics": {
+            "totalLinesChanged": 50767,
+            "netChange": 29567,
+            "churnTotal": 50767,
+            "avgCommitSize": 1410.1944444444443
+          },
+          "filesAndScope": {
+            "uniqueFiles": 118,
+            "avgFilesPerCommit": 7.888888888888889,
+            "fileDiversityScore": 100,
+            "mostModifiedFiles": [
+              {
+                "path": "package.json",
+                "commits": 17,
+                "percentage": 47.22222222222222
+              },
+              {
+                "path": "src/output/html.ts",
+                "commits": 15,
+                "percentage": 41.66666666666667
+              },
+              {
+                "path": "package-lock.json",
+                "commits": 13,
+                "percentage": 36.11111111111111
+              },
+              {
+                "path": "src/core/analyzer.ts",
+                "commits": 12,
+                "percentage": 33.33333333333333
+              },
+              {
+                "path": "reports/git-spark-report.html",
+                "commits": 12,
+                "percentage": 33.33333333333333
+              }
+            ],
+            "directoryFocus": [
+              {
+                "directory": "src",
+                "percentage": 202.77777777777777
+              },
+              {
+                "directory": "copilot",
+                "percentage": 133.33333333333331
+              },
+              {
+                "directory": "test",
+                "percentage": 91.66666666666666
+              },
+              {
+                "directory": "package.json",
+                "percentage": 47.22222222222222
+              },
+              {
+                "directory": "scripts",
+                "percentage": 41.66666666666667
+              },
+              {
+                "directory": "reports",
+                "percentage": 38.88888888888889
+              },
+              {
+                "directory": "package-lock.json",
+                "percentage": 36.11111111111111
+              },
+              {
+                "directory": "test-output",
+                "percentage": 33.33333333333333
+              },
+              {
+                "directory": "README.md",
+                "percentage": 16.666666666666664
+              },
+              {
+                "directory": ".github",
+                "percentage": 13.88888888888889
+              },
+              {
+                "directory": ".gitignore",
+                "percentage": 13.88888888888889
+              },
+              {
+                "directory": "custom-output",
+                "percentage": 13.88888888888889
+              },
+              {
+                "directory": "demo-proportional-bars",
+                "percentage": 11.11111111111111
+              },
+              {
+                "directory": "test-30-days",
+                "percentage": 5.555555555555555
+              },
+              {
+                "directory": "test-analysis-period",
+                "percentage": 5.555555555555555
+              },
+              {
+                "directory": "test-date-range",
+                "percentage": 5.555555555555555
+              },
+              {
+                "directory": "test-final-version",
+                "percentage": 5.555555555555555
+              },
+              {
+                "directory": "test-main-command",
+                "percentage": 5.555555555555555
+              },
+              {
+                "directory": "bin",
+                "percentage": 5.555555555555555
+              },
+              {
+                "directory": "_rawlog.txt",
+                "percentage": 5.555555555555555
+              },
+              {
+                "directory": "cli-test-reports",
+                "percentage": 5.555555555555555
+              },
+              {
+                "directory": "demo-proportional-bars.js",
+                "percentage": 5.555555555555555
+              },
+              {
+                "directory": "eslint.config.js",
+                "percentage": 5.555555555555555
+              },
+              {
+                "directory": "eslint.config.mjs",
+                "percentage": 5.555555555555555
+              },
+              {
+                "directory": "generate-demo-report.ts",
+                "percentage": 5.555555555555555
+              },
+              {
+                "directory": "tsconfig.json",
+                "percentage": 5.555555555555555
+              },
+              {
+                "directory": "CHANGELOG.md",
+                "percentage": 2.7777777777777777
+              },
+              {
+                "directory": ".husky",
+                "percentage": 2.7777777777777777
+              },
+              {
+                "directory": "eslint.config.cjs",
+                "percentage": 2.7777777777777777
+              },
+              {
+                "directory": "CLI-IMPLEMENTATION-COMPLETE.md",
+                "percentage": 2.7777777777777777
+              },
+              {
+                "directory": ".git-spark.json",
+                "percentage": 2.7777777777777777
+              },
+              {
+                "directory": ".prettierrc",
+                "percentage": 2.7777777777777777
+              },
+              {
+                "directory": ".vscode",
+                "percentage": 2.7777777777777777
+              },
+              {
+                "directory": "LICENSE",
+                "percentage": 2.7777777777777777
+              }
+            ],
+            "sourceVsPublishedRatio": {
+              "sourceCommits": 23,
+              "sourceLines": {
+                "insertions": 12418,
+                "deletions": 5699
+              },
+              "publishedCommits": 13,
+              "publishedLines": {
+                "insertions": 27749,
+                "deletions": 4901
+              }
+            }
+          }
+        },
+        "collaboration": {
+          "coAuthorshipRate": 0,
+          "coAuthors": [],
+          "prIntegrationRate": 0,
+          "prBreakdown": {
+            "mergeCommits": 0,
+            "squashMerges": 0,
+            "directCommits": 36
+          },
+          "fileOwnership": {
+            "exclusiveFiles": 118,
+            "sharedFiles": 0,
+            "highTrafficFiles": 0,
+            "ownershipStyle": "specialized"
+          },
+          "knowledgeSharingIndex": 0
+        },
+        "workPattern": {
+          "commitTiming": {
+            "mostActiveDay": {
+              "day": "Monday",
+              "percentage": 55.55555555555556
+            },
+            "mostActiveTime": {
+              "timeRange": "Morning (9am-12pm)",
+              "percentage": 27.77777777777778
+            },
+            "workPattern": "weekday-focused",
+            "afterHoursRate": 19.444444444444446
+          },
+          "temporalPatterns": {
+            "burstDetection": [],
+            "longestGap": {
+              "days": 0,
+              "startDate": "2025-10-01T03:20:35.965Z",
+              "endDate": "2025-10-01T03:20:35.965Z"
+            },
+            "averageGap": 0,
+            "consistencyScore": 100,
+            "velocityTrend": "decreasing"
+          },
+          "workLifeBalance": {
+            "afterHoursPercentage": 19.444444444444446,
+            "weekendPercentage": 0,
+            "lateNightCommits": 2,
+            "vacationBreaks": []
+          }
+        },
+        "quality": {
+          "codeQuality": {
+            "revertRate": 0,
+            "fixToFeatureRatio": 0.125,
+            "wipCommitFrequency": 0,
+            "refactoringActivity": {
+              "refactorCommits": 1,
+              "linesRefactored": 90,
+              "percentage": 2.7777777777777777
+            },
+            "documentationContributions": {
+              "docCommits": 6,
+              "docLinesChanged": 16131,
+              "percentage": 16.666666666666664
+            }
+          },
+          "riskAndOwnership": {
+            "highRiskFileContributions": 0,
+            "ownershipDominance": 0,
+            "hotspotInvolvement": 0,
+            "legacyCodeInteraction": 0
+          }
+        },
+        "comparative": {
+          "teamContext": {
+            "relativeContribution": 100,
+            "commitRank": 1,
+            "linesChangedRank": 1,
+            "filesRank": 1,
+            "messageQualityRank": 0,
+            "percentileRankings": {
+              "commits": 100,
+              "linesChanged": 100,
+              "filesTouched": 100,
+              "messageQuality": 200
+            }
+          },
+          "specialization": {
+            "focusIndex": 0,
+            "specializationLevel": "generalist"
+          },
+          "growth": {
+            "periodOverPeriodGrowth": {
+              "commits": 0,
+              "linesChanged": 0,
+              "filesTouched": 0,
+              "messageQuality": 0
+            },
+            "complexityTrajectory": {
+              "avgLinesPerCommitGrowth": 0,
+              "avgFilesPerCommitGrowth": 0
+            },
+            "technologyBreadth": {
+              "languages": [],
+              "diversityScore": 0,
+              "trend": "stable"
+            }
+          }
+        },
+        "insights": {
+          "positivePatterns": [],
+          "growthAreas": [],
+          "neutralObservations": [],
+          "concerningPatterns": [],
+          "automatedInsights": {
+            "workLifeBalance": "healthy",
+            "collaboration": "moderate",
+            "codeQuality": "good",
+            "consistency": "consistent",
+            "expertise": "mid-level"
+          },
+          "recommendations": []
+        }
+      }
+    }
+  ],
+  "files": [
+    {
+      "path": "package-lock.json",
+      "commits": 13,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 7796,
+      "insertions": 7712,
+      "deletions": 84,
+      "firstChange": "2025-09-29T15:17:34.000Z",
+      "lastChange": "2025-10-01T00:21:47.000Z",
+      "riskScore": 0.5575,
+      "hotspotScore": 0.39775,
+      "ownership": {
+        "Mark Hazleton": 13
+      }
+    },
+    {
+      "path": "reports/git-spark-report.html",
+      "commits": 12,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 3952,
+      "insertions": 1976,
+      "deletions": 1976,
+      "firstChange": "2025-09-29T15:17:34.000Z",
+      "lastChange": "2025-09-30T11:42:41.000Z",
+      "riskScore": 0.48164000000000007,
+      "hotspotScore": 0.38975,
+      "ownership": {
+        "Mark Hazleton": 12
+      }
+    },
+    {
+      "path": "src/output/html.ts",
+      "commits": 15,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 3223,
+      "insertions": 2504,
+      "deletions": 719,
+      "firstChange": "2025-09-29T15:17:34.000Z",
+      "lastChange": "2025-10-01T00:21:47.000Z",
+      "riskScore": 0.43811,
+      "hotspotScore": 0.41375,
+      "ownership": {
+        "Mark Hazleton": 15
+      },
+      "language": "TypeScript"
+    },
+    {
+      "path": "src/core/analyzer.ts",
+      "commits": 12,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 3153,
+      "insertions": 2644,
+      "deletions": 509,
+      "firstChange": "2025-09-29T15:17:34.000Z",
+      "lastChange": "2025-10-01T00:21:47.000Z",
+      "riskScore": 0.42571000000000003,
+      "hotspotScore": 0.38975,
+      "ownership": {
+        "Mark Hazleton": 12
+      },
+      "language": "TypeScript"
+    },
+    {
+      "path": "test-output/git-spark-report.html",
+      "commits": 7,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 1894,
+      "insertions": 947,
+      "deletions": 947,
+      "firstChange": "2025-09-29T15:50:02.000Z",
+      "lastChange": "2025-09-30T11:42:41.000Z",
+      "riskScore": 0.32508000000000004,
+      "hotspotScore": 0.25758333333333333,
+      "ownership": {
+        "Mark Hazleton": 7
+      }
+    },
+    {
+      "path": "test/html-exporter.test.ts",
+      "commits": 9,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 1236,
+      "insertions": 876,
+      "deletions": 360,
+      "firstChange": "2025-09-29T15:50:02.000Z",
+      "lastChange": "2025-10-01T00:21:47.000Z",
+      "riskScore": 0.28402,
+      "hotspotScore": 0.21875,
+      "ownership": {
+        "Mark Hazleton": 9
+      },
+      "language": "TypeScript"
+    },
+    {
+      "path": "demo-proportional-bars/git-spark-report.html",
+      "commits": 4,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 1214,
+      "insertions": 607,
+      "deletions": 607,
+      "firstChange": "2025-09-30T00:17:49.000Z",
+      "lastChange": "2025-09-30T11:42:41.000Z",
+      "riskScore": 0.26998,
+      "hotspotScore": 0.17691666666666667,
+      "ownership": {
+        "Mark Hazleton": 4
+      }
+    },
+    {
+      "path": "test-30-days/git-spark-report.html",
+      "commits": 2,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 1194,
+      "insertions": 597,
+      "deletions": 597,
+      "firstChange": "2025-09-30T16:57:00.000Z",
+      "lastChange": "2025-09-30T18:56:28.000Z",
+      "riskScore": 0.26358000000000004,
+      "hotspotScore": 0.15925,
+      "ownership": {
+        "Mark Hazleton": 2
+      }
+    },
+    {
+      "path": "test-analysis-period/git-spark-report.html",
+      "commits": 2,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 1194,
+      "insertions": 597,
+      "deletions": 597,
+      "firstChange": "2025-09-30T16:57:00.000Z",
+      "lastChange": "2025-09-30T18:56:28.000Z",
+      "riskScore": 0.26358000000000004,
+      "hotspotScore": 0.15925,
+      "ownership": {
+        "Mark Hazleton": 2
+      }
+    },
+    {
+      "path": "test-date-range/git-spark-report.html",
+      "commits": 2,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 1194,
+      "insertions": 597,
+      "deletions": 597,
+      "firstChange": "2025-09-30T16:57:00.000Z",
+      "lastChange": "2025-09-30T18:56:28.000Z",
+      "riskScore": 0.26358000000000004,
+      "hotspotScore": 0.15925,
+      "ownership": {
+        "Mark Hazleton": 2
+      }
+    },
+    {
+      "path": "test-final-version/git-spark-report.html",
+      "commits": 2,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 1194,
+      "insertions": 597,
+      "deletions": 597,
+      "firstChange": "2025-09-30T16:57:00.000Z",
+      "lastChange": "2025-09-30T18:56:28.000Z",
+      "riskScore": 0.26358000000000004,
+      "hotspotScore": 0.15925,
+      "ownership": {
+        "Mark Hazleton": 2
+      }
+    },
+    {
+      "path": "test-main-command/git-spark-report.html",
+      "commits": 2,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 1194,
+      "insertions": 597,
+      "deletions": 597,
+      "firstChange": "2025-09-30T16:57:00.000Z",
+      "lastChange": "2025-09-30T18:56:28.000Z",
+      "riskScore": 0.26358000000000004,
+      "hotspotScore": 0.15925,
+      "ownership": {
+        "Mark Hazleton": 2
+      }
+    },
+    {
+      "path": "scripts/cli-html-demo.ts",
+      "commits": 3,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 776,
+      "insertions": 388,
+      "deletions": 388,
+      "firstChange": "2025-09-29T15:50:02.000Z",
+      "lastChange": "2025-09-30T11:42:41.000Z",
+      "riskScore": 0.23682,
+      "hotspotScore": 0.13241666666666668,
+      "ownership": {
+        "Mark Hazleton": 3
+      },
+      "language": "TypeScript"
+    },
+    {
+      "path": "src/core/collector.ts",
+      "commits": 8,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 757,
+      "insertions": 603,
+      "deletions": 154,
+      "firstChange": "2025-09-29T15:17:34.000Z",
+      "lastChange": "2025-09-30T21:07:31.000Z",
+      "riskScore": 0.24799,
+      "hotspotScore": 0.17083333333333334,
+      "ownership": {
+        "Mark Hazleton": 8
+      },
+      "language": "TypeScript"
+    },
+    {
+      "path": "src/cli/commands.ts",
+      "commits": 7,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 726,
+      "insertions": 678,
+      "deletions": 48,
+      "firstChange": "2025-09-29T15:17:34.000Z",
+      "lastChange": "2025-10-01T00:21:47.000Z",
+      "riskScore": 0.24331999999999998,
+      "hotspotScore": 0.16025,
+      "ownership": {
+        "Mark Hazleton": 7
+      },
+      "language": "TypeScript"
+    },
+    {
+      "path": "README.md",
+      "commits": 6,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 700,
+      "insertions": 659,
+      "deletions": 41,
+      "firstChange": "2025-09-29T14:12:08.000Z",
+      "lastChange": "2025-10-01T00:21:47.000Z",
+      "riskScore": 0.239,
+      "hotspotScore": 0.15008333333333335,
+      "ownership": {
+        "Mark Hazleton": 6
+      }
+    },
+    {
+      "path": "src/types/index.ts",
+      "commits": 7,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 662,
+      "insertions": 633,
+      "deletions": 29,
+      "firstChange": "2025-09-29T15:17:34.000Z",
+      "lastChange": "2025-10-01T00:21:47.000Z",
+      "riskScore": 0.23884,
+      "hotspotScore": 0.15491666666666667,
+      "ownership": {
+        "Mark Hazleton": 7
+      },
+      "language": "TypeScript"
+    },
+    {
+      "path": "test/index.test.ts",
+      "commits": 5,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 523,
+      "insertions": 470,
+      "deletions": 53,
+      "firstChange": "2025-09-29T15:17:34.000Z",
+      "lastChange": "2025-10-01T00:21:47.000Z",
+      "riskScore": 0.22410999999999998,
+      "hotspotScore": 0.12733333333333335,
+      "ownership": {
+        "Mark Hazleton": 5
+      },
+      "language": "TypeScript"
+    },
+    {
+      "path": "test/console-exporter.test.ts",
+      "commits": 3,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 515,
+      "insertions": 481,
+      "deletions": 34,
+      "firstChange": "2025-09-30T14:20:51.000Z",
+      "lastChange": "2025-10-01T00:21:47.000Z",
+      "riskScore": 0.21855,
+      "hotspotScore": 0.11066666666666666,
+      "ownership": {
+        "Mark Hazleton": 3
+      },
+      "language": "TypeScript"
+    },
+    {
+      "path": "test/markdown-exporter.test.ts",
+      "commits": 2,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 504,
+      "insertions": 485,
+      "deletions": 19,
+      "firstChange": "2025-09-29T23:25:49.000Z",
+      "lastChange": "2025-10-01T00:21:47.000Z",
+      "riskScore": 0.21528,
+      "hotspotScore": 0.10175000000000001,
+      "ownership": {
+        "Mark Hazleton": 2
+      },
+      "language": "TypeScript"
+    },
+    {
+      "path": "src/index.ts",
+      "commits": 4,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 500,
+      "insertions": 492,
+      "deletions": 8,
+      "firstChange": "2025-09-29T15:17:34.000Z",
+      "lastChange": "2025-09-30T13:35:24.000Z",
+      "riskScore": 0.21999999999999997,
+      "hotspotScore": 0.11741666666666667,
+      "ownership": {
+        "Mark Hazleton": 4
+      },
+      "language": "TypeScript"
+    },
+    {
+      "path": "copilot/session-2025-09-29/analysis-documents.md",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 423,
+      "insertions": 423,
+      "deletions": 0,
+      "firstChange": "2025-09-29T17:21:59.000Z",
+      "lastChange": "2025-09-29T17:21:59.000Z",
+      "riskScore": 0.20711,
+      "hotspotScore": 0.087,
+      "ownership": {
+        "Mark Hazleton": 1
+      }
+    },
+    {
+      "path": "test/git-utils.test.ts",
+      "commits": 2,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 402,
+      "insertions": 398,
+      "deletions": 4,
+      "firstChange": "2025-09-29T23:51:29.000Z",
+      "lastChange": "2025-09-30T20:57:32.000Z",
+      "riskScore": 0.20814,
+      "hotspotScore": 0.09325,
+      "ownership": {
+        "Mark Hazleton": 2
+      },
+      "language": "TypeScript"
+    },
+    {
+      "path": "reports/git-spark-report.json",
+      "commits": 2,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 400,
+      "insertions": 200,
+      "deletions": 200,
+      "firstChange": "2025-09-29T15:17:34.000Z",
+      "lastChange": "2025-09-29T17:25:33.000Z",
+      "riskScore": 0.208,
+      "hotspotScore": 0.09308333333333332,
+      "ownership": {
+        "Mark Hazleton": 2
+      }
+    },
+    {
+      "path": "test/input-validation.test.ts",
+      "commits": 2,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 399,
+      "insertions": 389,
+      "deletions": 10,
+      "firstChange": "2025-09-30T20:57:32.000Z",
+      "lastChange": "2025-09-30T21:07:31.000Z",
+      "riskScore": 0.20793,
+      "hotspotScore": 0.093,
+      "ownership": {
+        "Mark Hazleton": 2
+      },
+      "language": "TypeScript"
+    },
+    {
+      "path": "test/csv-exporter.test.ts",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 384,
+      "insertions": 384,
+      "deletions": 0,
+      "firstChange": "2025-09-29T23:25:49.000Z",
+      "lastChange": "2025-09-29T23:25:49.000Z",
+      "riskScore": 0.20438,
+      "hotspotScore": 0.08374999999999999,
+      "ownership": {
+        "Mark Hazleton": 1
+      },
+      "language": "TypeScript"
+    },
+    {
+      "path": ".github/copilot-instructions.md",
+      "commits": 2,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 373,
+      "insertions": 372,
+      "deletions": 1,
+      "firstChange": "2025-09-29T16:01:06.000Z",
+      "lastChange": "2025-09-30T18:56:28.000Z",
+      "riskScore": 0.20611,
+      "hotspotScore": 0.09083333333333334,
+      "ownership": {
+        "Mark Hazleton": 2
+      }
+    },
+    {
+      "path": "scripts/test-html-comprehensive.ts",
+      "commits": 2,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 372,
+      "insertions": 186,
+      "deletions": 186,
+      "firstChange": "2025-09-29T15:50:02.000Z",
+      "lastChange": "2025-09-30T11:42:41.000Z",
+      "riskScore": 0.20604,
+      "hotspotScore": 0.09075,
+      "ownership": {
+        "Mark Hazleton": 2
+      },
+      "language": "TypeScript"
+    },
+    {
+      "path": "generate-demo-report.ts",
+      "commits": 2,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 366,
+      "insertions": 183,
+      "deletions": 183,
+      "firstChange": "2025-09-30T00:17:49.000Z",
+      "lastChange": "2025-09-30T11:42:41.000Z",
+      "riskScore": 0.20562,
+      "hotspotScore": 0.09025,
+      "ownership": {
+        "Mark Hazleton": 2
+      },
+      "language": "TypeScript"
+    },
+    {
+      "path": "copilot/session-2025-09-29/npm-publishing-plan.md",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 355,
+      "insertions": 355,
+      "deletions": 0,
+      "firstChange": "2025-09-30T00:31:03.000Z",
+      "lastChange": "2025-09-30T00:31:03.000Z",
+      "riskScore": 0.20235,
+      "hotspotScore": 0.08133333333333333,
+      "ownership": {
+        "Mark Hazleton": 1
+      }
+    },
+    {
+      "path": "scripts/CLI-README.md",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 336,
+      "insertions": 336,
+      "deletions": 0,
+      "firstChange": "2025-09-29T15:50:02.000Z",
+      "lastChange": "2025-09-29T15:50:02.000Z",
+      "riskScore": 0.20101999999999998,
+      "hotspotScore": 0.07975,
+      "ownership": {
+        "Mark Hazleton": 1
+      }
+    },
+    {
+      "path": "cli-test-reports/git-spark-report.html",
+      "commits": 2,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 328,
+      "insertions": 164,
+      "deletions": 164,
+      "firstChange": "2025-09-29T15:50:02.000Z",
+      "lastChange": "2025-09-30T11:42:41.000Z",
+      "riskScore": 0.20296,
+      "hotspotScore": 0.08708333333333333,
+      "ownership": {
+        "Mark Hazleton": 2
+      }
+    },
+    {
+      "path": "src/utils/input-validation.ts",
+      "commits": 2,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 327,
+      "insertions": 300,
+      "deletions": 27,
+      "firstChange": "2025-09-30T20:57:32.000Z",
+      "lastChange": "2025-09-30T21:07:31.000Z",
+      "riskScore": 0.20289,
+      "hotspotScore": 0.087,
+      "ownership": {
+        "Mark Hazleton": 2
+      },
+      "language": "TypeScript"
+    },
+    {
+      "path": ".gitignore",
+      "commits": 5,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 312,
+      "insertions": 307,
+      "deletions": 5,
+      "firstChange": "2025-09-29T14:12:08.000Z",
+      "lastChange": "2025-09-30T13:18:47.000Z",
+      "riskScore": 0.20934,
+      "hotspotScore": 0.10975,
+      "ownership": {
+        "Mark Hazleton": 5
+      }
+    },
+    {
+      "path": "test/json-exporter.test.ts",
+      "commits": 2,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 309,
+      "insertions": 308,
+      "deletions": 1,
+      "firstChange": "2025-09-29T23:25:49.000Z",
+      "lastChange": "2025-09-30T13:41:42.000Z",
+      "riskScore": 0.20163,
+      "hotspotScore": 0.08549999999999999,
+      "ownership": {
+        "Mark Hazleton": 2
+      },
+      "language": "TypeScript"
+    },
+    {
+      "path": "src/utils/git.ts",
+      "commits": 4,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 303,
+      "insertions": 283,
+      "deletions": 20,
+      "firstChange": "2025-09-29T15:17:34.000Z",
+      "lastChange": "2025-09-30T21:07:31.000Z",
+      "riskScore": 0.20621,
+      "hotspotScore": 0.101,
+      "ownership": {
+        "Mark Hazleton": 4
+      },
+      "language": "TypeScript"
+    },
+    {
+      "path": "scripts/git-spark-html.ps1",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 297,
+      "insertions": 297,
+      "deletions": 0,
+      "firstChange": "2025-09-29T15:50:02.000Z",
+      "lastChange": "2025-09-29T15:50:02.000Z",
+      "riskScore": 0.19829,
+      "hotspotScore": 0.0765,
+      "ownership": {
+        "Mark Hazleton": 1
+      }
+    },
+    {
+      "path": "src/output/console.ts",
+      "commits": 2,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 295,
+      "insertions": 274,
+      "deletions": 21,
+      "firstChange": "2025-09-29T15:17:34.000Z",
+      "lastChange": "2025-10-01T00:21:47.000Z",
+      "riskScore": 0.20065,
+      "hotspotScore": 0.08433333333333333,
+      "ownership": {
+        "Mark Hazleton": 2
+      },
+      "language": "TypeScript"
+    },
+    {
+      "path": "demo-proportional-bars.js",
+      "commits": 2,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 288,
+      "insertions": 144,
+      "deletions": 144,
+      "firstChange": "2025-09-30T00:17:49.000Z",
+      "lastChange": "2025-09-30T11:42:41.000Z",
+      "riskScore": 0.20016,
+      "hotspotScore": 0.08374999999999999,
+      "ownership": {
+        "Mark Hazleton": 2
+      },
+      "language": "JavaScript"
+    },
+    {
+      "path": "test/validation.test.ts",
+      "commits": 3,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 278,
+      "insertions": 278,
+      "deletions": 0,
+      "firstChange": "2025-09-29T15:17:34.000Z",
+      "lastChange": "2025-09-29T23:51:29.000Z",
+      "riskScore": 0.20196,
+      "hotspotScore": 0.09091666666666667,
+      "ownership": {
+        "Mark Hazleton": 3
+      },
+      "language": "TypeScript"
+    },
+    {
+      "path": "_rawlog.txt",
+      "commits": 2,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 262,
+      "insertions": 131,
+      "deletions": 131,
+      "firstChange": "2025-09-29T20:29:52.000Z",
+      "lastChange": "2025-09-30T11:42:41.000Z",
+      "riskScore": 0.19834,
+      "hotspotScore": 0.08158333333333333,
+      "ownership": {
+        "Mark Hazleton": 2
+      }
+    },
+    {
+      "path": "copilot/session-2025-09-30/azure-devops-vs-github-git-storage.md",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 250,
+      "insertions": 250,
+      "deletions": 0,
+      "firstChange": "2025-09-30T18:56:28.000Z",
+      "lastChange": "2025-09-30T18:56:28.000Z",
+      "riskScore": 0.195,
+      "hotspotScore": 0.07258333333333333,
+      "ownership": {
+        "Mark Hazleton": 1
+      }
+    },
+    {
+      "path": "copilot/session-2025-09-29/detailed-author-metrics-implementation.md",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 249,
+      "insertions": 249,
+      "deletions": 0,
+      "firstChange": "2025-09-29T22:20:24.000Z",
+      "lastChange": "2025-09-29T22:20:24.000Z",
+      "riskScore": 0.19493,
+      "hotspotScore": 0.0725,
+      "ownership": {
+        "Mark Hazleton": 1
+      }
+    },
+    {
+      "path": "src/utils/validation.ts",
+      "commits": 2,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 240,
+      "insertions": 240,
+      "deletions": 0,
+      "firstChange": "2025-09-29T15:17:34.000Z",
+      "lastChange": "2025-09-29T17:21:59.000Z",
+      "riskScore": 0.1968,
+      "hotspotScore": 0.07975,
+      "ownership": {
+        "Mark Hazleton": 2
+      },
+      "language": "TypeScript"
+    },
+    {
+      "path": "copilot/session-2025-09-30/activity-index-calculation-display.md",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 233,
+      "insertions": 233,
+      "deletions": 0,
+      "firstChange": "2025-10-01T00:21:47.000Z",
+      "lastChange": "2025-10-01T00:21:47.000Z",
+      "riskScore": 0.19380999999999998,
+      "hotspotScore": 0.07116666666666666,
+      "ownership": {
+        "Mark Hazleton": 1
+      }
+    },
+    {
+      "path": "copilot/session-2025-09-30/team-organization-score-redesign-summary.md",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 227,
+      "insertions": 227,
+      "deletions": 0,
+      "firstChange": "2025-10-01T00:21:47.000Z",
+      "lastChange": "2025-10-01T00:21:47.000Z",
+      "riskScore": 0.19339,
+      "hotspotScore": 0.07066666666666666,
+      "ownership": {
+        "Mark Hazleton": 1
+      }
+    },
+    {
+      "path": "copilot/session-2025-09-30/team-metrics-accuracy-review.md",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 227,
+      "insertions": 227,
+      "deletions": 0,
+      "firstChange": "2025-09-30T18:56:28.000Z",
+      "lastChange": "2025-09-30T18:56:28.000Z",
+      "riskScore": 0.19339,
+      "hotspotScore": 0.07066666666666666,
+      "ownership": {
+        "Mark Hazleton": 1
+      }
+    },
+    {
+      "path": "test/analyzer.test.ts",
+      "commits": 2,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 218,
+      "insertions": 185,
+      "deletions": 33,
+      "firstChange": "2025-09-30T14:52:07.000Z",
+      "lastChange": "2025-10-01T00:21:47.000Z",
+      "riskScore": 0.19526,
+      "hotspotScore": 0.07791666666666666,
+      "ownership": {
+        "Mark Hazleton": 2
+      },
+      "language": "TypeScript"
+    },
+    {
+      "path": "copilot/session-2025-09-30/team-score-implementation-summary.md",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 217,
+      "insertions": 217,
+      "deletions": 0,
+      "firstChange": "2025-09-30T18:56:28.000Z",
+      "lastChange": "2025-09-30T18:56:28.000Z",
+      "riskScore": 0.19269,
+      "hotspotScore": 0.06983333333333333,
+      "ownership": {
+        "Mark Hazleton": 1
+      }
+    },
+    {
+      "path": "copilot/session-2025-09-30/team-effectiveness-refactoring-completion-summary.md",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 215,
+      "insertions": 215,
+      "deletions": 0,
+      "firstChange": "2025-10-01T00:21:47.000Z",
+      "lastChange": "2025-10-01T00:21:47.000Z",
+      "riskScore": 0.19255,
+      "hotspotScore": 0.06966666666666667,
+      "ownership": {
+        "Mark Hazleton": 1
+      }
+    },
+    {
+      "path": "copilot/session-2025-09-30/repository-health-score-alignment.md",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 207,
+      "insertions": 207,
+      "deletions": 0,
+      "firstChange": "2025-10-01T00:21:47.000Z",
+      "lastChange": "2025-10-01T00:21:47.000Z",
+      "riskScore": 0.19199,
+      "hotspotScore": 0.069,
+      "ownership": {
+        "Mark Hazleton": 1
+      }
+    },
+    {
+      "path": "copilot/session-2025-09-30/aggressive-subjective-content-removal-summary.md",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 206,
+      "insertions": 206,
+      "deletions": 0,
+      "firstChange": "2025-10-01T00:21:47.000Z",
+      "lastChange": "2025-10-01T00:21:47.000Z",
+      "riskScore": 0.19191999999999998,
+      "hotspotScore": 0.06891666666666667,
+      "ownership": {
+        "Mark Hazleton": 1
+      }
+    },
+    {
+      "path": "copilot/session-2025-09-30/command-injection-security-fix-summary.md",
+      "commits": 2,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 203,
+      "insertions": 200,
+      "deletions": 3,
+      "firstChange": "2025-09-30T20:57:32.000Z",
+      "lastChange": "2025-09-30T21:07:31.000Z",
+      "riskScore": 0.19421,
+      "hotspotScore": 0.07666666666666666,
+      "ownership": {
+        "Mark Hazleton": 2
+      }
+    },
+    {
+      "path": "CLI-IMPLEMENTATION-COMPLETE.md",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 203,
+      "insertions": 203,
+      "deletions": 0,
+      "firstChange": "2025-09-29T15:50:02.000Z",
+      "lastChange": "2025-09-29T15:50:02.000Z",
+      "riskScore": 0.19171,
+      "hotspotScore": 0.06866666666666667,
+      "ownership": {
+        "Mark Hazleton": 1
+      }
+    },
+    {
+      "path": "copilot/session-2025-09-30/email-normalization-implementation-summary.md",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 197,
+      "insertions": 197,
+      "deletions": 0,
+      "firstChange": "2025-10-01T00:21:47.000Z",
+      "lastChange": "2025-10-01T00:21:47.000Z",
+      "riskScore": 0.19129,
+      "hotspotScore": 0.06816666666666667,
+      "ownership": {
+        "Mark Hazleton": 1
+      }
+    },
+    {
+      "path": "copilot/session-2025-09-30/team-metrics-transparency-implementation-summary.md",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 196,
+      "insertions": 196,
+      "deletions": 0,
+      "firstChange": "2025-09-30T18:56:28.000Z",
+      "lastChange": "2025-09-30T18:56:28.000Z",
+      "riskScore": 0.19122,
+      "hotspotScore": 0.06808333333333333,
+      "ownership": {
+        "Mark Hazleton": 1
+      }
+    },
+    {
+      "path": "copilot/session-2025-09-30/documentation-update-summary.md",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 193,
+      "insertions": 193,
+      "deletions": 0,
+      "firstChange": "2025-10-01T00:21:47.000Z",
+      "lastChange": "2025-10-01T00:21:47.000Z",
+      "riskScore": 0.19101,
+      "hotspotScore": 0.06783333333333333,
+      "ownership": {
+        "Mark Hazleton": 1
+      }
+    },
+    {
+      "path": "copilot/session-2025-09-30/team-metrics-limitations-update-summary.md",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 193,
+      "insertions": 193,
+      "deletions": 0,
+      "firstChange": "2025-09-30T18:56:28.000Z",
+      "lastChange": "2025-09-30T18:56:28.000Z",
+      "riskScore": 0.19101,
+      "hotspotScore": 0.06783333333333333,
+      "ownership": {
+        "Mark Hazleton": 1
+      }
+    },
+    {
+      "path": "scripts/serve-report.ts",
+      "commits": 2,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 190,
+      "insertions": 95,
+      "deletions": 95,
+      "firstChange": "2025-09-29T15:50:02.000Z",
+      "lastChange": "2025-09-30T11:42:41.000Z",
+      "riskScore": 0.1933,
+      "hotspotScore": 0.07558333333333334,
+      "ownership": {
+        "Mark Hazleton": 2
+      },
+      "language": "TypeScript"
+    },
+    {
+      "path": "copilot/session-2025-09-30/developer-specialization-fix.md",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 187,
+      "insertions": 187,
+      "deletions": 0,
+      "firstChange": "2025-10-01T00:21:47.000Z",
+      "lastChange": "2025-10-01T00:21:47.000Z",
+      "riskScore": 0.19058999999999998,
+      "hotspotScore": 0.06733333333333333,
+      "ownership": {
+        "Mark Hazleton": 1
+      }
+    },
+    {
+      "path": "package.json",
+      "commits": 17,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 187,
+      "insertions": 154,
+      "deletions": 33,
+      "firstChange": "2025-09-29T15:17:34.000Z",
+      "lastChange": "2025-10-01T00:21:47.000Z",
+      "riskScore": 0.23059,
+      "hotspotScore": 0.19533333333333336,
+      "ownership": {
+        "Mark Hazleton": 17
+      }
+    },
+    {
+      "path": "copilot/session-2025-09-29/test-coverage-improvement-summary.md",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 184,
+      "insertions": 184,
+      "deletions": 0,
+      "firstChange": "2025-09-29T23:25:49.000Z",
+      "lastChange": "2025-09-29T23:25:49.000Z",
+      "riskScore": 0.19038,
+      "hotspotScore": 0.06708333333333333,
+      "ownership": {
+        "Mark Hazleton": 1
+      }
+    },
+    {
+      "path": "scripts/git-spark-html.bat",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 183,
+      "insertions": 183,
+      "deletions": 0,
+      "firstChange": "2025-09-29T15:50:02.000Z",
+      "lastChange": "2025-09-29T15:50:02.000Z",
+      "riskScore": 0.19031,
+      "hotspotScore": 0.067,
+      "ownership": {
+        "Mark Hazleton": 1
+      }
+    },
+    {
+      "path": "copilot/session-2025-09-30/console-exporter-test-implementation-summary.md",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 180,
+      "insertions": 180,
+      "deletions": 0,
+      "firstChange": "2025-09-30T14:20:51.000Z",
+      "lastChange": "2025-09-30T14:20:51.000Z",
+      "riskScore": 0.1901,
+      "hotspotScore": 0.06675,
+      "ownership": {
+        "Mark Hazleton": 1
+      }
+    },
+    {
+      "path": "src/output/markdown.ts",
+      "commits": 3,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 179,
+      "insertions": 161,
+      "deletions": 18,
+      "firstChange": "2025-09-29T15:17:34.000Z",
+      "lastChange": "2025-10-01T00:21:47.000Z",
+      "riskScore": 0.19502999999999998,
+      "hotspotScore": 0.08266666666666667,
+      "ownership": {
+        "Mark Hazleton": 3
+      },
+      "language": "TypeScript"
+    },
+    {
+      "path": "copilot/session-2025-09-29/feature-grid.md",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 168,
+      "insertions": 168,
+      "deletions": 0,
+      "firstChange": "2025-09-29T18:44:46.000Z",
+      "lastChange": "2025-09-29T18:44:46.000Z",
+      "riskScore": 0.18925999999999998,
+      "hotspotScore": 0.06575,
+      "ownership": {
+        "Mark Hazleton": 1
+      }
+    },
+    {
+      "path": "copilot/session-2025-09-29/implementation-summary.md",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 166,
+      "insertions": 166,
+      "deletions": 0,
+      "firstChange": "2025-09-30T00:31:03.000Z",
+      "lastChange": "2025-09-30T00:31:03.000Z",
+      "riskScore": 0.18912,
+      "hotspotScore": 0.06558333333333333,
+      "ownership": {
+        "Mark Hazleton": 1
+      }
+    },
+    {
+      "path": "copilot/session-2025-09-30/team-metrics-accuracy-overhaul-summary.md",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 165,
+      "insertions": 165,
+      "deletions": 0,
+      "firstChange": "2025-09-30T18:56:28.000Z",
+      "lastChange": "2025-09-30T18:56:28.000Z",
+      "riskScore": 0.18905,
+      "hotspotScore": 0.0655,
+      "ownership": {
+        "Mark Hazleton": 1
+      }
+    },
+    {
+      "path": "copilot/session-2025-09-30/readme-honesty-commitment-update-summary.md",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 151,
+      "insertions": 151,
+      "deletions": 0,
+      "firstChange": "2025-09-30T18:56:28.000Z",
+      "lastChange": "2025-09-30T18:56:28.000Z",
+      "riskScore": 0.18807000000000001,
+      "hotspotScore": 0.06433333333333333,
+      "ownership": {
+        "Mark Hazleton": 1
+      }
+    },
+    {
+      "path": "src/output/csv.ts",
+      "commits": 2,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 151,
+      "insertions": 150,
+      "deletions": 1,
+      "firstChange": "2025-09-29T15:17:34.000Z",
+      "lastChange": "2025-09-30T13:35:24.000Z",
+      "riskScore": 0.19057,
+      "hotspotScore": 0.07233333333333333,
+      "ownership": {
+        "Mark Hazleton": 2
+      },
+      "language": "TypeScript"
+    },
+    {
+      "path": "copilot/session-2025-09-30/commit-message-quality-removal-summary.md",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 147,
+      "insertions": 147,
+      "deletions": 0,
+      "firstChange": "2025-10-01T00:21:47.000Z",
+      "lastChange": "2025-10-01T00:21:47.000Z",
+      "riskScore": 0.18779,
+      "hotspotScore": 0.064,
+      "ownership": {
+        "Mark Hazleton": 1
+      }
+    },
+    {
+      "path": "copilot/session-2025-09-30/author-details-improvements-summary.md",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 145,
+      "insertions": 145,
+      "deletions": 0,
+      "firstChange": "2025-10-01T00:21:47.000Z",
+      "lastChange": "2025-10-01T00:21:47.000Z",
+      "riskScore": 0.18764999999999998,
+      "hotspotScore": 0.06383333333333333,
+      "ownership": {
+        "Mark Hazleton": 1
+      }
+    },
+    {
+      "path": "copilot/session-2025-09-30/documentation-section-implementation-summary.md",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 145,
+      "insertions": 145,
+      "deletions": 0,
+      "firstChange": "2025-09-30T18:56:28.000Z",
+      "lastChange": "2025-09-30T18:56:28.000Z",
+      "riskScore": 0.18764999999999998,
+      "hotspotScore": 0.06383333333333333,
+      "ownership": {
+        "Mark Hazleton": 1
+      }
+    },
+    {
+      "path": "copilot/session-2025-09-30/pr-detection-enhancement-proposal.md",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 145,
+      "insertions": 145,
+      "deletions": 0,
+      "firstChange": "2025-09-30T18:56:28.000Z",
+      "lastChange": "2025-09-30T18:56:28.000Z",
+      "riskScore": 0.18764999999999998,
+      "hotspotScore": 0.06383333333333333,
+      "ownership": {
+        "Mark Hazleton": 1
+      }
+    },
+    {
+      "path": "copilot/session-2025-09-30/executive-summary-cleanup.md",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 144,
+      "insertions": 144,
+      "deletions": 0,
+      "firstChange": "2025-10-01T00:21:47.000Z",
+      "lastChange": "2025-10-01T00:21:47.000Z",
+      "riskScore": 0.18758,
+      "hotspotScore": 0.06375,
+      "ownership": {
+        "Mark Hazleton": 1
+      }
+    },
+    {
+      "path": "custom-output/git-spark-report.json",
+      "commits": 5,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 140,
+      "insertions": 70,
+      "deletions": 70,
+      "firstChange": "2025-09-29T23:25:49.000Z",
+      "lastChange": "2025-09-30T11:42:41.000Z",
+      "riskScore": 0.19729999999999998,
+      "hotspotScore": 0.09541666666666668,
+      "ownership": {
+        "Mark Hazleton": 5
+      }
+    },
+    {
+      "path": "test-output/git-spark-report.json",
+      "commits": 5,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 140,
+      "insertions": 70,
+      "deletions": 70,
+      "firstChange": "2025-09-29T23:25:49.000Z",
+      "lastChange": "2025-09-30T11:42:41.000Z",
+      "riskScore": 0.19729999999999998,
+      "hotspotScore": 0.09541666666666668,
+      "ownership": {
+        "Mark Hazleton": 5
+      }
+    },
+    {
+      "path": "test/logger.test.ts",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 134,
+      "insertions": 134,
+      "deletions": 0,
+      "firstChange": "2025-09-30T14:52:07.000Z",
+      "lastChange": "2025-09-30T14:52:07.000Z",
+      "riskScore": 0.18688,
+      "hotspotScore": 0.06291666666666666,
+      "ownership": {
+        "Mark Hazleton": 1
+      },
+      "language": "TypeScript"
+    },
+    {
+      "path": ".github/workflows/security.yml",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 131,
+      "insertions": 131,
+      "deletions": 0,
+      "firstChange": "2025-09-30T00:31:03.000Z",
+      "lastChange": "2025-09-30T00:31:03.000Z",
+      "riskScore": 0.18667,
+      "hotspotScore": 0.06266666666666666,
+      "ownership": {
+        "Mark Hazleton": 1
+      }
+    },
+    {
+      "path": "copilot/session-2025-09-29/cleanup-summary.md",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 130,
+      "insertions": 130,
+      "deletions": 0,
+      "firstChange": "2025-09-30T11:42:41.000Z",
+      "lastChange": "2025-09-30T11:42:41.000Z",
+      "riskScore": 0.1866,
+      "hotspotScore": 0.06258333333333332,
+      "ownership": {
+        "Mark Hazleton": 1
+      }
+    },
+    {
+      "path": "copilot/session-2025-09-30/html-section-removal-summary.md",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 128,
+      "insertions": 128,
+      "deletions": 0,
+      "firstChange": "2025-10-01T00:21:47.000Z",
+      "lastChange": "2025-10-01T00:21:47.000Z",
+      "riskScore": 0.18646000000000001,
+      "hotspotScore": 0.06241666666666666,
+      "ownership": {
+        "Mark Hazleton": 1
+      }
+    },
+    {
+      "path": "copilot/session-2025-09-30/css-styling-fix-summary.md",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 125,
+      "insertions": 125,
+      "deletions": 0,
+      "firstChange": "2025-10-01T00:21:47.000Z",
+      "lastChange": "2025-10-01T00:21:47.000Z",
+      "riskScore": 0.18625,
+      "hotspotScore": 0.06216666666666666,
+      "ownership": {
+        "Mark Hazleton": 1
+      }
+    },
+    {
+      "path": "copilot/session-2025-09-30/team-effectiveness-refinement-plan.md",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 125,
+      "insertions": 125,
+      "deletions": 0,
+      "firstChange": "2025-10-01T00:21:47.000Z",
+      "lastChange": "2025-10-01T00:21:47.000Z",
+      "riskScore": 0.18625,
+      "hotspotScore": 0.06216666666666666,
+      "ownership": {
+        "Mark Hazleton": 1
+      }
+    },
+    {
+      "path": "src/output/json.ts",
+      "commits": 3,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 123,
+      "insertions": 114,
+      "deletions": 9,
+      "firstChange": "2025-09-29T15:17:34.000Z",
+      "lastChange": "2025-09-30T13:35:24.000Z",
+      "riskScore": 0.19111,
+      "hotspotScore": 0.078,
+      "ownership": {
+        "Mark Hazleton": 3
+      },
+      "language": "TypeScript"
+    },
+    {
+      "path": "eslint.config.js",
+      "commits": 2,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 122,
+      "insertions": 61,
+      "deletions": 61,
+      "firstChange": "2025-09-29T15:17:34.000Z",
+      "lastChange": "2025-09-30T11:42:41.000Z",
+      "riskScore": 0.18853999999999999,
+      "hotspotScore": 0.06991666666666667,
+      "ownership": {
+        "Mark Hazleton": 2
+      },
+      "language": "JavaScript"
+    },
+    {
+      "path": "eslint.config.mjs",
+      "commits": 2,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 122,
+      "insertions": 61,
+      "deletions": 61,
+      "firstChange": "2025-09-29T22:20:24.000Z",
+      "lastChange": "2025-09-30T11:42:41.000Z",
+      "riskScore": 0.18853999999999999,
+      "hotspotScore": 0.06991666666666667,
+      "ownership": {
+        "Mark Hazleton": 2
+      }
+    },
+    {
+      "path": "copilot/session-2025-09-30/html-documentation-update-summary.md",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 118,
+      "insertions": 118,
+      "deletions": 0,
+      "firstChange": "2025-09-30T18:56:28.000Z",
+      "lastChange": "2025-09-30T18:56:28.000Z",
+      "riskScore": 0.18575999999999998,
+      "hotspotScore": 0.06158333333333333,
+      "ownership": {
+        "Mark Hazleton": 1
+      }
+    },
+    {
+      "path": "copilot/session-2025-09-30/analysis-period-display-fix-summary.md",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 110,
+      "insertions": 110,
+      "deletions": 0,
+      "firstChange": "2025-09-30T16:57:00.000Z",
+      "lastChange": "2025-09-30T16:57:00.000Z",
+      "riskScore": 0.1852,
+      "hotspotScore": 0.06091666666666666,
+      "ownership": {
+        "Mark Hazleton": 1
+      }
+    },
+    {
+      "path": ".github/workflows/publish.yml",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 109,
+      "insertions": 109,
+      "deletions": 0,
+      "firstChange": "2025-09-30T00:31:03.000Z",
+      "lastChange": "2025-09-30T00:31:03.000Z",
+      "riskScore": 0.18513,
+      "hotspotScore": 0.06083333333333333,
+      "ownership": {
+        "Mark Hazleton": 1
+      }
+    },
+    {
+      "path": "copilot/session-2025-09-30/subjective-insight-removal-summary.md",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 104,
+      "insertions": 104,
+      "deletions": 0,
+      "firstChange": "2025-10-01T00:21:47.000Z",
+      "lastChange": "2025-10-01T00:21:47.000Z",
+      "riskScore": 0.18478,
+      "hotspotScore": 0.06041666666666666,
+      "ownership": {
+        "Mark Hazleton": 1
+      }
+    },
+    {
+      "path": "scripts/test-html-report.ts",
+      "commits": 2,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 104,
+      "insertions": 52,
+      "deletions": 52,
+      "firstChange": "2025-09-29T15:50:02.000Z",
+      "lastChange": "2025-09-30T11:42:41.000Z",
+      "riskScore": 0.18728,
+      "hotspotScore": 0.06841666666666667,
+      "ownership": {
+        "Mark Hazleton": 2
+      },
+      "language": "TypeScript"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 103,
+      "insertions": 103,
+      "deletions": 0,
+      "firstChange": "2025-09-30T00:31:03.000Z",
+      "lastChange": "2025-09-30T00:31:03.000Z",
+      "riskScore": 0.18470999999999999,
+      "hotspotScore": 0.06033333333333333,
+      "ownership": {
+        "Mark Hazleton": 1
+      }
+    },
+    {
+      "path": "src/utils/logger.ts",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 102,
+      "insertions": 102,
+      "deletions": 0,
+      "firstChange": "2025-09-29T15:17:34.000Z",
+      "lastChange": "2025-09-29T15:17:34.000Z",
+      "riskScore": 0.18464,
+      "hotspotScore": 0.06025,
+      "ownership": {
+        "Mark Hazleton": 1
+      },
+      "language": "TypeScript"
+    },
+    {
+      "path": "copilot/session-2025-09-30/final-blue-text-fix-summary.md",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 99,
+      "insertions": 99,
+      "deletions": 0,
+      "firstChange": "2025-10-01T00:21:47.000Z",
+      "lastChange": "2025-10-01T00:21:47.000Z",
+      "riskScore": 0.18442999999999998,
+      "hotspotScore": 0.06,
+      "ownership": {
+        "Mark Hazleton": 1
+      }
+    },
+    {
+      "path": "copilot/session-2025-09-30/hotspot-filtering-implementation.md",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 94,
+      "insertions": 94,
+      "deletions": 0,
+      "firstChange": "2025-09-30T12:31:08.000Z",
+      "lastChange": "2025-09-30T12:31:08.000Z",
+      "riskScore": 0.18408,
+      "hotspotScore": 0.05958333333333333,
+      "ownership": {
+        "Mark Hazleton": 1
+      }
+    },
+    {
+      "path": "CHANGELOG.md",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 94,
+      "insertions": 94,
+      "deletions": 0,
+      "firstChange": "2025-09-30T00:31:03.000Z",
+      "lastChange": "2025-09-30T00:31:03.000Z",
+      "riskScore": 0.18408,
+      "hotspotScore": 0.05958333333333333,
+      "ownership": {
+        "Mark Hazleton": 1
+      }
+    },
+    {
+      "path": "copilot/session-2025-09-30/team-score-implementation-plan.md",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 93,
+      "insertions": 93,
+      "deletions": 0,
+      "firstChange": "2025-09-30T18:56:28.000Z",
+      "lastChange": "2025-09-30T18:56:28.000Z",
+      "riskScore": 0.18401,
+      "hotspotScore": 0.0595,
+      "ownership": {
+        "Mark Hazleton": 1
+      }
+    },
+    {
+      "path": "copilot/session-2025-09-30/ci-version-import-fix-summary.md",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 90,
+      "insertions": 90,
+      "deletions": 0,
+      "firstChange": "2025-09-30T15:44:30.000Z",
+      "lastChange": "2025-09-30T15:44:30.000Z",
+      "riskScore": 0.1838,
+      "hotspotScore": 0.05925,
+      "ownership": {
+        "Mark Hazleton": 1
+      }
+    },
+    {
+      "path": "copilot/session-2025-09-30/test-fixes-summary.md",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 85,
+      "insertions": 85,
+      "deletions": 0,
+      "firstChange": "2025-10-01T00:21:47.000Z",
+      "lastChange": "2025-10-01T00:21:47.000Z",
+      "riskScore": 0.18345,
+      "hotspotScore": 0.05883333333333333,
+      "ownership": {
+        "Mark Hazleton": 1
+      }
+    },
+    {
+      "path": "copilot/session-2025-09-30/version-increment-implementation-summary.md",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 84,
+      "insertions": 84,
+      "deletions": 0,
+      "firstChange": "2025-09-30T12:53:09.000Z",
+      "lastChange": "2025-09-30T12:53:09.000Z",
+      "riskScore": 0.18338,
+      "hotspotScore": 0.05875,
+      "ownership": {
+        "Mark Hazleton": 1
+      }
+    },
+    {
+      "path": "test/collector-regression.test.ts",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 76,
+      "insertions": 76,
+      "deletions": 0,
+      "firstChange": "2025-09-29T20:29:52.000Z",
+      "lastChange": "2025-09-29T20:29:52.000Z",
+      "riskScore": 0.18281999999999998,
+      "hotspotScore": 0.058083333333333334,
+      "ownership": {
+        "Mark Hazleton": 1
+      },
+      "language": "TypeScript"
+    },
+    {
+      "path": "scripts/html-report-runner.js",
+      "commits": 2,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 66,
+      "insertions": 33,
+      "deletions": 33,
+      "firstChange": "2025-09-29T22:20:24.000Z",
+      "lastChange": "2025-09-30T11:42:41.000Z",
+      "riskScore": 0.18462,
+      "hotspotScore": 0.06525,
+      "ownership": {
+        "Mark Hazleton": 2
+      },
+      "language": "JavaScript"
+    },
+    {
+      "path": "copilot/session-2025-09-30/readme-cleanup-summary.md",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 58,
+      "insertions": 58,
+      "deletions": 0,
+      "firstChange": "2025-09-30T12:31:08.000Z",
+      "lastChange": "2025-09-30T12:31:08.000Z",
+      "riskScore": 0.18156,
+      "hotspotScore": 0.05658333333333333,
+      "ownership": {
+        "Mark Hazleton": 1
+      }
+    },
+    {
+      "path": "copilot/session-2025-09-29/session-summary.md",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 54,
+      "insertions": 54,
+      "deletions": 0,
+      "firstChange": "2025-09-29T16:01:06.000Z",
+      "lastChange": "2025-09-29T16:01:06.000Z",
+      "riskScore": 0.18128,
+      "hotspotScore": 0.056249999999999994,
+      "ownership": {
+        "Mark Hazleton": 1
+      }
+    },
+    {
+      "path": ".git-spark.json",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 54,
+      "insertions": 54,
+      "deletions": 0,
+      "firstChange": "2025-09-29T15:17:34.000Z",
+      "lastChange": "2025-09-29T15:17:34.000Z",
+      "riskScore": 0.18128,
+      "hotspotScore": 0.056249999999999994,
+      "ownership": {
+        "Mark Hazleton": 1
+      }
+    },
+    {
+      "path": "copilot/session-2025-09-30/version-increment-implementation.md",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 43,
+      "insertions": 43,
+      "deletions": 0,
+      "firstChange": "2025-09-30T12:53:09.000Z",
+      "lastChange": "2025-09-30T12:53:09.000Z",
+      "riskScore": 0.18051,
+      "hotspotScore": 0.05533333333333333,
+      "ownership": {
+        "Mark Hazleton": 1
+      }
+    },
+    {
+      "path": "copilot/session-2025-09-30/readme-review-analysis.md",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 39,
+      "insertions": 39,
+      "deletions": 0,
+      "firstChange": "2025-09-30T12:31:08.000Z",
+      "lastChange": "2025-09-30T12:31:08.000Z",
+      "riskScore": 0.18023,
+      "hotspotScore": 0.055,
+      "ownership": {
+        "Mark Hazleton": 1
+      }
+    },
+    {
+      "path": "bin/git-spark.js",
+      "commits": 2,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 37,
+      "insertions": 35,
+      "deletions": 2,
+      "firstChange": "2025-09-30T13:18:47.000Z",
+      "lastChange": "2025-09-30T16:57:00.000Z",
+      "riskScore": 0.18259,
+      "hotspotScore": 0.06283333333333332,
+      "ownership": {
+        "Mark Hazleton": 2
+      },
+      "language": "JavaScript"
+    },
+    {
+      "path": "eslint.config.cjs",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 36,
+      "insertions": 36,
+      "deletions": 0,
+      "firstChange": "2025-09-29T22:20:24.000Z",
+      "lastChange": "2025-09-29T22:20:24.000Z",
+      "riskScore": 0.18001999999999999,
+      "hotspotScore": 0.05475,
+      "ownership": {
+        "Mark Hazleton": 1
+      }
+    },
+    {
+      "path": "tsconfig.json",
+      "commits": 2,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 28,
+      "insertions": 27,
+      "deletions": 1,
+      "firstChange": "2025-09-29T15:17:34.000Z",
+      "lastChange": "2025-09-29T22:20:24.000Z",
+      "riskScore": 0.18196,
+      "hotspotScore": 0.06208333333333333,
+      "ownership": {
+        "Mark Hazleton": 2
+      }
+    },
+    {
+      "path": "scripts/generate-version.js",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 25,
+      "insertions": 25,
+      "deletions": 0,
+      "firstChange": "2025-09-30T12:53:09.000Z",
+      "lastChange": "2025-09-30T12:53:09.000Z",
+      "riskScore": 0.17925,
+      "hotspotScore": 0.05383333333333333,
+      "ownership": {
+        "Mark Hazleton": 1
+      },
+      "language": "JavaScript"
+    },
+    {
+      "path": "LICENSE",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 21,
+      "insertions": 21,
+      "deletions": 0,
+      "firstChange": "2025-09-29T14:12:08.000Z",
+      "lastChange": "2025-09-29T14:12:08.000Z",
+      "riskScore": 0.17897,
+      "hotspotScore": 0.0535,
+      "ownership": {
+        "Mark Hazleton": 1
+      }
+    },
+    {
+      "path": ".prettierrc",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 10,
+      "insertions": 10,
+      "deletions": 0,
+      "firstChange": "2025-09-29T15:17:34.000Z",
+      "lastChange": "2025-09-29T15:17:34.000Z",
+      "riskScore": 0.1782,
+      "hotspotScore": 0.05258333333333333,
+      "ownership": {
+        "Mark Hazleton": 1
+      }
+    },
+    {
+      "path": "src/types/ambient.d.ts",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 5,
+      "insertions": 5,
+      "deletions": 0,
+      "firstChange": "2025-09-29T17:21:59.000Z",
+      "lastChange": "2025-09-29T17:21:59.000Z",
+      "riskScore": 0.17785,
+      "hotspotScore": 0.05216666666666667,
+      "ownership": {
+        "Mark Hazleton": 1
+      },
+      "language": "TypeScript"
+    },
+    {
+      "path": ".vscode/settings.json",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 3,
+      "insertions": 3,
+      "deletions": 0,
+      "firstChange": "2025-09-29T15:17:34.000Z",
+      "lastChange": "2025-09-29T15:17:34.000Z",
+      "riskScore": 0.17770999999999998,
+      "hotspotScore": 0.052,
+      "ownership": {
+        "Mark Hazleton": 1
+      }
+    },
+    {
+      "path": ".husky/pre-commit",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 2,
+      "insertions": 2,
+      "deletions": 0,
+      "firstChange": "2025-09-29T22:20:24.000Z",
+      "lastChange": "2025-09-29T22:20:24.000Z",
+      "riskScore": 0.17764,
+      "hotspotScore": 0.051916666666666667,
+      "ownership": {
+        "Mark Hazleton": 1
+      }
+    },
+    {
+      "path": "copilot/session-2025-09-29/cli-implementation-complete.md",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 0,
+      "insertions": 0,
+      "deletions": 0,
+      "firstChange": "2025-09-29T16:01:06.000Z",
+      "lastChange": "2025-09-29T16:01:06.000Z",
+      "riskScore": 0.1775,
+      "hotspotScore": 0.05175,
+      "ownership": {
+        "Mark Hazleton": 1
+      }
+    },
+    {
+      "path": "copilot/session-2025-09-29/cli-readme.md",
+      "commits": 1,
+      "authors": [
+        "Mark Hazleton"
+      ],
+      "churn": 0,
+      "insertions": 0,
+      "deletions": 0,
+      "firstChange": "2025-09-29T16:01:06.000Z",
+      "lastChange": "2025-09-29T16:01:06.000Z",
+      "riskScore": 0.1775,
+      "hotspotScore": 0.05175,
+      "ownership": {
+        "Mark Hazleton": 1
+      }
+    }
+  ],
+  "hotspots": [],
+  "risks": {
+    "highRiskFiles": [],
+    "riskFactors": {
+      "highChurnFiles": 12,
+      "manyAuthorFiles": 0,
+      "largeCommits": 17,
+      "recentChanges": 118
+    },
+    "recommendations": [],
+    "overallRisk": "medium"
+  },
+  "governance": {
+    "conventionalCommits": 29,
+    "traceabilityScore": 0,
+    "avgMessageLength": 294.5833333333333,
+    "wipCommits": 0,
+    "revertCommits": 0,
+    "shortMessages": 0,
+    "score": 0.505555555555556,
+    "recommendations": []
+  },
+  "teamScore": {
+    "overall": 85,
+    "collaboration": {
+      "score": 100,
+      "crossTeamInteraction": 100,
+      "knowledgeDistribution": 100,
+      "fileOwnershipDistribution": {
+        "exclusive": 100,
+        "shared": 0,
+        "collaborative": 0
+      },
+      "limitations": {
+        "dataSource": "git-file-authorship-only",
+        "knownLimitations": [
+          "Based only on Git commit authorship, not actual collaboration quality",
+          "High specialization may indicate knowledge silos if taken to extreme",
+          "Cannot measure code reviews, pair programming, or knowledge transfer",
+          "File ownership patterns may not reflect actual domain expertise",
+          "Does not account for intentional collaboration or mentoring"
+        ]
+      }
+    },
+    "consistency": {
+      "score": 74,
+      "velocityConsistency": 35.09265863584487,
+      "busFactorPercentage": 100,
+      "activeContributorRatio": 100,
+      "deliveryCadence": 60,
+      "contributionDistribution": {
+        "giniCoefficient": 0,
+        "topContributorDominance": 100
+      }
+    },
+    "workLifeBalance": {
+      "score": 76,
+      "commitTimePatterns": 80.55555555555556,
+      "afterHoursCommitFrequency": 19.444444444444446,
+      "weekendCommitActivity": 0,
+      "commitTimingIndicators": {
+        "highVelocityDays": 0,
+        "consecutiveCommitDays": 3,
+        "afterHoursCommits": 7
+      },
+      "teamActiveCoverage": {
+        "multiContributorDays": 0,
+        "soloContributorDays": 3,
+        "coveragePercentage": 0,
+        "note": "Measures daily contributor diversity, not vacation coverage or work scheduling"
+      },
+      "limitations": {
+        "timezoneWarning": "Commit timestamps may not reflect actual work hours due to timezone differences",
+        "workPatternNote": "Git commits ≠ work hours (CI commits, batched commits, scheduled deployments)",
+        "burnoutDetection": "Cannot accurately assess burnout from Git data alone",
+        "recommendedApproach": "Use for general patterns only, not individual performance assessment",
+        "knownLimitations": [
+          "Commit times affected by timezones and CI/CD systems",
+          "Weekend/after-hours commits may be maintenance or urgent fixes",
+          "Does not account for flexible work schedules",
+          "Cannot distinguish between work and personal commits",
+          "Team coverage estimates collaboration, not vacation planning"
+        ]
+      }
+    },
+    "insights": {
+      "strengths": [
+        "Strong knowledge distribution across team members",
+        "Good cross-team collaboration on shared files",
+        "Well-distributed contribution pattern - low bus factor risk"
+      ],
+      "improvements": [],
+      "risks": [],
+      "teamDynamics": "highly-collaborative",
+      "maturityLevel": "mature",
+      "sustainabilityRating": "good"
+    },
+    "recommendations": []
+  },
+  "summary": {
+    "healthRating": "fair",
+    "keyMetrics": {
+      "Total Commits": 36,
+      "Active Contributors": 1,
+      "Files Changed": 118,
+      "Code Churn": 50767,
+      "Activity Index": 56,
+      "Governance Score": 51,
+      "Bus Factor": 1
+    },
+    "insights": [],
+    "actionItems": []
+  },
+  "dailyTrends": {
+    "analysisMetadata": {
+      "timezone": "America/Chicago",
+      "startDate": "2025-09-25T03:20:35.966Z",
+      "endDate": "2025-10-01T03:20:35.966Z",
+      "totalDays": 7,
+      "activeDays": 3,
+      "workingHours": {
+        "start": 8,
+        "end": 18,
+        "weekdays": true
+      }
+    },
+    "flowMetrics": [
+      {
+        "date": "2025-09-25T00:00:00.000Z",
+        "day": "2025-09-25",
+        "commitsPerDay": 0,
+        "uniqueAuthorsPerDay": 0,
+        "grossLinesChangedPerDay": 0,
+        "insertionsPerDay": 0,
+        "deletionsPerDay": 0,
+        "filesTouchedPerDay": 0,
+        "commitSizeDistribution": {
+          "p50": 0,
+          "p90": 0
+        }
+      },
+      {
+        "date": "2025-09-26T00:00:00.000Z",
+        "day": "2025-09-26",
+        "commitsPerDay": 0,
+        "uniqueAuthorsPerDay": 0,
+        "grossLinesChangedPerDay": 0,
+        "insertionsPerDay": 0,
+        "deletionsPerDay": 0,
+        "filesTouchedPerDay": 0,
+        "commitSizeDistribution": {
+          "p50": 0,
+          "p90": 0
+        }
+      },
+      {
+        "date": "2025-09-27T00:00:00.000Z",
+        "day": "2025-09-27",
+        "commitsPerDay": 0,
+        "uniqueAuthorsPerDay": 0,
+        "grossLinesChangedPerDay": 0,
+        "insertionsPerDay": 0,
+        "deletionsPerDay": 0,
+        "filesTouchedPerDay": 0,
+        "commitSizeDistribution": {
+          "p50": 0,
+          "p90": 0
+        }
+      },
+      {
+        "date": "2025-09-28T00:00:00.000Z",
+        "day": "2025-09-28",
+        "commitsPerDay": 0,
+        "uniqueAuthorsPerDay": 0,
+        "grossLinesChangedPerDay": 0,
+        "insertionsPerDay": 0,
+        "deletionsPerDay": 0,
+        "filesTouchedPerDay": 0,
+        "commitSizeDistribution": {
+          "p50": 0,
+          "p90": 0
+        }
+      },
+      {
+        "date": "2025-09-29T00:00:00.000Z",
+        "day": "2025-09-29",
+        "commitsPerDay": 18,
+        "uniqueAuthorsPerDay": 1,
+        "grossLinesChangedPerDay": 27278,
+        "insertionsPerDay": 24513,
+        "deletionsPerDay": 2765,
+        "filesTouchedPerDay": 59,
+        "commitSizeDistribution": {
+          "p50": 332,
+          "p90": 3423
+        }
+      },
+      {
+        "date": "2025-09-30T00:00:00.000Z",
+        "day": "2025-09-30",
+        "commitsPerDay": 17,
+        "uniqueAuthorsPerDay": 1,
+        "grossLinesChangedPerDay": 19150,
+        "insertionsPerDay": 12250,
+        "deletionsPerDay": 6900,
+        "filesTouchedPerDay": 74,
+        "commitSizeDistribution": {
+          "p50": 313,
+          "p90": 3588
+        }
+      },
+      {
+        "date": "2025-10-01T00:00:00.000Z",
+        "day": "2025-10-01",
+        "commitsPerDay": 1,
+        "uniqueAuthorsPerDay": 1,
+        "grossLinesChangedPerDay": 4339,
+        "insertionsPerDay": 3404,
+        "deletionsPerDay": 935,
+        "filesTouchedPerDay": 31,
+        "commitSizeDistribution": {
+          "p50": 4339,
+          "p90": 4339
+        }
+      }
+    ],
+    "stabilityMetrics": [
+      {
+        "date": "2025-09-25T00:00:00.000Z",
+        "day": "2025-09-25",
+        "revertsPerDay": 0,
+        "mergeRatioPerDay": 0,
+        "retouchRate": 0,
+        "renamesPerDay": 0,
+        "outOfHoursShare": 0
+      },
+      {
+        "date": "2025-09-26T00:00:00.000Z",
+        "day": "2025-09-26",
+        "revertsPerDay": 0,
+        "mergeRatioPerDay": 0,
+        "retouchRate": 0,
+        "renamesPerDay": 0,
+        "outOfHoursShare": 0
+      },
+      {
+        "date": "2025-09-27T00:00:00.000Z",
+        "day": "2025-09-27",
+        "revertsPerDay": 0,
+        "mergeRatioPerDay": 0,
+        "retouchRate": 0,
+        "renamesPerDay": 0,
+        "outOfHoursShare": 0
+      },
+      {
+        "date": "2025-09-28T00:00:00.000Z",
+        "day": "2025-09-28",
+        "revertsPerDay": 0,
+        "mergeRatioPerDay": 0,
+        "retouchRate": 0,
+        "renamesPerDay": 0,
+        "outOfHoursShare": 0
+      },
+      {
+        "date": "2025-09-29T00:00:00.000Z",
+        "day": "2025-09-29",
+        "revertsPerDay": 0,
+        "mergeRatioPerDay": 0,
+        "retouchRate": 0,
+        "renamesPerDay": 2,
+        "outOfHoursShare": 0.2222222222222222
+      },
+      {
+        "date": "2025-09-30T00:00:00.000Z",
+        "day": "2025-09-30",
+        "revertsPerDay": 0,
+        "mergeRatioPerDay": 0,
+        "retouchRate": 0.43243243243243246,
+        "renamesPerDay": 0,
+        "outOfHoursShare": 0.35294117647058826
+      },
+      {
+        "date": "2025-10-01T00:00:00.000Z",
+        "day": "2025-10-01",
+        "revertsPerDay": 0,
+        "mergeRatioPerDay": 0,
+        "retouchRate": 0.45161290322580644,
+        "renamesPerDay": 0,
+        "outOfHoursShare": 1
+      }
+    ],
+    "ownershipMetrics": [
+      {
+        "date": "2025-09-25T00:00:00.000Z",
+        "day": "2025-09-25",
+        "newFilesCreatedPerDay": 0,
+        "singleOwnerFilesTouched": 0,
+        "filesTouchedToday": 0,
+        "singleOwnerShare": 0,
+        "avgAuthorsPerFile": 0
+      },
+      {
+        "date": "2025-09-26T00:00:00.000Z",
+        "day": "2025-09-26",
+        "newFilesCreatedPerDay": 0,
+        "singleOwnerFilesTouched": 0,
+        "filesTouchedToday": 0,
+        "singleOwnerShare": 0,
+        "avgAuthorsPerFile": 0
+      },
+      {
+        "date": "2025-09-27T00:00:00.000Z",
+        "day": "2025-09-27",
+        "newFilesCreatedPerDay": 0,
+        "singleOwnerFilesTouched": 0,
+        "filesTouchedToday": 0,
+        "singleOwnerShare": 0,
+        "avgAuthorsPerFile": 0
+      },
+      {
+        "date": "2025-09-28T00:00:00.000Z",
+        "day": "2025-09-28",
+        "newFilesCreatedPerDay": 0,
+        "singleOwnerFilesTouched": 0,
+        "filesTouchedToday": 0,
+        "singleOwnerShare": 0,
+        "avgAuthorsPerFile": 0
+      },
+      {
+        "date": "2025-09-29T00:00:00.000Z",
+        "day": "2025-09-29",
+        "newFilesCreatedPerDay": 67,
+        "singleOwnerFilesTouched": 0,
+        "filesTouchedToday": 59,
+        "singleOwnerShare": 0,
+        "avgAuthorsPerFile": 0
+      },
+      {
+        "date": "2025-09-30T00:00:00.000Z",
+        "day": "2025-09-30",
+        "newFilesCreatedPerDay": 54,
+        "singleOwnerFilesTouched": 32,
+        "filesTouchedToday": 74,
+        "singleOwnerShare": 0.43243243243243246,
+        "avgAuthorsPerFile": 0.43243243243243246
+      },
+      {
+        "date": "2025-10-01T00:00:00.000Z",
+        "day": "2025-10-01",
+        "newFilesCreatedPerDay": 17,
+        "singleOwnerFilesTouched": 14,
+        "filesTouchedToday": 31,
+        "singleOwnerShare": 0.45161290322580644,
+        "avgAuthorsPerFile": 0.45161290322580644
+      }
+    ],
+    "couplingMetrics": [
+      {
+        "date": "2025-09-25T00:00:00.000Z",
+        "day": "2025-09-25",
+        "coChangeDensityPerDay": 0,
+        "totalCoChangePairs": 0,
+        "multiFileCommits": 0
+      },
+      {
+        "date": "2025-09-26T00:00:00.000Z",
+        "day": "2025-09-26",
+        "coChangeDensityPerDay": 0,
+        "totalCoChangePairs": 0,
+        "multiFileCommits": 0
+      },
+      {
+        "date": "2025-09-27T00:00:00.000Z",
+        "day": "2025-09-27",
+        "coChangeDensityPerDay": 0,
+        "totalCoChangePairs": 0,
+        "multiFileCommits": 0
+      },
+      {
+        "date": "2025-09-28T00:00:00.000Z",
+        "day": "2025-09-28",
+        "coChangeDensityPerDay": 0,
+        "totalCoChangePairs": 0,
+        "multiFileCommits": 0
+      },
+      {
+        "date": "2025-09-29T00:00:00.000Z",
+        "day": "2025-09-29",
+        "coChangeDensityPerDay": 37.44444444444444,
+        "totalCoChangePairs": 674,
+        "multiFileCommits": 17
+      },
+      {
+        "date": "2025-09-30T00:00:00.000Z",
+        "day": "2025-09-30",
+        "coChangeDensityPerDay": 46.11764705882353,
+        "totalCoChangePairs": 784,
+        "multiFileCommits": 16
+      },
+      {
+        "date": "2025-10-01T00:00:00.000Z",
+        "day": "2025-10-01",
+        "coChangeDensityPerDay": 465,
+        "totalCoChangePairs": 465,
+        "multiFileCommits": 1
+      }
+    ],
+    "hygieneMetrics": [
+      {
+        "date": "2025-09-25T00:00:00.000Z",
+        "day": "2025-09-25",
+        "medianCommitMessageLength": 0,
+        "shortMessages": 0,
+        "conventionalCommits": 0
+      },
+      {
+        "date": "2025-09-26T00:00:00.000Z",
+        "day": "2025-09-26",
+        "medianCommitMessageLength": 0,
+        "shortMessages": 0,
+        "conventionalCommits": 0
+      },
+      {
+        "date": "2025-09-27T00:00:00.000Z",
+        "day": "2025-09-27",
+        "medianCommitMessageLength": 0,
+        "shortMessages": 0,
+        "conventionalCommits": 0
+      },
+      {
+        "date": "2025-09-28T00:00:00.000Z",
+        "day": "2025-09-28",
+        "medianCommitMessageLength": 0,
+        "shortMessages": 0,
+        "conventionalCommits": 0
+      },
+      {
+        "date": "2025-09-29T00:00:00.000Z",
+        "day": "2025-09-29",
+        "medianCommitMessageLength": 91,
+        "shortMessages": 1,
+        "conventionalCommits": 14
+      },
+      {
+        "date": "2025-09-30T00:00:00.000Z",
+        "day": "2025-09-30",
+        "medianCommitMessageLength": 94,
+        "shortMessages": 0,
+        "conventionalCommits": 15
+      },
+      {
+        "date": "2025-10-01T00:00:00.000Z",
+        "day": "2025-10-01",
+        "medianCommitMessageLength": 858,
+        "shortMessages": 0,
+        "conventionalCommits": 0
+      }
+    ],
+    "contributionsGraph": {
+      "calendar": [
+        {
+          "date": "2025-09-25",
+          "count": 0,
+          "intensity": 0,
+          "dayOfWeek": 3
+        },
+        {
+          "date": "2025-09-26",
+          "count": 0,
+          "intensity": 0,
+          "dayOfWeek": 4
+        },
+        {
+          "date": "2025-09-27",
+          "count": 0,
+          "intensity": 0,
+          "dayOfWeek": 5
+        },
+        {
+          "date": "2025-09-28",
+          "count": 0,
+          "intensity": 0,
+          "dayOfWeek": 6
+        },
+        {
+          "date": "2025-09-29",
+          "count": 18,
+          "intensity": 4,
+          "dayOfWeek": 7
+        },
+        {
+          "date": "2025-09-30",
+          "count": 17,
+          "intensity": 4,
+          "dayOfWeek": 1
+        },
+        {
+          "date": "2025-10-01",
+          "count": 1,
+          "intensity": 1,
+          "dayOfWeek": 2
+        }
+      ],
+      "maxCommits": 18,
+      "totalCommits": 36,
+      "weeks": [
+        {
+          "weekNumber": 39,
+          "days": [
+            {
+              "date": "2025-09-25",
+              "count": 0,
+              "intensity": 0,
+              "dayOfWeek": 3
+            },
+            {
+              "date": "2025-09-26",
+              "count": 0,
+              "intensity": 0,
+              "dayOfWeek": 4
+            },
+            {
+              "date": "2025-09-27",
+              "count": 0,
+              "intensity": 0,
+              "dayOfWeek": 5
+            },
+            {
+              "date": "2025-09-28",
+              "count": 0,
+              "intensity": 0,
+              "dayOfWeek": 6
+            },
+            {
+              "date": "2025-09-29",
+              "count": 18,
+              "intensity": 4,
+              "dayOfWeek": 7
+            }
+          ]
+        },
+        {
+          "weekNumber": 40,
+          "days": [
+            {
+              "date": "2025-09-30",
+              "count": 17,
+              "intensity": 4,
+              "dayOfWeek": 1
+            },
+            {
+              "date": "2025-10-01",
+              "count": 1,
+              "intensity": 1,
+              "dayOfWeek": 2
+            }
+          ]
+        }
+      ]
+    },
+    "limitations": {
+      "dataSource": "git-commit-history-only",
+      "timezoneWarnings": [
+        "Commit timestamps reflect when commits were made, not actual working hours",
+        "Timezone conversion is based on system locale or specified timezone",
+        "Authors may work across multiple timezones",
+        "Commit timing does not indicate work-life balance or overtime"
+      ],
+      "calculationMethods": {
+        "retouch-rate": "Files changed today that were also changed within last 14 days",
+        "single-owner": "Files with only one author in trailing 90-day window",
+        "out-of-hours": "Commits outside configured working hours (default: 8am-6pm Mon-Fri)",
+        "co-change-density": "Average number of file pairs changed together per commit",
+        "conventional-commits": "Basic pattern matching for conventional commit format"
+      },
+      "knownLimitations": [
+        "No access to code review data, pull request workflows, or approval processes",
+        "Cannot determine actual working hours, time zones, or availability",
+        "File ownership based on commit authorship only, not actual responsibility",
+        "Revert detection based on commit message content only",
+        "No integration with issue tracking, CI/CD, or deployment systems",
+        "Commit timing affected by development workflows and git strategies",
+        "Cannot distinguish between code quality, bug fixes, or feature work"
+      ],
+      "recommendedSupplementalData": [
+        "Code review metrics from GitHub/GitLab/Azure DevOps APIs",
+        "Issue tracking data for work item correlation",
+        "CI/CD pipeline data for deployment and build metrics",
+        "Code quality metrics from static analysis tools",
+        "Test coverage data from testing frameworks",
+        "Team structure and timezone information from HR systems",
+        "Actual working hours and calendar data"
+      ]
+    }
+  }
+}
