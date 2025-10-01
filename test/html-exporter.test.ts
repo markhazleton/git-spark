@@ -236,11 +236,13 @@ describe('HTMLExporter (Phase 3)', () => {
     expect(html).not.toContain(forbiddenPattern);
   });
 
-  it('shows governance and risk sections plus charts', async () => {
+  it('shows current sections and navigation', async () => {
     await exporter.export(report, outDir);
     const html = readFileSync(resolve(outDir, 'git-spark-report.html'), 'utf-8');
-    expect(html).toContain('Risk Overview');
-    expect(html).toContain('riskFactorsChart');
+    expect(html).toContain('Executive Summary');
+    expect(html).toContain('Team Patterns');
+    expect(html).toContain('Author Details');
+    expect(html).toContain('File Hotspots');
   });
 
   it('includes CSS variables, smooth scroll behavior, and dataset toggles', async () => {

@@ -387,7 +387,7 @@ export class HTMLExporter {
           <td class="num" data-sort="${f.commits}">${numberFmt(f.commits)}</td>
           <td class="num" data-sort="${f.churn}">${numberFmt(f.churn)}</td>
           <td class="num" data-sort="${authors}">${authors}</td>
-          <td class="num" data-sort="${riskPercent}"><span class="risk-badge risk-${this.getRiskBand(riskPercent)}" title="Commits: ${f.commits}\nChurn: ${f.churn}\nAuthors: ${authors}">${riskPercent}%</span></td>
+          <td class="num" data-sort="${riskPercent}"><span class="activity-badge activity-${this.getRiskBand(riskPercent)}" title="Commits: ${f.commits}\nLines Changed: ${f.churn}\nAuthors: ${authors}">${riskPercent}%</span></td>
         </tr>`;
       })
       .join('');
@@ -487,7 +487,7 @@ export class HTMLExporter {
   <meta name="repository" content="${this.escapeHtml(repoName)}">
   <meta property="og:title" content="GitSpark Report - ${this.escapeHtml(repoName)}">
   <meta property="og:type" content="article">
-  <meta property="og:description" content="${this.escapeHtml(`${report.repository.totalCommits} commits • ${report.repository.totalAuthors} contributors • Health ${healthPct}%`)}">>
+  <meta property="og:description" content="${this.escapeHtml(`${report.repository.totalCommits} commits • ${report.repository.totalAuthors} contributors • Activity Index ${healthPct}%`)}">>
   <meta property="og:image" content="${ogImage}">
   <meta http-equiv="Content-Security-Policy" content="${csp}">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
@@ -503,11 +503,12 @@ export class HTMLExporter {
       <nav class="main-nav" aria-label="Section navigation">
         <ul>
           <li><a href="#summary">Summary</a></li>
+          <li><a href="#limitations">Limitations</a></li>
           <li><a href="#authors">Authors</a></li>
-          <li><a href="#team-score">Team Score</a></li>
-          <li><a href="#files">Files</a></li>
-          <li><a href="#risks">Risks</a></li>
+          <li><a href="#team-patterns">Team Patterns</a></li>
+          <li><a href="#files">File Hotspots</a></li>
           <li><a href="#author-details">Author Details</a></li>
+          ${report.dailyTrends ? '<li><a href="#daily-trends">Daily Trends</a></li>' : ''}
           <li><a href="#documentation">Documentation</a></li>
           <li><a href="#meta">Metadata</a></li>
         </ul>
@@ -528,7 +529,7 @@ export class HTMLExporter {
       </div>
 
       <div class="health-badges" aria-label="Activity Metrics">
-        <div class="health-score" data-rating="${this.getHealthRating(healthPct)}" title="Repository activity index">${healthPct}% <span>${this.capitalize(this.getHealthRating(healthPct))}</span></div>
+        <div class="health-score" data-rating="${this.getHealthRating(healthPct)}" title="Repository activity index based on commit frequency and author participation">${healthPct}% <span>Activity Index</span></div>
       </div>
 
       ${(() => {
@@ -536,6 +537,9 @@ export class HTMLExporter {
         return `
         <div class="activity-breakdown">
           <h3>Activity Index Calculation</h3>
+          <div class="activity-explanation">
+            <p><strong>Note:</strong> This index measures repository activity patterns from Git commit data only. Higher values indicate more frequent commits and broader author participation. This is not a measure of code quality, team performance, or project success.</p>
+          </div>
           <div class="breakdown-components">
             <div class="component">
               <div class="component-label">Commit Frequency</div>
@@ -560,290 +564,282 @@ export class HTMLExporter {
       })()}
     </section>
 
+    <section id="limitations" class="section">
+      <h2>⚠️ Important: Measurement Limitations</h2>
+      <div class="critical-notice">
+        <h3>What Git Repository Data Can and Cannot Tell Us</h3>
+        
+        <div class="limitation-grid">
+          <div class="limitation-category">
+            <h4>✅ Available from Git Repository</h4>
+            <ul>
+              <li>Commit metadata (author, timestamp, message)</li>
+              <li>File changes (additions, deletions, modifications)</li>
+              <li>Branch and merge history</li>
+              <li>Authorship and co-authorship information</li>
+              <li>Commit relationships and ancestry</li>
+            </ul>
+          </div>
+          
+          <div class="limitation-category">
+            <h4>❌ NOT Available from Git Repository</h4>
+            <ul>
+              <li><strong>Code review data:</strong> No reviewer info, approval status, or review comments</li>
+              <li><strong>Pull/merge request metadata:</strong> No PR numbers, descriptions, or review workflows</li>
+              <li><strong>Issue tracking:</strong> No bug reports, feature requests, or issue relationships</li>
+              <li><strong>Team structure:</strong> No organizational hierarchy, roles, or responsibilities</li>
+              <li><strong>Work hours/timezones:</strong> No actual working hours or availability</li>
+              <li><strong>Performance metrics:</strong> No build times, test results, or runtime performance</li>
+              <li><strong>Code quality:</strong> No actual defect rates, test coverage, or maintainability scores</li>
+            </ul>
+          </div>
+        </div>
+        
+        <div class="honest-metrics-notice">
+          <h4>📊 Our Approach: Honest, Observable Metrics Only</h4>
+          <p>All metrics in this report are calculated exclusively from Git commit history. We do not guess, estimate, or infer team performance, code quality, or individual productivity from Git data alone.</p>
+          
+          <div class="metric-categories">
+            <div class="metric-category">
+              <h5>Author Metrics (Individual)</h5>
+              <ul>
+                <li><strong>Commit Count:</strong> Number of commits authored</li>
+                <li><strong>Lines Changed:</strong> Sum of insertions and deletions</li>
+                <li><strong>Commit Size Distribution:</strong> Pattern of small vs large commits</li>
+                <li><strong>Active Days:</strong> Number of days with at least one commit</li>
+                <li><strong>Files Touched:</strong> Number of unique files modified</li>
+              </ul>
+            </div>
+            
+            <div class="metric-category">
+              <h5>Team Metrics (Aggregate)</h5>
+              <ul>
+                <li><strong>Commit Frequency:</strong> Total commits per time period</li>
+                <li><strong>Code Churn:</strong> Total lines changed across repository</li>
+                <li><strong>Batch Size Distribution:</strong> Average and variation in commit sizes</li>
+                <li><strong>Active Contributors:</strong> Number of distinct authors in time window</li>
+                <li><strong>File Hotspots:</strong> Files with highest number of changes</li>
+              </ul>
+            </div>
+          </div>
+          
+          <div class="usage-guidelines">
+            <h5>🎯 Appropriate Usage Guidelines</h5>
+            <ul>
+              <li><strong>DO:</strong> Use to understand activity patterns and contribution distribution</li>
+              <li><strong>DO:</strong> Identify files that change frequently (maintenance hotspots)</li>
+              <li><strong>DO:</strong> Track repository activity trends over time</li>
+              <li><strong>DON'T:</strong> Use for performance reviews or productivity assessments</li>
+              <li><strong>DON'T:</strong> Assume commit count equals productivity or value</li>
+              <li><strong>DON'T:</strong> Draw conclusions about code quality from Git metrics alone</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section id="authors" class="section">
-      <h2>Top Contributors</h2>
+      <h2>Top Contributors (Author Metrics)</h2>
+      <p class="section-description">Individual developer metrics calculated from Git commit data. These represent observable activity patterns, not productivity or performance.</p>
       <div class="table-wrapper" role="region" aria-label="Top authors table">
         <table class="data-table" data-sortable data-initial-limit="15" data-table="authors">
-          <thead><tr><th scope="col">Author</th><th class="num" scope="col">Commits</th><th class="num" scope="col">Churn</th><th class="num" scope="col">Avg Size</th><th class="num" scope="col">Files</th></tr></thead>
+          <thead><tr><th scope="col">Author</th><th class="num" scope="col">Commits</th><th class="num" scope="col">Lines Changed</th><th class="num" scope="col">Avg Commit Size</th><th class="num" scope="col">Files Touched</th></tr></thead>
           <tbody>${authorRows}</tbody>
         </table>
       </div>
       <button class="show-more" data-target-table="authors" hidden>Show more</button>
     </section>
 
-    <section id="team-score" class="section">
-      <h2>Team Effectiveness Score</h2>
-      <div class="team-score-overview">
-        <div class="team-score-main">
-          <div class="score-circle">
-            <div class="score-value">${report.teamScore.overall}</div>
-            <div class="score-label">Overall Score</div>
-          </div>
-          <div class="score-rating">
-            <span class="rating-label">${this.getTeamScoreRating(report.teamScore.overall)}</span>
-            <div class="rating-description">${this.getTeamScoreDescription(report.teamScore.overall)}</div>
-          </div>
-        </div>
-      </div>
+    <section id="team-patterns" class="section">
+      <h2>Team Activity Patterns (Aggregate Metrics)</h2>
+      <p class="section-description">Repository-wide patterns calculated from all Git commits. These show activity distribution, not team performance or quality.</p>
       
-      <div class="team-metrics-grid">
-        <div class="metric-card">
-          <h3>Team Organization</h3>
-          <div class="metric-score">${report.teamScore.collaboration.score}</div>
-          <div class="metric-details">
-            <div class="metric-item">
-              <span class="metric-name">Developer Specialization</span>
-              <span class="metric-value">${report.teamScore.collaboration.knowledgeDistribution.toFixed(1)}%</span>
+      <div class="team-patterns-grid">
+        <div class="pattern-card">
+          <h3>Commit Distribution</h3>
+          <div class="pattern-metrics">
+            <div class="pattern-metric">
+              <span class="metric-label">Total Commits</span>
+              <span class="metric-value">${numberFmt(report.repository.totalCommits)}</span>
             </div>
-            <div class="metric-item">
-              <span class="metric-name">File Ownership Clarity</span>
-              <span class="metric-value">${report.teamScore.collaboration.crossTeamInteraction.toFixed(1)}%</span>
+            <div class="pattern-metric">
+              <span class="metric-label">Avg per Day</span>
+              <span class="metric-value">${report.repository.avgCommitsPerDay.toFixed(1)}</span>
             </div>
-          </div>
-          <div class="metric-limitations">
-            <small>📊 Higher scores indicate better team organization and specialization</small>
-          </div>
-        </div>
-
-        <div class="metric-card">
-          <h3>Consistency</h3>
-          <div class="metric-score">${report.teamScore.consistency.score}</div>
-          <div class="metric-details">
-            <div class="metric-item">
-              <span class="metric-name">Bus Factor Distribution</span>
-              <span class="metric-value">${report.teamScore.consistency.busFactorPercentage.toFixed(1)}%</span>
-            </div>
-            <div class="metric-item">
-              <span class="metric-name">Active Contributors</span>
-              <span class="metric-value">${report.teamScore.consistency.activeContributorRatio.toFixed(1)}%</span>
-            </div>
-            <div class="metric-item">
-              <span class="metric-name">Velocity Consistency</span>
-              <span class="metric-value">${report.teamScore.consistency.velocityConsistency.toFixed(1)}%</span>
-            </div>
-            <div class="metric-item">
-              <span class="metric-name">Delivery Cadence</span>
-              <span class="metric-value">${report.teamScore.consistency.deliveryCadence.toFixed(1)}%</span>
+            <div class="pattern-metric">
+              <span class="metric-label">Active Days</span>
+              <span class="metric-value">${numberFmt(report.repository.activeDays)}</span>
             </div>
           </div>
         </div>
 
-        <div class="metric-card">
-          <h3>Work-Life Balance</h3>
-          <div class="metric-score">${report.teamScore.workLifeBalance.score}</div>
-          <div class="metric-details">
-            <div class="metric-item">
-              <span class="metric-name">Commit Time Patterns</span>
-              <span class="metric-value">${report.teamScore.workLifeBalance.commitTimePatterns.toFixed(1)}%</span>
+        <div class="pattern-card">
+          <h3>Code Volume</h3>
+          <div class="pattern-metrics">
+            <div class="pattern-metric">
+              <span class="metric-label">Total Churn</span>
+              <span class="metric-value">${compactFmt(report.repository.totalChurn)}</span>
             </div>
-            <div class="metric-item">
-              <span class="metric-name">After-Hours Commits</span>
-              <span class="metric-value">${report.teamScore.workLifeBalance.afterHoursCommitFrequency.toFixed(1)}%</span>
+            <div class="pattern-metric">
+              <span class="metric-label">Files Changed</span>
+              <span class="metric-value">${numberFmt(report.repository.totalFiles)}</span>
             </div>
-            <div class="metric-item">
-              <span class="metric-name">Weekend Commits</span>
-              <span class="metric-value">${report.teamScore.workLifeBalance.weekendCommitActivity.toFixed(1)}%</span>
+          </div>
+        </div>
+
+        <div class="pattern-card">
+          <h3>Contributor Patterns</h3>
+          <div class="pattern-metrics">
+            <div class="pattern-metric">
+              <span class="metric-label">Total Authors</span>
+              <span class="metric-value">${numberFmt(report.repository.totalAuthors)}</span>
             </div>
-            <div class="metric-item">
-              <span class="metric-name">Team Coverage</span>
-              <span class="metric-value">${report.teamScore.workLifeBalance.teamActiveCoverage.coveragePercentage.toFixed(1)}%</span>
+            <div class="pattern-metric">
+              <span class="metric-label">Bus Factor</span>
+              <span class="metric-value">${numberFmt(report.repository.busFactor)}</span>
+              <span class="metric-note">Authors for 50% of commits</span>
             </div>
           </div>
         </div>
       </div>
-
     </section>
 
     <section id="files" class="section">
-      <h2>Source Code Hotspots (Top 10)</h2>
-      <div class="table-wrapper" role="region" aria-label="Top source code files table">
+      <h2>File Activity Hotspots</h2>
+      <p class="section-description">Source code files with the most Git activity. High activity may indicate maintenance hotspots but does not imply code quality issues.</p>
+      <div class="table-wrapper" role="region" aria-label="File activity table">
         <table class="data-table" data-sortable data-initial-limit="25" data-table="files">
-          <thead><tr><th scope="col">File</th><th class="num" scope="col">Commits</th><th class="num" scope="col">Churn</th><th class="num" scope="col">Authors</th><th class="num" scope="col">Risk</th></tr></thead>
+          <thead><tr><th scope="col">File</th><th class="num" scope="col">Commits</th><th class="num" scope="col">Lines Changed</th><th class="num" scope="col">Authors</th><th class="num" scope="col">Activity Score</th></tr></thead>
           <tbody>${riskRows}</tbody>
         </table>
       </div>
       <button class="show-more" data-target-table="files" hidden>Show more</button>
-    </section>
-
-    <section id="risks" class="section">
-      <h2>Risk Overview</h2>
-      <p class="risk-level-label">Overall Risk: <strong>${this.capitalize(report.risks.overallRisk)}</strong></p>
-      <ul class="risk-factors">
-        <li>High Churn Files: ${report.risks.riskFactors.highChurnFiles}</li>
-        <li>Many Author Files: ${report.risks.riskFactors.manyAuthorFiles}</li>
-        <li>Large Commits: ${report.risks.riskFactors.largeCommits}</li>
-        <li>Recent Changes: ${report.risks.riskFactors.recentChanges}</li>
-      </ul>
-      <div id="riskFactorsChart" class="chart-container">
-        <!-- Risk factors chart placeholder -->
-      </div>
-
-    </section>
 
     <section id="author-details" class="section">
-      <h2>Detailed Author Profiles</h2>
+      <h2>Author Activity Details</h2>
+      <p class="section-description">Detailed activity patterns for individual contributors. All metrics are derived from Git commit data and represent observable patterns only.</p>
       <div class="author-profiles">
         ${this.generateDetailedAuthorProfiles(report.authors)}
       </div>
     </section>
 
+    ${report.dailyTrends ? this.generateDailyTrendsSection(report.dailyTrends) : ''}
+
     <section id="documentation" class="section">
       <h2>Calculation Documentation</h2>
-      <p class="doc-intro">This section provides detailed explanations of the metrics and formulas used in team and author evaluations.</p>
+      <p class="doc-intro">This section provides detailed explanations of the metrics and calculations used, all based exclusively on Git repository commit data.</p>
       
-      <div class="measurement-limitations">
-        <h3>⚠️ Important: Measurement Limitations</h3>
-        <p><strong>What Git Stores vs. What Platforms Store:</strong></p>
-        <ul>
-          <li><strong>✅ Available from Git:</strong> Commit data, merge commits, co-authorship, file changes, commit messages, timestamps</li>
-          <li><strong>❌ NOT Available from Git:</strong> PR/MR approvers, reviewers, review comments, approval policies, CI/CD results</li>
-        </ul>
-        <p><strong>Code Review Metrics:</strong> All "code review" and "review workflow" metrics are <em>estimated</em> from Git commit patterns (merge commits, commit message patterns) and may not reflect actual review practices, especially in teams using squash merges, rebase workflows, or manual reviews.</p>
-        <p><strong>Platform Differences:</strong> Detection accuracy varies between GitHub, GitLab, Azure DevOps, and other Git platforms based on their merge commit patterns and message formats.</p>
+      <div class="measurement-principles">
+        <h3>📐 Measurement Principles</h3>
+        <div class="principles-grid">
+          <div class="principle-card">
+            <h4>Objective Data Only</h4>
+            <p>All metrics are calculated from observable Git commit data without interpretation or speculation about team dynamics, productivity, or code quality.</p>
+          </div>
+          <div class="principle-card">
+            <h4>Transparent Limitations</h4>
+            <p>We clearly state what our metrics can and cannot measure, avoiding false claims about team performance or code quality assessment.</p>
+          </div>
+          <div class="principle-card">
+            <h4>No Speculation</h4>
+            <p>We do not infer work-life balance, collaboration effectiveness, or individual performance from Git commit patterns alone.</p>
+          </div>
+        </div>
       </div>
       
       <div class="doc-section">
-        <h3>Team Effectiveness Score</h3>
-        <p>The Team Effectiveness Score evaluates team performance across three key dimensions: organization patterns, development consistency, and work-life balance sustainability, providing insights into team structure and workflow efficiency.</p>
+        <h3>Repository Activity Index</h3>
+        <p>The Activity Index provides a normalized measure of repository activity based on observable Git patterns.</p>
         
         <div class="formula-box">
-          <h4>Overall Team Score Formula</h4>
+          <h4>Activity Index Formula</h4>
           <code class="formula">
-            Team Score = (Team Organization × 0.40) + (Consistency × 0.45) + (Work-Life Balance × 0.15)
+            Activity Index = (Commit Frequency + Author Participation + Change Consistency) ÷ 3
           </code>
-        </div>
-
-        <div class="metric-docs">
-          <div class="metric-category">
-            <h4>Team Organization (40% Weight)</h4>
-            <div class="limitation-notice">
-              <strong>⚠️ Measurement Approach:</strong> Measures team organization and specialization patterns from Git commit data. 
-              High scores indicate clear file ownership and developer specialization rather than traditional "collaboration."
-            </div>
+          <div class="formula-explanation">
             <ul>
-              <li><strong>Developer Specialization:</strong> Measures how unique each developer's file set is compared to others. Higher scores indicate developers working on distinct areas rather than overlapping work.</li>
-              <li><strong>File Ownership Clarity:</strong> Percentage of files with single-author ownership. Higher scores suggest clear responsibility and reduced conflicts.</li>
-              <li><strong>Organization Efficiency:</strong> Measures low file overlap between developers. Higher scores indicate better task distribution and less potential for conflicts.</li>
-              <li><strong>Co-Authorship Rate:</strong> Percentage of commits with multiple authors (Co-authored-by: tags). Measured separately as intentional collaboration indicator.</li>
+              <li><strong>Commit Frequency:</strong> Daily commit rate normalized to 0-1 scale</li>
+              <li><strong>Author Participation:</strong> Author-to-commit ratio indicating contribution spread</li>
+              <li><strong>Change Consistency:</strong> Variation in commit sizes (derived component)</li>
             </ul>
-            <div class="formula-box">
-              <code class="formula">
-                Organization Score = (Specialization × 0.50) + (Ownership Clarity × 0.30) + (Low Overlap × 0.20)
-              </code>
-            </div>
-            <div class="interpretation-note">
-              <strong>📝 Interpretation:</strong> This metric favors teams where developers have specialized, non-overlapping areas of responsibility. 
-              Very high scores may indicate knowledge silos, while very low scores may suggest unclear ownership or excessive conflicts.
-            </div>
-          </div>
-
-          <div class="metric-category">
-            <h4>Consistency & Velocity (45% Weight)</h4>
-            <ul>
-              <li><strong>Bus Factor:</strong> Number of top contributors needed to account for 50% of commits. Higher values indicate better knowledge distribution.</li>
-              <li><strong>Active Contributor Ratio:</strong> Percentage of team members with commits in the last 30 days. Measures current team engagement.</li>
-              <li><strong>Velocity Consistency:</strong> Inverse of coefficient of variation in daily commits. Higher values indicate steadier development pace.</li>
-              <li><strong>Delivery Cadence:</strong> Regularity of commits over time, calculated using coefficient of variation of commit intervals.</li>
-            </ul>
-            <div class="formula-box">
-              <code class="formula">
-                Consistency Score = (Bus Factor Score × 0.25) + (Active Contributors × 0.25) + (Velocity Consistency × 0.25) + (Delivery Cadence × 0.25)
-              </code>
-            </div>
-          </div>
-
-          <div class="metric-category">
-            <h4>Work-Life Balance & Sustainability (20% Weight)</h4>
-            <div class="limitation-notice">
-              <strong>⚠️ Important Limitations:</strong> Work patterns are estimated from commit timing only. 
-              Cannot detect actual working hours, time zones, or real work-life balance.
-            </div>
-            <ul>
-              <li><strong>Commit Time Patterns:</strong> Index score based on commit timing distribution. Values reflect temporal commit patterns across business vs non-business hours.</li>
-              <li><strong>After-Hours Commit Frequency:</strong> Percentage of commits made outside business hours (before 8 AM or after 6 PM). <em>Note: Based on commit timestamps, not actual working hours.</em></li>
-              <li><strong>Weekend Commit Activity:</strong> Percentage of commits made on weekends (Saturday and Sunday).</li>
-              <li><strong>Team Active Coverage:</strong> Estimated team coverage patterns from commit authoring. <em>Note: Based on commit patterns, not actual vacation or availability data.</em></li>
-              <li><strong>Burnout Risk Indicators:</strong> Detection of high-velocity days, consecutive commit periods, and excessive after-hours activity patterns.</li>
-            </ul>
-            <div class="formula-box">
-              <code class="formula">
-                Balance Score = (Commit Time Patterns × 0.40) + ((100 - After-Hours Frequency) × 0.30) + ((100 - Weekend Activity) × 0.20) + (Team Active Coverage × 0.10)
-              </code>
-            </div>
           </div>
         </div>
 
-        <div class="score-thresholds">
-          <h4>Team Score Ranges</h4>
-          <ul>
-            <li><strong>90-100:</strong> Excellent team organization with clear specialization and ownership</li>
-            <li><strong>75-89:</strong> Good organization with well-defined areas of responsibility</li>
-            <li><strong>60-74:</strong> Moderate organization with some clear ownership patterns</li>
-            <li><strong>40-59:</strong> Mixed organization with moderate file overlap between developers</li>
-            <li><strong>0-39:</strong> High file overlap suggesting unclear ownership or excessive conflicts</li>
-          </ul>
+        <div class="limitation-notice">
+          <strong>⚠️ Important:</strong> This index measures repository activity patterns, not project health, team performance, or code quality. High activity doesn't necessarily indicate good outcomes, and low activity doesn't indicate problems.
         </div>
       </div>
 
       <div class="doc-section">
-        <h3>Author Evaluation Metrics</h3>
-        <p>Individual author metrics provide detailed insights into contribution patterns, code quality, work organization style, and work habits.</p>
+        <h3>Author Activity Metrics</h3>
+        <p>Individual contributor metrics focus on observable activity patterns from Git commit history.</p>
 
         <div class="metric-docs">
           <div class="metric-category">
-            <h4>Core Contribution Metrics</h4>
+            <h4>Core Activity Metrics</h4>
             <ul>
-              <li><strong>Commit Frequency:</strong> Average commits per active day. Calculated as total commits divided by number of unique days with commits.</li>
-              <li><strong>Commit Size Distribution:</strong> Classification of commits into categories (micro: &lt;20 lines, small: 20-50, medium: 51-200, large: 201-500, very large: &gt;500 lines).</li>
-              <li><strong>Churn Rate:</strong> Total lines added plus lines deleted. Indicates volume of code changes.</li>
-              <li><strong>File Diversity Score:</strong> Percentage of total repository files modified by the author.</li>
+              <li><strong>Commit Count:</strong> Total number of commits authored in the analysis period</li>
+              <li><strong>Lines Changed:</strong> Sum of all line insertions and deletions across all commits</li>
+              <li><strong>Average Commit Size:</strong> Mean number of lines changed per commit</li>
+              <li><strong>Files Touched:</strong> Number of unique files modified by the author</li>
+              <li><strong>Active Days:</strong> Number of distinct days with at least one commit</li>
             </ul>
             <div class="formula-box">
+              <code class="formula">
+                Lines Changed = Total Insertions + Total Deletions
+              </code>
               <code class="formula">
                 Average Commit Size = Total Lines Changed ÷ Total Commits
               </code>
-              <code class="formula">
-                File Diversity = (Author's Unique Files ÷ Total Repository Files) × 100
-              </code>
             </div>
           </div>
 
           <div class="metric-category">
-            <h4>Author Organization Patterns</h4>
+            <h4>Commit Size Distribution</h4>
+            <p>Classification of commits by the number of lines changed, showing different development patterns:</p>
             <ul>
-              <li><strong>Co-Authorship Rate:</strong> Percentage of commits with multiple authors, indicating intentional collaborative work.</li>
-              <li><strong>Pull Request Integration:</strong> Ratio of merge commits to direct commits, showing adherence to review processes.</li>
-              <li><strong>File Specialization Index:</strong> Ratio of exclusive files to shared files, measuring focus on specific areas.</li>
-              <li><strong>File Ownership Style:</strong> Classification as specialized, shared, or balanced based on file ownership patterns.</li>
+              <li><strong>Micro (&lt;20 lines):</strong> Small fixes, minor changes</li>
+              <li><strong>Small (20-50 lines):</strong> Focused changes, bug fixes</li>
+              <li><strong>Medium (51-200 lines):</strong> Feature additions, moderate refactoring</li>
+              <li><strong>Large (201-500 lines):</strong> Significant features, major changes</li>
+              <li><strong>Very Large (&gt;500 lines):</strong> Major features, large refactors, or merged changes</li>
             </ul>
+            <p><em>Note: Commit size alone does not indicate quality, complexity, or effort. Large commits may represent legitimate batch changes, while small commits may address complex issues.</em></p>
           </div>
 
           <div class="metric-category">
-            <h4>Code Quality Indicators</h4>
+            <h4>Temporal Patterns</h4>
+            <p>Observable timing patterns in commit history:</p>
             <ul>
-              <li><strong>Commit Message Quality:</strong> Composite score based on conventional commit format, traceability references, adequate length, and descriptiveness.</li>
-              <li><strong>Revert Rate:</strong> Percentage of author's commits that were later reverted, indicating code stability.</li>
-              <li><strong>Refactoring Activity:</strong> Percentage of commits dedicated to code improvement and cleanup.</li>
-              <li><strong>Documentation Contribution:</strong> Percentage of commits that include documentation changes.</li>
+              <li><strong>Commit Timing:</strong> Distribution of commits across hours and days (timestamp analysis only)</li>
+              <li><strong>Activity Periods:</strong> Identification of high and low activity periods</li>
+              <li><strong>Consistency:</strong> Regularity of contributions over time</li>
             </ul>
-            <div class="formula-box">
-              <code class="formula">
-                Message Quality = (Conventional × 0.25) + (Traceability × 0.25) + (Length × 0.20) + (Descriptive × 0.20) + (Capitalization × 0.10)
-              </code>
+            <div class="limitation-notice">
+              <strong>⚠️ Timing Limitations:</strong> Commit timestamps reflect when commits were made, not actual working hours. They can be affected by time zones, commit strategies, and development workflows. Do not use for work-life balance assessment.
             </div>
           </div>
+        </div>
+      </div>
 
+      <div class="doc-section">
+        <h3>Team Activity Patterns</h3>
+        <div class="metric-docs">
           <div class="metric-category">
-            <h4>Work Pattern Analysis</h4>
+            <h4>Aggregate Repository Metrics</h4>
             <ul>
-              <li><strong>Activity Distribution:</strong> Analysis of commit timing across hours and days to identify work patterns.</li>
-              <li><strong>Consistency Score:</strong> Regularity of contributions over time, calculated using coefficient of variation of daily activity.</li>
-              <li><strong>Burst Detection:</strong> Identification of periods with unusually high activity that may indicate deadline pressure.</li>
-              <li><strong>Work-Life Balance:</strong> Assessment of after-hours and weekend activity relative to total contributions.</li>
+              <li><strong>Total Commits:</strong> Complete count of commits in the analysis period</li>
+              <li><strong>Code Churn:</strong> Total lines inserted and deleted across all commits</li>
+              <li><strong>Active Contributors:</strong> Number of unique authors with commits in the period</li>
+              <li><strong>File Activity:</strong> Number of unique files modified during the period</li>
+              <li><strong>Bus Factor:</strong> Minimum number of top contributors needed to account for 50% of commits</li>
             </ul>
             <div class="formula-box">
               <code class="formula">
-                Consistency Score = 100 - (Standard Deviation of Daily Commits ÷ Average Daily Commits) × 100
+                Bus Factor = Minimum authors needed for 50% of total commits
+              </code>
+              <code class="formula">
+                Daily Commit Average = Total Commits ÷ Active Days
               </code>
             </div>
           </div>
@@ -851,49 +847,37 @@ export class HTMLExporter {
       </div>
 
       <div class="doc-section">
-        <h3>Statistical Methods</h3>
+        <h3>File Activity Hotspots</h3>
         <div class="metric-docs">
           <div class="metric-category">
-            <h4>Advanced Calculations</h4>
+            <h4>File Activity Analysis</h4>
             <ul>
-              <li><strong>Gini Coefficient:</strong> Measures inequality in contribution distribution. Values close to 0 indicate equal distribution, values close to 1 indicate high inequality.</li>
-              <li><strong>Coefficient of Variation:</strong> Standard deviation divided by mean, used to measure relative variability in commit patterns.</li>
-              <li><strong>Percentile Rankings:</strong> Authors are ranked against team members across multiple dimensions (commits, lines changed, files touched, message quality).</li>
-              <li><strong>Temporal Coupling:</strong> Analysis of files frequently changed together, indicating architectural dependencies.</li>
+              <li><strong>File Commit Count:</strong> Number of commits that modified each file</li>
+              <li><strong>File Line Changes:</strong> Total lines added and removed for each file</li>
+              <li><strong>File Author Count:</strong> Number of different authors who modified each file</li>
+              <li><strong>Activity Score:</strong> Composite score based on commit frequency and author count</li>
             </ul>
-            <div class="formula-box">
-              <code class="formula">
-                Gini Coefficient = (2 × Σ(rank × value)) ÷ (n × Σ(value)) - (n + 1) ÷ n
-              </code>
-              <code class="formula">
-                Coefficient of Variation = (Standard Deviation ÷ Mean) × 100
-              </code>
+            <p><strong>Interpretation:</strong> Files with high activity scores are changed frequently and/or by many authors. This may indicate:</p>
+            <ul>
+              <li>Core functionality that requires frequent updates</li>
+              <li>Configuration files that change with features</li>
+              <li>Files that need architectural attention</li>
+              <li>Areas of active development</li>
+            </ul>
+            <div class="limitation-notice">
+              <strong>⚠️ Activity ≠ Problems:</strong> High file activity does not necessarily indicate problems, bugs, or poor code quality. Many legitimate factors can cause frequent file changes.
             </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="doc-section">
-        <h3>Risk Assessment Framework</h3>
-        <div class="metric-docs">
-          <div class="metric-category">
-            <h4>Repository Activity Indicators</h4>
-            <ul>
-              <li><strong>Bus Factor:</strong> Percentage of codebase commits concentrated among top contributors (inverse measure of knowledge distribution).</li>
-              <li><strong>Hotspot Analysis:</strong> Files with high churn and multiple authors, indicating potential maintenance challenges.</li>
-              <li><strong>Code Ownership Distribution:</strong> Analysis of how knowledge and responsibility are distributed across the team.</li>
-              <li><strong>Technical Debt Indicators:</strong> Patterns suggesting accumulating maintenance burden (large commits, frequent reverts, WIP commits).</li>
-            </ul>
           </div>
         </div>
       </div>
 
       <div class="methodology-note">
-        <h4>Methodology Notes</h4>
-        <p><strong>Data Source:</strong> All metrics are calculated from Git commit history, including commit metadata, file changes, and authorship information.</p>
-        <p><strong>Time Window:</strong> Analysis covers the specified date range with temporal weighting for recent activity when applicable.</p>
-        <p><strong>Normalization:</strong> Scores are normalized to 0-100 scale for consistency and interpretability across different team sizes and project characteristics.</p>
-        <p><strong>Statistical Note:</strong> Metrics calculated from available Git commit data (larger datasets provide more representative patterns).</p>
+        <h4>Methodology and Data Sources</h4>
+        <p><strong>Data Source:</strong> All metrics are calculated exclusively from Git commit history using standard Git commands (git log, git show, git diff).</p>
+        <p><strong>Scope:</strong> Analysis covers the specified date range and branch(es) with all calculations based on available commit data.</p>
+        <p><strong>Normalization:</strong> Some metrics are normalized to 0-100 scale for consistency and comparison across different repository sizes.</p>
+        <p><strong>Accuracy:</strong> Metric accuracy depends on the completeness and quality of Git commit history. Repositories with missing history or non-standard workflows may show different patterns.</p>
+        <p><strong>No External Data:</strong> We deliberately avoid integrating external data sources (issue trackers, CI/CD systems, code quality tools) to maintain transparency about what Git data alone can and cannot reveal.</p>
       </div>
     </section>
 
@@ -985,6 +969,8 @@ export class HTMLExporter {
       .health-score[data-rating='low'] { background:var(--color-danger); }
       .activity-breakdown { margin:1rem 0; padding:1rem; background:var(--color-bg); border:1px solid var(--color-border); border-radius:6px; }
       .activity-breakdown h3 { margin:0 0 .75rem; font-size:1rem; color:var(--color-text); }
+      .activity-explanation { margin-bottom:1rem; padding:.75rem; background:var(--color-surface); border-left:4px solid var(--color-warning); border-radius:4px; }
+      .activity-explanation p { margin:0; font-size:.9rem; color:var(--color-text); }
       .breakdown-components { display:grid; gap:.75rem; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); margin-bottom:1rem; }
       .component { background:var(--color-surface); padding:.75rem; border-radius:4px; border:1px solid var(--color-border); }
       .component-label { font-size:.75rem; color:var(--color-text-secondary); text-transform:uppercase; letter-spacing:.05em; margin-bottom:.25rem; }
@@ -992,7 +978,56 @@ export class HTMLExporter {
       .component-detail { font-size:.7rem; color:var(--color-text-secondary); }
       .formula { margin-top:.75rem; padding-top:.75rem; border-top:1px solid var(--color-border); }
       .formula code { background:var(--color-surface); padding:.25rem .4rem; border-radius:3px; font-size:.8rem; }
-  .analysis-period { font-size:.8rem; margin:.25rem 0 1rem; color:var(--color-text-secondary); }
+      .analysis-period { font-size:.8rem; margin:.25rem 0 1rem; color:var(--color-text-secondary); }
+      
+      /* New Limitation Section Styles */
+      .critical-notice { background:#fff3cd; border:1px solid #ffeaa7; border-radius:8px; padding:1.5rem; margin-bottom:2rem; border-left:4px solid #fd7e14; }
+      :root.dark .critical-notice { background:#2d2419; border-color:#635a3e; }
+      .critical-notice h3 { color:#856404; margin:0 0 1rem; font-size:1.2rem; }
+      :root.dark .critical-notice h3 { color:#ffeaa7; }
+      .limitation-grid { display:grid; gap:1.5rem; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); margin-bottom:1.5rem; }
+      .limitation-category { background:var(--color-surface); border:1px solid var(--color-border); border-radius:6px; padding:1rem; }
+      .limitation-category h4 { margin:0 0 .75rem; color:var(--color-text); font-size:1rem; }
+      .limitation-category ul { margin:.5rem 0; padding-left:1.2rem; }
+      .limitation-category li { margin:.5rem 0; font-size:.9rem; }
+      
+      .honest-metrics-notice { background:var(--color-bg); border:1px solid var(--color-border); border-radius:6px; padding:1.5rem; border-left:4px solid var(--color-primary); }
+      .honest-metrics-notice h4 { margin:0 0 1rem; color:var(--color-primary); }
+      .honest-metrics-notice p { margin:.75rem 0; }
+      .metric-categories { display:grid; gap:1rem; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); margin:1rem 0; }
+      .metric-category { background:var(--color-surface); border:1px solid var(--color-border); border-radius:4px; padding:1rem; }
+      .metric-category h5 { margin:0 0 .75rem; color:var(--color-text); font-size:.95rem; }
+      .usage-guidelines { margin-top:1.5rem; background:var(--color-surface); border:1px solid var(--color-border); border-radius:4px; padding:1rem; }
+      
+      /* Team Patterns Section */
+      .section-description { font-style:italic; color:var(--color-text-secondary); margin-bottom:1.5rem; font-size:.9rem; }
+      .team-patterns-grid { display:grid; gap:1.5rem; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); margin-bottom:2rem; }
+      .pattern-card { background:var(--color-surface); border:1px solid var(--color-border); border-radius:8px; padding:1.5rem; box-shadow:var(--shadow-sm); }
+      .pattern-card h3 { margin:0 0 1rem; font-size:1.1rem; color:var(--color-text); border-bottom:2px solid var(--color-primary); padding-bottom:.5rem; }
+      .pattern-metrics { display:flex; flex-direction:column; gap:.75rem; }
+      .pattern-metric { display:flex; justify-content:space-between; align-items:center; padding:.5rem; background:var(--color-bg); border-radius:4px; }
+      .pattern-metric .metric-label { font-size:.85rem; color:var(--color-text-secondary); }
+      .pattern-metric .metric-value { font-weight:600; color:var(--color-text); }
+      .pattern-metric .metric-note { font-size:.75rem; color:var(--color-text-secondary); font-style:italic; }
+      
+      /* Activity badge styles (renamed from risk badges) */
+      .activity-badge { padding:.25rem .5rem; border-radius:4px; font-size:.65rem; font-weight:600; }
+      .activity-high { background:var(--color-danger); color:#fff; }
+      .activity-medium { background:var(--color-warning); color:#000; }
+      .activity-low { background:var(--color-success); color:#fff; }
+      .activity-minimal { background:#3b7ddd; color:#fff; }
+      
+      /* Measurement Principles */
+      .measurement-principles { margin-bottom:2rem; }
+      .principles-grid { display:grid; gap:1rem; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); margin-top:1rem; }
+      .principle-card { background:var(--color-surface); border:1px solid var(--color-border); border-radius:6px; padding:1rem; border-left:4px solid var(--color-primary); }
+      .principle-card h4 { margin:0 0 .75rem; color:var(--color-primary); font-size:1rem; }
+      .principle-card p { margin:0; font-size:.9rem; }
+      
+      /* Updated formula explanations */
+      .formula-explanation { margin-top:.75rem; }
+      .formula-explanation ul { margin:.5rem 0; padding-left:1.2rem; }
+      .formula-explanation li { font-size:.85rem; margin:.25rem 0; }
       ul { padding-left:1.1rem; }
       li { margin:.25rem 0; }
       .table-wrapper { overflow:auto; border:1px solid var(--color-border); border-radius:6px; }
@@ -1296,6 +1331,175 @@ export class HTMLExporter {
         .size-label { min-width:auto; }
         .size-bar-container { width:100%; }
       }
+
+      /* Daily Trends Section Styles */
+      .trends-overview { margin-bottom:2rem; }
+      .trends-summary-grid { 
+        display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); 
+        gap:1rem; margin-bottom:1.5rem; 
+      }
+      .trend-summary-card { 
+        background:var(--color-surface); border:1px solid var(--color-border); 
+        border-radius:8px; padding:1.5rem; text-align:center; 
+        box-shadow:var(--shadow-sm); 
+      }
+      .summary-metric .metric-value { 
+        font-size:2rem; font-weight:700; color:var(--color-primary); 
+        margin-bottom:.5rem; 
+      }
+      .summary-metric .metric-label { 
+        font-size:.9rem; font-weight:600; color:var(--color-text); 
+        margin-bottom:.25rem; 
+      }
+      .summary-metric .metric-detail { 
+        font-size:.75rem; color:var(--color-text-secondary); 
+      }
+      
+      .key-trends { margin-bottom:2rem; }
+      .trend-category { 
+        margin-bottom:2.5rem; background:var(--color-surface); 
+        border:1px solid var(--color-border); border-radius:8px; 
+        padding:1.5rem; border-left:4px solid var(--color-primary); 
+      }
+      .trend-category h4 { 
+        margin:0 0 1rem; font-size:1.2rem; color:var(--color-primary); 
+        border-bottom:1px solid var(--color-border); padding-bottom:.5rem; 
+      }
+      .trend-explanation { 
+        margin-bottom:1.5rem; padding:.75rem; 
+        background:var(--color-bg); border-radius:4px; 
+        border-left:3px solid var(--color-primary); 
+      }
+      .trend-explanation p { margin:0; font-size:.9rem; color:var(--color-text); }
+      
+      .trends-table { font-size:.8rem; }
+      .trends-table th, .trends-table td { padding:.4rem .6rem; }
+      .table-note { 
+        font-size:.75rem; color:var(--color-text-secondary); 
+        margin-top:.5rem; font-style:italic; 
+      }
+      
+      .trends-limitations { 
+        background:#fff3cd; border:1px solid #ffeaa7; 
+        border-radius:8px; padding:1.5rem; 
+        border-left:4px solid #fd7e14; 
+      }
+      :root.dark .trends-limitations { 
+        background:#2d2419; border-color:#635a3e; 
+      }
+      .trends-limitations h3 { 
+        color:#856404; margin:0 0 1rem; font-size:1.2rem; 
+      }
+      :root.dark .trends-limitations h3 { color:#ffeaa7; }
+      .trends-limitations h4 { 
+        color:#856404; margin:1.5rem 0 .75rem; font-size:1rem; 
+      }
+      :root.dark .trends-limitations h4 { color:#ffeaa7; }
+      .trends-limitations ul { margin:.5rem 0; padding-left:1.5rem; }
+      .trends-limitations li { margin:.25rem 0; font-size:.9rem; }
+
+      /* Contributions Graph Styles */
+      .contributions-graph { 
+        margin: 2rem 0; 
+        background: var(--color-surface); 
+        border: 1px solid var(--color-border); 
+        border-radius: 8px; 
+        padding: 1.5rem; 
+        border-left: 4px solid var(--color-primary); 
+      }
+      .contributions-graph h3 { 
+        margin: 0 0 1rem; 
+        font-size: 1.2rem; 
+        color: var(--color-primary); 
+        border-bottom: 1px solid var(--color-border); 
+        padding-bottom: .5rem; 
+      }
+      .contributions-calendar { 
+        display: flex; 
+        flex-direction: column; 
+        gap: 3px; 
+        max-width: 100%; 
+        overflow-x: auto; 
+        padding: 1rem 0; 
+      }
+      .contributions-header { 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+        margin-bottom: 1rem; 
+        font-size: .9rem; 
+        color: var(--color-text-secondary); 
+      }
+      .contributions-weeks { 
+        display: flex; 
+        gap: 3px; 
+      }
+      .contributions-week { 
+        display: flex; 
+        flex-direction: column; 
+        gap: 3px; 
+      }
+      .contribution-day { 
+        width: 10px; 
+        height: 10px; 
+        border-radius: 2px; 
+        border: 1px solid var(--color-border); 
+        cursor: pointer; 
+        transition: all 0.2s ease; 
+      }
+      .contribution-day:hover { 
+        border-color: var(--color-primary); 
+        transform: scale(1.2); 
+      }
+      .contribution-day.intensity-0 { 
+        background: var(--color-bg); 
+      }
+      .contribution-day.intensity-1 { 
+        background: #9be9a8; 
+      }
+      .contribution-day.intensity-2 { 
+        background: #40c463; 
+      }
+      .contribution-day.intensity-3 { 
+        background: #30a14e; 
+      }
+      .contribution-day.intensity-4 { 
+        background: #216e39; 
+      }
+      .contributions-legend { 
+        display: flex; 
+        align-items: center; 
+        gap: .5rem; 
+        margin-top: 1rem; 
+        font-size: .75rem; 
+        color: var(--color-text-secondary); 
+      }
+      .legend-scale { 
+        display: flex; 
+        gap: 2px; 
+      }
+      .legend-day { 
+        width: 8px; 
+        height: 8px; 
+        border-radius: 1px; 
+        border: 1px solid var(--color-border); 
+      }
+      .contribution-tooltip { 
+        position: absolute; 
+        background: var(--color-surface); 
+        border: 1px solid var(--color-border); 
+        border-radius: 4px; 
+        padding: .5rem; 
+        font-size: .75rem; 
+        box-shadow: var(--shadow-lg); 
+        z-index: 1000; 
+        pointer-events: none; 
+        opacity: 0; 
+        transition: opacity 0.2s ease; 
+      }
+      .contribution-tooltip.visible { 
+        opacity: 1; 
+      }
     `;
   }
 
@@ -1333,22 +1537,6 @@ export class HTMLExporter {
     if (scorePercent >= 60) return 'moderate';
     if (scorePercent >= 40) return 'fair';
     return 'low';
-  }
-
-  private getTeamScoreRating(score: number): string {
-    if (score >= 90) return 'High';
-    if (score >= 75) return 'Moderate';
-    if (score >= 60) return 'Fair';
-    if (score >= 40) return 'Low';
-    return 'Minimal';
-  }
-
-  private getTeamScoreDescription(score: number): string {
-    if (score >= 90) return 'Excellent team organization with clear specialization';
-    if (score >= 75) return 'Good team organization with defined ownership';
-    if (score >= 60) return 'Moderate team organization detected';
-    if (score >= 40) return 'Mixed organization patterns with some overlap';
-    return 'High file overlap suggests unclear ownership';
   }
 
   private generateDetailedAuthorProfiles(authors: any[]): string {
@@ -1433,11 +1621,6 @@ export class HTMLExporter {
     // Safely access detailed metrics with fallbacks
     const contribution = metrics?.contribution || {};
     const workPattern = metrics?.workPattern || {};
-    const insights = metrics?.insights || {
-      positivePatterns: [],
-      growthAreas: [],
-      recommendations: [],
-    };
 
     return `
     <div class="author-profile-card" id="author-${authorId}">
@@ -1448,7 +1631,7 @@ export class HTMLExporter {
       </div>
 
       <div class="contribution-overview">
-        <h4>Contribution Overview</h4>
+        <h4>Observable Activity Metrics</h4>
         <div class="metrics-grid">
           <div class="metric-box">
             <div class="metric-value">${numberFmt(author.commits)}</div>
@@ -1470,28 +1653,27 @@ export class HTMLExporter {
         <div class="summary-stats">
           Avg: ${author.avgCommitSize.toFixed(1)} lines/commit • 
           ${(contribution.filesAndScope?.avgFilesPerCommit || 0).toFixed(1)} files/commit • 
-          ${(contribution.commitFrequency || 0).toFixed(2)}/day
+          ${(contribution.commitFrequency || 0).toFixed(2)} commits/day
         </div>
       </div>
 
       <div class="commit-patterns">
-        <h4>Commit Patterns</h4>
+        <h4>Commit Timing Patterns</h4>
         <div class="pattern-info">
-          <div>Peak Day: <strong>${workPattern.commitTiming?.mostActiveDay?.day || 'N/A'}</strong> • 
-          Peak Time: <strong>${workPattern.commitTiming?.mostActiveTime?.timeRange || 'N/A'}</strong></div>
-          <div>Work Pattern: <strong>${workPattern.commitTiming?.workPattern || 'N/A'}</strong> • 
-          Weekend commits: <strong>${pctFmt(workPattern.workLifeBalance?.weekendPercentage || 0)}</strong></div>
-          <div>After hours: <strong>${pctFmt(workPattern.workLifeBalance?.afterHoursPercentage || 0)}</strong> • 
-          Consistency: <strong>${(workPattern.temporalPatterns?.consistencyScore || 0).toFixed(0)}/100</strong></div>
+          <p><strong>⚠️ Note:</strong> Timing patterns reflect when commits were made, not actual working hours or availability.</p>
+          <div>Most Active Day: <strong>${workPattern.commitTiming?.mostActiveDay?.day || 'N/A'}</strong> (${pctFmt(workPattern.commitTiming?.mostActiveDay?.percentage || 0)} of commits)</div>
+          <div>Most Active Time: <strong>${workPattern.commitTiming?.mostActiveTime?.timeRange || 'N/A'}</strong></div>
+          <div>Weekend Commits: <strong>${pctFmt(workPattern.workLifeBalance?.weekendPercentage || 0)}</strong></div>
+          <div>After-Hours Commits: <strong>${pctFmt(workPattern.workLifeBalance?.afterHoursPercentage || 0)}</strong></div>
         </div>
       </div>
 
       <div class="code-focus">
-        <h4>Code Focus</h4>
+        <h4>File Activity Focus</h4>
         <div class="focus-info">
-          <div>Primary areas: ${this.getTopDirectories(contribution.filesAndScope?.directoryFocus || [])}</div>
-          <div>File diversity: ${pctFmt(contribution.filesAndScope?.fileDiversityScore || 0)} of codebase</div>
-          <div>Source: +${numberFmt(contribution.filesAndScope?.sourceVsPublishedRatio?.sourceLines?.insertions || 0)} / 
+          <div>Primary Directories: ${this.getTopDirectories(contribution.filesAndScope?.directoryFocus || [])}</div>
+          <div>Repository Coverage: ${pctFmt(contribution.filesAndScope?.fileDiversityScore || 0)} of total files</div>
+          <div>Source Code Changes: +${numberFmt(contribution.filesAndScope?.sourceVsPublishedRatio?.sourceLines?.insertions || 0)} / 
           -${numberFmt(contribution.filesAndScope?.sourceVsPublishedRatio?.sourceLines?.deletions || 0)} 
           (${numberFmt(contribution.filesAndScope?.sourceVsPublishedRatio?.sourceCommits || 0)} commits)</div>
         </div>
@@ -1504,37 +1686,33 @@ export class HTMLExporter {
         </div>
       </div>
 
-      <div class="insights-section">
-        <h4>Insights & Details</h4>
-        <div class="insights-content">
-          ${
-            insights.positivePatterns?.length > 0
-              ? insights.positivePatterns
-                  .map((p: string) => `<div class="insight positive">✓ ${this.escapeHtml(p)}</div>`)
-                  .join('')
-              : ''
-          }
-          ${
-            insights.growthAreas?.length > 0
-              ? insights.growthAreas
-                  .map((g: string) => `<div class="insight growth">→ ${this.escapeHtml(g)}</div>`)
-                  .join('')
-              : ''
-          }
-          
+      <div class="activity-details">
+        <h4>Activity Details</h4>
+        <div class="activity-content">
           ${
             contribution.largestCommitDetails?.size > 0
               ? `
           <div class="largest-commit">
-            <strong>Biggest commit:</strong> ${numberFmt(contribution.largestCommitDetails.size)} lines 
+            <strong>Largest Single Change:</strong> ${numberFmt(contribution.largestCommitDetails.size)} lines 
             (${contribution.largestCommitDetails.hash.substring(0, 7)}) on 
             ${contribution.largestCommitDetails.date.toLocaleDateString()}<br>
             <em>"${this.escapeHtml(contribution.largestCommitDetails.message)}"</em>
           </div>`
               : ''
           }
+          
+          <div class="activity-summary">
+            <p><strong>Activity Summary:</strong> This author contributed ${numberFmt(author.commits)} commits over ${author.activeDays} active days, 
+            changing ${numberFmt(contribution.filesAndScope?.uniqueFiles || 0)} unique files with an average of 
+            ${author.avgCommitSize.toFixed(1)} lines per commit.</p>
+            
+            <p><strong>Data Limitations:</strong> All metrics are derived from Git commit data and represent observable patterns only. 
+            They do not indicate productivity, code quality, work hours, or individual performance.</p>
+          </div>
         </div>
       </div>
+
+      ${this.generateAuthorInsightsSection(metrics)}
     </div>`;
   }
 
@@ -1635,8 +1813,49 @@ export class HTMLExporter {
     return 'w-100';
   }
 
-  private capitalize(s: string): string {
-    return s.charAt(0).toUpperCase() + s.slice(1);
+  private generateAuthorInsightsSection(metrics: any): string {
+    const insights = metrics?.insights;
+
+    if (!insights || (!insights.strengths?.length && !insights.growthAreas?.length)) {
+      return '';
+    }
+
+    const strengths = insights.strengths || [];
+    const growthAreas = insights.growthAreas || [];
+
+    return `
+      <div class="insights-section">
+        <h4>Observable Patterns & Insights</h4>
+        <div class="insights-content">
+          ${
+            strengths.length > 0
+              ? `
+          <div class="insight-category">
+            <h5>Strengths</h5>
+            <ul>
+              ${strengths.map((strength: string) => `<li>${this.escapeHtml(strength)}</li>`).join('')}
+            </ul>
+          </div>`
+              : ''
+          }
+          
+          ${
+            growthAreas.length > 0
+              ? `
+          <div class="insight-category">
+            <h5>Growth Areas</h5>
+            <ul>
+              ${growthAreas.map((area: string) => `<li>${this.escapeHtml(area)}</li>`).join('')}
+            </ul>
+          </div>`
+              : ''
+          }
+        </div>
+        
+        <div class="limitation-notice">
+          <strong>⚠️ Pattern Recognition:</strong> These insights are derived from Git commit patterns only and represent observable behaviors, not performance evaluations or personal assessments.
+        </div>
+      </div>`;
   }
 
   private getBasicScript(): string {
@@ -1781,5 +2000,425 @@ export class HTMLExporter {
       consistencyIndexRaw,
       formula,
     };
+  }
+
+  /**
+   * Generate daily trends section for HTML report
+   * @private
+   */
+  private generateDailyTrendsSection(trends: any): string {
+    const dateFormat = (date: Date) => date.toISOString().split('T')[0];
+
+    const metadata = trends.analysisMetadata;
+    const flowMetrics = trends.flowMetrics || [];
+    const stabilityMetrics = trends.stabilityMetrics || [];
+    const ownershipMetrics = trends.ownershipMetrics || [];
+    const couplingMetrics = trends.couplingMetrics || [];
+    const hygieneMetrics = trends.hygieneMetrics || [];
+
+    // Calculate summary statistics
+    const totalCommits = flowMetrics.reduce((sum: number, day: any) => sum + day.commitsPerDay, 0);
+    const peakDay = flowMetrics.reduce(
+      (peak: any, day: any) => (day.commitsPerDay > (peak?.commitsPerDay || 0) ? day : peak),
+      null
+    );
+    const avgCommitsPerDay = flowMetrics.length > 0 ? totalCommits / flowMetrics.length : 0;
+
+    // Stability stats
+    const totalReverts = stabilityMetrics.reduce(
+      (sum: number, day: any) => sum + day.revertsPerDay,
+      0
+    );
+
+    return `
+    <section id="daily-trends" class="section">
+      <h2>📈 Daily Activity Trends</h2>
+      <p class="section-description">
+        Objective daily patterns computed exclusively from Git commit history. These metrics show repository activity trends 
+        and do not indicate team performance, code quality, or individual productivity.
+      </p>
+
+      <!-- Trends Overview -->
+      <div class="trends-overview">
+        <h3>Analysis Period Overview</h3>
+        <div class="trends-summary-grid">
+          <div class="trend-summary-card">
+            <div class="summary-metric">
+              <div class="metric-value">${metadata.activeDays}</div>
+              <div class="metric-label">Active Days</div>
+              <div class="metric-detail">out of ${metadata.totalDays} total days</div>
+            </div>
+          </div>
+          <div class="trend-summary-card">
+            <div class="summary-metric">
+              <div class="metric-value">${avgCommitsPerDay.toFixed(1)}</div>
+              <div class="metric-label">Avg Commits/Day</div>
+              <div class="metric-detail">across active days</div>
+            </div>
+          </div>
+          <div class="trend-summary-card">
+            <div class="summary-metric">
+              <div class="metric-value">${peakDay ? peakDay.commitsPerDay : 0}</div>
+              <div class="metric-label">Peak Day</div>
+              <div class="metric-detail">${peakDay ? dateFormat(new Date(peakDay.date)) : 'N/A'}</div>
+            </div>
+          </div>
+          <div class="trend-summary-card">
+            <div class="summary-metric">
+              <div class="metric-value">${totalReverts}</div>
+              <div class="metric-label">Total Reverts</div>
+              <div class="metric-detail">across all days</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contributions Graph -->
+      ${this.generateContributionsGraphSection(trends.contributionsGraph, metadata)}
+
+      <!-- Key Trends -->
+      <div class="key-trends">
+        <h3>Key Trending Patterns</h3>
+        
+        <!-- Flow Trends -->
+        <div class="trend-category">
+          <h4>📊 Daily Flow & Throughput</h4>
+          <div class="trend-explanation">
+            <p>Observable patterns in commit frequency, author participation, and code volume changes.</p>
+          </div>
+          
+          ${this.generateFlowTrendsTable(flowMetrics)}
+        </div>
+
+        <!-- Stability Trends -->
+        <div class="trend-category">
+          <h4>⚖️ Daily Stability Indicators</h4>
+          <div class="trend-explanation">
+            <p>Patterns that may indicate repository stability, including reverts, merges, and file retouch rates.</p>
+          </div>
+          
+          ${this.generateStabilityTrendsTable(stabilityMetrics)}
+        </div>
+
+        <!-- Ownership Trends -->
+        <div class="trend-category">
+          <h4>👥 Daily Ownership Patterns</h4>
+          <div class="trend-explanation">
+            <p>File ownership distribution and knowledge spreading patterns based on authorship data.</p>
+          </div>
+          
+          ${this.generateOwnershipTrendsTable(ownershipMetrics)}
+        </div>
+
+        <!-- Coupling Trends -->
+        <div class="trend-category">
+          <h4>🔗 Daily Coupling Indicators</h4>
+          <div class="trend-explanation">
+            <p>Patterns in file co-changes that may indicate architectural coupling or batch changes.</p>
+          </div>
+          
+          ${this.generateCouplingTrendsTable(couplingMetrics)}
+        </div>
+
+        <!-- Hygiene Trends -->
+        <div class="trend-category">
+          <h4>🧹 Daily Hygiene Patterns</h4>
+          <div class="trend-explanation">
+            <p>Commit message quality patterns and documentation practices observed in commit data.</p>
+          </div>
+          
+          ${this.generateHygieneTrendsTable(hygieneMetrics)}
+        </div>
+      </div>
+
+      <!-- Limitations and Context -->
+      <div class="trends-limitations">
+        <h3>⚠️ Daily Trends Limitations</h3>
+        <div class="limitation-notice">
+          <h4>Git Data Only - No External Context</h4>
+          <p>These trends are calculated exclusively from Git commit history and have significant limitations:</p>
+          <ul>
+            <li><strong>Timing:</strong> Commit timestamps reflect when commits were made, not actual working hours</li>
+            <li><strong>Batch Operations:</strong> Large commits may represent batch changes, merges, or automated processes</li>
+            <li><strong>Development Workflows:</strong> Patterns affected by branching strategies, release cycles, and team practices</li>
+            <li><strong>No Quality Context:</strong> Cannot distinguish between bug fixes, features, refactoring, or maintenance</li>
+            <li><strong>No External Events:</strong> Cannot correlate with releases, incidents, holidays, or business events</li>
+          </ul>
+          
+          <h4>Appropriate Usage</h4>
+          <ul>
+            <li><strong>Activity Monitoring:</strong> Track repository activity levels and participation</li>
+            <li><strong>Pattern Recognition:</strong> Identify unusual spikes, drops, or cyclical patterns</li>
+            <li><strong>Planning Context:</strong> Understand historical activity patterns for capacity planning</li>
+            <li><strong>Process Insights:</strong> Observe effects of workflow or tooling changes</li>
+          </ul>
+          
+          <h4>Inappropriate Usage</h4>
+          <ul>
+            <li><strong>Performance Assessment:</strong> Do not use for individual or team performance evaluation</li>
+            <li><strong>Quality Measurement:</strong> Trends do not indicate code quality or defect rates</li>
+            <li><strong>Productivity Metrics:</strong> Commit patterns ≠ productivity or business value</li>
+            <li><strong>Work-Life Balance:</strong> Timing patterns do not indicate actual working hours or stress</li>
+          </ul>
+        </div>
+      </div>
+    </section>`;
+  }
+
+  private generateFlowTrendsTable(flowMetrics: any[]): string {
+    if (flowMetrics.length === 0) {
+      return '<div class="no-data">No flow data available</div>';
+    }
+
+    // Show last 30 days or all data if less
+    const recentMetrics = flowMetrics.slice(-30);
+
+    const rows = recentMetrics
+      .map(
+        day => `
+      <tr>
+        <td>${day.day}</td>
+        <td class="num">${day.commitsPerDay}</td>
+        <td class="num">${day.uniqueAuthorsPerDay}</td>
+        <td class="num">${new Intl.NumberFormat().format(day.grossLinesChangedPerDay)}</td>
+        <td class="num">${day.filesTouchedPerDay}</td>
+        <td class="num">${day.commitSizeDistribution.p50}</td>
+        <td class="num">${day.commitSizeDistribution.p90}</td>
+      </tr>
+    `
+      )
+      .join('');
+
+    return `
+      <div class="table-wrapper">
+        <table class="data-table trends-table" data-sortable>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th class="num">Commits</th>
+              <th class="num">Authors</th>
+              <th class="num">Lines Changed</th>
+              <th class="num">Files Touched</th>
+              <th class="num">P50 Commit Size</th>
+              <th class="num">P90 Commit Size</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+      ${flowMetrics.length > 30 ? '<p class="table-note">Showing last 30 days. Complete data available in exported reports.</p>' : ''}
+    `;
+  }
+
+  private generateStabilityTrendsTable(stabilityMetrics: any[]): string {
+    if (stabilityMetrics.length === 0) {
+      return '<div class="no-data">No stability data available</div>';
+    }
+
+    const recentMetrics = stabilityMetrics.slice(-30);
+
+    const rows = recentMetrics
+      .map(
+        day => `
+      <tr>
+        <td>${day.day}</td>
+        <td class="num">${day.revertsPerDay}</td>
+        <td class="num">${(day.mergeRatioPerDay * 100).toFixed(1)}%</td>
+        <td class="num">${(day.retouchRate * 100).toFixed(1)}%</td>
+        <td class="num">${day.renamesPerDay}</td>
+        <td class="num">${(day.outOfHoursShare * 100).toFixed(1)}%</td>
+      </tr>
+    `
+      )
+      .join('');
+
+    return `
+      <div class="table-wrapper">
+        <table class="data-table trends-table" data-sortable>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th class="num">Reverts</th>
+              <th class="num">Merge Ratio</th>
+              <th class="num">Retouch Rate</th>
+              <th class="num">Renames</th>
+              <th class="num">Out of Hours</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+      ${stabilityMetrics.length > 30 ? '<p class="table-note">Showing last 30 days. Complete data available in exported reports.</p>' : ''}
+    `;
+  }
+
+  private generateOwnershipTrendsTable(ownershipMetrics: any[]): string {
+    if (ownershipMetrics.length === 0) {
+      return '<div class="no-data">No ownership data available</div>';
+    }
+
+    const recentMetrics = ownershipMetrics.slice(-30);
+
+    const rows = recentMetrics
+      .map(
+        day => `
+      <tr>
+        <td>${day.day}</td>
+        <td class="num">${day.newFilesCreatedPerDay}</td>
+        <td class="num">${day.singleOwnerFilesTouched}</td>
+        <td class="num">${day.filesTouchedToday}</td>
+        <td class="num">${(day.singleOwnerShare * 100).toFixed(1)}%</td>
+        <td class="num">${day.avgAuthorsPerFile.toFixed(1)}</td>
+      </tr>
+    `
+      )
+      .join('');
+
+    return `
+      <div class="table-wrapper">
+        <table class="data-table trends-table" data-sortable>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th class="num">New Files</th>
+              <th class="num">Single Owner Files</th>
+              <th class="num">Total Files Touched</th>
+              <th class="num">Single Owner %</th>
+              <th class="num">Avg Authors/File</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+      ${ownershipMetrics.length > 30 ? '<p class="table-note">Showing last 30 days. Complete data available in exported reports.</p>' : ''}
+    `;
+  }
+
+  private generateCouplingTrendsTable(couplingMetrics: any[]): string {
+    if (couplingMetrics.length === 0) {
+      return '<div class="no-data">No coupling data available</div>';
+    }
+
+    const recentMetrics = couplingMetrics.slice(-30);
+
+    const rows = recentMetrics
+      .map(
+        day => `
+      <tr>
+        <td>${day.day}</td>
+        <td class="num">${day.coChangeDensityPerDay.toFixed(2)}</td>
+        <td class="num">${day.totalCoChangePairs}</td>
+        <td class="num">${day.multiFileCommits}</td>
+      </tr>
+    `
+      )
+      .join('');
+
+    return `
+      <div class="table-wrapper">
+        <table class="data-table trends-table" data-sortable>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th class="num">Co-change Density</th>
+              <th class="num">Total Co-change Pairs</th>
+              <th class="num">Multi-file Commits</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+      ${couplingMetrics.length > 30 ? '<p class="table-note">Showing last 30 days. Complete data available in exported reports.</p>' : ''}
+    `;
+  }
+
+  private generateHygieneTrendsTable(hygieneMetrics: any[]): string {
+    if (hygieneMetrics.length === 0) {
+      return '<div class="no-data">No hygiene data available</div>';
+    }
+
+    const recentMetrics = hygieneMetrics.slice(-30);
+
+    const rows = recentMetrics
+      .map(
+        day => `
+      <tr>
+        <td>${day.day}</td>
+        <td class="num">${day.medianCommitMessageLength}</td>
+        <td class="num">${day.shortMessages}</td>
+        <td class="num">${day.conventionalCommits}</td>
+      </tr>
+    `
+      )
+      .join('');
+
+    return `
+      <div class="table-wrapper">
+        <table class="data-table trends-table" data-sortable>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th class="num">Median Message Length</th>
+              <th class="num">Short Messages</th>
+              <th class="num">Conventional Commits</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+      ${hygieneMetrics.length > 30 ? '<p class="table-note">Showing last 30 days. Complete data available in exported reports.</p>' : ''}
+    `;
+  }
+
+  /**
+   * Generate GitHub-style contributions graph section
+   */
+  private generateContributionsGraphSection(contributionsGraph: any, metadata: any): string {
+    if (!contributionsGraph || !contributionsGraph.calendar) {
+      return '';
+    }
+
+    const { totalCommits, weeks } = contributionsGraph;
+
+    // Generate week columns
+    const weekColumns = weeks
+      .map((week: any) => {
+        const days = week.days
+          .map((day: any) => {
+            const classes = `contribution-day intensity-${day.intensity}`;
+            const title = `${day.date}: ${day.count} commit${day.count !== 1 ? 's' : ''}`;
+            return `<div class="${classes}" title="${title}" data-count="${day.count}" data-date="${day.date}"></div>`;
+          })
+          .join('');
+
+        return `<div class="contributions-week">${days}</div>`;
+      })
+      .join('');
+
+    return `
+      <div class="contributions-graph">
+        <h3>🗓️ Contributions Calendar</h3>
+        <div class="contributions-header">
+          <span>Activity over the last ${metadata.totalDays} days</span>
+          <span>${totalCommits} total commits</span>
+        </div>
+        <div class="contributions-calendar">
+          <div class="contributions-weeks">
+            ${weekColumns}
+          </div>
+        </div>
+        <div class="contributions-legend">
+          <span>Less</span>
+          <div class="legend-scale">
+            <div class="legend-day intensity-0"></div>
+            <div class="legend-day intensity-1"></div>
+            <div class="legend-day intensity-2"></div>
+            <div class="legend-day intensity-3"></div>
+            <div class="legend-day intensity-4"></div>
+          </div>
+          <span>More</span>
+        </div>
+      </div>
+    `;
   }
 }
