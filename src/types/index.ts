@@ -246,20 +246,6 @@ export interface AuthorWorkPatternMetrics {
 }
 
 export interface AuthorQualityMetrics {
-  commitMessageQuality: {
-    overallScore: number; // 0-100
-    conventionalCommitsRate: number;
-    issueTraceabilityRate: number;
-    averageLength: number;
-    qualityBreakdown: {
-      conventional: number;
-      hasIssueRefs: number;
-      adequateLength: number;
-      descriptive: number;
-      properCapitalization: number;
-      noWip: number;
-    };
-  };
   codeQuality: {
     revertRate: number;
     fixToFeatureRatio: number;
@@ -426,7 +412,6 @@ export interface TeamScore {
   overall: number;
   collaboration: TeamCollaborationMetrics;
   consistency: TeamConsistencyMetrics;
-  quality: TeamQualityMetrics;
   workLifeBalance: TeamWorkLifeBalanceMetrics;
   insights: TeamInsights;
   recommendations: string[];
@@ -434,24 +419,15 @@ export interface TeamScore {
 
 export interface TeamCollaborationMetrics {
   score: number;
-  reviewWorkflowParticipation: number; // Estimated from merge commit patterns only
   crossTeamInteraction: number; // Files touched by multiple authors
   knowledgeDistribution: number; // Distribution of file ownership
-  coAuthorshipRate: number;
   fileOwnershipDistribution: {
     exclusive: number;
     shared: number;
     collaborative: number;
   };
   limitations: {
-    reviewerDataAvailable: boolean; // Git doesn't store actual reviewers/approvers
-    estimationMethod: 'merge-commit-analysis' | 'git-patterns-only';
-    dataSource: 'git-commits-only';
-    platformSpecific: {
-      detected: string;
-      accuracy: 'high' | 'medium' | 'low';
-      notes: string;
-    };
+    dataSource: 'git-file-authorship-only';
     knownLimitations: string[];
   };
 }
@@ -459,7 +435,7 @@ export interface TeamCollaborationMetrics {
 export interface TeamConsistencyMetrics {
   score: number;
   velocityConsistency: number;
-  busFactor: number;
+  busFactorPercentage: number; // Percentage of authors who account for 80% of commits
   activeContributorRatio: number;
   deliveryCadence: number;
   contributionDistribution: {
@@ -470,11 +446,9 @@ export interface TeamConsistencyMetrics {
 
 export interface TeamQualityMetrics {
   score: number;
-  teamGovernanceScore: number;
   refactoringActivity: number;
   bugFixRatio: number;
   documentationContribution: number;
-  mergeWorkflowUsage: number; // Percentage of commits via merge (not actual review coverage)
   testFileDetection: {
     hasTestFiles: boolean;
     testFiles: number;
@@ -485,7 +459,7 @@ export interface TeamQualityMetrics {
     };
   };
   limitations: {
-    qualityMeasurement: 'pattern-based-estimation';
+    qualityMeasurement: 'commit-message-pattern-analysis';
     testCoverageNote: 'File detection only, not execution coverage';
     knownLimitations: string[];
   };

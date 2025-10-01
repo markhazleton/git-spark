@@ -9,7 +9,7 @@ describe('GitAnalyzer Coverage Tests', () => {
   });
 
   describe('Recommendation generation edge cases', () => {
-    it('should generate risk recommendations for high-risk scenarios', () => {
+    it('should return empty risk recommendations (removed subjective recommendations)', () => {
       // Mock data that would trigger high-risk recommendations
       const mockHighRiskFiles = Array(15).fill({ path: 'file.ts', riskScore: 0.9 }); // More than 10 high-risk files
       const mockRiskFactors = {
@@ -25,16 +25,12 @@ describe('GitAnalyzer Coverage Tests', () => {
       );
       const recommendations = generateRiskRecommendations(mockHighRiskFiles, mockRiskFactors);
 
-      expect(recommendations).toContain(
-        'Consider refactoring high-churn files to reduce complexity'
-      );
-      expect(recommendations).toContain(
-        'Establish code ownership guidelines for frequently modified files'
-      );
-      expect(recommendations).toContain('Encourage smaller, more focused commits');
+      // Should return empty array since recommendations were removed for objectivity
+      expect(recommendations).toEqual([]);
+      expect(recommendations).toHaveLength(0);
     });
 
-    it('should generate governance recommendations for poor governance', () => {
+    it('should return empty governance recommendations (removed subjective recommendations)', () => {
       const mockGovernanceData = {
         conventionalCommits: 2,
         totalCommits: 10, // 20% conventional commits (< 50%)
@@ -48,12 +44,12 @@ describe('GitAnalyzer Coverage Tests', () => {
       ).generateGovernanceRecommendations.bind(analyzer);
       const recommendations = generateGovernanceRecommendations(mockGovernanceData);
 
-      expect(recommendations).toContain('Adopt conventional commit message format');
-      expect(recommendations).toContain('Link commits to issues for better traceability');
-      expect(recommendations).toContain('Write more descriptive commit messages');
+      // Should return empty array since recommendations were removed for objectivity
+      expect(recommendations).toEqual([]);
+      expect(recommendations).toHaveLength(0);
     });
 
-    it('should not generate recommendations when thresholds are not met', () => {
+    it('should always return empty recommendations (no subjective recommendations)', () => {
       // Mock data that does NOT trigger recommendations
       const mockLowRiskFiles = Array(5).fill({ path: 'file.ts', riskScore: 0.3 }); // Only 5 high-risk files (<=10)
       const mockLowRiskFactors = {
@@ -68,16 +64,12 @@ describe('GitAnalyzer Coverage Tests', () => {
       );
       const recommendations = generateRiskRecommendations(mockLowRiskFiles, mockLowRiskFactors);
 
-      expect(recommendations).not.toContain(
-        'Consider refactoring high-churn files to reduce complexity'
-      );
-      expect(recommendations).not.toContain(
-        'Establish code ownership guidelines for frequently modified files'
-      );
-      expect(recommendations).not.toContain('Encourage smaller, more focused commits');
+      // Should return empty array regardless of input since recommendations were removed
+      expect(recommendations).toEqual([]);
+      expect(recommendations).toHaveLength(0);
     });
 
-    it('should not generate governance recommendations when metrics are good', () => {
+    it('should always return empty governance recommendations (no subjective recommendations)', () => {
       const mockGoodGovernanceData = {
         conventionalCommits: 8,
         totalCommits: 10, // 80% conventional commits (>= 50%)
@@ -90,9 +82,9 @@ describe('GitAnalyzer Coverage Tests', () => {
       ).generateGovernanceRecommendations.bind(analyzer);
       const recommendations = generateGovernanceRecommendations(mockGoodGovernanceData);
 
-      expect(recommendations).not.toContain('Adopt conventional commit message format');
-      expect(recommendations).not.toContain('Link commits to issues for better traceability');
-      expect(recommendations).not.toContain('Write more descriptive commit messages');
+      // Should return empty array regardless of input since recommendations were removed
+      expect(recommendations).toEqual([]);
+      expect(recommendations).toHaveLength(0);
     });
 
     it('should handle edge case with zero total commits in governance', () => {
@@ -107,10 +99,11 @@ describe('GitAnalyzer Coverage Tests', () => {
         analyzer as any
       ).generateGovernanceRecommendations.bind(analyzer);
 
-      // Should not throw an error with zero commits
+      // Should not throw an error with zero commits and return empty array
       expect(() => {
         const recommendations = generateGovernanceRecommendations(mockZeroCommitsData);
         expect(Array.isArray(recommendations)).toBe(true);
+        expect(recommendations).toEqual([]);
       }).not.toThrow();
     });
 
@@ -132,14 +125,9 @@ describe('GitAnalyzer Coverage Tests', () => {
         mockBoundaryRiskFactors
       );
 
-      // At exactly threshold values, recommendations should NOT be generated
-      expect(recommendations).not.toContain(
-        'Consider refactoring high-churn files to reduce complexity'
-      );
-      expect(recommendations).not.toContain(
-        'Establish code ownership guidelines for frequently modified files'
-      );
-      expect(recommendations).not.toContain('Encourage smaller, more focused commits');
+      // Should return empty array regardless of boundary values since recommendations were removed
+      expect(recommendations).toEqual([]);
+      expect(recommendations).toHaveLength(0);
     });
 
     it('should handle boundary governance values', () => {

@@ -6,14 +6,14 @@
 
 ## Enterprise-grade Git repository analytics and reporting tool
 
-Git Spark provides transparent, honest insights into Git repository health, team collaboration patterns, and code quality through comprehensive analysis of commit history. **We are committed to reporting only what can be accurately derived from Git repository data alone** - never guessing, estimating, or fabricating metrics from unavailable data sources. Built for enterprise environments with performance, reliability, security, and analytical integrity in mind.
+Git Spark provides transparent, honest insights into Git repository health, team organization patterns, and code quality through comprehensive analysis of commit history. **We are committed to reporting only what can be accurately derived from Git repository data alone** - never guessing, estimating, or fabricating metrics from unavailable data sources. Built for enterprise environments with performance, reliability, security, and analytical integrity in mind.
 
 ## ✨ Features
 
 ### 📊 Comprehensive Analytics
 
 - **Repository Health Scoring** - Overall health assessment with actionable recommendations
-- **Team Collaboration Analysis** - Git workflow patterns, file ownership distribution, and commit collaboration
+- **Team Organization Analysis** - File ownership patterns, developer specialization, and team structure
 - **Code Quality Metrics** - Risk assessment, hotspot identification, and governance scoring
 - **Timeline Visualization** - Activity patterns and trend analysis
 - **Bus Factor Calculation** - Knowledge concentration and team resilience metrics
@@ -408,15 +408,15 @@ Code quality metrics including:
 
 ### Team Analytics
 
-Git workflow and collaboration insights covering:
+Team organization and specialization insights covering:
 
-- **Review Workflow Participation** - Merge commit pattern analysis (estimated from Git data only)
-- **Cross-Team Interaction** - Files touched by multiple team members
-- **Knowledge Distribution** - File ownership distribution patterns
-- **Commit Time Patterns** - Work timing analysis based on commit timestamps
-- **Team Active Coverage** - Days with multiple contributors (not actual vacation coverage)
+- **Developer Specialization** - Measures how unique each developer's file set is compared to others, promoting clear areas of responsibility
+- **File Ownership Clarity** - Percentage of files with single-author ownership, indicating clear responsibility boundaries  
+- **Organization Efficiency** - Low file overlap between developers, suggesting better task distribution and reduced conflicts
+- **Commit Time Patterns** - Work timing analysis based on commit timestamps (not actual working hours)
+- **Team Active Coverage** - Days with multiple contributors (estimated pattern, not actual vacation coverage)
 
-> **⚠️ Important Limitations**: Team metrics are estimated from Git commit data only. We cannot detect actual code reviews, real working hours, vacation schedules, or team performance without platform-specific APIs. All metrics include comprehensive limitation documentation to prevent misinterpretation.
+> **⚠️ Important Approach**: The Team Organization Score measures specialization and clear ownership rather than traditional collaboration. High scores indicate well-organized teams with distinct areas of responsibility, which typically reduces conflicts and improves efficiency. Very high scores may sometimes indicate knowledge silos, while very low scores suggest unclear ownership or coordination issues. All metrics include comprehensive limitation documentation to prevent misinterpretation.
 
 ## 🏗️ CI/CD Integration
 

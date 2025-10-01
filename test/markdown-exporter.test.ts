@@ -159,11 +159,7 @@ describe('MarkdownExporter', () => {
           largeCommits: 5,
           recentChanges: 8,
         },
-        recommendations: [
-          'Review files with high churn rates',
-          'Consider breaking down large commits',
-          'Implement code review process for high-risk files',
-        ],
+        recommendations: [],
         overallRisk: 'medium',
       },
       governance: {
@@ -174,11 +170,7 @@ describe('MarkdownExporter', () => {
         revertCommits: 3,
         shortMessages: 12,
         score: 0.73,
-        recommendations: [
-          'Improve commit message consistency',
-          'Adopt conventional commit format',
-          'Increase traceability with issue references',
-        ],
+        recommendations: [],
       },
       summary: {
         healthRating: 'good',
@@ -331,11 +323,11 @@ describe('MarkdownExporter', () => {
     expect(content).toContain('- Large commits: 5');
     expect(content).toContain('- Recently changed files: 8');
 
-    // Check recommendations
-    expect(content).toContain('### Recommendations');
-    expect(content).toContain('- Review files with high churn rates');
-    expect(content).toContain('- Consider breaking down large commits');
-    expect(content).toContain('- Implement code review process for high-risk files');
+    // Should not contain recommendations (removed for objectivity)
+    expect(content).not.toContain('### Recommendations');
+    expect(content).not.toContain('- Review files with high churn rates');
+    expect(content).not.toContain('- Consider breaking down large commits');
+    expect(content).not.toContain('- Implement code review process for high-risk files');
   });
 
   it('displays governance analysis section', async () => {
@@ -354,10 +346,10 @@ describe('MarkdownExporter', () => {
     expect(content).toContain('- **Revert Commits:** 3');
     expect(content).toContain('- **Short Messages:** 12');
 
-    // Check governance recommendations
-    expect(content).toContain('- Improve commit message consistency');
-    expect(content).toContain('- Adopt conventional commit format');
-    expect(content).toContain('- Increase traceability with issue references');
+    // Check governance recommendations (should be empty)
+    expect(content).not.toContain('- Improve commit message consistency');
+    expect(content).not.toContain('- Adopt conventional commit format');
+    expect(content).not.toContain('- Increase traceability with issue references');
   });
 
   it('includes footer with metadata', async () => {

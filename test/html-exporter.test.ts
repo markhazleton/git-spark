@@ -98,34 +98,22 @@ describe('HTMLExporter (Phase 3)', () => {
         overall: 78,
         collaboration: {
           score: 80,
-          reviewWorkflowParticipation: 65,
           crossTeamInteraction: 72,
           knowledgeDistribution: 72,
-          coAuthorshipRate: 15,
           fileOwnershipDistribution: {
             exclusive: 40,
             shared: 45,
             collaborative: 15,
           },
           limitations: {
-            reviewerDataAvailable: false,
-            estimationMethod: 'merge-commit-analysis' as const,
-            dataSource: 'git-commits-only' as const,
-            platformSpecific: {
-              detected: 'github',
-              accuracy: 'medium' as const,
-              notes: 'Merge commit patterns detected',
-            },
-            knownLimitations: [
-              'Cannot distinguish between actual code reviews and merge commits',
-              'Merge commit patterns may not reflect true review culture',
-            ],
+            dataSource: 'git-file-authorship-only' as const,
+            knownLimitations: ['Based only on Git commit authorship, not actual collaboration'],
           },
         },
         consistency: {
           score: 75,
           velocityConsistency: 70,
-          busFactor: 2,
+          busFactorPercentage: 35,
           activeContributorRatio: 85,
           deliveryCadence: 75,
           contributionDistribution: {
@@ -135,20 +123,22 @@ describe('HTMLExporter (Phase 3)', () => {
         },
         quality: {
           score: 82,
-          teamGovernanceScore: 75,
+          commitMessageQuality: 75,
           refactoringActivity: 12,
           bugFixRatio: 25,
           documentationContribution: 18,
-          mergeWorkflowUsage: 65,
           testFileDetection: {
-            hasTests: true,
+            hasTestFiles: true,
             testFiles: 5,
-            testToCodeRatio: 28,
+            testFileToSourceRatio: 28,
+            limitations: {
+              note: 'Detects test files only, not actual test execution coverage',
+              recommendedTools: ['Jest', 'nyc', 'c8'],
+            },
           },
           limitations: {
-            reviewerDataAvailable: false,
-            estimationMethod: 'pattern-detection' as const,
-            platformSpecific: false,
+            qualityMeasurement: 'commit-message-pattern-analysis',
+            testCoverageNote: 'File detection only, not execution coverage',
             knownLimitations: [
               'Cannot measure actual test coverage percentage',
               'Test file detection based on naming patterns only',
@@ -249,10 +239,8 @@ describe('HTMLExporter (Phase 3)', () => {
   it('shows governance and risk sections plus charts', async () => {
     await exporter.export(report, outDir);
     const html = readFileSync(resolve(outDir, 'git-spark-report.html'), 'utf-8');
-    expect(html).toContain('Governance & Code Quality');
     expect(html).toContain('Risk Overview');
     expect(html).toContain('riskFactorsChart');
-    expect(html).toContain('governanceChart');
   });
 
   it('includes CSS variables, smooth scroll behavior, and dataset toggles', async () => {
@@ -323,6 +311,7 @@ describe('HTMLExporter (Phase 3)', () => {
     // Also create a demo report for user to see proportional bars
     const demoOutDir = './demo-proportional-bars';
     await exporter.export(report, demoOutDir);
+    /* eslint-disable no-console */
     console.log('\n🎯 PROPORTIONAL BARS DEMO REPORT CREATED!');
     console.log(`📍 Location: ${demoOutDir}/git-spark-report.html`);
     console.log('📊 Commit Size Distribution:');
@@ -332,6 +321,7 @@ describe('HTMLExporter (Phase 3)', () => {
     console.log('   • Large (3 commits, 10.7%): Narrow bar');
     console.log('   • Very Large (1 commit, 3.6%): Very narrow bar');
     console.log('📖 Open the HTML file to see proportional bars in action!\n');
+    /* eslint-enable no-console */
 
     const html = readFileSync(resolve(outDir, 'git-spark-report.html'), 'utf-8');
 
@@ -458,10 +448,10 @@ describe('HTMLExporter (Phase 3)', () => {
   it('tests health rating calculations', async () => {
     // Test different health score ranges
     const testCases = [
-      { healthScore: 0.95, expected: 'excellent' },
-      { healthScore: 0.75, expected: 'good' },
+      { healthScore: 0.95, expected: 'high' },
+      { healthScore: 0.75, expected: 'moderate' },
       { healthScore: 0.55, expected: 'fair' },
-      { healthScore: 0.25, expected: 'poor' },
+      { healthScore: 0.25, expected: 'low' },
     ];
 
     for (const testCase of testCases) {
@@ -484,5 +474,43 @@ describe('HTMLExporter (Phase 3)', () => {
     expect(html).toContain('...');
     // The path might still appear in the title attribute, so check for truncation in the display text
     expect(html).toMatch(/src\/very\/long\/path.*\.\.\..*display\/file\.ts/);
+  });
+
+  it('merges authors with same email address (case-insensitive)', async () => {
+    // Create test data with authors having same email in different cases
+    const testReport = { ...report };
+    // Create two authors with same email but different cases
+    const originalAuthor = testReport.authors[0];
+    testReport.authors = [
+      {
+        ...originalAuthor,
+        name: 'John Doe',
+        email: 'John.Doe@Example.COM',
+        commits: 10,
+      },
+      {
+        ...originalAuthor,
+        name: 'john.doe@example.com',
+        email: 'john.doe@example.com',
+        commits: 5,
+      },
+    ];
+
+    await exporter.export(testReport, outDir);
+    const html = readFileSync(resolve(outDir, 'git-spark-report.html'), 'utf-8');
+
+    // Should have merged the authors - only one author profile should exist
+    const authorProfileMatches = html.match(/<div class="author-profile-card"/g);
+    expect(authorProfileMatches).toHaveLength(1);
+
+    // Email should be lowercase in the output
+    expect(html).toContain('john.doe@example.com');
+    expect(html).not.toContain('John.Doe@Example.COM');
+
+    // Should show combined commit count (10 + 5 = 15)
+    expect(html).toContain('>15<');
+
+    // Should prefer the more descriptive name over the email address
+    expect(html).toContain('John Doe');
   });
 });

@@ -14,7 +14,7 @@ const logger = createLogger('html-exporter');
  * - Interactive charts using Chart.js
  * - Detailed author and file analysis tables
  * - Risk assessment with color-coded indicators
- * - Governance scoring and recommendations
+ * - Repository activity and contribution patterns
  * - Responsive design with modern CSS styling
  *
  * @example
@@ -337,11 +337,9 @@ export class HTMLExporter {
     const repoName = basename(report.metadata.repoPath || '.') || 'repository';
     const generatedAt = report.metadata.generatedAt.toISOString();
     const healthPct = Math.round(report.repository.healthScore * 100);
-    const governancePct = Math.round(report.governance.score * 100);
     const numberFmt = (n: number) => new Intl.NumberFormat().format(n);
     const compactFmt = (n: number) =>
       new Intl.NumberFormat(undefined, { notation: 'compact', maximumFractionDigits: 1 }).format(n);
-    const pctFmt = (n: number) => `${n.toFixed(1)}%`;
     const warnings: string[] = (report as any).warnings || [];
 
     const keyMetrics = [
@@ -366,7 +364,6 @@ export class HTMLExporter {
         raw: report.repository.totalChurn,
       },
       { label: 'Health', value: `${healthPct}%`, raw: healthPct },
-      { label: 'Governance', value: `${governancePct}%`, raw: governancePct },
       {
         label: 'Bus Factor',
         value: numberFmt(report.repository.busFactor),
@@ -395,7 +392,9 @@ export class HTMLExporter {
       })
       .join('');
 
-    const authorRows = report.authors
+    // Merge authors with same email (case-insensitive) for consistent display
+    const mergedAuthors = this.mergeAuthorsByEmail(report.authors);
+    const authorRows = mergedAuthors
       .slice(0, 15)
       .map(
         a => `<tr>
@@ -409,7 +408,7 @@ export class HTMLExporter {
       .join('');
 
     // Simple SVG OG image summarizing key stats
-    const ogSvg = `<svg xmlns='http://www.w3.org/2000/svg' width='800' height='418' viewBox='0 0 800 418' role='img'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop stop-color='%230066cc' offset='0'/><stop stop-color='%2328a745' offset='1'/></linearGradient></defs><rect width='800' height='418' fill='%231e2227'/><text x='40' y='80' font-family='Segoe UI,Roboto,Arial,sans-serif' font-size='42' fill='white'>Git Activity Report</text><text x='40' y='140' font-size='26' fill='white'>${this.escapeHtml(repoName)}</text><text x='40' y='200' font-size='20' fill='white'>Commits: ${report.repository.totalCommits}</text><text x='40' y='235' font-size='20' fill='white'>Authors: ${report.repository.totalAuthors}</text><text x='40' y='270' font-size='20' fill='white'>Health: ${healthPct}%</text><text x='40' y='305' font-size='20' fill='white'>Governance: ${governancePct}%</text><text x='40' y='350' font-size='16' fill='#bbb'>Generated ${new Date(report.metadata.generatedAt).toISOString().split('T')[0]}</text><rect x='600' y='60' width='160' height='160' rx='8' fill='url(#g)' opacity='0.8'/><text x='680' y='160' text-anchor='middle' font-size='54' fill='white' font-weight='700'>${healthPct}%</text></svg>`;
+    const ogSvg = `<svg xmlns='http://www.w3.org/2000/svg' width='800' height='418' viewBox='0 0 800 418' role='img'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop stop-color='%230066cc' offset='0'/><stop stop-color='%2328a745' offset='1'/></linearGradient></defs><rect width='800' height='418' fill='%231e2227'/><text x='40' y='80' font-family='Segoe UI,Roboto,Arial,sans-serif' font-size='42' fill='white'>Git Activity Report</text><text x='40' y='140' font-size='26' fill='white'>${this.escapeHtml(repoName)}</text><text x='40' y='200' font-size='20' fill='white'>Commits: ${report.repository.totalCommits}</text><text x='40' y='235' font-size='20' fill='white'>Authors: ${report.repository.totalAuthors}</text><text x='40' y='270' font-size='20' fill='white'>Health: ${healthPct}%</text><text x='40' y='320' font-size='16' fill='#bbb'>Generated ${new Date(report.metadata.generatedAt).toISOString().split('T')[0]}</text><rect x='600' y='60' width='160' height='160' rx='8' fill='url(#g)' opacity='0.8'/><text x='680' y='160' text-anchor='middle' font-size='54' fill='white' font-weight='700'>${healthPct}%</text></svg>`;
     const ogImage = 'data:image/svg+xml;base64,' + Buffer.from(ogSvg).toString('base64');
 
     // Analysis period (based on analysis options, not just commit range)
@@ -486,13 +485,13 @@ export class HTMLExporter {
   <meta name="generator" content="git-spark v${this.escapeHtml(report.metadata.version)}">
   <meta name="report-date" content="${generatedAt}">
   <meta name="repository" content="${this.escapeHtml(repoName)}">
-  <meta property="og:title" content="Git Activity Report - ${this.escapeHtml(repoName)}">
+  <meta property="og:title" content="GitSpark Report - ${this.escapeHtml(repoName)}">
   <meta property="og:type" content="article">
-  <meta property="og:description" content="${this.escapeHtml(`${report.repository.totalCommits} commits • ${report.repository.totalAuthors} contributors • Health ${healthPct}% • Gov ${governancePct}%`)}">
+  <meta property="og:description" content="${this.escapeHtml(`${report.repository.totalCommits} commits • ${report.repository.totalAuthors} contributors • Health ${healthPct}%`)}">>
   <meta property="og:image" content="${ogImage}">
   <meta http-equiv="Content-Security-Policy" content="${csp}">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
-  <title>Git Activity Report - ${this.escapeHtml(repoName)}</title>
+  <title>GitSpark Report - ${this.escapeHtml(repoName)}</title>
   <style>${styleContent}</style>
 </head>
 <body>
@@ -500,7 +499,7 @@ export class HTMLExporter {
   <a class="skip-link" href="#summary">Skip to content</a>
   <header class="site-header">
     <div class="header-inner">
-      <div class="branding">Git Activity Report <span class="repo-name">${this.escapeHtml(repoName)}</span></div>
+      <div class="branding">GitSpark Report <span class="repo-name">${this.escapeHtml(repoName)}</span></div>
       <nav class="main-nav" aria-label="Section navigation">
         <ul>
           <li><a href="#summary">Summary</a></li>
@@ -508,10 +507,9 @@ export class HTMLExporter {
           <li><a href="#team-score">Team Score</a></li>
           <li><a href="#files">Files</a></li>
           <li><a href="#risks">Risks</a></li>
-          <li><a href="#governance">Governance</a></li>
           <li><a href="#author-details">Author Details</a></li>
-          <li><a href="#meta">Metadata</a></li>
           <li><a href="#documentation">Documentation</a></li>
+          <li><a href="#meta">Metadata</a></li>
         </ul>
       </nav>
     </div>
@@ -529,20 +527,37 @@ export class HTMLExporter {
           .join('')}
       </div>
 
-      <div class="health-badges" aria-label="Health Scores">
-        <div class="health-score" data-rating="${this.getHealthRating(healthPct)}" title="Repository health score">${healthPct}% <span>${this.capitalize(this.getHealthRating(healthPct))}</span></div>
-        <div class="gov-score" title="Governance score">${governancePct}% Governance</div>
+      <div class="health-badges" aria-label="Activity Metrics">
+        <div class="health-score" data-rating="${this.getHealthRating(healthPct)}" title="Repository activity index">${healthPct}% <span>${this.capitalize(this.getHealthRating(healthPct))}</span></div>
       </div>
-      <div class="insights">
-        <h2>Key Insights</h2>
-        <ul>
-          ${report.summary.insights.map(i => `<li>${this.escapeHtml(i)}</li>`).join('') || '<li>No notable insights</li>'}
-        </ul>
-      </div>
-      <div class="actions">
-        <h2>Action Items</h2>
-        <ul>${report.summary.actionItems.map(a => `<li>${this.escapeHtml(a)}</li>`).join('') || '<li>No critical actions</li>'}</ul>
-      </div>
+
+      ${(() => {
+        const breakdown = this.calculateActivityIndexBreakdown(report);
+        return `
+        <div class="activity-breakdown">
+          <h3>Activity Index Calculation</h3>
+          <div class="breakdown-components">
+            <div class="component">
+              <div class="component-label">Commit Frequency</div>
+              <div class="component-value">${breakdown.commitFrequency}%</div>
+              <div class="component-detail">${breakdown.commitFrequencyRaw.toFixed(2)} commits/day (normalized)</div>
+            </div>
+            <div class="component">
+              <div class="component-label">Author Participation</div>
+              <div class="component-value">${breakdown.authorParticipation}%</div>
+              <div class="component-detail">${breakdown.authorParticipationRaw.toFixed(2)} participation ratio</div>
+            </div>
+            <div class="component">
+              <div class="component-label">Change Consistency</div>
+              <div class="component-value">${breakdown.consistencyIndex}%</div>
+              <div class="component-detail">Commit size variation index</div>
+            </div>
+          </div>
+          <div class="formula">
+            <strong>Formula:</strong> <code>${breakdown.formula}</code>
+          </div>
+        </div>`;
+      })()}
     </section>
 
     <section id="authors" class="section">
@@ -573,25 +588,20 @@ export class HTMLExporter {
       
       <div class="team-metrics-grid">
         <div class="metric-card">
-          <h3>Collaboration</h3>
+          <h3>Team Organization</h3>
           <div class="metric-score">${report.teamScore.collaboration.score}</div>
           <div class="metric-details">
             <div class="metric-item">
-              <span class="metric-name">Review Workflow Participation</span>
-              <span class="metric-value">${report.teamScore.collaboration.reviewWorkflowParticipation.toFixed(1)}%</span>
-            </div>
-            <div class="metric-item">
-              <span class="metric-name">Knowledge Distribution</span>
+              <span class="metric-name">Developer Specialization</span>
               <span class="metric-value">${report.teamScore.collaboration.knowledgeDistribution.toFixed(1)}%</span>
             </div>
             <div class="metric-item">
-              <span class="metric-name">Cross-Team Interaction</span>
+              <span class="metric-name">File Ownership Clarity</span>
               <span class="metric-value">${report.teamScore.collaboration.crossTeamInteraction.toFixed(1)}%</span>
             </div>
-            <div class="metric-item">
-              <span class="metric-name">Co-Authorship</span>
-              <span class="metric-value">${report.teamScore.collaboration.coAuthorshipRate.toFixed(1)}%</span>
-            </div>
+          </div>
+          <div class="metric-limitations">
+            <small>📊 Higher scores indicate better team organization and specialization</small>
           </div>
         </div>
 
@@ -600,8 +610,8 @@ export class HTMLExporter {
           <div class="metric-score">${report.teamScore.consistency.score}</div>
           <div class="metric-details">
             <div class="metric-item">
-              <span class="metric-name">Bus Factor</span>
-              <span class="metric-value">${report.teamScore.consistency.busFactor}</span>
+              <span class="metric-name">Bus Factor Distribution</span>
+              <span class="metric-value">${report.teamScore.consistency.busFactorPercentage.toFixed(1)}%</span>
             </div>
             <div class="metric-item">
               <span class="metric-name">Active Contributors</span>
@@ -614,29 +624,6 @@ export class HTMLExporter {
             <div class="metric-item">
               <span class="metric-name">Delivery Cadence</span>
               <span class="metric-value">${report.teamScore.consistency.deliveryCadence.toFixed(1)}%</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="metric-card">
-          <h3>Quality</h3>
-          <div class="metric-score">${report.teamScore.quality.score}</div>
-          <div class="metric-details">
-            <div class="metric-item">
-              <span class="metric-name">Governance Score</span>
-              <span class="metric-value">${report.teamScore.quality.teamGovernanceScore.toFixed(1)}</span>
-            </div>
-            <div class="metric-item">
-              <span class="metric-name">Refactoring Activity</span>
-              <span class="metric-value">${report.teamScore.quality.refactoringActivity.toFixed(1)}%</span>
-            </div>
-            <div class="metric-item">
-              <span class="metric-name">Documentation</span>
-              <span class="metric-value">${report.teamScore.quality.documentationContribution.toFixed(1)}%</span>
-            </div>
-            <div class="metric-item">
-              <span class="metric-name">Merge Workflow Usage</span>
-              <span class="metric-value">${report.teamScore.quality.mergeWorkflowUsage.toFixed(1)}%</span>
             </div>
           </div>
         </div>
@@ -665,46 +652,6 @@ export class HTMLExporter {
         </div>
       </div>
 
-      <div class="team-insights">
-        <div class="insights-section">
-          <h3>Team Dynamics</h3>
-          <div class="dynamic-badges">
-            <span class="dynamic-badge">${this.capitalize(report.teamScore.insights.teamDynamics.replace('-', ' '))}</span>
-            <span class="dynamic-badge">${this.capitalize(report.teamScore.insights.maturityLevel)}</span>
-            <span class="dynamic-badge">${this.capitalize(report.teamScore.insights.sustainabilityRating)}</span>
-          </div>
-        </div>
-
-        <div class="insights-grid">
-          <div class="insight-category">
-            <h4>Strengths</h4>
-            <ul>
-              ${report.teamScore.insights.strengths.map(s => `<li>${this.escapeHtml(s)}</li>`).join('') || '<li>No specific strengths identified</li>'}
-            </ul>
-          </div>
-          
-          <div class="insight-category">
-            <h4>Improvement Areas</h4>
-            <ul>
-              ${report.teamScore.insights.improvements.map(i => `<li>${this.escapeHtml(i)}</li>`).join('') || '<li>No improvement areas identified</li>'}
-            </ul>
-          </div>
-          
-          <div class="insight-category">
-            <h4>Risk Areas</h4>
-            <ul>
-              ${report.teamScore.insights.risks.map(r => `<li>${this.escapeHtml(r)}</li>`).join('') || '<li>No risk areas identified</li>'}
-            </ul>
-          </div>
-        </div>
-
-        <div class="recommendations">
-          <h4>Recommendations</h4>
-          <ul>
-            ${report.teamScore.recommendations.map(r => `<li>${this.escapeHtml(r)}</li>`).join('') || '<li>No specific recommendations</li>'}
-          </ul>
-        </div>
-      </div>
     </section>
 
     <section id="files" class="section">
@@ -730,48 +677,14 @@ export class HTMLExporter {
       <div id="riskFactorsChart" class="chart-container">
         <!-- Risk factors chart placeholder -->
       </div>
-      <div class="recommendations">
-        <h3>Recommendations</h3>
-        <ul>${report.risks.recommendations.map(r => `<li>${this.escapeHtml(r)}</li>`).join('') || '<li>No recommendations</li>'}</ul>
-      </div>
-    </section>
 
-    <section id="governance" class="section">
-      <h2>Governance & Code Quality</h2>
-      <div class="gov-grid">
-        <div class="gov-card">Conventional Commits: ${numberFmt(report.governance.conventionalCommits)}</div>
-        <div class="gov-card">Traceability: ${pctFmt(report.governance.traceabilityScore * 100)}</div>
-        <div class="gov-card">Avg Message Length: ${report.governance.avgMessageLength.toFixed(1)}</div>
-        <div class="gov-card">WIP Commits: ${numberFmt(report.governance.wipCommits)}</div>
-        <div class="gov-card">Reverts: ${numberFmt(report.governance.revertCommits)}</div>
-        <div class="gov-card">Short Messages: ${numberFmt(report.governance.shortMessages)}</div>
-      </div>
-      <div id="governanceChart" class="chart-container">
-        <!-- Governance chart placeholder -->
-      </div>
-      <h3>Governance Recommendations</h3>
-      <ul>${report.governance.recommendations.map(r => `<li>${this.escapeHtml(r)}</li>`).join('') || '<li>No governance recommendations</li>'}</ul>
     </section>
 
     <section id="author-details" class="section">
       <h2>Detailed Author Profiles</h2>
       <div class="author-profiles">
-        ${this.generateDetailedAuthorProfiles(report.authors.slice(0, 10))}
+        ${this.generateDetailedAuthorProfiles(report.authors)}
       </div>
-    </section>
-
-    <section id="meta" class="section">
-      <h2>Report Metadata</h2>
-      <dl class="meta-grid">
-        <dt>Generated</dt><dd>${this.escapeHtml(new Date(report.metadata.generatedAt).toLocaleString())}</dd>
-        <dt>Version</dt><dd>${this.escapeHtml(report.metadata.version)}</dd>
-        <dt>Branch</dt><dd>${this.escapeHtml(report.metadata.branch || '')}</dd>
-        <dt>Commit</dt><dd><code>${this.escapeHtml((report.metadata.commit || '').slice(0, 8))}</code></dd>
-        <dt>Processing Time</dt><dd>${(report.metadata.processingTime / 1000).toFixed(2)}s</dd>
-        <dt>Repo Path</dt><dd>${this.escapeHtml(report.metadata.repoPath)}</dd>
-        ${report.metadata.cliArguments?.length ? `<dt>CLI Arguments</dt><dd><code>${this.escapeHtml(report.metadata.cliArguments.join(' '))}</code></dd>` : ''}
-        ${warnings.length ? `<dt>Warnings</dt><dd><ul class="warnings">${warnings.map(w => `<li>${this.escapeHtml(w)}</li>`).join('')}</ul></dd>` : ''}
-      </dl>
     </section>
 
     <section id="documentation" class="section">
@@ -791,37 +704,41 @@ export class HTMLExporter {
       
       <div class="doc-section">
         <h3>Team Effectiveness Score</h3>
-        <p>The Team Effectiveness Score is a comprehensive metric that evaluates team performance across four key dimensions, providing insights into collaboration patterns, consistency, code quality, and work-life balance.</p>
+        <p>The Team Effectiveness Score evaluates team performance across three key dimensions: organization patterns, development consistency, and work-life balance sustainability, providing insights into team structure and workflow efficiency.</p>
         
         <div class="formula-box">
           <h4>Overall Team Score Formula</h4>
           <code class="formula">
-            Team Score = (Collaboration × 0.30) + (Consistency × 0.25) + (Quality × 0.25) + (Work-Life Balance × 0.20)
+            Team Score = (Team Organization × 0.40) + (Consistency × 0.45) + (Work-Life Balance × 0.15)
           </code>
         </div>
 
         <div class="metric-docs">
           <div class="metric-category">
-            <h4>Collaboration (30% Weight)</h4>
+            <h4>Team Organization (40% Weight)</h4>
             <div class="limitation-notice">
-              <strong>⚠️ Measurement Limitations:</strong> Git stores commit data but not PR reviewers/approvers. 
-              Metrics are estimated from available Git data (merge commits, co-authorship, file patterns).
+              <strong>⚠️ Measurement Approach:</strong> Measures team organization and specialization patterns from Git commit data. 
+              High scores indicate clear file ownership and developer specialization rather than traditional "collaboration."
             </div>
             <ul>
-              <li><strong>Review Workflow Participation:</strong> Estimated percentage of commits made through merge workflows vs direct commits. Based on merge commit detection and commit message patterns. <em>Note: May underestimate teams using squash merges or rebase workflows.</em></li>
-              <li><strong>Cross-Team Interaction:</strong> Percentage of files modified by multiple authors. Directly measurable from Git history and indicates knowledge sharing across the team.</li>
-              <li><strong>Knowledge Distribution:</strong> Distribution of file ownership patterns across the team. Directly measurable and indicates better knowledge distribution.</li>
-              <li><strong>Co-Authorship Rate:</strong> Percentage of commits with multiple authors (Co-authored-by: tags). Directly measurable and indicates pair programming and collaborative development.</li>
+              <li><strong>Developer Specialization:</strong> Measures how unique each developer's file set is compared to others. Higher scores indicate developers working on distinct areas rather than overlapping work.</li>
+              <li><strong>File Ownership Clarity:</strong> Percentage of files with single-author ownership. Higher scores suggest clear responsibility and reduced conflicts.</li>
+              <li><strong>Organization Efficiency:</strong> Measures low file overlap between developers. Higher scores indicate better task distribution and less potential for conflicts.</li>
+              <li><strong>Co-Authorship Rate:</strong> Percentage of commits with multiple authors (Co-authored-by: tags). Measured separately as intentional collaboration indicator.</li>
             </ul>
             <div class="formula-box">
               <code class="formula">
-                Collaboration Score = (Review Workflow Participation + Cross-Team Interaction + Knowledge Distribution + Co-Authorship × 2) ÷ 4
+                Organization Score = (Specialization × 0.50) + (Ownership Clarity × 0.30) + (Low Overlap × 0.20)
               </code>
+            </div>
+            <div class="interpretation-note">
+              <strong>📝 Interpretation:</strong> This metric favors teams where developers have specialized, non-overlapping areas of responsibility. 
+              Very high scores may indicate knowledge silos, while very low scores may suggest unclear ownership or excessive conflicts.
             </div>
           </div>
 
           <div class="metric-category">
-            <h4>Consistency & Velocity (25% Weight)</h4>
+            <h4>Consistency & Velocity (45% Weight)</h4>
             <ul>
               <li><strong>Bus Factor:</strong> Number of top contributors needed to account for 50% of commits. Higher values indicate better knowledge distribution.</li>
               <li><strong>Active Contributor Ratio:</strong> Percentage of team members with commits in the last 30 days. Measures current team engagement.</li>
@@ -836,30 +753,13 @@ export class HTMLExporter {
           </div>
 
           <div class="metric-category">
-            <h4>Code Quality & Governance (25% Weight)</h4>
-            <ul>
-              <li><strong>Team Governance Score:</strong> Average commit message quality across all team members, based on conventional commits, traceability, and descriptiveness.</li>
-              <li><strong>Refactoring Activity:</strong> Percentage of commits containing refactoring keywords (refactor, cleanup, restructure).</li>
-              <li><strong>Bug Fix Ratio:</strong> Percentage of commits addressing bugs vs feature development.</li>
-              <li><strong>Documentation Contribution:</strong> Percentage of commits that modify documentation files or contain documentation keywords.</li>
-              <li><strong>Merge Workflow Usage:</strong> Percentage of commits that went through merge workflows (estimated from merge commits). <em>Note: This detects merge patterns, not actual code review coverage which requires platform API access.</em></li>
-              <li><strong>Test File Detection:</strong> Analysis of test file presence and ratios. <em>Note: This detects test files by naming patterns, not actual test execution coverage.</em></li>
-            </ul>
-            <div class="formula-box">
-              <code class="formula">
-                Quality Score = (Governance × 0.30) + (Refactoring × 0.20) + (Documentation × 0.20) + (Merge Workflow × 0.20) + (Test File Detection × 0.10)
-              </code>
-            </div>
-          </div>
-
-          <div class="metric-category">
             <h4>Work-Life Balance & Sustainability (20% Weight)</h4>
             <div class="limitation-notice">
               <strong>⚠️ Important Limitations:</strong> Work patterns are estimated from commit timing only. 
               Cannot detect actual working hours, time zones, or real work-life balance.
             </div>
             <ul>
-              <li><strong>Commit Time Patterns:</strong> Health score based on commit timing patterns. Higher values indicate commits during standard business hours.</li>
+              <li><strong>Commit Time Patterns:</strong> Index score based on commit timing distribution. Values reflect temporal commit patterns across business vs non-business hours.</li>
               <li><strong>After-Hours Commit Frequency:</strong> Percentage of commits made outside business hours (before 8 AM or after 6 PM). <em>Note: Based on commit timestamps, not actual working hours.</em></li>
               <li><strong>Weekend Commit Activity:</strong> Percentage of commits made on weekends (Saturday and Sunday).</li>
               <li><strong>Team Active Coverage:</strong> Estimated team coverage patterns from commit authoring. <em>Note: Based on commit patterns, not actual vacation or availability data.</em></li>
@@ -874,20 +774,20 @@ export class HTMLExporter {
         </div>
 
         <div class="score-thresholds">
-          <h4>Team Score Interpretation</h4>
+          <h4>Team Score Ranges</h4>
           <ul>
-            <li><strong>90-100 (Excellent):</strong> High-performing team with outstanding practices and sustainable workflow</li>
-            <li><strong>75-89 (Good):</strong> Healthy team dynamics with opportunities for optimization</li>
-            <li><strong>60-74 (Fair):</strong> Functional team with specific improvement areas identified</li>
-            <li><strong>40-59 (Poor):</strong> Team showing concerning patterns requiring attention</li>
-            <li><strong>0-39 (Critical):</strong> Team requires immediate intervention and process changes</li>
+            <li><strong>90-100:</strong> Excellent team organization with clear specialization and ownership</li>
+            <li><strong>75-89:</strong> Good organization with well-defined areas of responsibility</li>
+            <li><strong>60-74:</strong> Moderate organization with some clear ownership patterns</li>
+            <li><strong>40-59:</strong> Mixed organization with moderate file overlap between developers</li>
+            <li><strong>0-39:</strong> High file overlap suggesting unclear ownership or excessive conflicts</li>
           </ul>
         </div>
       </div>
 
       <div class="doc-section">
         <h3>Author Evaluation Metrics</h3>
-        <p>Individual author metrics provide detailed insights into contribution patterns, code quality, collaboration style, and work habits.</p>
+        <p>Individual author metrics provide detailed insights into contribution patterns, code quality, work organization style, and work habits.</p>
 
         <div class="metric-docs">
           <div class="metric-category">
@@ -909,12 +809,12 @@ export class HTMLExporter {
           </div>
 
           <div class="metric-category">
-            <h4>Collaboration Assessment</h4>
+            <h4>Author Organization Patterns</h4>
             <ul>
-              <li><strong>Co-Authorship Rate:</strong> Percentage of commits with multiple authors, indicating pair programming and collaborative work.</li>
+              <li><strong>Co-Authorship Rate:</strong> Percentage of commits with multiple authors, indicating intentional collaborative work.</li>
               <li><strong>Pull Request Integration:</strong> Ratio of merge commits to direct commits, showing adherence to review processes.</li>
-              <li><strong>Knowledge Sharing Index:</strong> Ratio of shared files to exclusive files, measuring willingness to work on others' code.</li>
-              <li><strong>File Ownership Style:</strong> Classification as collaborative, specialized, or balanced based on file sharing patterns.</li>
+              <li><strong>File Specialization Index:</strong> Ratio of exclusive files to shared files, measuring focus on specific areas.</li>
+              <li><strong>File Ownership Style:</strong> Classification as specialized, shared, or balanced based on file ownership patterns.</li>
             </ul>
           </div>
 
@@ -977,9 +877,9 @@ export class HTMLExporter {
         <h3>Risk Assessment Framework</h3>
         <div class="metric-docs">
           <div class="metric-category">
-            <h4>Repository Health Indicators</h4>
+            <h4>Repository Activity Indicators</h4>
             <ul>
-              <li><strong>Bus Factor:</strong> Minimum number of team members who must be unavailable before project knowledge becomes critically compromised.</li>
+              <li><strong>Bus Factor:</strong> Percentage of codebase commits concentrated among top contributors (inverse measure of knowledge distribution).</li>
               <li><strong>Hotspot Analysis:</strong> Files with high churn and multiple authors, indicating potential maintenance challenges.</li>
               <li><strong>Code Ownership Distribution:</strong> Analysis of how knowledge and responsibility are distributed across the team.</li>
               <li><strong>Technical Debt Indicators:</strong> Patterns suggesting accumulating maintenance burden (large commits, frequent reverts, WIP commits).</li>
@@ -993,11 +893,30 @@ export class HTMLExporter {
         <p><strong>Data Source:</strong> All metrics are calculated from Git commit history, including commit metadata, file changes, and authorship information.</p>
         <p><strong>Time Window:</strong> Analysis covers the specified date range with temporal weighting for recent activity when applicable.</p>
         <p><strong>Normalization:</strong> Scores are normalized to 0-100 scale for consistency and interpretability across different team sizes and project characteristics.</p>
-        <p><strong>Statistical Confidence:</strong> Metrics are most reliable with sufficient data points (recommended minimum: 30 days of activity, 50+ commits).</p>
+        <p><strong>Statistical Note:</strong> Metrics calculated from available Git commit data (larger datasets provide more representative patterns).</p>
       </div>
     </section>
+
+    <section id="meta" class="section">
+      <h2>Report Metadata</h2>
+      <dl class="meta-grid">
+        <dt>Generated</dt><dd>${this.escapeHtml(new Date(report.metadata.generatedAt).toLocaleString())}</dd>
+        <dt>Version</dt><dd>${this.escapeHtml(report.metadata.version)}</dd>
+        <dt>Branch</dt><dd>${this.escapeHtml(report.metadata.branch || '')}</dd>
+        <dt>Commit</dt><dd><code>${this.escapeHtml((report.metadata.commit || '').slice(0, 8))}</code></dd>
+        <dt>Processing Time</dt><dd>${(report.metadata.processingTime / 1000).toFixed(2)}s</dd>
+        <dt>Repo Path</dt><dd>${this.escapeHtml(report.metadata.repoPath)}</dd>
+        ${report.metadata.cliArguments?.length ? `<dt>CLI Arguments</dt><dd><code>${this.escapeHtml(report.metadata.cliArguments.join(' '))}</code></dd>` : ''}
+        ${warnings.length ? `<dt>Warnings</dt><dd><ul class="warnings">${warnings.map(w => `<li>${this.escapeHtml(w)}</li>`).join('')}</ul></dd>` : ''}
+      </dl>
+    </section>
   </main>
-  <footer class="site-footer" role="contentinfo">Generated by git-spark v${this.escapeHtml(report.metadata.version)} • ${this.escapeHtml(new Date(report.metadata.generatedAt).toLocaleString())}</footer>
+  <footer class="site-footer" role="contentinfo">
+    <div class="footer-content">
+      <p>Generated by GitSpark v${this.escapeHtml(report.metadata.version)} • ${this.escapeHtml(new Date(report.metadata.generatedAt).toLocaleString())}</p>
+      <p>GitSpark is a <a href="https://markhazleton.com" target="_blank" rel="noopener noreferrer">Mark Hazleton</a> project</p>
+    </div>
+  </footer>
   <button id="backToTop" class="back-to-top" aria-label="Back to top" hidden>▲</button>
   <div id="liveRegion" class="sr-only" aria-live="polite" aria-atomic="true"></div>
   <script nonce="${scriptNonce}">${basicScript}</script>
@@ -1060,10 +979,19 @@ export class HTMLExporter {
       .metric-label { font-size:.7rem; text-transform:uppercase; letter-spacing:.05em; color:var(--color-text-secondary); }
       .health-badges { display:flex; gap:1rem; align-items:center; flex-wrap:wrap; margin:.5rem 0 1rem; }
       .health-score, .gov-score { padding:.6rem .9rem; border-radius:6px; font-weight:600; background:var(--color-primary); color:#fff; display:inline-flex; align-items:center; gap:.5rem; }
-      .health-score[data-rating='excellent'] { background:var(--color-success); }
-      .health-score[data-rating='good'] { background:var(--color-primary); }
+      .health-score[data-rating='high'] { background:var(--color-success); }
+      .health-score[data-rating='moderate'] { background:var(--color-primary); }
       .health-score[data-rating='fair'] { background:var(--color-warning); }
-      .health-score[data-rating='poor'] { background:var(--color-danger); }
+      .health-score[data-rating='low'] { background:var(--color-danger); }
+      .activity-breakdown { margin:1rem 0; padding:1rem; background:var(--color-bg); border:1px solid var(--color-border); border-radius:6px; }
+      .activity-breakdown h3 { margin:0 0 .75rem; font-size:1rem; color:var(--color-text); }
+      .breakdown-components { display:grid; gap:.75rem; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); margin-bottom:1rem; }
+      .component { background:var(--color-surface); padding:.75rem; border-radius:4px; border:1px solid var(--color-border); }
+      .component-label { font-size:.75rem; color:var(--color-text-secondary); text-transform:uppercase; letter-spacing:.05em; margin-bottom:.25rem; }
+      .component-value { font-size:1.1rem; font-weight:600; color:var(--color-primary); margin-bottom:.25rem; }
+      .component-detail { font-size:.7rem; color:var(--color-text-secondary); }
+      .formula { margin-top:.75rem; padding-top:.75rem; border-top:1px solid var(--color-border); }
+      .formula code { background:var(--color-surface); padding:.25rem .4rem; border-radius:3px; font-size:.8rem; }
   .analysis-period { font-size:.8rem; margin:.25rem 0 1rem; color:var(--color-text-secondary); }
       ul { padding-left:1.1rem; }
       li { margin:.25rem 0; }
@@ -1083,6 +1011,9 @@ export class HTMLExporter {
       .meta-grid { display:grid; grid-template-columns: 120px 1fr; gap:.35rem .75rem; font-size:.75rem; }
       .meta-grid dt { font-weight:600; }
       .site-footer { text-align:center; padding:1.5rem .5rem 3rem; font-size:.7rem; color:var(--color-text-secondary); }
+      .footer-content p { margin: 0.25rem 0; }
+      .footer-content a { color:var(--color-primary); text-decoration:none; }
+      .footer-content a:hover { text-decoration:underline; }
       .back-to-top { position:fixed; bottom:1rem; right:1rem; background:var(--color-primary); color:#fff; border:none; padding:.55rem .7rem; border-radius:4px; font-size:.85rem; cursor:pointer; box-shadow:var(--shadow-sm); }
       .back-to-top:hover, .back-to-top:focus { background:#004f99; }
       .warnings { margin:0; padding-left:1rem; }
@@ -1106,13 +1037,13 @@ export class HTMLExporter {
       .author-email { color:var(--color-text-secondary); font-size:.85rem; font-family:ui-monospace, monospace; }
       .author-period { color:var(--color-text-secondary); font-size:.8rem; margin-top:.25rem; }
       
-      .contribution-overview, .work-patterns, .collaboration, .code-focus, .commit-distribution, .insights-section { margin-bottom:1.25rem; }
-      .contribution-overview h4, .work-patterns h4, .collaboration h4, .code-focus h4, .commit-distribution h4, .insights-section h4 { 
+      .contribution-overview, .commit-patterns, .code-focus, .commit-distribution, .insights-section { margin-bottom:1.25rem; }
+      .contribution-overview h4, .commit-patterns h4, .code-focus h4, .commit-distribution h4, .insights-section h4 { 
         margin:0 0 .75rem; font-size:1.1rem; color:var(--color-text); border-bottom:1px solid var(--color-border); padding-bottom:.5rem; 
       }
       
       .metrics-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(120px, 1fr)); gap:.75rem; margin-bottom:.75rem; }
-      .metric-box { background:var(--color-bg); border:1px solid var(--color-border); border-radius:6px; padding:.75rem; text-align:center; }
+      .metric-box { background:var(--color-surface); border:1px solid var(--color-border); border-radius:6px; padding:.75rem; text-align:center; color:var(--color-text); }
 
       /* Team Score Styles */
       .team-score-overview { margin-bottom:2rem; }
@@ -1162,6 +1093,15 @@ export class HTMLExporter {
         background:var(--color-primary); color:#fff; 
         padding:.25rem .5rem; border-radius:4px; font-size:.8rem;
       }
+      .metric-limitations { 
+        margin-top:.5rem; padding:.25rem .5rem; 
+        background:var(--color-bg); border-radius:4px; 
+        text-align:left; opacity:0.8;
+      }
+      .metric-limitations small { 
+        font-size:.75rem; color:var(--color-text-secondary); 
+        font-style:italic;
+      }
       
       .team-insights { margin-top:2rem; }
       .insights-section h3 { margin:0 0 1rem; font-size:1.3rem; }
@@ -1187,16 +1127,7 @@ export class HTMLExporter {
       }
       .insight-category ul { margin:0; padding-left:1.2rem; }
       .insight-category li { font-size:.85rem; margin:.5rem 0; }
-      
-      .recommendations { 
-        background:var(--color-bg); border-left:4px solid var(--color-primary); 
-        padding:1rem 1.5rem; border-radius:0 6px 6px 0; 
-      }
-      .recommendations h4 { 
-        margin:0 0 .75rem; font-size:1.1rem; color:var(--color-primary); 
-      }
-      .recommendations ul { margin:0; padding-left:1.2rem; }
-      .recommendations li { font-size:.9rem; margin:.5rem 0; }
+
 
       /* Documentation Section Styles */
       .doc-intro { font-style:italic; color:var(--color-text-secondary); margin-bottom:2rem; }
@@ -1303,7 +1234,7 @@ export class HTMLExporter {
         line-height:1.5; 
       }
       .methodology-note strong { color:var(--color-text); }
-      .metric-box .metric-value { font-size:1.2rem; font-weight:600; color:var(--color-primary); }
+      .metric-box .metric-value { font-size:1.2rem; font-weight:600; color:var(--color-text); }
       .metric-box .metric-label { font-size:.7rem; color:var(--color-text-secondary); text-transform:uppercase; margin-top:.25rem; }
       
       .summary-stats { font-size:.85rem; color:var(--color-text-secondary); text-align:center; padding:.5rem; background:var(--color-bg); border-radius:4px; }
@@ -1398,30 +1329,98 @@ export class HTMLExporter {
   }
 
   private getHealthRating(scorePercent: number): string {
-    if (scorePercent >= 80) return 'excellent';
-    if (scorePercent >= 60) return 'good';
+    if (scorePercent >= 80) return 'high';
+    if (scorePercent >= 60) return 'moderate';
     if (scorePercent >= 40) return 'fair';
-    return 'poor';
+    return 'low';
   }
 
   private getTeamScoreRating(score: number): string {
-    if (score >= 90) return 'Excellent';
-    if (score >= 75) return 'Good';
+    if (score >= 90) return 'High';
+    if (score >= 75) return 'Moderate';
     if (score >= 60) return 'Fair';
-    if (score >= 40) return 'Poor';
-    return 'Critical';
+    if (score >= 40) return 'Low';
+    return 'Minimal';
   }
 
   private getTeamScoreDescription(score: number): string {
-    if (score >= 90) return 'High-performing team with excellent practices';
-    if (score >= 75) return 'Healthy team dynamics with room for optimization';
-    if (score >= 60) return 'Functional team with improvement opportunities';
-    if (score >= 40) return 'Team showing concerning patterns';
-    return 'Team requires immediate attention';
+    if (score >= 90) return 'Excellent team organization with clear specialization';
+    if (score >= 75) return 'Good team organization with defined ownership';
+    if (score >= 60) return 'Moderate team organization detected';
+    if (score >= 40) return 'Mixed organization patterns with some overlap';
+    return 'High file overlap suggests unclear ownership';
   }
 
   private generateDetailedAuthorProfiles(authors: any[]): string {
-    return authors.map(author => this.generateAuthorProfileCard(author)).join('\n');
+    // Normalize and merge authors with same email (case-insensitive)
+    const mergedAuthors = this.mergeAuthorsByEmail(authors);
+    return mergedAuthors.map(author => this.generateAuthorProfileCard(author)).join('\n');
+  }
+
+  private mergeAuthorsByEmail(authors: any[]): any[] {
+    const emailMap = new Map<string, any>();
+
+    for (const author of authors) {
+      const normalizedEmail = author.email.toLowerCase();
+
+      if (emailMap.has(normalizedEmail)) {
+        const existing = emailMap.get(normalizedEmail)!;
+        // Merge the authors by combining their data
+        existing.commits += author.commits;
+        existing.insertions += author.insertions;
+        existing.deletions += author.deletions;
+        existing.churn += author.churn;
+        existing.filesChanged = Math.max(existing.filesChanged, author.filesChanged);
+        existing.avgCommitSize = existing.churn / existing.commits;
+
+        // Use the earliest first commit and latest last commit
+        if (author.firstCommit < existing.firstCommit) {
+          existing.firstCommit = author.firstCommit;
+        }
+        if (author.lastCommit > existing.lastCommit) {
+          existing.lastCommit = author.lastCommit;
+        }
+
+        // Merge detailed metrics if they exist
+        if (existing.detailed && author.detailed) {
+          // Combine contribution metrics
+          if (existing.detailed.contribution && author.detailed.contribution) {
+            existing.detailed.contribution.totalCommits +=
+              author.detailed.contribution.totalCommits || 0;
+            existing.detailed.contribution.totalLines +=
+              author.detailed.contribution.totalLines || 0;
+            existing.detailed.contribution.avgCommitSize =
+              existing.detailed.contribution.totalLines /
+              existing.detailed.contribution.totalCommits;
+          }
+
+          // Merge work patterns - use the pattern with more data
+          if (
+            author.detailed.workPattern &&
+            (!existing.detailed.workPattern ||
+              (author.detailed.workPattern.commits || 0) >
+                (existing.detailed.workPattern.commits || 0))
+          ) {
+            existing.detailed.workPattern = author.detailed.workPattern;
+          }
+        }
+
+        // Keep the name that appears more frequently (prefer non-email names)
+        if (
+          author.name &&
+          !author.name.includes('@') &&
+          (existing.name.includes('@') || author.name.length > existing.name.length)
+        ) {
+          existing.name = author.name;
+        }
+      } else {
+        // Create a copy of the author with normalized email
+        const normalizedAuthor = { ...author, email: normalizedEmail };
+        emailMap.set(normalizedEmail, normalizedAuthor);
+      }
+    }
+
+    return Array.from(emailMap.values());
   }
 
   private generateAuthorProfileCard(author: any): string {
@@ -1433,9 +1432,7 @@ export class HTMLExporter {
 
     // Safely access detailed metrics with fallbacks
     const contribution = metrics?.contribution || {};
-    const collaboration = metrics?.collaboration || {};
     const workPattern = metrics?.workPattern || {};
-    const quality = metrics?.quality || {};
     const insights = metrics?.insights || {
       positivePatterns: [],
       growthAreas: [],
@@ -1477,25 +1474,15 @@ export class HTMLExporter {
         </div>
       </div>
 
-      <div class="work-patterns">
-        <h4>Work Patterns</h4>
+      <div class="commit-patterns">
+        <h4>Commit Patterns</h4>
         <div class="pattern-info">
-          <div><strong>${workPattern.commitTiming?.mostActiveDay?.day || 'N/A'}</strong> Peak Day • 
-          <strong>${workPattern.commitTiming?.mostActiveTime?.timeRange || 'N/A'}</strong> Peak Time</div>
-          <div><strong>${workPattern.commitTiming?.workPattern || 'N/A'}</strong> ${pctFmt(workPattern.workLifeBalance?.weekendPercentage || 0)} weekends</div>
-          <div>After hours: ${pctFmt(workPattern.workLifeBalance?.afterHoursPercentage || 0)} • 
-          Consistency: ${(workPattern.temporalPatterns?.consistencyScore || 0).toFixed(0)}/100</div>
-        </div>
-      </div>
-
-      <div class="collaboration">
-        <h4>Collaboration</h4>
-        <div class="collab-stats">
-          <div>PR Integration: ${pctFmt(collaboration.prIntegrationRate || 0)} • 
-          Issue refs: ${pctFmt(quality.commitMessageQuality?.issueTraceabilityRate || 0)} • 
-          Co-authored: ${pctFmt(collaboration.coAuthorshipRate || 0)}</div>
-          <div>Message Quality: ${(quality.commitMessageQuality?.overallScore || 0).toFixed(0)}/100</div>
-          <div>Knowledge sharing: ${pctFmt(collaboration.knowledgeSharingIndex || 0)}</div>
+          <div>Peak Day: <strong>${workPattern.commitTiming?.mostActiveDay?.day || 'N/A'}</strong> • 
+          Peak Time: <strong>${workPattern.commitTiming?.mostActiveTime?.timeRange || 'N/A'}</strong></div>
+          <div>Work Pattern: <strong>${workPattern.commitTiming?.workPattern || 'N/A'}</strong> • 
+          Weekend commits: <strong>${pctFmt(workPattern.workLifeBalance?.weekendPercentage || 0)}</strong></div>
+          <div>After hours: <strong>${pctFmt(workPattern.workLifeBalance?.afterHoursPercentage || 0)}</strong> • 
+          Consistency: <strong>${(workPattern.temporalPatterns?.consistencyScore || 0).toFixed(0)}/100</strong></div>
         </div>
       </div>
 
@@ -1554,10 +1541,31 @@ export class HTMLExporter {
   private getTopDirectories(directoryFocus: any[]): string {
     if (!directoryFocus || directoryFocus.length === 0) return 'N/A';
 
-    return directoryFocus
-      .slice(0, 3)
-      .map(d => `${d.directory}/ (${d.percentage.toFixed(0)}%)`)
-      .join(', ');
+    // Take top directories and normalize percentages to ensure they sum to 100%
+    let topDirectories = directoryFocus.slice(0, 3);
+
+    // Calculate total percentage of selected directories
+    let totalPercentage = topDirectories.reduce((sum, d) => sum + d.percentage, 0);
+
+    // If total exceeds 100%, normalize to 100%
+    if (totalPercentage > 100) {
+      const scaleFactor = 100 / totalPercentage;
+      topDirectories = topDirectories.map(d => ({
+        ...d,
+        percentage: d.percentage * scaleFactor,
+      }));
+      totalPercentage = 100;
+    }
+
+    // If we have less than 100% and need to show "others"
+    const result = topDirectories.map(d => `${d.directory}/ (${d.percentage.toFixed(0)}%)`);
+
+    if (totalPercentage < 100 && directoryFocus.length > 3) {
+      const othersPercentage = 100 - totalPercentage;
+      result.push(`others (${othersPercentage.toFixed(0)}%)`);
+    }
+
+    return result.join(', ');
   }
 
   private generateCommitSizeChart(distribution: any): string {
@@ -1714,5 +1722,64 @@ export class HTMLExporter {
         initPagination(); 
       });
     })();`;
+  }
+
+  /**
+   * Calculate Activity Index breakdown components for display
+   * @private
+   */
+  private calculateActivityIndexBreakdown(report: AnalysisReport): {
+    commitFrequency: number;
+    commitFrequencyRaw: number;
+    authorParticipation: number;
+    authorParticipationRaw: number;
+    consistencyIndex: number;
+    consistencyIndexRaw: number;
+    formula: string;
+  } {
+    const commits = report.repository.totalCommits;
+    const authors = report.repository.totalAuthors;
+    const activeDays = Math.max(report.repository.activeDays, 1);
+
+    if (commits === 0 || activeDays === 0) {
+      return {
+        commitFrequency: 0,
+        commitFrequencyRaw: 0,
+        authorParticipation: 0,
+        authorParticipationRaw: 0,
+        consistencyIndex: 0,
+        consistencyIndexRaw: 0,
+        formula: '(0.000 + 0.000 + 0.000) ÷ 3 = 0.000',
+      };
+    }
+
+    // Component 1: Commit frequency (commits per day) - normalized to 0-1 scale
+    const commitFrequencyRaw = commits / activeDays;
+    const commitFrequency = Math.min(commitFrequencyRaw / 5, 1); // Cap at 5 commits/day for normalization
+
+    // Component 2: Author participation ratio - normalized to 0-1 scale
+    const authorParticipationRaw = authors / Math.max(commits / 20, 1); // 1 author per 20 commits baseline
+    const authorParticipation = Math.min(authorParticipationRaw, 1);
+
+    // Component 3: Change consistency - derive from final score
+    // Since we don't have access to individual commit sizes in the report summary,
+    // we calculate this as the remaining component to reach the final score
+    const finalScore = report.repository.healthScore;
+    const consistencyIndexRaw = Math.max(
+      0,
+      Math.min(1, finalScore * 3 - commitFrequency - authorParticipation)
+    );
+
+    const formula = `(${commitFrequency.toFixed(3)} + ${authorParticipation.toFixed(3)} + ${consistencyIndexRaw.toFixed(3)}) ÷ 3 = ${finalScore.toFixed(3)}`;
+
+    return {
+      commitFrequency: Math.round(commitFrequency * 100),
+      commitFrequencyRaw,
+      authorParticipation: Math.round(authorParticipation * 100),
+      authorParticipationRaw,
+      consistencyIndex: Math.round(consistencyIndexRaw * 100),
+      consistencyIndexRaw,
+      formula,
+    };
   }
 }

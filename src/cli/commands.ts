@@ -196,7 +196,7 @@ async function executeHTMLReport(options: any): Promise<void> {
             chalk.blue(`📈 Total Commits: ${report.repository.totalCommits}\n`) +
             chalk.blue(`👥 Contributors: ${report.repository.totalAuthors}\n`) +
             chalk.blue(`📁 Files Analyzed: ${report.repository.totalFiles}\n`) +
-            chalk.blue(`🏥 Health Score: ${Math.round(report.repository.healthScore * 100)}%\n`) +
+            chalk.blue(`📊 Activity Index: ${Math.round(report.repository.healthScore * 100)}%\n`) +
             chalk.blue(`🚌 Bus Factor: ${report.repository.busFactor}`),
           {
             padding: 1,
@@ -558,7 +558,7 @@ function displaySummary(report: any): void {
           chalk.blue(`Total Commits: ${repository.totalCommits}\n`) +
           chalk.blue(`Active Contributors: ${repository.totalAuthors}\n`) +
           chalk.blue(`Files Changed: ${repository.totalFiles}\n`) +
-          chalk.blue(`Health Score: ${Math.round(repository.healthScore * 100)}%\n`) +
+          chalk.blue(`Activity Index: ${Math.round(repository.healthScore * 100)}%\n`) +
           chalk.blue(`Bus Factor: ${repository.busFactor}`),
         {
           padding: 1,
