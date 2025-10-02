@@ -515,4 +515,209 @@ describe('HTMLExporter (Phase 3)', () => {
     // Should prefer the more descriptive name over the email address
     expect(html).toContain('John Doe');
   });
+
+  describe('Daily Trends Coverage Tests', () => {
+    it('includes daily trends section when data is present', async () => {
+      const testReport = {
+        ...report,
+        dailyTrends: {
+          analysisMetadata: {
+            timezone: 'UTC',
+            startDate: '2024-01-01T00:00:00.000Z',
+            endDate: '2024-01-02T23:59:59.999Z',
+            totalDays: 2,
+            activeDays: 1,
+          },
+          flowMetrics: [
+            {
+              day: '2024-01-01',
+              date: '2024-01-01',
+              commitsPerDay: 3,
+              uniqueAuthorsPerDay: 2,
+              grossLinesChangedPerDay: 150,
+              filesChangedPerDay: 8,
+              filesTouchedPerDay: 8,
+              commitSizeDistribution: { p50: 25, p90: 100 },
+            },
+          ],
+          stabilityMetrics: [],
+          ownershipMetrics: [],
+          couplingMetrics: [],
+          hygieneMetrics: [],
+          contributionsGraph: { weeks: [], totalContributions: 0 },
+        } as any,
+      };
+
+      await exporter.export(testReport, outDir);
+      const html = readFileSync(resolve(outDir, 'git-spark-report.html'), 'utf-8');
+
+      // Check for main daily trends components
+      expect(html).toContain('📈 Daily Activity Trends');
+      expect(html).toContain('Visual Trend Analysis');
+      expect(html).toContain('Daily Commits Trend');
+      expect(html).toContain('Active Authors Trend');
+    });
+
+    it('omits daily trends section when no data provided', async () => {
+      const testReport = { ...report }; // No dailyTrends property
+
+      await exporter.export(testReport, outDir);
+      const html = readFileSync(resolve(outDir, 'git-spark-report.html'), 'utf-8');
+
+      // Should not contain daily trends section
+      expect(html).not.toContain('📈 Daily Activity Trends');
+      expect(html).not.toContain('Visual Trend Analysis');
+    });
+
+    it('handles empty flowMetrics array', async () => {
+      const testReport = {
+        ...report,
+        dailyTrends: {
+          analysisMetadata: {
+            timezone: 'UTC',
+            startDate: '2024-01-01T00:00:00.000Z',
+            endDate: '2024-01-01T23:59:59.999Z',
+            totalDays: 1,
+            activeDays: 0,
+          },
+          flowMetrics: [],
+          stabilityMetrics: [],
+          ownershipMetrics: [],
+          couplingMetrics: [],
+          hygieneMetrics: [],
+          contributionsGraph: { weeks: [], totalContributions: 0 },
+        } as any,
+      };
+
+      await exporter.export(testReport, outDir);
+      const html = readFileSync(resolve(outDir, 'git-spark-report.html'), 'utf-8');
+
+      // Should still generate section but handle empty data
+      expect(html).toContain('📈 Daily Activity Trends');
+      expect(html).toContain('No data available');
+    });
+
+    it('generates chart components', async () => {
+      const testReport = {
+        ...report,
+        dailyTrends: {
+          analysisMetadata: {
+            timezone: 'UTC',
+            startDate: '2024-01-01T00:00:00.000Z',
+            endDate: '2024-01-02T23:59:59.999Z',
+            totalDays: 2,
+            activeDays: 2,
+          },
+          flowMetrics: [
+            {
+              day: '2024-01-01',
+              date: '2024-01-01',
+              commitsPerDay: 3,
+              uniqueAuthorsPerDay: 2,
+              grossLinesChangedPerDay: 150,
+              filesChangedPerDay: 8,
+              filesTouchedPerDay: 8,
+              commitSizeDistribution: { p50: 25, p90: 100 },
+            },
+            {
+              day: '2024-01-02',
+              date: '2024-01-02',
+              commitsPerDay: 5,
+              uniqueAuthorsPerDay: 1,
+              grossLinesChangedPerDay: 200,
+              filesChangedPerDay: 12,
+              filesTouchedPerDay: 12,
+              commitSizeDistribution: { p50: 30, p90: 120 },
+            },
+          ],
+          stabilityMetrics: [],
+          ownershipMetrics: [],
+          couplingMetrics: [],
+          hygieneMetrics: [],
+          contributionsGraph: { weeks: [], totalContributions: 0 },
+        } as any,
+      };
+
+      await exporter.export(testReport, outDir);
+      const html = readFileSync(resolve(outDir, 'git-spark-report.html'), 'utf-8');
+
+      // Check for chart elements
+      expect(html).toContain('<svg');
+      expect(html).toContain('trend-chart');
+      expect(html).toContain('sparklines-container');
+      expect(html).toContain('spark-bar');
+      expect(html).toContain('Lines Changed');
+      expect(html).toContain('Files Touched');
+    });
+
+    it('includes proper CSS styles for daily trends', async () => {
+      const testReport = {
+        ...report,
+        dailyTrends: {
+          analysisMetadata: {
+            timezone: 'UTC',
+            startDate: '2024-01-01T00:00:00.000Z',
+            endDate: '2024-01-01T23:59:59.999Z',
+            totalDays: 1,
+            activeDays: 1,
+          },
+          flowMetrics: [
+            {
+              day: '2024-01-01',
+              date: '2024-01-01',
+              commitsPerDay: 1,
+              uniqueAuthorsPerDay: 1,
+              grossLinesChangedPerDay: 50,
+              filesChangedPerDay: 3,
+              filesTouchedPerDay: 3,
+              commitSizeDistribution: { p50: 15, p90: 50 },
+            },
+          ],
+          stabilityMetrics: [],
+          ownershipMetrics: [],
+          couplingMetrics: [],
+          hygieneMetrics: [],
+          contributionsGraph: { weeks: [], totalContributions: 0 },
+        } as any,
+      };
+
+      await exporter.export(testReport, outDir);
+      const html = readFileSync(resolve(outDir, 'git-spark-report.html'), 'utf-8');
+
+      // Check for chart-specific CSS styles
+      expect(html).toContain('.trend-chart');
+      expect(html).toContain('.sparklines-container');
+      expect(html).toContain('.spark-bar');
+      expect(html).toContain('.charts-grid');
+      expect(html).toContain('/* Daily Trends Section Styles */');
+    });
+
+    it('tests chart generation method accessibility', () => {
+      // Test that chart generation methods can be called directly
+      const mockFlowMetrics = [
+        {
+          day: '2024-01-01',
+          commitsPerDay: 3,
+          uniqueAuthorsPerDay: 2,
+          grossLinesChangedPerDay: 150,
+          filesChangedPerDay: 8,
+        },
+      ];
+
+      // Access private methods for coverage (TypeScript hack)
+      const htmlExporter = exporter as any;
+
+      expect(() => {
+        htmlExporter.generateCommitTrendChart(mockFlowMetrics);
+      }).not.toThrow();
+
+      expect(() => {
+        htmlExporter.generateAuthorTrendChart(mockFlowMetrics);
+      }).not.toThrow();
+
+      expect(() => {
+        htmlExporter.generateVolumeSparklines(mockFlowMetrics);
+      }).not.toThrow();
+    });
+  });
 });

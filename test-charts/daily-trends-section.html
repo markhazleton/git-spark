@@ -1,0 +1,493 @@
+
+    <section id="daily-trends" class="section">
+      <h2>📈 Daily Activity Trends</h2>
+      <p class="section-description">
+        Objective daily patterns computed exclusively from Git commit history. These metrics show repository activity trends 
+        and do not indicate team performance, code quality, or individual productivity.
+      </p>
+
+      <!-- Trends Overview -->
+      <div class="trends-overview">
+        <h3>Analysis Period Overview</h3>
+        <div class="trends-summary-grid">
+          <div class="trend-summary-card">
+            <div class="summary-metric">
+              <div class="metric-value">3</div>
+              <div class="metric-label">Active Days</div>
+              <div class="metric-detail">out of 3 total days</div>
+            </div>
+          </div>
+          <div class="trend-summary-card">
+            <div class="summary-metric">
+              <div class="metric-value">12.7</div>
+              <div class="metric-label">Avg Commits/Day</div>
+              <div class="metric-detail">across active days</div>
+            </div>
+          </div>
+          <div class="trend-summary-card">
+            <div class="summary-metric">
+              <div class="metric-value">18</div>
+              <div class="metric-label">Peak Day</div>
+              <div class="metric-detail">2025-09-29</div>
+            </div>
+          </div>
+          <div class="trend-summary-card">
+            <div class="summary-metric">
+              <div class="metric-value">0</div>
+              <div class="metric-label">Total Reverts</div>
+              <div class="metric-detail">across all days</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contributions Graph -->
+      
+      <div class="contributions-graph">
+        <h3>🗓️ Contributions Calendar</h3>
+        <div class="contributions-header">
+          <span>Activity over the last 3 days</span>
+          <span>38 total commits</span>
+        </div>
+        <div class="contributions-calendar">
+          <div class="contributions-weeks">
+            <div class="contributions-week"><div class="contribution-day intensity-4" title="2025-09-29: 18 commits" data-count="18" data-date="2025-09-29"></div></div><div class="contributions-week"><div class="contribution-day intensity-4" title="2025-09-30: 17 commits" data-count="17" data-date="2025-09-30"></div><div class="contribution-day intensity-1" title="2025-10-01: 3 commits" data-count="3" data-date="2025-10-01"></div></div>
+          </div>
+        </div>
+        <div class="contributions-legend">
+          <span>Less</span>
+          <div class="legend-scale">
+            <div class="legend-day intensity-0"></div>
+            <div class="legend-day intensity-1"></div>
+            <div class="legend-day intensity-2"></div>
+            <div class="legend-day intensity-3"></div>
+            <div class="legend-day intensity-4"></div>
+          </div>
+          <span>More</span>
+        </div>
+      </div>
+    
+
+      <!-- Visual Trend Charts -->
+      <div class="visual-trends">
+        <h3>Visual Trend Analysis</h3>
+        <div class="charts-grid">
+          
+      <div class="chart-container">
+        <h4>Daily Commits Trend</h4>
+        <svg class="trend-chart" width="800" height="200" viewBox="0 0 800 200">
+          <defs>
+            <linearGradient id="commitTrendGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" style="stop-color:var(--color-primary);stop-opacity:0.6" />
+              <stop offset="100%" style="stop-color:var(--color-primary);stop-opacity:0.1" />
+            </linearGradient>
+          </defs>
+          
+          <!-- Grid lines -->
+          <g class="grid" stroke="var(--color-border)" stroke-width="1" opacity="0.3">
+            <line x1="50" y1="20" x2="750" y2="20"/><line x1="50" y1="57.5" x2="750" y2="57.5"/><line x1="50" y1="95" x2="750" y2="95"/><line x1="50" y1="132.5" x2="750" y2="132.5"/><line x1="50" y1="170" x2="750" y2="170"/>
+          </g>
+          
+          <!-- Area fill -->
+          <path d="M 50 170 L 50 20 L 400 28.333333333333343 L 750 145 L 750 170 Z" fill="url(#commitTrendGradient)"/>
+          
+          <!-- Trend line -->
+          <path d="M 50 20 L 400 28.333333333333343 L 750 145" fill="none" stroke="var(--color-primary)" stroke-width="2"/>
+          
+          <!-- Data points -->
+          <g class="data-points">
+            <circle cx="50" cy="20" r="3" fill="var(--color-primary)" 
+                      title="2025-09-29: 18 commits">
+                 <title>2025-09-29: 18 commits</title>
+               </circle><circle cx="400" cy="28.333333333333343" r="3" fill="var(--color-primary)" 
+                      title="2025-09-30: 17 commits">
+                 <title>2025-09-30: 17 commits</title>
+               </circle><circle cx="750" cy="145" r="3" fill="var(--color-primary)" 
+                      title="2025-10-01: 3 commits">
+                 <title>2025-10-01: 3 commits</title>
+               </circle>
+          </g>
+          
+          <!-- Y-axis labels -->
+          <g class="y-labels" font-size="12" fill="var(--color-text-secondary)" text-anchor="end">
+            <text x="40" y="25">18</text>
+            <text x="40" y="175">0</text>
+          </g>
+          
+          <!-- Chart title -->
+          <text x="400" y="15" text-anchor="middle" font-size="14" font-weight="600" fill="var(--color-text)">
+            Last 3 Days
+          </text>
+        </svg>
+      </div>
+    
+          
+      <div class="chart-container">
+        <h4>Active Authors Trend</h4>
+        <svg class="trend-chart" width="800" height="200" viewBox="0 0 800 200">
+          <defs>
+            <linearGradient id="authorTrendGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" style="stop-color:var(--color-success);stop-opacity:0.6" />
+              <stop offset="100%" style="stop-color:var(--color-success);stop-opacity:0.1" />
+            </linearGradient>
+          </defs>
+          
+          <!-- Grid lines -->
+          <g class="grid" stroke="var(--color-border)" stroke-width="1" opacity="0.3">
+            <line x1="50" y1="20" x2="750" y2="20"/><line x1="50" y1="57.5" x2="750" y2="57.5"/><line x1="50" y1="95" x2="750" y2="95"/><line x1="50" y1="132.5" x2="750" y2="132.5"/><line x1="50" y1="170" x2="750" y2="170"/>
+          </g>
+          
+          <!-- Trend line -->
+          <path d="M 50 20 L 400 20 L 750 20" fill="none" stroke="var(--color-success)" stroke-width="2"/>
+          
+          <!-- Data points -->
+          <g class="data-points">
+            <circle cx="50" cy="20" r="3" fill="var(--color-success)" 
+                      title="2025-09-29: 1 authors">
+                 <title>2025-09-29: 1 authors</title>
+               </circle><circle cx="400" cy="20" r="3" fill="var(--color-success)" 
+                      title="2025-09-30: 1 authors">
+                 <title>2025-09-30: 1 authors</title>
+               </circle><circle cx="750" cy="20" r="3" fill="var(--color-success)" 
+                      title="2025-10-01: 1 authors">
+                 <title>2025-10-01: 1 authors</title>
+               </circle>
+          </g>
+          
+          <!-- Y-axis labels -->
+          <g class="y-labels" font-size="12" fill="var(--color-text-secondary)" text-anchor="end">
+            <text x="40" y="25">1</text>
+            <text x="40" y="175">0</text>
+          </g>
+          
+          <!-- Chart title -->
+          <text x="400" y="15" text-anchor="middle" font-size="14" font-weight="600" fill="var(--color-text)">
+            Last 3 Days
+          </text>
+        </svg>
+      </div>
+    
+          
+      <div class="sparklines-container">
+        <h4>Volume Trends (Last 14 Days)</h4>
+        <div class="sparklines-grid">
+          <div class="sparkline-item">
+            <div class="sparkline-label">Lines Changed</div>
+            <div class="sparkline-chart">
+              <div class="sparkline-bars">
+                <div class="spark-bar" style="height: 100%;" title="2025-09-29: 27,278 lines"></div><div class="spark-bar" style="height: 70.2030940684801%;" title="2025-09-30: 19,150 lines"></div><div class="spark-bar" style="height: 50.83583840457512%;" title="2025-10-01: 13,867 lines"></div>
+              </div>
+            </div>
+            <div class="sparkline-summary">Peak: 27,278</div>
+          </div>
+          
+          <div class="sparkline-item">
+            <div class="sparkline-label">Files Touched</div>
+            <div class="sparkline-chart">
+              <div class="sparkline-bars files">
+                <div class="spark-bar" style="height: 79.72972972972973%;" title="2025-09-29: 59 files"></div><div class="spark-bar" style="height: 100%;" title="2025-09-30: 74 files"></div><div class="spark-bar" style="height: 54.054054054054056%;" title="2025-10-01: 40 files"></div>
+              </div>
+            </div>
+            <div class="sparkline-summary">Peak: 74</div>
+          </div>
+        </div>
+      </div>
+    
+        </div>
+      </div>
+
+      <!-- Key Trends -->
+      <div class="key-trends">
+        <h3>Key Trending Patterns</h3>
+        
+        <!-- Flow Trends -->
+        <div class="trend-category">
+          <h4>📊 Daily Flow & Throughput</h4>
+          <div class="trend-explanation">
+            <p>Observable patterns in commit frequency, author participation, and code volume changes.</p>
+          </div>
+          
+          
+      <div class="table-wrapper">
+        <table class="data-table trends-table" data-sortable>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th class="num">Commits</th>
+              <th class="num">Authors</th>
+              <th class="num">Lines Changed</th>
+              <th class="num">Files Touched</th>
+              <th class="num">P50 Commit Size</th>
+              <th class="num">P90 Commit Size</th>
+            </tr>
+          </thead>
+          <tbody>
+      <tr>
+        <td>2025-09-29</td>
+        <td class="num">18</td>
+        <td class="num">1</td>
+        <td class="num">27,278</td>
+        <td class="num">59</td>
+        <td class="num">332</td>
+        <td class="num">3423</td>
+      </tr>
+    
+      <tr>
+        <td>2025-09-30</td>
+        <td class="num">17</td>
+        <td class="num">1</td>
+        <td class="num">19,150</td>
+        <td class="num">74</td>
+        <td class="num">313</td>
+        <td class="num">3588</td>
+      </tr>
+    
+      <tr>
+        <td>2025-10-01</td>
+        <td class="num">3</td>
+        <td class="num">1</td>
+        <td class="num">13,867</td>
+        <td class="num">40</td>
+        <td class="num">4339</td>
+        <td class="num">9335</td>
+      </tr>
+    </tbody>
+        </table>
+      </div>
+      
+    
+        </div>
+
+        <!-- Stability Trends -->
+        <div class="trend-category">
+          <h4>⚖️ Daily Stability Indicators</h4>
+          <div class="trend-explanation">
+            <p>Patterns that may indicate repository stability, including reverts, merges, and file retouch rates.</p>
+          </div>
+          
+          
+      <div class="table-wrapper">
+        <table class="data-table trends-table" data-sortable>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th class="num">Reverts</th>
+              <th class="num">Merge Ratio</th>
+              <th class="num">Retouch Rate</th>
+              <th class="num">Renames</th>
+              <th class="num">Out of Hours</th>
+            </tr>
+          </thead>
+          <tbody>
+      <tr>
+        <td>2025-09-29</td>
+        <td class="num">0</td>
+        <td class="num">0.0%</td>
+        <td class="num">0.0%</td>
+        <td class="num">2</td>
+        <td class="num">22.2%</td>
+      </tr>
+    
+      <tr>
+        <td>2025-09-30</td>
+        <td class="num">0</td>
+        <td class="num">0.0%</td>
+        <td class="num">43.2%</td>
+        <td class="num">0</td>
+        <td class="num">35.3%</td>
+      </tr>
+    
+      <tr>
+        <td>2025-10-01</td>
+        <td class="num">0</td>
+        <td class="num">0.0%</td>
+        <td class="num">35.0%</td>
+        <td class="num">0</td>
+        <td class="num">100.0%</td>
+      </tr>
+    </tbody>
+        </table>
+      </div>
+      
+    
+        </div>
+
+        <!-- Ownership Trends -->
+        <div class="trend-category">
+          <h4>👥 Daily Ownership Patterns</h4>
+          <div class="trend-explanation">
+            <p>File ownership distribution and knowledge spreading patterns based on authorship data.</p>
+          </div>
+          
+          
+      <div class="table-wrapper">
+        <table class="data-table trends-table" data-sortable>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th class="num">New Files</th>
+              <th class="num">Single Owner Files</th>
+              <th class="num">Total Files Touched</th>
+              <th class="num">Single Owner %</th>
+              <th class="num">Avg Authors/File</th>
+            </tr>
+          </thead>
+          <tbody>
+      <tr>
+        <td>2025-09-29</td>
+        <td class="num">67</td>
+        <td class="num">0</td>
+        <td class="num">59</td>
+        <td class="num">0.0%</td>
+        <td class="num">0.0</td>
+      </tr>
+    
+      <tr>
+        <td>2025-09-30</td>
+        <td class="num">54</td>
+        <td class="num">32</td>
+        <td class="num">74</td>
+        <td class="num">43.2%</td>
+        <td class="num">0.4</td>
+      </tr>
+    
+      <tr>
+        <td>2025-10-01</td>
+        <td class="num">28</td>
+        <td class="num">14</td>
+        <td class="num">40</td>
+        <td class="num">35.0%</td>
+        <td class="num">0.3</td>
+      </tr>
+    </tbody>
+        </table>
+      </div>
+      
+    
+        </div>
+
+        <!-- Coupling Trends -->
+        <div class="trend-category">
+          <h4>🔗 Daily Coupling Indicators</h4>
+          <div class="trend-explanation">
+            <p>Patterns in file co-changes that may indicate architectural coupling or batch changes.</p>
+          </div>
+          
+          
+      <div class="table-wrapper">
+        <table class="data-table trends-table" data-sortable>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th class="num">Co-change Density</th>
+              <th class="num">Total Co-change Pairs</th>
+              <th class="num">Multi-file Commits</th>
+            </tr>
+          </thead>
+          <tbody>
+      <tr>
+        <td>2025-09-29</td>
+        <td class="num">37.44</td>
+        <td class="num">674</td>
+        <td class="num">17</td>
+      </tr>
+    
+      <tr>
+        <td>2025-09-30</td>
+        <td class="num">46.12</td>
+        <td class="num">784</td>
+        <td class="num">16</td>
+      </tr>
+    
+      <tr>
+        <td>2025-10-01</td>
+        <td class="num">188.67</td>
+        <td class="num">566</td>
+        <td class="num">3</td>
+      </tr>
+    </tbody>
+        </table>
+      </div>
+      
+    
+        </div>
+
+        <!-- Hygiene Trends -->
+        <div class="trend-category">
+          <h4>🧹 Daily Hygiene Patterns</h4>
+          <div class="trend-explanation">
+            <p>Commit message quality patterns and documentation practices observed in commit data.</p>
+          </div>
+          
+          
+      <div class="table-wrapper">
+        <table class="data-table trends-table" data-sortable>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th class="num">Median Message Length</th>
+              <th class="num">Short Messages</th>
+              <th class="num">Conventional Commits</th>
+            </tr>
+          </thead>
+          <tbody>
+      <tr>
+        <td>2025-09-29</td>
+        <td class="num">91</td>
+        <td class="num">1</td>
+        <td class="num">14</td>
+      </tr>
+    
+      <tr>
+        <td>2025-09-30</td>
+        <td class="num">94</td>
+        <td class="num">0</td>
+        <td class="num">15</td>
+      </tr>
+    
+      <tr>
+        <td>2025-10-01</td>
+        <td class="num">76</td>
+        <td class="num">0</td>
+        <td class="num">1</td>
+      </tr>
+    </tbody>
+        </table>
+      </div>
+      
+    
+        </div>
+      </div>
+
+      <!-- Limitations and Context -->
+      <div class="trends-limitations">
+        <h3>⚠️ Daily Trends Limitations</h3>
+        <div class="limitation-notice">
+          <h4>Git Data Only - No External Context</h4>
+          <p>These trends are calculated exclusively from Git commit history and have significant limitations:</p>
+          <ul>
+            <li><strong>Timing:</strong> Commit timestamps reflect when commits were made, not actual working hours</li>
+            <li><strong>Batch Operations:</strong> Large commits may represent batch changes, merges, or automated processes</li>
+            <li><strong>Development Workflows:</strong> Patterns affected by branching strategies, release cycles, and team practices</li>
+            <li><strong>No Quality Context:</strong> Cannot distinguish between bug fixes, features, refactoring, or maintenance</li>
+            <li><strong>No External Events:</strong> Cannot correlate with releases, incidents, holidays, or business events</li>
+          </ul>
+          
+          <h4>Appropriate Usage</h4>
+          <ul>
+            <li><strong>Activity Monitoring:</strong> Track repository activity levels and participation</li>
+            <li><strong>Pattern Recognition:</strong> Identify unusual spikes, drops, or cyclical patterns</li>
+            <li><strong>Planning Context:</strong> Understand historical activity patterns for capacity planning</li>
+            <li><strong>Process Insights:</strong> Observe effects of workflow or tooling changes</li>
+          </ul>
+          
+          <h4>Inappropriate Usage</h4>
+          <ul>
+            <li><strong>Performance Assessment:</strong> Do not use for individual or team performance evaluation</li>
+            <li><strong>Quality Measurement:</strong> Trends do not indicate code quality or defect rates</li>
+            <li><strong>Productivity Metrics:</strong> Commit patterns ≠ productivity or business value</li>
+            <li><strong>Work-Life Balance:</strong> Timing patterns do not indicate actual working hours or stress</li>
+          </ul>
+        </div>
+      </div>
+    </section>
