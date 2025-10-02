@@ -315,7 +315,7 @@ export class HTMLExporter {
         '/tests/',
         '/test/',
       ],
-      maxHotspots: 10,
+      maxHotspots: 20,
     };
   }
 
@@ -1500,6 +1500,143 @@ export class HTMLExporter {
       .contribution-tooltip.visible { 
         opacity: 1; 
       }
+
+      /* Visual Trends Chart Styles */
+      .visual-trends { margin: 2rem 0; }
+      .charts-grid { 
+        display: grid; 
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); 
+        gap: 2rem; 
+        margin: 1.5rem 0; 
+      }
+      
+      .chart-container { 
+        background: var(--color-surface); 
+        border: 1px solid var(--color-border); 
+        border-radius: 8px; 
+        padding: 1.5rem; 
+        box-shadow: var(--shadow-sm); 
+      }
+      .chart-container h4 { 
+        margin: 0 0 1rem; 
+        font-size: 1.1rem; 
+        color: var(--color-text); 
+        border-bottom: 1px solid var(--color-border); 
+        padding-bottom: 0.5rem; 
+      }
+      
+      .trend-chart { 
+        max-width: 100%; 
+        height: auto; 
+        border-radius: 4px; 
+        background: var(--color-surface); 
+      }
+      .trend-chart .data-points circle:hover { 
+        r: 5; 
+        stroke: var(--color-surface); 
+        stroke-width: 2; 
+        cursor: pointer; 
+      }
+      .trend-chart .grid line { 
+        stroke: var(--color-border); 
+        stroke-opacity: 0.3; 
+      }
+      
+      .chart-placeholder { 
+        text-align: center; 
+        color: var(--color-text-secondary); 
+        font-style: italic; 
+        padding: 2rem; 
+        background: var(--color-bg); 
+        border-radius: 4px; 
+        border: 1px dashed var(--color-border); 
+      }
+      
+      /* Sparklines Styles */
+      .sparklines-container { 
+        background: var(--color-surface); 
+        border: 1px solid var(--color-border); 
+        border-radius: 8px; 
+        padding: 1.5rem; 
+        box-shadow: var(--shadow-sm); 
+      }
+      .sparklines-container h4 { 
+        margin: 0 0 1rem; 
+        font-size: 1.1rem; 
+        color: var(--color-text); 
+        border-bottom: 1px solid var(--color-border); 
+        padding-bottom: 0.5rem; 
+      }
+      
+      .sparklines-grid { 
+        display: grid; 
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+        gap: 1.5rem; 
+      }
+      
+      .sparkline-item { 
+        background: var(--color-bg); 
+        border: 1px solid var(--color-border); 
+        border-radius: 6px; 
+        padding: 1rem; 
+      }
+      .sparkline-label { 
+        font-size: 0.85rem; 
+        font-weight: 600; 
+        color: var(--color-text); 
+        margin-bottom: 0.5rem; 
+      }
+      .sparkline-summary { 
+        font-size: 0.75rem; 
+        color: var(--color-text-secondary); 
+        margin-top: 0.5rem; 
+        text-align: center; 
+      }
+      
+      .sparkline-chart { 
+        height: 60px; 
+        margin: 0.75rem 0; 
+      }
+      .sparkline-bars { 
+        display: flex; 
+        align-items: flex-end; 
+        gap: 2px; 
+        height: 100%; 
+        padding: 0 0.25rem; 
+      }
+      .spark-bar { 
+        flex: 1; 
+        min-height: 2px; 
+        background: linear-gradient(to top, var(--color-primary), #2196f3); 
+        border-radius: 2px 2px 0 0; 
+        transition: all 0.2s ease; 
+        cursor: pointer; 
+      }
+      .spark-bar:hover { 
+        background: var(--color-warning); 
+        transform: scaleY(1.1); 
+        z-index: 10; 
+      }
+      .sparkline-bars.files .spark-bar { 
+        background: linear-gradient(to top, var(--color-success), #4caf50); 
+      }
+      .sparkline-bars.files .spark-bar:hover { 
+        background: var(--color-warning); 
+      }
+      
+      /* Responsive design for charts */
+      @media (max-width: 768px) { 
+        .charts-grid { 
+          grid-template-columns: 1fr; 
+        }
+        .sparklines-grid { 
+          grid-template-columns: 1fr; 
+        }
+        .trend-chart { 
+          width: 100%; 
+          height: auto; 
+        }
+      }
     `;
   }
 
@@ -2076,6 +2213,16 @@ export class HTMLExporter {
       <!-- Contributions Graph -->
       ${this.generateContributionsGraphSection(trends.contributionsGraph, metadata)}
 
+      <!-- Visual Trend Charts -->
+      <div class="visual-trends">
+        <h3>Visual Trend Analysis</h3>
+        <div class="charts-grid">
+          ${this.generateCommitTrendChart(flowMetrics)}
+          ${this.generateAuthorTrendChart(flowMetrics)}
+          ${this.generateVolumeSparklines(flowMetrics)}
+        </div>
+      </div>
+
       <!-- Key Trends -->
       <div class="key-trends">
         <h3>Key Trending Patterns</h3>
@@ -2417,6 +2564,220 @@ export class HTMLExporter {
             <div class="legend-day intensity-4"></div>
           </div>
           <span>More</span>
+        </div>
+      </div>
+    `;
+  }
+
+  /**
+   * Generate SVG line chart for commit trends
+   * @private
+   */
+  private generateCommitTrendChart(flowMetrics: any[]): string {
+    if (!flowMetrics || flowMetrics.length === 0) {
+      return '<div class="chart-placeholder">No commit trend data available</div>';
+    }
+
+    // Take last 30 days or all data if less
+    const recentData = flowMetrics.slice(-30);
+    const maxCommits = Math.max(...recentData.map(d => d.commitsPerDay), 1);
+
+    // Chart dimensions
+    const width = 800;
+    const height = 200;
+    const padding = { top: 20, right: 50, bottom: 30, left: 50 };
+    const chartWidth = width - padding.left - padding.right;
+    const chartHeight = height - padding.top - padding.bottom;
+
+    // Generate points for the line
+    const points = recentData.map((day, index) => {
+      const x = padding.left + (index * chartWidth) / (recentData.length - 1 || 1);
+      const y = padding.top + chartHeight - (day.commitsPerDay * chartHeight) / maxCommits;
+      return { x, y, value: day.commitsPerDay, date: day.day };
+    });
+
+    const pathData = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
+    const areaData = `M ${padding.left} ${height - padding.bottom} L ${pathData.substring(2)} L ${points[points.length - 1]?.x || padding.left} ${height - padding.bottom} Z`;
+
+    return `
+      <div class="chart-container">
+        <h4>Daily Commits Trend</h4>
+        <svg class="trend-chart" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
+          <defs>
+            <linearGradient id="commitTrendGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" style="stop-color:var(--color-primary);stop-opacity:0.6" />
+              <stop offset="100%" style="stop-color:var(--color-primary);stop-opacity:0.1" />
+            </linearGradient>
+          </defs>
+          
+          <!-- Grid lines -->
+          <g class="grid" stroke="var(--color-border)" stroke-width="1" opacity="0.3">
+            ${Array.from({ length: 5 }, (_, i) => {
+              const y = padding.top + (i * chartHeight) / 4;
+              return `<line x1="${padding.left}" y1="${y}" x2="${width - padding.right}" y2="${y}"/>`;
+            }).join('')}
+          </g>
+          
+          <!-- Area fill -->
+          <path d="${areaData}" fill="url(#commitTrendGradient)"/>
+          
+          <!-- Trend line -->
+          <path d="${pathData}" fill="none" stroke="var(--color-primary)" stroke-width="2"/>
+          
+          <!-- Data points -->
+          <g class="data-points">
+            ${points
+              .map(
+                p =>
+                  `<circle cx="${p.x}" cy="${p.y}" r="3" fill="var(--color-primary)" 
+                      title="${p.date}: ${p.value} commits">
+                 <title>${p.date}: ${p.value} commits</title>
+               </circle>`
+              )
+              .join('')}
+          </g>
+          
+          <!-- Y-axis labels -->
+          <g class="y-labels" font-size="12" fill="var(--color-text-secondary)" text-anchor="end">
+            <text x="${padding.left - 10}" y="${padding.top + 5}">${maxCommits}</text>
+            <text x="${padding.left - 10}" y="${height - padding.bottom + 5}">0</text>
+          </g>
+          
+          <!-- Chart title -->
+          <text x="${width / 2}" y="15" text-anchor="middle" font-size="14" font-weight="600" fill="var(--color-text)">
+            Last ${recentData.length} Days
+          </text>
+        </svg>
+      </div>
+    `;
+  }
+
+  /**
+   * Generate SVG line chart for author trends
+   * @private
+   */
+  private generateAuthorTrendChart(flowMetrics: any[]): string {
+    if (!flowMetrics || flowMetrics.length === 0) {
+      return '<div class="chart-placeholder">No author trend data available</div>';
+    }
+
+    const recentData = flowMetrics.slice(-30);
+    const maxAuthors = Math.max(...recentData.map(d => d.uniqueAuthorsPerDay), 1);
+
+    const width = 800;
+    const height = 200;
+    const padding = { top: 20, right: 50, bottom: 30, left: 50 };
+    const chartWidth = width - padding.left - padding.right;
+    const chartHeight = height - padding.top - padding.bottom;
+
+    const points = recentData.map((day, index) => {
+      const x = padding.left + (index * chartWidth) / (recentData.length - 1 || 1);
+      const y = padding.top + chartHeight - (day.uniqueAuthorsPerDay * chartHeight) / maxAuthors;
+      return { x, y, value: day.uniqueAuthorsPerDay, date: day.day };
+    });
+
+    const pathData = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
+
+    return `
+      <div class="chart-container">
+        <h4>Active Authors Trend</h4>
+        <svg class="trend-chart" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
+          <defs>
+            <linearGradient id="authorTrendGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" style="stop-color:var(--color-success);stop-opacity:0.6" />
+              <stop offset="100%" style="stop-color:var(--color-success);stop-opacity:0.1" />
+            </linearGradient>
+          </defs>
+          
+          <!-- Grid lines -->
+          <g class="grid" stroke="var(--color-border)" stroke-width="1" opacity="0.3">
+            ${Array.from({ length: 5 }, (_, i) => {
+              const y = padding.top + (i * chartHeight) / 4;
+              return `<line x1="${padding.left}" y1="${y}" x2="${width - padding.right}" y2="${y}"/>`;
+            }).join('')}
+          </g>
+          
+          <!-- Trend line -->
+          <path d="${pathData}" fill="none" stroke="var(--color-success)" stroke-width="2"/>
+          
+          <!-- Data points -->
+          <g class="data-points">
+            ${points
+              .map(
+                p =>
+                  `<circle cx="${p.x}" cy="${p.y}" r="3" fill="var(--color-success)" 
+                      title="${p.date}: ${p.value} authors">
+                 <title>${p.date}: ${p.value} authors</title>
+               </circle>`
+              )
+              .join('')}
+          </g>
+          
+          <!-- Y-axis labels -->
+          <g class="y-labels" font-size="12" fill="var(--color-text-secondary)" text-anchor="end">
+            <text x="${padding.left - 10}" y="${padding.top + 5}">${maxAuthors}</text>
+            <text x="${padding.left - 10}" y="${height - padding.bottom + 5}">0</text>
+          </g>
+          
+          <!-- Chart title -->
+          <text x="${width / 2}" y="15" text-anchor="middle" font-size="14" font-weight="600" fill="var(--color-text)">
+            Last ${recentData.length} Days
+          </text>
+        </svg>
+      </div>
+    `;
+  }
+
+  /**
+   * Generate CSS-based sparklines for volume metrics
+   * @private
+   */
+  private generateVolumeSparklines(flowMetrics: any[]): string {
+    if (!flowMetrics || flowMetrics.length === 0) {
+      return '<div class="chart-placeholder">No volume data available</div>';
+    }
+
+    const recentData = flowMetrics.slice(-14); // Last 2 weeks
+    const maxLines = Math.max(...recentData.map(d => d.grossLinesChangedPerDay), 1);
+    const maxFiles = Math.max(...recentData.map(d => d.filesTouchedPerDay), 1);
+
+    const linesSparkline = recentData
+      .map(day => {
+        const height = (day.grossLinesChangedPerDay / maxLines) * 100;
+        return `<div class="spark-bar" style="height: ${height}%;" title="${day.day}: ${day.grossLinesChangedPerDay.toLocaleString()} lines"></div>`;
+      })
+      .join('');
+
+    const filesSparkline = recentData
+      .map(day => {
+        const height = (day.filesTouchedPerDay / maxFiles) * 100;
+        return `<div class="spark-bar" style="height: ${height}%;" title="${day.day}: ${day.filesTouchedPerDay} files"></div>`;
+      })
+      .join('');
+
+    return `
+      <div class="sparklines-container">
+        <h4>Volume Trends (Last 14 Days)</h4>
+        <div class="sparklines-grid">
+          <div class="sparkline-item">
+            <div class="sparkline-label">Lines Changed</div>
+            <div class="sparkline-chart">
+              <div class="sparkline-bars">
+                ${linesSparkline}
+              </div>
+            </div>
+            <div class="sparkline-summary">Peak: ${maxLines.toLocaleString()}</div>
+          </div>
+          
+          <div class="sparkline-item">
+            <div class="sparkline-label">Files Touched</div>
+            <div class="sparkline-chart">
+              <div class="sparkline-bars files">
+                ${filesSparkline}
+              </div>
+            </div>
+            <div class="sparkline-summary">Peak: ${maxFiles}</div>
+          </div>
         </div>
       </div>
     `;
