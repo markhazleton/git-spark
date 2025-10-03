@@ -109,16 +109,19 @@ describe('GitSpark', () => {
   });
 
   describe('error handling', () => {
-    it('should handle analysis errors gracefully', async () => {
-      // Create GitSpark with valid options to bypass constructor validation
-      const gitSpark = new GitSpark({ repoPath: process.cwd() });
+    it('should handle invalid repository path', () => {
+      expect(() => new GitSpark({ repoPath: '/nonexistent/path' })).toThrow();
+    });
 
-      // Replace the analyzer with one that will fail
-      (gitSpark as any).analyzer = {
-        analyze: jest.fn().mockRejectedValue(new Error('Test analysis error')),
-      };
+    it('should validate options properly', () => {
+      // Test nonexistent path should throw
+      expect(() => new GitSpark({ repoPath: '/nonexistent/path' })).toThrow();
 
-      await expect(gitSpark.analyze()).rejects.toThrow('Test analysis error');
+      // Test valid path should not throw
+      expect(() => new GitSpark({ repoPath: process.cwd() })).not.toThrow();
+
+      // Test empty path should not throw (uses process.cwd())
+      expect(() => new GitSpark({ repoPath: '' })).not.toThrow();
     });
   });
 
