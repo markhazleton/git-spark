@@ -10,12 +10,14 @@
 ### What npm Package Page Supports
 
 **✅ Can Display:**
+
 - Markdown README with images
 - Links to external demos
 - Embedded images from GitHub or CDNs
 - GIFs and animations
 
 **❌ Cannot Display:**
+
 - Live HTML files directly on npm
 - PDFs inline (but can link to them)
 - Interactive iframes
@@ -29,6 +31,7 @@
 ### Phase 1: GitHub Pages Setup (Live Interactive Demo)
 
 #### Step 1: Create Demo Report
+
 ```powershell
 # Generate a comprehensive demo report
 git-spark html --days=90 --output=./docs --heavy
@@ -41,6 +44,7 @@ git-spark html --days=90 --output=./docs
 ```
 
 #### Step 2: Create Index Page
+
 Create `docs/index.html`:
 
 ```html
@@ -165,6 +169,7 @@ Create `docs/index.html`:
 ```
 
 #### Step 3: Enable GitHub Pages
+
 ```powershell
 # Commit the docs folder
 git add docs/
@@ -188,6 +193,7 @@ git push
 #### Step 1: Generate and Capture Screenshots
 
 **What to Capture:**
+
 1. **Dashboard Overview** - Full report view showing health score
 2. **Contributions Calendar** - GitHub-style heatmap
 3. **Daily Trends Chart** - Interactive timeline
@@ -196,11 +202,13 @@ git push
 6. **Data Export** - Show export functionality
 
 **Tools:**
+
 - Windows: Win + Shift + S (built-in Snipping Tool)
 - Chrome: DevTools device mode for consistent sizing
 - For retina displays: Use 2x resolution
 
 **Recommended Sizes:**
+
 - Full width: 1920px width
 - Thumbnails: 800px width
 - Mobile views: 375px width
@@ -242,24 +250,27 @@ Add this section after the "Live Demo" section:
 
 ### Phase 3: Animated GIFs (Optional but Impressive)
 
-#### What to Show:
+#### What to Show
+
 1. **Installing and running** - Terminal session
 2. **Dark mode toggle** - Smooth transition
 3. **Interactive charts** - Hover and click interactions
 4. **Data export** - Download functionality
 
-#### Tools:
-- **ScreenToGif** (Windows, Free) - https://www.screentogif.com/
+#### Tools
+
+- **ScreenToGif** (Windows, Free) - <https://www.screentogif.com/>
 - **LICEcap** (Cross-platform, Free)
 - **Kap** (macOS, Free)
 
-#### Best Practices:
+#### Best Practices
+
 - Keep GIFs under 5MB for faster loading
 - Use 10-15 FPS for smaller file size
 - Max 30 seconds duration
 - Optimize with tools like ezgif.com
 
-#### Add to README:
+#### Add to README
 
 ```markdown
 ### 🎬 Features in Action
@@ -274,6 +285,7 @@ Add this section after the "Live Demo" section:
 ### Phase 4: Alternative Hosting Options
 
 #### Option A: raw.githack.com (for HTML)
+
 ```markdown
 **[View Sample Report (Interactive)](https://raw.githack.com/MarkHazleton/git-spark/main/docs/git-spark-report.html)**
 ```
@@ -285,12 +297,14 @@ Add this section after the "Live Demo" section:
 #### Option B: PDF Reports
 
 1. Generate PDF from HTML:
+
 ```powershell
 # Use Chrome DevTools or browser "Print to PDF"
 # Or use a tool like wkhtmltopdf
 ```
 
 2. Add to docs folder:
+
 ```powershell
 # Save as: docs/sample-report.pdf
 git add docs/sample-report.pdf
@@ -299,6 +313,7 @@ git push
 ```
 
 3. Link in README:
+
 ```markdown
 **[📄 Download Sample PDF Report](https://github.com/MarkHazleton/git-spark/raw/main/docs/sample-report.pdf)**
 ```
@@ -361,6 +376,7 @@ Experience the full Git Spark analytics dashboard with real data:
 ## 🎯 Implementation Checklist
 
 ### Quick Setup (30 minutes)
+
 - [ ] Generate demo report: `git-spark html --days=90 --output=./docs`
 - [ ] Create docs/index.html (copy from above)
 - [ ] Enable GitHub Pages in repo settings
@@ -368,6 +384,7 @@ Experience the full Git Spark analytics dashboard with real data:
 - [ ] Commit and push changes
 
 ### Enhanced Setup (2-3 hours)
+
 - [ ] Capture 4-6 high-quality screenshots
 - [ ] Save to docs/screenshots/ folder
 - [ ] Add screenshot section to README
@@ -376,6 +393,7 @@ Experience the full Git Spark analytics dashboard with real data:
 - [ ] Test all links and images
 
 ### Polish (optional)
+
 - [ ] Create multiple example reports from different repos
 - [ ] Add comparison views
 - [ ] Create video walkthrough on YouTube
@@ -431,6 +449,7 @@ git push
 ## 🎓 Best Practices
 
 ### Screenshots
+
 - Use consistent window size (1920x1080 or 1600x900)
 - Capture at 2x resolution for retina displays
 - Use PNG format for crisp images
@@ -438,6 +457,7 @@ git push
 - Include UI interactions (hover states, etc.)
 
 ### GitHub Pages
+
 - Keep HTML reports under 25MB
 - Optimize images before committing
 - Use relative links for local assets
@@ -445,6 +465,7 @@ git push
 - Add meta tags for SEO and social sharing
 
 ### GIFs
+
 - Max 10MB file size (npm displays inline)
 - 800px width recommended
 - 10-15 FPS for smaller size
@@ -456,18 +477,21 @@ git push
 ## 🆘 Troubleshooting
 
 **GitHub Pages not working?**
+
 - Check Settings → Pages is enabled
 - Verify /docs folder has index.html
 - Wait 5-10 minutes for first deployment
 - Check Actions tab for deployment status
 
 **Images not showing in README?**
+
 - Use raw.githubusercontent.com URLs
 - Check file paths are correct
 - Ensure images are committed to main branch
 - Try hard refresh (Ctrl+Shift+R)
 
 **GIFs too large?**
+
 - Reduce dimensions to 800px width
 - Lower FPS to 10-12
 - Shorten duration to 15-20 seconds

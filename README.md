@@ -13,9 +13,9 @@
 [![GitHub issues](https://img.shields.io/github/issues/MarkHazleton/git-spark.svg?style=flat-square)](https://github.com/MarkHazleton/git-spark/issues)
 [![GitHub stars](https://img.shields.io/github/stars/MarkHazleton/git-spark.svg?style=flat-square)](https://github.com/MarkHazleton/git-spark/stargazers)
 
-**[🎨 Live Demo](https://markhazleton.github.io/git-spark/)** • 
-**[📖 Documentation](#-documentation)** • 
-**[🚀 Quick Start](#-quick-start)** • 
+**[🎨 Live Demo](https://markhazleton.github.io/git-spark/)** •
+**[📖 Documentation](#-documentation)** •
+**[🚀 Quick Start](#-quick-start)** •
 **[💡 Examples](#-examples)**
 
 ---
@@ -42,6 +42,7 @@ Git Spark provides **transparent, honest insights** into Git repository health, 
 **[📊 View Live Interactive Demo →](https://markhazleton.github.io/git-spark/)**
 
 Experience the full Git Spark analytics dashboard with real data:
+
 - Interactive charts and visualizations
 - GitHub-style contributions calendar  
 - Detailed author profiles and metrics
