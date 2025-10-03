@@ -366,7 +366,7 @@ export class HTMLExporter {
       { label: 'Health', value: `${healthPct}%`, raw: healthPct },
       {
         label: 'Bus Factor',
-        value: numberFmt(report.repository.busFactor),
+        value: `${Math.round((report.repository.busFactor / report.repository.totalAuthors) * 100)}%`,
         raw: report.repository.busFactor,
       },
     ];
@@ -695,8 +695,8 @@ export class HTMLExporter {
             </div>
             <div class="pattern-metric">
               <span class="metric-label">Bus Factor</span>
-              <span class="metric-value">${numberFmt(report.repository.busFactor)}</span>
-              <span class="metric-note">Authors for 50% of commits</span>
+              <span class="metric-value">${Math.round((report.repository.busFactor / report.repository.totalAuthors) * 100)}%</span>
+              <span class="metric-note">Percentage of authors for 50% of commits</span>
             </div>
           </div>
         </div>
@@ -831,11 +831,11 @@ export class HTMLExporter {
               <li><strong>Code Churn:</strong> Total lines inserted and deleted across all commits</li>
               <li><strong>Active Contributors:</strong> Number of unique authors with commits in the period</li>
               <li><strong>File Activity:</strong> Number of unique files modified during the period</li>
-              <li><strong>Bus Factor:</strong> Minimum number of top contributors needed to account for 50% of commits</li>
+              <li><strong>Bus Factor:</strong> Percentage of contributors needed to account for 50% of commits</li>
             </ul>
             <div class="formula-box">
               <code class="formula">
-                Bus Factor = Minimum authors needed for 50% of total commits
+                Bus Factor = (Minimum authors needed for 50% of total commits ÷ Total authors) × 100%
               </code>
               <code class="formula">
                 Daily Commit Average = Total Commits ÷ Active Days

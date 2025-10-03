@@ -237,7 +237,7 @@ describe('MarkdownExporter', () => {
     expect(content).toContain('| Contributors | 3 |');
     expect(content).toContain('| Files Changed | 25 |');
     expect(content).toContain('| Health Score | 82% |');
-    expect(content).toContain('| Bus Factor | 2 |');
+    expect(content).toContain('| Bus Factor | 67% |');
   });
 
   it('includes insights and action items when available', async () => {

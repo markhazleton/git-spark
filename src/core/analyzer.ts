@@ -612,7 +612,9 @@ export class GitAnalyzer {
       for (const file of commit.files) {
         fileCommitCounts.set(file.path, (fileCommitCounts.get(file.path) || 0) + 1);
 
-        const dir = file.path.split('/')[0] || 'root';
+        const pathParts = file.path.split('/');
+        const dir =
+          pathParts.length >= 2 ? `${pathParts[0]}/${pathParts[1]}` : pathParts[0] || 'root';
         directoryCommitCounts.set(dir, (directoryCommitCounts.get(dir) || 0) + 1);
       }
     }
@@ -1329,7 +1331,7 @@ export class GitAnalyzer {
       'Code Churn': repository.totalChurn,
       'Activity Index': Math.round(repository.healthScore * 100),
       'Governance Score': Math.round(governance.score * 100),
-      'Bus Factor': repository.busFactor,
+      'Bus Factor': Math.round((repository.busFactor / repository.totalAuthors) * 100),
     };
 
     const insights = this.generateInsights(repository, authors, files, risks, governance);
