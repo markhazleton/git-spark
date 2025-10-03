@@ -1,4 +1,10 @@
+<div align="center">
+
 # 🔥 Git Spark
+
+### Enterprise-Grade Git Repository Analytics & Reporting
+
+**Transform your Git history into actionable insights with beautiful, interactive reports**
 
 [![npm version](https://img.shields.io/npm/v/git-spark.svg?style=flat-square)](https://www.npmjs.com/package/git-spark)
 [![npm downloads](https://img.shields.io/npm/dm/git-spark.svg?style=flat-square)](https://www.npmjs.com/package/git-spark)
@@ -7,11 +13,29 @@
 [![GitHub issues](https://img.shields.io/github/issues/MarkHazleton/git-spark.svg?style=flat-square)](https://github.com/MarkHazleton/git-spark/issues)
 [![GitHub stars](https://img.shields.io/github/stars/MarkHazleton/git-spark.svg?style=flat-square)](https://github.com/MarkHazleton/git-spark/stargazers)
 
-## Enterprise-grade Git repository analytics and reporting tool
+**[🎨 Live Demo](https://markhazleton.github.io/git-spark/)** • 
+**[📖 Documentation](#-documentation)** • 
+**[🚀 Quick Start](#-quick-start)** • 
+**[💡 Examples](#-examples)**
 
-Git Spark provides transparent, honest insights into Git repository health, team organization patterns, and code quality through comprehensive analysis of commit history. **We are committed to reporting only what can be accurately derived from Git repository data alone** - never guessing, estimating, or fabricating metrics from unavailable data sources. Built for enterprise environments with performance, reliability, security, and analytical integrity in mind.
+---
 
-> **Current Version**: v1.0 - Full-featured analytics with comprehensive daily trends, GitHub-style contributions calendar, and transparent limitations documentation throughout all reports.
+</div>
+
+## 🌟 Why Git Spark?
+
+Git Spark provides **transparent, honest insights** into Git repository health, team organization patterns, and code quality through comprehensive analysis of commit history. Built for enterprise environments with performance, reliability, security, and **analytical integrity** in mind.
+
+### ✨ What Makes Git Spark Special
+
+- 🎯 **Analytical Honesty** - Report only what can be accurately derived from Git data, never guess or fabricate metrics
+- 🎨 **Beautiful Reports** - Interactive HTML dashboards with GitHub-style contributions calendar and dark mode
+- ⚡ **Lightning Fast** - Process 100k+ commits in minutes with intelligent caching and streaming
+- 🔒 **Security First** - CSP/SRI hardened reports, input validation, and optional email redaction
+- 📊 **Multiple Formats** - HTML, JSON, Markdown, CSV, and console output for any workflow
+- 🛠️ **Developer Friendly** - Intuitive CLI and TypeScript API with comprehensive documentation
+
+> **Current Version**: v1.0 - Full-featured analytics with daily trends, contributions calendar, and complete transparency
 
 ## 🎨 Live Demo & Examples
 
@@ -704,6 +728,54 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Issues**: [GitHub Issues](https://github.com/MarkHazleton/git-spark/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/MarkHazleton/git-spark/discussions)
 - **Email**: [mark@markhazleton.com](mailto:mark@markhazleton.com)
+
+---
+
+## 👨‍💻 About the Author
+
+**Mark Hazleton** is a passionate software architect and developer with decades of experience building enterprise-scale solutions. As the creator of the **WebSpark** family of tools and frameworks, Mark is committed to empowering developers with practical, honest, and high-quality open-source solutions.
+
+### 🌐 Connect with Mark
+
+- **Website**: [markhazleton.com](https://markhazleton.com) - Portfolio, blog, and technical articles
+- **GitHub**: [@MarkHazleton](https://github.com/MarkHazleton) - Open source projects and contributions
+- **LinkedIn**: [Mark Hazleton](https://www.linkedin.com/in/markhazleton/) - Professional network
+- **Email**: [mark@markhazleton.com](mailto:mark@markhazleton.com) - Direct contact
+
+### 💼 Professional Focus
+
+Mark specializes in:
+
+- Enterprise application architecture and design
+- Open-source tooling and developer productivity
+- Code quality, analytics, and automation
+- Mentoring and knowledge sharing in the developer community
+
+---
+
+## ⚡ The WebSpark Family
+
+**Git Spark** is part of the **WebSpark** ecosystem - a growing family of tools, frameworks, and demonstrations designed to solve real-world development challenges with elegance and precision.
+
+### 🎯 Other WebSpark Projects
+
+- **WebSpark Demos** - Interactive demonstrations of modern web technologies and architectural patterns
+- **WebSpark Tools** - Productivity utilities for developers and teams
+- **WebSpark Frameworks** - Reusable components and libraries for enterprise applications
+
+### 🚀 The WebSpark Philosophy
+
+The WebSpark family is built on core principles:
+
+- ✨ **Practical Excellence** - Tools that solve real problems elegantly
+- 🔍 **Transparency First** - Honest about capabilities and limitations
+- 🎓 **Education Focused** - Empowering developers with knowledge
+- 🤝 **Community Driven** - Open source and collaborative
+- 🏢 **Enterprise Ready** - Production-grade quality and reliability
+
+### 🌟 Explore More
+
+Visit [markhazleton.com](https://markhazleton.com) to explore the full WebSpark ecosystem and discover tools that can transform your development workflow.
 
 ---
 
