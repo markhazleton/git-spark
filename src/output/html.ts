@@ -563,80 +563,6 @@ export class HTMLExporter {
       })()}
     </section>
 
-    <section id="limitations" class="section">
-      <h2>⚠️ Important: Measurement Limitations</h2>
-      <div class="critical-notice">
-        <h3>What Git Repository Data Can and Cannot Tell Us</h3>
-        
-        <div class="limitation-grid">
-          <div class="limitation-category">
-            <h4>✅ Available from Git Repository</h4>
-            <ul>
-              <li>Commit metadata (author, timestamp, message)</li>
-              <li>File changes (additions, deletions, modifications)</li>
-              <li>Branch and merge history</li>
-              <li>Authorship and co-authorship information</li>
-              <li>Commit relationships and ancestry</li>
-            </ul>
-          </div>
-          
-          <div class="limitation-category">
-            <h4>❌ NOT Available from Git Repository</h4>
-            <ul>
-              <li><strong>Code review data:</strong> No reviewer info, approval status, or review comments</li>
-              <li><strong>Pull/merge request metadata:</strong> No PR numbers, descriptions, or review workflows</li>
-              <li><strong>Issue tracking:</strong> No bug reports, feature requests, or issue relationships</li>
-              <li><strong>Team structure:</strong> No organizational hierarchy, roles, or responsibilities</li>
-              <li><strong>Work hours/timezones:</strong> No actual working hours or availability</li>
-              <li><strong>Performance metrics:</strong> No build times, test results, or runtime performance</li>
-              <li><strong>Code quality:</strong> No actual defect rates, test coverage, or maintainability scores</li>
-            </ul>
-          </div>
-        </div>
-        
-        <div class="honest-metrics-notice">
-          <h4>📊 Our Approach: Honest, Observable Metrics Only</h4>
-          <p>All metrics in this report are calculated exclusively from Git commit history. We do not guess, estimate, or infer team performance, code quality, or individual productivity from Git data alone.</p>
-          
-          <div class="metric-categories">
-            <div class="metric-category">
-              <h5>Author Metrics (Individual)</h5>
-              <ul>
-                <li><strong>Commit Count:</strong> Number of commits authored</li>
-                <li><strong>Lines Changed:</strong> Sum of insertions and deletions</li>
-                <li><strong>Commit Size Distribution:</strong> Pattern of small vs large commits</li>
-                <li><strong>Active Days:</strong> Number of days with at least one commit</li>
-                <li><strong>Files Touched:</strong> Number of unique files modified</li>
-              </ul>
-            </div>
-            
-            <div class="metric-category">
-              <h5>Team Metrics (Aggregate)</h5>
-              <ul>
-                <li><strong>Commit Frequency:</strong> Total commits per time period</li>
-                <li><strong>Code Churn:</strong> Total lines changed across repository</li>
-                <li><strong>Batch Size Distribution:</strong> Average and variation in commit sizes</li>
-                <li><strong>Active Contributors:</strong> Number of distinct authors in time window</li>
-                <li><strong>File Hotspots:</strong> Files with highest number of changes</li>
-              </ul>
-            </div>
-          </div>
-          
-          <div class="usage-guidelines">
-            <h5>🎯 Appropriate Usage Guidelines</h5>
-            <ul>
-              <li><strong>DO:</strong> Use to understand activity patterns and contribution distribution</li>
-              <li><strong>DO:</strong> Identify files that change frequently (maintenance hotspots)</li>
-              <li><strong>DO:</strong> Track repository activity trends over time</li>
-              <li><strong>DON'T:</strong> Use for performance reviews or productivity assessments</li>
-              <li><strong>DON'T:</strong> Assume commit count equals productivity or value</li>
-              <li><strong>DON'T:</strong> Draw conclusions about code quality from Git metrics alone</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </section>
-
     <section id="authors" class="section">
       <h2>Top Contributors (Author Metrics)</h2>
       <p class="section-description">Individual developer metrics calculated from Git commit data. These represent observable activity patterns, not productivity or performance.</p>
@@ -723,6 +649,80 @@ export class HTMLExporter {
     </section>
 
     ${report.dailyTrends ? this.generateDailyTrendsSection(report.dailyTrends) : ''}
+
+    <section id="limitations" class="section">
+      <h2>⚠️ Important: Measurement Limitations</h2>
+      <div class="critical-notice">
+        <h3>What Git Repository Data Can and Cannot Tell Us</h3>
+        
+        <div class="limitation-grid">
+          <div class="limitation-category">
+            <h4>✅ Available from Git Repository</h4>
+            <ul>
+              <li>Commit metadata (author, timestamp, message)</li>
+              <li>File changes (additions, deletions, modifications)</li>
+              <li>Branch and merge history</li>
+              <li>Authorship and co-authorship information</li>
+              <li>Commit relationships and ancestry</li>
+            </ul>
+          </div>
+          
+          <div class="limitation-category">
+            <h4>❌ NOT Available from Git Repository</h4>
+            <ul>
+              <li><strong>Code review data:</strong> No reviewer info, approval status, or review comments</li>
+              <li><strong>Pull/merge request metadata:</strong> No PR numbers, descriptions, or review workflows</li>
+              <li><strong>Issue tracking:</strong> No bug reports, feature requests, or issue relationships</li>
+              <li><strong>Team structure:</strong> No organizational hierarchy, roles, or responsibilities</li>
+              <li><strong>Work hours/timezones:</strong> No actual working hours or availability</li>
+              <li><strong>Performance metrics:</strong> No build times, test results, or runtime performance</li>
+              <li><strong>Code quality:</strong> No actual defect rates, test coverage, or maintainability scores</li>
+            </ul>
+          </div>
+        </div>
+        
+        <div class="honest-metrics-notice">
+          <h4>📊 Our Approach: Honest, Observable Metrics Only</h4>
+          <p>All metrics in this report are calculated exclusively from Git commit history. We do not guess, estimate, or infer team performance, code quality, or individual productivity from Git data alone.</p>
+          
+          <div class="metric-categories">
+            <div class="metric-category">
+              <h5>Author Metrics (Individual)</h5>
+              <ul>
+                <li><strong>Commit Count:</strong> Number of commits authored</li>
+                <li><strong>Lines Changed:</strong> Sum of insertions and deletions</li>
+                <li><strong>Commit Size Distribution:</strong> Pattern of small vs large commits</li>
+                <li><strong>Active Days:</strong> Number of days with at least one commit</li>
+                <li><strong>Files Touched:</strong> Number of unique files modified</li>
+              </ul>
+            </div>
+            
+            <div class="metric-category">
+              <h5>Team Metrics (Aggregate)</h5>
+              <ul>
+                <li><strong>Commit Frequency:</strong> Total commits per time period</li>
+                <li><strong>Code Churn:</strong> Total lines changed across repository</li>
+                <li><strong>Batch Size Distribution:</strong> Average and variation in commit sizes</li>
+                <li><strong>Active Contributors:</strong> Number of distinct authors in time window</li>
+                <li><strong>File Hotspots:</strong> Files with highest number of changes</li>
+              </ul>
+            </div>
+          </div>
+          
+          <div class="usage-guidelines">
+            <h5>🎯 Appropriate Usage Guidelines</h5>
+            <ul>
+              <li><strong>DO:</strong> Use to understand activity patterns and contribution distribution</li>
+              <li><strong>DO:</strong> Identify files that change frequently (maintenance hotspots)</li>
+              <li><strong>DO:</strong> Track repository activity trends over time</li>
+              <li><strong>DON'T:</strong> Use for performance reviews or productivity assessments</li>
+              <li><strong>DON'T:</strong> Assume commit count equals productivity or value</li>
+              <li><strong>DON'T:</strong> Draw conclusions about code quality from Git metrics alone</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
 
     <section id="documentation" class="section">
       <h2>Calculation Documentation</h2>
