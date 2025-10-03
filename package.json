@@ -1,6 +1,6 @@
 {
   "name": "git-spark",
-  "version": "1.0.102",
+  "version": "1.0.109",
   "description": "Enterprise-grade Git repository analytics and reporting tool",
   "keywords": [
     "git",
@@ -75,7 +75,7 @@
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",
-    "@types/node": "^24.6.0",
+    "@types/node": "^24.6.2",
     "@types/semver": "^7.7.1",
     "@typescript-eslint/eslint-plugin": "^8.45.0",
     "@typescript-eslint/parser": "^8.45.0",
@@ -88,7 +88,7 @@
     "rimraf": "^6.0.1",
     "ts-jest": "^29.4.4",
     "typedoc": "^0.28.13",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.3"
   },
   "jest": {
     "preset": "ts-jest",

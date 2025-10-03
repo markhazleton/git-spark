@@ -528,10 +528,6 @@ export class HTMLExporter {
           .join('')}
       </div>
 
-      <div class="health-badges" aria-label="Activity Metrics">
-        <div class="health-score" data-rating="${this.getHealthRating(healthPct)}" title="Repository activity index based on commit frequency and author participation">${healthPct}% <span>Activity Index</span></div>
-      </div>
-
       ${(() => {
         const breakdown = this.calculateActivityIndexBreakdown(report);
         return `
@@ -557,8 +553,11 @@ export class HTMLExporter {
               <div class="component-detail">Commit size variation index</div>
             </div>
           </div>
-          <div class="formula">
-            <strong>Formula:</strong> <code>${breakdown.formula}</code>
+          <div class="formula-line">
+            <div class="formula">
+              <strong>Formula:</strong> <code>${breakdown.formula}</code>
+            </div>
+            <div class="health-score" data-rating="${this.getHealthRating(healthPct)}" title="Repository activity index based on commit frequency and author participation">${healthPct}% <span>Activity Index</span></div>
           </div>
         </div>`;
       })()}
@@ -978,6 +977,9 @@ export class HTMLExporter {
       .component-detail { font-size:.7rem; color:var(--color-text-secondary); }
       .formula { margin-top:.75rem; padding-top:.75rem; border-top:1px solid var(--color-border); }
       .formula code { background:var(--color-surface); padding:.25rem .4rem; border-radius:3px; font-size:.8rem; }
+      .formula-line { display:flex; align-items:center; justify-content:space-between; gap:1rem; margin-top:.75rem; padding-top:.75rem; border-top:1px solid var(--color-border); flex-wrap:wrap; }
+      .formula-line .formula { margin:0; padding:0; border:none; flex:1; min-width:300px; }
+      .formula-line .health-score { margin:0; flex-shrink:0; }
       .analysis-period { font-size:.8rem; margin:.25rem 0 1rem; color:var(--color-text-secondary); }
       
       /* New Limitation Section Styles */
@@ -1007,7 +1009,7 @@ export class HTMLExporter {
       .pattern-metrics { display:flex; flex-direction:column; gap:.75rem; }
       .pattern-metric { display:flex; justify-content:space-between; align-items:center; padding:.5rem; background:var(--color-bg); border-radius:4px; }
       .pattern-metric .metric-label { font-size:.85rem; color:var(--color-text-secondary); }
-      .pattern-metric .metric-value { font-weight:600; color:var(--color-text); }
+      .pattern-metric .metric-value { font-weight:600; }
       .pattern-metric .metric-note { font-size:.75rem; color:var(--color-text-secondary); font-style:italic; }
       
       /* Activity badge styles (renamed from risk badges) */
@@ -1124,7 +1126,7 @@ export class HTMLExporter {
       }
       .metric-name { font-size:.85rem; color:var(--color-text-secondary); }
       .metric-value { 
-        font-weight:600; color:var(--color-text); 
+        font-weight:600; 
         background:var(--color-primary); color:#fff; 
         padding:.25rem .5rem; border-radius:4px; font-size:.8rem;
       }
@@ -1269,7 +1271,7 @@ export class HTMLExporter {
         line-height:1.5; 
       }
       .methodology-note strong { color:var(--color-text); }
-      .metric-box .metric-value { font-size:1.2rem; font-weight:600; color:var(--color-text); }
+      .metric-box .metric-value { font-size:1.2rem; font-weight:600; }
       .metric-box .metric-label { font-size:.7rem; color:var(--color-text-secondary); text-transform:uppercase; margin-top:.25rem; }
       
       .summary-stats { font-size:.85rem; color:var(--color-text-secondary); text-align:center; padding:.5rem; background:var(--color-bg); border-radius:4px; }
@@ -1344,8 +1346,7 @@ export class HTMLExporter {
         box-shadow:var(--shadow-sm); 
       }
       .summary-metric .metric-value { 
-        font-size:2rem; font-weight:700; color:var(--color-primary); 
-        margin-bottom:.5rem; 
+        font-size:2rem; font-weight:700; margin-bottom:.5rem; 
       }
       .summary-metric .metric-label { 
         font-size:.9rem; font-weight:600; color:var(--color-text); 
