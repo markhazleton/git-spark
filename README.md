@@ -1,8 +1,11 @@
 # 🔥 Git Spark
 
-[![npm version](https://badge.fury.io/js/git-spark.svg)](https://badge.fury.io/js/git-spark)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Node.js CI](https://github.com/MarkHazleton/git-spark/workflows/Node.js%20CI/badge.svg)](https://github.com/MarkHazleton/git-spark/actions)
+[![npm version](https://img.shields.io/npm/v/git-spark.svg?style=flat-square)](https://www.npmjs.com/package/git-spark)
+[![npm downloads](https://img.shields.io/npm/dm/git-spark.svg?style=flat-square)](https://www.npmjs.com/package/git-spark)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
+[![Node.js Version](https://img.shields.io/node/v/git-spark.svg?style=flat-square)](https://nodejs.org)
+[![GitHub issues](https://img.shields.io/github/issues/MarkHazleton/git-spark.svg?style=flat-square)](https://github.com/MarkHazleton/git-spark/issues)
+[![GitHub stars](https://img.shields.io/github/stars/MarkHazleton/git-spark.svg?style=flat-square)](https://github.com/MarkHazleton/git-spark/stargazers)
 
 ## Enterprise-grade Git repository analytics and reporting tool
 
