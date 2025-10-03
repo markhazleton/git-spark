@@ -62,7 +62,7 @@ export class ConsoleExporter {
       ['Files Changed', repository.totalFiles.toLocaleString()],
       ['Code Churn', repository.totalChurn.toLocaleString() + ' lines'],
       ['Activity Index', Math.round(repository.healthScore * 100) + '%'],
-      ['Bus Factor', repository.busFactor.toString()],
+      ['Bus Factor', Math.round((repository.busFactor / repository.totalAuthors) * 100) + '%'],
       ['Active Days', repository.activeDays.toString()],
     ];
 
@@ -101,9 +101,9 @@ export class ConsoleExporter {
         .map(author => [
           author.name,
           author.commits.toString(),
-          author.totalChurn.toString(),
+          author.churn.toString(),
           author.filesChanged.toString(),
-          Math.round(author.averageCommitSize).toString(),
+          Math.round(author.avgCommitSize).toString(),
         ]),
     ];
 
@@ -147,9 +147,10 @@ export class ConsoleExporter {
     process.stdout.write(chalk.bold.cyan('⚠️  RISK ANALYSIS') + '\n');
     process.stdout.write(chalk.blue('─'.repeat(40)) + '\n');
 
-    const riskColor = this.getRiskColor(risks.level);
+    const riskLevel = risks?.overallRisk || 'unknown';
+    const riskColor = this.getRiskColor(riskLevel);
     process.stdout.write(
-      `${chalk.bold('Overall Risk Level:')} ${riskColor(risks.level.toUpperCase())}\n`
+      `${chalk.bold('Overall Risk Level:')} ${riskColor(riskLevel.toUpperCase())}\n`
     );
     process.stdout.write('\n');
 
@@ -184,12 +185,12 @@ export class ConsoleExporter {
 
     const governanceData = [
       ['Metric', 'Value'],
-      ['Conventional Commits', governance.conventionalCommits.toString()],
-      ['Traceability Score', Math.round(governance.traceabilityScore * 100) + '%'],
-      ['Avg Message Length', governance.averageMessageLength.toString()],
-      ['WIP Commits', governance.wipCommits.toString()],
-      ['Revert Commits', governance.revertCommits.toString()],
-      ['Short Messages', governance.shortMessages.toString()],
+      ['Conventional Commits', governance.conventionalCommits?.toString() || '0'],
+      ['Traceability Score', Math.round((governance.traceabilityScore || 0) * 100) + '%'],
+      ['Avg Message Length', governance.avgMessageLength?.toString() || '0'],
+      ['WIP Commits', governance.wipCommits?.toString() || '0'],
+      ['Revert Commits', governance.revertCommits?.toString() || '0'],
+      ['Short Messages', governance.shortMessages?.toString() || '0'],
     ];
 
     process.stdout.write(table(governanceData));
@@ -239,6 +240,7 @@ export class ConsoleExporter {
    * @private
    */
   private getRiskColor(level: string): (text: string) => string {
+    if (!level) return chalk.gray;
     switch (level.toLowerCase()) {
       case 'low':
         return chalk.green;

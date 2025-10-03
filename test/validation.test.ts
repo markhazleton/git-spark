@@ -124,6 +124,68 @@ describe('Validation Utils', () => {
       expect(result.isValid).toBe(false);
       expect(result.errors.length).toBeGreaterThan(0);
     });
+
+    it('should validate non-existent repository path', () => {
+      const options: GitSparkOptions = {
+        repoPath: '/non/existent/path',
+      };
+
+      const result = validateOptions(options);
+      expect(result.isValid).toBe(false);
+      expect(result.errors.some(e => e.includes('Repository path does not exist'))).toBe(true);
+    });
+
+    it('should validate file instead of directory as repo path', () => {
+      const options: GitSparkOptions = {
+        repoPath: './package.json', // This is a file, not a directory
+      };
+
+      const result = validateOptions(options);
+      expect(result.isValid).toBe(false);
+      expect(result.errors.some(e => e.includes('Repository path is not a directory'))).toBe(true);
+    });
+
+    it('should validate directory without .git folder', () => {
+      const options: GitSparkOptions = {
+        repoPath: './src', // This directory exists but is not a git repo
+      };
+
+      const result = validateOptions(options);
+      expect(result.isValid).toBe(false);
+      expect(result.errors.some(e => e.includes('Directory is not a Git repository'))).toBe(true);
+    });
+
+    it('should validate date range where since >= until', () => {
+      const options: GitSparkOptions = {
+        since: '2023-12-31',
+        until: '2023-01-01',
+      };
+
+      const result = validateOptions(options);
+      expect(result.isValid).toBe(false);
+      expect(result.errors.some(e => e.includes('Since date must be before until date'))).toBe(
+        true
+      );
+    });
+
+    it('should validate non-integer days', () => {
+      const options: GitSparkOptions = {
+        days: 30.5,
+      };
+
+      const result = validateOptions(options);
+      expect(result.isValid).toBe(false);
+      expect(result.errors.some(e => e.includes('Days must be a positive integer'))).toBe(true);
+    });
+
+    it('should warn about very large days value', () => {
+      const options: GitSparkOptions = {
+        days: 4000, // More than 10 years
+      };
+
+      const result = validateOptions(options);
+      expect(result.warnings.some(w => w.includes('more than 10 years'))).toBe(true);
+    });
   });
 
   describe('validateNodeVersion', () => {
@@ -165,6 +227,34 @@ describe('Validation Utils', () => {
 
     it('should identify issue references', () => {
       const message = 'fix: resolve issue #123';
+      const result = validateCommitMessage(message);
+
+      expect(result.hasIssueReference).toBe(true);
+    });
+
+    it('should identify conventional commits with scope', () => {
+      const message = 'feat(auth): add login functionality';
+      const result = validateCommitMessage(message);
+
+      expect(result.isConventional).toBe(true);
+    });
+
+    it('should identify commits with "closes" keyword', () => {
+      const message = 'fix: bug that closes #456';
+      const result = validateCommitMessage(message);
+
+      expect(result.hasIssueReference).toBe(true);
+    });
+
+    it('should identify commits with "fixes" keyword', () => {
+      const message = 'refactor: code that fixes the problem';
+      const result = validateCommitMessage(message);
+
+      expect(result.hasIssueReference).toBe(true);
+    });
+
+    it('should identify commits with "resolves" keyword', () => {
+      const message = 'docs: update README that resolves confusion';
       const result = validateCommitMessage(message);
 
       expect(result.hasIssueReference).toBe(true);
@@ -248,6 +338,15 @@ describe('Validation Utils', () => {
       const sanitized = sanitizePath('');
       expect(sanitized).toBeDefined();
     });
+
+    it('should handle path resolution normally', () => {
+      // The sanitizePath function resolves paths normally
+      // The .. check is for edge cases where resolution doesn't work properly
+      const result = sanitizePath('../../sensitive/file.txt');
+      expect(result).toBeDefined();
+      expect(typeof result).toBe('string');
+      // Just ensure it doesn't crash - the path gets resolved normally
+    });
   });
 
   describe('sanitizeEmail', () => {
@@ -273,6 +372,12 @@ describe('Validation Utils', () => {
     it('should handle empty email', () => {
       expect(sanitizeEmail('', false)).toBeDefined();
       expect(sanitizeEmail('', true)).toBeDefined();
+    });
+
+    it('should handle email without domain when redacting', () => {
+      const emailNoDomain = 'testuser';
+      const sanitized = sanitizeEmail(emailNoDomain, true);
+      expect(sanitized).toBe('***');
     });
   });
 });

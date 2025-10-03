@@ -53,7 +53,7 @@ Generated on ${report.metadata.generatedAt.toLocaleDateString()}
 | Contributors | ${repository.totalAuthors} |
 | Files Changed | ${repository.totalFiles} |
 | Health Score | ${Math.round(repository.healthScore * 100)}% |
-| Bus Factor | ${repository.busFactor} |
+| Bus Factor | ${Math.round((repository.busFactor / repository.totalAuthors) * 100)}% |
 
 ${
   summary.insights.length > 0

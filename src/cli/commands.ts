@@ -197,7 +197,9 @@ async function executeHTMLReport(options: any): Promise<void> {
             chalk.blue(`👥 Contributors: ${report.repository.totalAuthors}\n`) +
             chalk.blue(`📁 Files Analyzed: ${report.repository.totalFiles}\n`) +
             chalk.blue(`📊 Activity Index: ${Math.round(report.repository.healthScore * 100)}%\n`) +
-            chalk.blue(`🚌 Bus Factor: ${report.repository.busFactor}`),
+            chalk.blue(
+              `🚌 Bus Factor: ${Math.round((report.repository.busFactor / report.repository.totalAuthors) * 100)}%`
+            ),
           {
             padding: 1,
             margin: 1,
@@ -559,7 +561,9 @@ function displaySummary(report: any): void {
           chalk.blue(`Active Contributors: ${repository.totalAuthors}\n`) +
           chalk.blue(`Files Changed: ${repository.totalFiles}\n`) +
           chalk.blue(`Activity Index: ${Math.round(repository.healthScore * 100)}%\n`) +
-          chalk.blue(`Bus Factor: ${repository.busFactor}`),
+          chalk.blue(
+            `Bus Factor: ${Math.round((repository.busFactor / repository.totalAuthors) * 100)}%`
+          ),
         {
           padding: 1,
           margin: 1,
@@ -602,7 +606,9 @@ function displayHealthSummary(report: any): void {
           chalk.cyan(`Overall Health: ${Math.round(repository.healthScore * 100)}%\n`) +
           chalk.blue(`Governance Score: ${Math.round(governance.score * 100)}%\n`) +
           chalk.blue(`Risk Level: ${report.risks.overallRisk.toUpperCase()}\n`) +
-          chalk.blue(`Bus Factor: ${repository.busFactor}\n`) +
+          chalk.blue(
+            `Bus Factor: ${Math.round((repository.busFactor / repository.totalAuthors) * 100)}%\n`
+          ) +
           chalk.blue(`Active Days: ${repository.activeDays}`),
         {
           padding: 1,
