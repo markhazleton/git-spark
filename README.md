@@ -8,6 +8,8 @@
 
 Git Spark provides transparent, honest insights into Git repository health, team organization patterns, and code quality through comprehensive analysis of commit history. **We are committed to reporting only what can be accurately derived from Git repository data alone** - never guessing, estimating, or fabricating metrics from unavailable data sources. Built for enterprise environments with performance, reliability, security, and analytical integrity in mind.
 
+> **Current Version**: v1.0.125 - Full-featured analytics with comprehensive daily trends, GitHub-style contributions calendar, and transparent limitations documentation throughout all reports.
+
 ## ✨ Features
 
 ### 📊 Comprehensive Analytics
@@ -29,15 +31,15 @@ Git Spark provides transparent, honest insights into Git repository health, team
 - **Configurable Analysis** - Customizable thresholds, weights, and filtering options
 - **Security Focused** - Input validation, safe file handling, and email redaction
 - **CI/CD Integration** - JSON output for automated analysis and reporting
+- **Email Privacy** - Optional email redaction via `--redact-emails` flag
 
 ### 🛠️ Developer Experience
 
-- **CLI Interface** - Intuitive command-line tool with progress indicators
+- **CLI Interface** - Intuitive command-line tool with progress indicators and multiple commands
 - **Programmatic API** - TypeScript/JavaScript library for custom integrations
 - **Interactive Reports** - Rich, security‑hardened HTML reports with advanced visualizations
 - **Comprehensive Documentation** - Examples, tutorials, and best practices
-
-> **Current Version**: Git Spark v1.0.90 includes comprehensive daily trends analysis and GitHub-style contributions calendar alongside all core analytics features. Advanced features like branch comparison, watch mode, and API server are planned for future releases (see [Roadmap](#-roadmap) section).
+- **Live Development Server** - Built-in HTTP server for local report viewing
 
 ### 🖥️ Interactive HTML Report (v1.0)
 
@@ -78,23 +80,32 @@ npm install git-spark
 # Analyze current repository (last 30 days)
 git-spark --days=30
 
-# Generate HTML report
-git-spark --format=html --output=./reports
+# Generate HTML report with built-in command
+git-spark html --days=30 --output=./reports
+
+# Serve HTML report with live HTTP server
+git-spark html --days=30 --serve --port=3000
+
+# Open HTML report in browser automatically
+git-spark html --days=30 --open
 
 # Analyze specific date range
-git-spark --since=2024-01-01 --until=2024-12-31
+git-spark --since=2024-01-01 --until=2024-12-31 --format=html
 
 # Quick health check
 git-spark health
 
-# Validate environment
+# Validate environment and Git repository
 git-spark validate
 
 # Enable heavy analysis for detailed insights  
-git-spark --heavy --format=html
+git-spark --heavy --format=html --output=./reports
 
 # Analyze with comprehensive daily trends (shows all days, not just active days)
 git-spark --days=60 --format=html --output=./reports
+
+# Generate report with email redaction for privacy
+git-spark --days=30 --format=html --redact-emails
 ```
 
 ### Programmatic Usage
@@ -168,6 +179,44 @@ Options:
   -r, --repo <path>          repository path (default: current directory)
 ```
 
+#### `git-spark html`
+
+Generate comprehensive HTML report with additional options:
+
+```bash
+git-spark html [options]
+
+Options:
+  -r, --repo <path>          repository path (default: current directory)
+  -d, --days <number>        analyze last N days
+  -s, --since <date>         start date (YYYY-MM-DD)
+  -u, --until <date>         end date (YYYY-MM-DD)
+  -o, --output <path>        output directory (default: "./reports")
+  -b, --branch <name>        analyze specific branch
+  -a, --author <name>        filter by author
+  -p, --path <glob>          filter by file path pattern
+  --open                     open HTML report in browser after generation
+  --serve                    start HTTP server to serve the report
+  --port <number>            port for HTTP server (default: 3000)
+  --heavy                    enable expensive analyses for detailed insights
+```
+
+Examples:
+
+```bash
+# Generate HTML report for last 30 days
+git-spark html --days=30
+
+# Generate and open in browser
+git-spark html --days=30 --open
+
+# Generate and serve on local web server
+git-spark html --days=60 --serve --port=8080
+
+# Heavy analysis with detailed insights
+git-spark html --days=90 --heavy --output=./detailed-reports
+```
+
 #### `git-spark validate`
 
 Environment and requirements validation:
@@ -196,7 +245,7 @@ git-spark --days=30 --heavy --format=html
 
 Create a `.git-spark.json` configuration file to customize analysis:
 
-> **Note**: Configuration file support is implemented for basic options. Advanced configuration features may be expanded in future versions.
+> **Note**: Configuration file support is available for basic analysis options. The configuration system supports custom thresholds, weights, and exclusion patterns for fine-tuned analysis.
 
 ```json
 {
@@ -226,23 +275,13 @@ Create a `.git-spark.json` configuration file to customize analysis:
         "ownership": 0.20,
         "entropy": 0.10,
         "coupling": 0.10
-      },
-      "governance": {
-        "conventional": 0.40,
-        "traceability": 0.25,
-        "length": 0.15,
-        "wipPenalty": 0.10,
-        "revertPenalty": 0.05,
-        "shortPenalty": 0.05
       }
     }
   },
   "output": {
     "defaultFormat": "html",
     "outputDir": "./reports",
-    "includeCharts": true,
-    "redactEmails": false,
-    "theme": "default"
+    "redactEmails": false
   },
   "performance": {
     "maxBuffer": 200,
@@ -352,18 +391,22 @@ All team-related metrics include detailed explanations of:
 
 Interactive reports with transparent analytics and comprehensive limitations documentation:
 
-- Executive summary with health rating and data source explanations
-- Interactive charts and visualizations (multi‑series timelines, risk & governance analytics)
-- **Daily Activity Trends** - Comprehensive day-by-day analysis covering all days in the specified range (including zero-activity days)
-- **GitHub-style Contributions Calendar** - Interactive activity heatmap with color-coded intensity levels and hover tooltips
-- Detailed author and file analysis with clear metric definitions
-- Risk assessment and recommendations with calculation transparency
-- Governance scoring with methodology explanations
-- **Comprehensive limitations documentation** for all team metrics
-- Export buttons (JSON + CSV) for downstream processing
-- Dark mode, accessibility features, and CSP/SRI security hardening
+- **Executive Summary** - Health rating with activity index breakdown and clear data source explanations
+- **Limitations Section** - Comprehensive documentation of what Git data can and cannot reveal (positioned before detailed metrics)
+- **Top Contributors** - Author metrics table with detailed activity patterns
+- **Team Activity Patterns** - Aggregate repository metrics showing overall activity distribution
+- **File Activity Hotspots** - Source code files with highest activity (filtered for relevant code files)
+- **Author Activity Details** - Detailed profile cards for each contributor with commit patterns, file focus, and insights
+- **Daily Activity Trends** - Comprehensive day-by-day analysis with GitHub-style contributions calendar (optional)
+- **Calculation Documentation** - Transparent methodology for all metrics including formulas and measurement principles
+- **Report Metadata** - Generation details, Git branch information, and processing statistics
+- Interactive visualizations with dark mode support
+- Progressive table pagination for performance
+- Sortable columns with accessibility features
+- Export capabilities for downstream analysis
+- CSP/SRI security hardening
 
-> **Transparency First**: Every metric in the HTML report includes clear explanations of what it measures, its data sources, and its limitations. Users receive honest, educational information about Git analytics capabilities.
+> **Transparency First**: Every metric in the HTML report includes clear explanations of what it measures, its data sources, and its limitations. The limitations section is prominently positioned before detailed calculations to ensure users understand data constraints upfront.
 
 ### JSON Reports
 
@@ -426,23 +469,14 @@ Comprehensive daily analysis providing:
 
 ### Risk Analysis
 
-File-level risk assessment considering:
+File-level risk assessment (activity scoring) considering:
 
 - **Code Churn** - Frequency and volume of changes
 - **Author Count** - Number of different contributors
 - **Recency** - How recently files were modified
-- **Ownership Distribution** - Knowledge concentration
-- **Temporal Coupling** - Files that change together (planned for v1.1)
+- **Ownership Distribution** - Knowledge concentration across files
 
-### Governance Scoring
-
-Code quality metrics including:
-
-- **Conventional Commits** - Structured commit message adherence
-- **Traceability** - Issue references and linking
-- **Message Quality** - Length and descriptiveness
-- **WIP Detection** - Work-in-progress identification
-- **Revert Analysis** - Error correction patterns
+Risk metrics help identify files that may need attention due to high activity levels, but do not indicate code quality or defect likelihood.
 
 ### Team Analytics
 
@@ -588,25 +622,29 @@ npm run dev
 
 ## 📋 Roadmap
 
-### ✅ Completed (v1.0)
+### ✅ Completed (v1.0.125)
 
-- **Transparent Team Metrics**: Honest metric terminology with comprehensive limitations documentation
-- **Analytical Integrity Framework**: Clear separation between what Git data can and cannot provide
-- **Enhanced User Education**: Comprehensive warnings and guidance about metric interpretation
-- **Daily Activity Trends**: Comprehensive daily analysis showing all days in specified range (including zero-activity days)
-- **GitHub-style Contributions Calendar**: Interactive activity heatmap with color-coded intensity levels and tooltips
-- Secure HTML report with strict CSP + SRI
-- Multi‑series activity timeline (commits / churn / authors)
-- Risk factor aggregation & visualization
-- Governance radar visualization
-- Dark mode with adaptive chart theming
-- One‑click JSON & CSV export from report UI
-- Pagination & performance safeguards for large tables
-- Accessibility improvements (ARIA live sort announcements, keyboard navigation, reduced motion support)
-- OG image (SVG) generation for social/link previews
-- Email redaction option
+- **Core Analytics Engine** - Comprehensive Git repository analysis
+- **Multiple Output Formats** - HTML, JSON, Markdown, CSV, and console formats
+- **Transparent Team Metrics** - Honest metric terminology with comprehensive limitations documentation
+- **Analytical Integrity Framework** - Clear separation between what Git data can and cannot provide
+- **Enhanced User Education** - Comprehensive warnings and guidance about metric interpretation
+- **Daily Activity Trends** - Comprehensive daily analysis showing all days in specified range (including zero-activity days)
+- **GitHub-style Contributions Calendar** - Interactive activity heatmap with color-coded intensity levels and tooltips
+- **Activity Index Calculation** - Transparent breakdown of commit frequency, author participation, and consistency components
+- **Author Profile Cards** - Detailed individual contributor analysis with commit patterns and file focus
+- **Secure HTML Reports** - Strict CSP + SHA-256 hashed inline content (no unsafe-inline)
+- **Dark Mode** - Persistent theme preference with adaptive styling
+- **Progressive Tables** - Pagination & performance safeguards for large datasets
+- **Sortable Data Tables** - Column sorting with ARIA live announcements
+- **Accessibility Features** - ARIA live regions, keyboard navigation, reduced motion support
+- **OG Image Generation** - Auto-generated SVG summaries for social/link previews
+- **Email Redaction** - Privacy-focused email anonymization option
+- **CLI Commands** - Main analysis, health check, validation, and dedicated HTML report generation
+- **HTTP Server** - Built-in web server for local report viewing (`--serve` option)
+- **Auto-Open Browser** - Automatic browser launch after report generation (`--open` option)
 
-These capabilities establish a foundation of **analytical honesty and transparency** that will guide all future development, ensuring users have accurate expectations about Git repository analytics.
+These capabilities establish a foundation of **analytical honesty and transparency** that guides all development.
 
 ### v1.1 (Planned)
 
