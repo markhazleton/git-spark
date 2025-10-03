@@ -11,7 +11,20 @@
 
 Git Spark provides transparent, honest insights into Git repository health, team organization patterns, and code quality through comprehensive analysis of commit history. **We are committed to reporting only what can be accurately derived from Git repository data alone** - never guessing, estimating, or fabricating metrics from unavailable data sources. Built for enterprise environments with performance, reliability, security, and analytical integrity in mind.
 
-> **Current Version**: v1.0.125 - Full-featured analytics with comprehensive daily trends, GitHub-style contributions calendar, and transparent limitations documentation throughout all reports.
+> **Current Version**: v1.0 - Full-featured analytics with comprehensive daily trends, GitHub-style contributions calendar, and transparent limitations documentation throughout all reports.
+
+## 🎨 Live Demo & Examples
+
+**[📊 View Live Interactive Demo →](https://markhazleton.github.io/git-spark/)**
+
+Experience the full Git Spark analytics dashboard with real data:
+- Interactive charts and visualizations
+- GitHub-style contributions calendar  
+- Detailed author profiles and metrics
+- Dark mode toggle
+- Real-time data export
+
+> Sample reports generated from open-source repositories to showcase all features
 
 ## ✨ Features
 
@@ -625,7 +638,7 @@ npm run dev
 
 ## 📋 Roadmap
 
-### ✅ Completed (v1.0.125)
+### ✅ Completed (v1.0)
 
 - **Core Analytics Engine** - Comprehensive Git repository analysis
 - **Multiple Output Formats** - HTML, JSON, Markdown, CSV, and console formats
