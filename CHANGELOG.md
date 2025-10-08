@@ -7,6 +7,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.183] - 2025-10-08
+
+### Fixed
+
+- **HTML Report Meta Tag**
+  - Removed extra `>` character in `og:description` meta tag causing validation error
+
+- **Volume Trends Sparkline Visualization**
+  - Fixed completely flat sparklines that weren't reflecting data variation
+  - Root cause: CSS flexbox `flex: 1` property was overriding height styles
+  - Migrated from div-based flexbox implementation to SVG coordinate system for precise control
+
+### Changed
+
+- **Volume Trends Layout**
+  - Made Volume Trends section full-width using `grid-column: 1 / -1`
+  - Matches layout style of Daily Commits and Active Authors sections
+  - Improved visual consistency in Visual Trend Analysis section
+
+- **Sparkline Implementation**
+  - Replaced CSS flexbox bars with SVG `<rect>` elements
+  - Added gradient fills using `<linearGradient>` for visual enhancement
+  - Implemented bottom-aligned coordinate positioning (`y = chartHeight - height`)
+  - Data-driven height calculation now properly visualizes variations
+
+### Technical
+
+- Updated `src/output/html.ts` - Complete sparkline rewrite using SVG (lines 2755-2825)
+- Modified CSS Grid layout for full-width sparklines (line 1567)
+- Removed flexbox sparkline styles, added SVG container styles (lines 1607-1615)
+- Updated `test/html-exporter.test.ts` - Changed test expectations from `.spark-bar` divs to `<svg>` elements
+- All 217 tests passing with new SVG implementation
+- Version bump from 1.0.175 to 1.0.183
+
 ## [1.0.170] - 2025-10-07
 
 ### Fixed
@@ -115,6 +149,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safe shell command execution
 - Security-focused HTML output (CSP headers)
 
-[Unreleased]: https://github.com/MarkHazleton/git-spark/compare/v1.0.170...HEAD
+[Unreleased]: https://github.com/MarkHazleton/git-spark/compare/v1.0.183...HEAD
+[1.0.183]: https://github.com/MarkHazleton/git-spark/compare/v1.0.170...v1.0.183
 [1.0.170]: https://github.com/MarkHazleton/git-spark/compare/v1.0.0...v1.0.170
 [1.0.0]: https://github.com/MarkHazleton/git-spark/releases/tag/v1.0.0
