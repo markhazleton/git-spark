@@ -515,10 +515,10 @@ export class HTMLExporter {
           <li><a href="#team-patterns">Team Patterns</a></li>
           <li><a href="#files">File Hotspots</a></li>
           <li><a href="#author-details">Author Details</a></li>
+          ${report.dailyTrends ? '<li><a href="#daily-trends">Detailed Daily Tables</a></li>' : ''}
           <li><a href="#limitations">Limitations</a></li>
           <li><a href="#documentation">Documentation</a></li>
           <li><a href="#meta">Metadata</a></li>
-          ${report.dailyTrends ? '<li><a href="#daily-trends">Detailed Daily Tables</a></li>' : ''}
         </ul>
       </nav>
     </div>

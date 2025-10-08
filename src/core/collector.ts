@@ -106,6 +106,7 @@ export class DataCollector {
 
     // Get the first commit date in the repository to cap the analysis range
     const firstCommitDate = await this.git.getFirstCommitDate(options.branch);
+    logger.debug(`Repository first commit date: ${firstCommitDate?.toISOString() || 'null'}`);
 
     // Derive since date from --days if user supplied days but not an explicit since
     if (!options.since && options.days && options.days > 0) {
@@ -113,17 +114,25 @@ export class DataCollector {
       d.setDate(d.getDate() - options.days);
       // Use ISO date (no time) to let git interpret midnight boundary
       options.since = d.toISOString().split('T')[0];
+      logger.debug(`Calculated since date from --days=${options.days}: ${options.since}`);
     }
 
     // Cap the analysis range to repository lifetime
     if (options.since && firstCommitDate) {
       const requestedStartDate = new Date(options.since);
+      logger.debug(
+        `Comparing dates: requested=${requestedStartDate.toISOString()}, firstCommit=${firstCommitDate.toISOString()}`
+      );
       if (requestedStartDate < firstCommitDate) {
         const originalSince = options.since;
-        options.since = firstCommitDate.toISOString().split('T')[0];
+        // Convert to local date at start of day to ensure we include the first commit
+        // Subtract one day to ensure we capture commits on the first commit date
+        const adjustedDate = new Date(firstCommitDate);
+        adjustedDate.setDate(adjustedDate.getDate() - 1);
+        options.since = adjustedDate.toISOString().split('T')[0];
         logger.info(
-          `Analysis start date (${originalSince}) is before repository first commit (${options.since}). ` +
-            `Adjusting range to repository lifetime.`
+          `Analysis start date (${originalSince}) is before repository first commit. ` +
+            `Adjusting range to start from ${options.since}.`
         );
       }
     }

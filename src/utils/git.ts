@@ -200,13 +200,19 @@ export class GitExecutor {
     return parseInt(output.trim(), 10);
   }
 
-  async getFirstCommitDate(branch = 'HEAD'): Promise<Date | null> {
+  async getFirstCommitDate(_branch = 'HEAD'): Promise<Date | null> {
     try {
+      // Use --all to find the absolute first commit in the repository
+      // This handles complex branching structures correctly
+      // Note: We ignore the branch parameter and always use --all to get the true
+      // repository creation date, not just the first commit on a specific branch
+      // Important: Don't use --max-count=1 with --reverse as it limits BEFORE reversing
       const output = await this.execute({
         command: 'log',
-        args: ['--reverse', '--format=%aI', '--max-count=1', branch],
+        args: ['--all', '--reverse', '--format=%aI'],
       });
-      const dateString = output.trim();
+      const lines = output.trim().split('\n');
+      const dateString = lines[0]; // First line is the oldest commit
       if (!dateString) {
         return null;
       }
