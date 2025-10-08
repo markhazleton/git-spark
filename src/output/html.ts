@@ -495,7 +495,7 @@ export class HTMLExporter {
   <meta name="repository" content="${this.escapeHtml(repoName)}">
   <meta property="og:title" content="GitSpark Report - ${this.escapeHtml(repoName)}">
   <meta property="og:type" content="article">
-  <meta property="og:description" content="${this.escapeHtml(`${report.repository.totalCommits} commits • ${report.repository.totalAuthors} contributors • Activity Index ${healthPct}%`)}">>
+  <meta property="og:description" content="${this.escapeHtml(`${report.repository.totalCommits} commits • ${report.repository.totalAuthors} contributors • Activity Index ${healthPct}%`)}">
   <meta property="og:image" content="${ogImage}">
   <meta http-equiv="Content-Security-Policy" content="${csp}">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
@@ -1565,6 +1565,7 @@ export class HTMLExporter {
       
       /* Sparklines Styles */
       .sparklines-container { 
+        grid-column: 1 / -1;
         background: var(--color-surface); 
         border: 1px solid var(--color-border); 
         border-radius: 8px; 
@@ -1581,7 +1582,7 @@ export class HTMLExporter {
       
       .sparklines-grid { 
         display: grid; 
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+        grid-template-columns: repeat(2, 1fr); 
         gap: 1.5rem; 
       }
       
@@ -1607,32 +1608,19 @@ export class HTMLExporter {
       .sparkline-chart { 
         height: 60px; 
         margin: 0.75rem 0; 
+        position: relative;
       }
-      .sparkline-bars { 
-        display: flex; 
-        align-items: flex-end; 
-        gap: 2px; 
-        height: 100%; 
-        padding: 0 0.25rem; 
+      .sparkline-chart svg {
+        display: block;
+        width: 100%;
+        height: 50px;
       }
-      .spark-bar { 
-        flex: 1; 
-        min-height: 2px; 
-        background: linear-gradient(to top, var(--color-primary), #2196f3); 
-        border-radius: 2px 2px 0 0; 
-        transition: all 0.2s ease; 
-        cursor: pointer; 
+      .sparkline-chart svg rect {
+        cursor: pointer;
+        transition: opacity 0.2s ease;
       }
-      .spark-bar:hover { 
-        background: var(--color-warning); 
-        transform: scaleY(1.1); 
-        z-index: 10; 
-      }
-      .sparkline-bars.files .spark-bar { 
-        background: linear-gradient(to top, var(--color-success), #4caf50); 
-      }
-      .sparkline-bars.files .spark-bar:hover { 
-        background: var(--color-warning); 
+      .sparkline-chart svg rect:hover {
+        opacity: 0.8;
       }
       
       /* Responsive design for charts */
@@ -2760,17 +2748,30 @@ export class HTMLExporter {
     const maxLines = Math.max(...recentData.map(d => d.grossLinesChangedPerDay), 1);
     const maxFiles = Math.max(...recentData.map(d => d.filesTouchedPerDay), 1);
 
+    const barWidth = 100 / recentData.length;
+    const chartHeight = 50;
+
     const linesSparkline = recentData
-      .map(day => {
-        const height = (day.grossLinesChangedPerDay / maxLines) * 100;
-        return `<div class="spark-bar" style="height: ${height}%;" title="${day.day}: ${day.grossLinesChangedPerDay.toLocaleString()} lines"></div>`;
+      .map((day, index) => {
+        const heightPercent = (day.grossLinesChangedPerDay / maxLines) * 100;
+        const height = (heightPercent / 100) * chartHeight;
+        const x = index * barWidth;
+        const y = chartHeight - height;
+        return `<rect x="${x}%" y="${y}" width="${barWidth * 0.8}%" height="${height}" fill="url(#lines-gradient)" rx="1">
+          <title>${day.day}: ${day.grossLinesChangedPerDay.toLocaleString()} lines</title>
+        </rect>`;
       })
       .join('');
 
     const filesSparkline = recentData
-      .map(day => {
-        const height = (day.filesTouchedPerDay / maxFiles) * 100;
-        return `<div class="spark-bar" style="height: ${height}%;" title="${day.day}: ${day.filesTouchedPerDay} files"></div>`;
+      .map((day, index) => {
+        const heightPercent = (day.filesTouchedPerDay / maxFiles) * 100;
+        const height = (heightPercent / 100) * chartHeight;
+        const x = index * barWidth;
+        const y = chartHeight - height;
+        return `<rect x="${x}%" y="${y}" width="${barWidth * 0.8}%" height="${height}" fill="url(#files-gradient)" rx="1">
+          <title>${day.day}: ${day.filesTouchedPerDay} files</title>
+        </rect>`;
       })
       .join('');
 
@@ -2781,9 +2782,15 @@ export class HTMLExporter {
           <div class="sparkline-item">
             <div class="sparkline-label">Lines Changed</div>
             <div class="sparkline-chart">
-              <div class="sparkline-bars">
+              <svg width="100%" height="50" viewBox="0 0 100 50" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="lines-gradient" x1="0%" y1="100%" x2="0%" y2="0%">
+                    <stop offset="0%" style="stop-color:var(--color-primary);stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#2196f3;stop-opacity:1" />
+                  </linearGradient>
+                </defs>
                 ${linesSparkline}
-              </div>
+              </svg>
             </div>
             <div class="sparkline-summary">Peak: ${maxLines.toLocaleString()}</div>
           </div>
@@ -2791,9 +2798,15 @@ export class HTMLExporter {
           <div class="sparkline-item">
             <div class="sparkline-label">Files Touched</div>
             <div class="sparkline-chart">
-              <div class="sparkline-bars files">
+              <svg width="100%" height="50" viewBox="0 0 100 50" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="files-gradient" x1="0%" y1="100%" x2="0%" y2="0%">
+                    <stop offset="0%" style="stop-color:var(--color-success);stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#4caf50;stop-opacity:1" />
+                  </linearGradient>
+                </defs>
                 ${filesSparkline}
-              </div>
+              </svg>
             </div>
             <div class="sparkline-summary">Peak: ${maxFiles}</div>
           </div>
