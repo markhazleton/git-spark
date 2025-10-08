@@ -552,7 +552,7 @@ describe('HTMLExporter (Phase 3)', () => {
       const html = readFileSync(resolve(outDir, 'git-spark-report.html'), 'utf-8');
 
       // Check for main daily trends components
-      expect(html).toContain('📈 Daily Activity Trends');
+      expect(html).toContain('Detailed Daily Tables');
       expect(html).toContain('Visual Trend Analysis');
       expect(html).toContain('Daily Commits Trend');
       expect(html).toContain('Active Authors Trend');
@@ -565,7 +565,7 @@ describe('HTMLExporter (Phase 3)', () => {
       const html = readFileSync(resolve(outDir, 'git-spark-report.html'), 'utf-8');
 
       // Should not contain daily trends section
-      expect(html).not.toContain('📈 Daily Activity Trends');
+      expect(html).not.toContain('Detailed Daily Tables');
       expect(html).not.toContain('Visual Trend Analysis');
     });
 
@@ -593,7 +593,7 @@ describe('HTMLExporter (Phase 3)', () => {
       const html = readFileSync(resolve(outDir, 'git-spark-report.html'), 'utf-8');
 
       // Should still generate section but handle empty data
-      expect(html).toContain('📈 Daily Activity Trends');
+      expect(html).toContain('Detailed Daily Tables');
       expect(html).toContain('No data available');
     });
 

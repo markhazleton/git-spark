@@ -200,6 +200,22 @@ export class GitExecutor {
     return parseInt(output.trim(), 10);
   }
 
+  async getFirstCommitDate(branch = 'HEAD'): Promise<Date | null> {
+    try {
+      const output = await this.execute({
+        command: 'log',
+        args: ['--reverse', '--format=%aI', '--max-count=1', branch],
+      });
+      const dateString = output.trim();
+      if (!dateString) {
+        return null;
+      }
+      return new Date(dateString);
+    } catch {
+      return null;
+    }
+  }
+
   async getLanguageStats(): Promise<{ [language: string]: number }> {
     try {
       const output = await this.execute({

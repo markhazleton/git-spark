@@ -442,6 +442,14 @@ export class HTMLExporter {
       }
 
       if (startDate && endDate) {
+        // Cap the analysis period to the repository's actual lifetime
+        if (report.repository.firstCommit && startDate < report.repository.firstCommit) {
+          startDate = report.repository.firstCommit;
+        }
+        if (report.repository.lastCommit && endDate > report.repository.lastCommit) {
+          endDate = report.repository.lastCommit;
+        }
+
         const firstStr = startDate.toISOString().split('T')[0];
         const lastStr = endDate.toISOString().split('T')[0];
         const days = Math.max(
@@ -503,14 +511,14 @@ export class HTMLExporter {
       <nav class="main-nav" aria-label="Section navigation">
         <ul>
           <li><a href="#summary">Summary</a></li>
-          <li><a href="#limitations">Limitations</a></li>
           <li><a href="#authors">Authors</a></li>
           <li><a href="#team-patterns">Team Patterns</a></li>
           <li><a href="#files">File Hotspots</a></li>
           <li><a href="#author-details">Author Details</a></li>
-          ${report.dailyTrends ? '<li><a href="#daily-trends">Daily Trends</a></li>' : ''}
+          <li><a href="#limitations">Limitations</a></li>
           <li><a href="#documentation">Documentation</a></li>
           <li><a href="#meta">Metadata</a></li>
+          ${report.dailyTrends ? '<li><a href="#daily-trends">Detailed Daily Tables</a></li>' : ''}
         </ul>
       </nav>
     </div>
@@ -627,6 +635,8 @@ export class HTMLExporter {
           </div>
         </div>
       </div>
+
+      ${report.dailyTrends ? this.generateActivityVisualsForTeamPatterns(report.dailyTrends) : ''}
     </section>
 
     <section id="files" class="section">
@@ -1843,9 +1853,6 @@ export class HTMLExporter {
             <p><strong>Activity Summary:</strong> This author contributed ${numberFmt(author.commits)} commits over ${author.activeDays} active days, 
             changing ${numberFmt(contribution.filesAndScope?.uniqueFiles || 0)} unique files with an average of 
             ${author.avgCommitSize.toFixed(1)} lines per commit.</p>
-            
-            <p><strong>Data Limitations:</strong> All metrics are derived from Git commit data and represent observable patterns only. 
-            They do not indicate productivity, code quality, work hours, or individual performance.</p>
           </div>
         </div>
       </div>
@@ -2141,18 +2148,15 @@ export class HTMLExporter {
   }
 
   /**
-   * Generate daily trends section for HTML report
+   * Generate activity visuals (overview, calendar, charts) for Team Patterns section
    * @private
    */
-  private generateDailyTrendsSection(trends: any): string {
+  private generateActivityVisualsForTeamPatterns(trends: any): string {
     const dateFormat = (date: Date) => date.toISOString().split('T')[0];
 
     const metadata = trends.analysisMetadata;
     const flowMetrics = trends.flowMetrics || [];
     const stabilityMetrics = trends.stabilityMetrics || [];
-    const ownershipMetrics = trends.ownershipMetrics || [];
-    const couplingMetrics = trends.couplingMetrics || [];
-    const hygieneMetrics = trends.hygieneMetrics || [];
 
     // Calculate summary statistics
     const totalCommits = flowMetrics.reduce((sum: number, day: any) => sum + day.commitsPerDay, 0);
@@ -2169,14 +2173,7 @@ export class HTMLExporter {
     );
 
     return `
-    <section id="daily-trends" class="section">
-      <h2>📈 Daily Activity Trends</h2>
-      <p class="section-description">
-        Objective daily patterns computed exclusively from Git commit history. These metrics show repository activity trends 
-        and do not indicate team performance, code quality, or individual productivity.
-      </p>
-
-      <!-- Trends Overview -->
+      <!-- Activity Period Overview -->
       <div class="trends-overview">
         <h3>Analysis Period Overview</h3>
         <div class="trends-summary-grid">
@@ -2211,7 +2208,7 @@ export class HTMLExporter {
         </div>
       </div>
 
-      <!-- Contributions Graph -->
+      <!-- Contributions Calendar -->
       ${this.generateContributionsGraphSection(trends.contributionsGraph, metadata)}
 
       <!-- Visual Trend Charts -->
@@ -2223,10 +2220,31 @@ export class HTMLExporter {
           ${this.generateVolumeSparklines(flowMetrics)}
         </div>
       </div>
+    `;
+  }
+
+  /**
+   * Generate daily trends section for HTML report
+   * @private
+   */
+  private generateDailyTrendsSection(trends: any): string {
+    const flowMetrics = trends.flowMetrics || [];
+    const stabilityMetrics = trends.stabilityMetrics || [];
+    const ownershipMetrics = trends.ownershipMetrics || [];
+    const couplingMetrics = trends.couplingMetrics || [];
+    const hygieneMetrics = trends.hygieneMetrics || [];
+
+    return `
+    <section id="daily-trends" class="section">
+      <h2>� Detailed Daily Tables</h2>
+      <p class="section-description">
+        Detailed day-by-day breakdowns of repository metrics computed from Git commit history. These tables provide 
+        granular data for analysis but should not be used for performance evaluation.
+      </p>
 
       <!-- Key Trends -->
       <div class="key-trends">
-        <h3>Key Trending Patterns</h3>
+        <h3>Daily Metrics Breakdown</h3>
         
         <!-- Flow Trends -->
         <div class="trend-category">

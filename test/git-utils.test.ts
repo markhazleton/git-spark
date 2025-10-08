@@ -390,5 +390,63 @@ describe('Git Utilities', () => {
       await expect(executePromise).rejects.toThrow('Git command timed out');
       expect(mockChild.kill).toHaveBeenCalled();
     }, 1000);
+
+    it('gets first commit date successfully', async () => {
+      const mockChild = createMockChild();
+      mockSpawn.mockReturnValue(mockChild);
+
+      const datePromise = gitExecutor.getFirstCommitDate();
+
+      mockChild.stdout.emit('data', Buffer.from('2024-01-15T10:30:45+00:00\n'));
+      mockChild.emit('close', 0);
+
+      const result = await datePromise;
+      expect(result).toBeInstanceOf(Date);
+      expect(result?.toISOString()).toContain('2024-01-15');
+    });
+
+    it('gets first commit date for specific branch', async () => {
+      const mockChild = createMockChild();
+      mockSpawn.mockReturnValue(mockChild);
+
+      const datePromise = gitExecutor.getFirstCommitDate('develop');
+
+      mockChild.stdout.emit('data', Buffer.from('2024-02-20T14:22:33+00:00\n'));
+      mockChild.emit('close', 0);
+
+      const result = await datePromise;
+      expect(result).toBeInstanceOf(Date);
+      expect(mockSpawn).toHaveBeenCalledWith(
+        'git',
+        ['log', '--reverse', '--format=%aI', '--max-count=1', 'develop'],
+        expect.any(Object)
+      );
+    });
+
+    it('handles repository with no commits', async () => {
+      const mockChild = createMockChild();
+      mockSpawn.mockReturnValue(mockChild);
+
+      const datePromise = gitExecutor.getFirstCommitDate();
+
+      mockChild.stdout.emit('data', Buffer.from(''));
+      mockChild.emit('close', 0);
+
+      const result = await datePromise;
+      expect(result).toBeNull();
+    });
+
+    it('handles getFirstCommitDate error gracefully', async () => {
+      const mockChild = createMockChild();
+      mockSpawn.mockReturnValue(mockChild);
+
+      const datePromise = gitExecutor.getFirstCommitDate();
+
+      mockChild.stderr.emit('data', Buffer.from('fatal: not a git repository\n'));
+      mockChild.emit('close', 128);
+
+      const result = await datePromise;
+      expect(result).toBeNull();
+    });
   });
 });
