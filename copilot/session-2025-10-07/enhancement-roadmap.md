@@ -72,7 +72,7 @@ git-spark init --preset=enterprise
 
 **Success Criteria:**
 
-- API docs live at https://markhazleton.github.io/git-spark/api
+- API docs live at <https://markhazleton.github.io/git-spark/api>
 - Demo video on YouTube with 100+ views in first month
 - Documentation completeness score: 90%+
 
