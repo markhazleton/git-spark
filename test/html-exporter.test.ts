@@ -645,7 +645,7 @@ describe('HTMLExporter (Phase 3)', () => {
       expect(html).toContain('<svg');
       expect(html).toContain('trend-chart');
       expect(html).toContain('sparklines-container');
-      expect(html).toContain('spark-bar');
+      expect(html).toContain('<svg'); // SVG sparklines instead of .spark-bar divs
       expect(html).toContain('Lines Changed');
       expect(html).toContain('Files Touched');
     });
@@ -684,10 +684,10 @@ describe('HTMLExporter (Phase 3)', () => {
       await exporter.export(testReport, outDir);
       const html = readFileSync(resolve(outDir, 'git-spark-report.html'), 'utf-8');
 
-      // Check for chart-specific CSS styles
+      // Check for chart-specific CSS styles and SVG elements
       expect(html).toContain('.trend-chart');
       expect(html).toContain('.sparklines-container');
-      expect(html).toContain('.spark-bar');
+      expect(html).toContain('<svg'); // SVG sparklines instead of .spark-bar divs
       expect(html).toContain('.charts-grid');
       expect(html).toContain('/* Daily Trends Section Styles */');
     });
