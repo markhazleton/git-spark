@@ -409,6 +409,8 @@ describe('Git Utilities', () => {
       const mockChild = createMockChild();
       mockSpawn.mockReturnValue(mockChild);
 
+      // Note: The function now ignores the branch parameter and uses --all
+      // to find the repository's absolute first commit
       const datePromise = gitExecutor.getFirstCommitDate('develop');
 
       mockChild.stdout.emit('data', Buffer.from('2024-02-20T14:22:33+00:00\n'));
@@ -418,7 +420,7 @@ describe('Git Utilities', () => {
       expect(result).toBeInstanceOf(Date);
       expect(mockSpawn).toHaveBeenCalledWith(
         'git',
-        ['log', '--reverse', '--format=%aI', '--max-count=1', 'develop'],
+        ['log', '--all', '--reverse', '--format=%aI'],
         expect.any(Object)
       );
     });
