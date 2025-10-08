@@ -7,14 +7,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
+## [1.0.170] - 2025-10-07
 
-- Initial release preparation
-- GitHub Actions CI/CD workflows
-- Comprehensive test suite with 80%+ coverage
-- Multiple output formats (HTML, JSON, CSV, Markdown, Console)
-- Enterprise-grade security features
-- Cross-platform support (Windows, macOS, Linux)
+### Fixed
+
+- **Critical Bug: First Commit Date Detection**
+  - Fixed `getFirstCommitDate()` method that was returning incorrect dates
+  - Removed problematic `--max-count=1` flag that limited results before reversing
+  - Now uses `--all --reverse` to find true repository first commit across all branches
+  - Resolves issue where `--days=300` returned 0 commits despite recent activity
+
+- **Date Range Calculation**
+  - Added repository lifetime capping to prevent analysis periods before first commit
+  - Implemented timezone-safe date handling by subtracting 1 day from first commit
+  - Fixed analysis period display showing impossible dates (before repository creation)
+  - Added comprehensive debug logging for date comparisons
+
+### Changed
+
+- **HTML Report Navigation**
+  - Reorganized navigation menu to match visual section order
+  - Final order: Summary → Authors → Team Patterns → Files → Author Details → Detailed Daily Tables → Limitations → Documentation → Metadata
+  - Split "Daily Activity Trends" section for better organization:
+    - Moved visualizations (Analysis Period Overview, Contributions Calendar, Visual Trend Analysis) to Team Patterns section
+    - Kept detailed tables in separate "Detailed Daily Tables" section at bottom
+  - Positioned "Detailed Daily Tables" between Author Details and Limitations for logical flow
+
+### Technical
+
+- Updated `src/utils/git.ts` - Complete rewrite of `getFirstCommitDate()` method
+- Enhanced `src/core/collector.ts` - Added repository lifetime capping with timezone safety
+- Modified `src/output/html.ts` - Navigation reordering and date display improvements
+- Updated `test/git-utils.test.ts` - Test expectations match new implementation
+- All 217 tests passing with updated logic
 
 ## [1.0.0] - 2025-09-29
 
@@ -90,5 +115,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safe shell command execution
 - Security-focused HTML output (CSP headers)
 
-[Unreleased]: https://github.com/MarkHazleton/git-spark/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/MarkHazleton/git-spark/compare/v1.0.170...HEAD
+[1.0.170]: https://github.com/MarkHazleton/git-spark/compare/v1.0.0...v1.0.170
 [1.0.0]: https://github.com/MarkHazleton/git-spark/releases/tag/v1.0.0
