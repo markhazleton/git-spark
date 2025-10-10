@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Current Repository State Enhancements**
+  - Executive Summary-style metrics grid layout for consistency
+  - Professional table layouts with data-table styling throughout
+  - Repository filesystem statistics with extension, category, and directory breakdowns
+
+### Fixed
+
+- **Directory Counting Bug**
+  - Fixed "N/A" display for directory counts in Current Repository State section
+  - Root cause: Interface mismatch between analyzer (`topDirectories`) and HTML template (`directoryBreakdown`)
+  - Directory count now correctly displays actual numbers and detailed breakdown table
+  - Updated HTML template field references to use correct analyzer data structure
+
+### Changed
+
+- **Layout Improvements**
+  - Current Repository State section now matches Executive Summary styling
+  - Consistent metric-card design across all summary sections
+  - Enhanced table layouts with proper data-table CSS classes
+
 ## [1.0.183] - 2025-10-08
 
 ### Fixed

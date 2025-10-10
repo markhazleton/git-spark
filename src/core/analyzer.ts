@@ -16,11 +16,14 @@ import {
   TeamConsistencyMetrics,
   TeamWorkLifeBalanceMetrics,
   TeamInsights,
+  CurrentRepositoryState,
 } from '../types';
 import { DataCollector } from './collector';
 import { DailyTrendsAnalyzer } from './daily-trends';
 import { createLogger } from '../utils/logger';
 import { validateCommitMessage, sanitizeEmail } from '../utils/validation';
+import * as fs from 'fs';
+import * as path from 'path';
 
 const logger = createLogger('analyzer');
 
@@ -161,7 +164,10 @@ export class GitAnalyzer {
     const dailyTrends =
       commits.length > 0 ? await this.analyzeDailyTrends(commits, options) : undefined;
 
-    this.reportProgress('Generating report', 90, 100);
+    this.reportProgress('Analyzing current repository state', 92, 100);
+    const currentState = await this.analyzeCurrentRepositoryState(options.repoPath || '.');
+
+    this.reportProgress('Generating report', 95, 100);
 
     // Generate metadata
     const metadata = await this.generateMetadata(options, Date.now() - startTime);
@@ -175,6 +181,7 @@ export class GitAnalyzer {
     const report: AnalysisReport = {
       metadata,
       repository: repositoryStats,
+      currentState,
       timeline,
       authors,
       files,
@@ -675,6 +682,7 @@ export class GitAnalyzer {
         publishedCommits,
         publishedLines,
       },
+      fileTypeBreakdown: this.calculateFileTypeBreakdown(authorCommits),
     };
   }
 
@@ -1453,6 +1461,181 @@ export class GitAnalyzer {
     return normalizedCommits * 0.4 + normalizedAuthors * 0.35 + normalizedChurn * 0.25;
   }
 
+  private calculateFileTypeBreakdown(commits: any[]): any {
+    const fileTypeStats = new Map<string, { commits: number; files: Set<string>; churn: number }>();
+    const categoryStats = {
+      sourceCode: { files: new Set<string>(), commits: 0, churn: 0 },
+      documentation: { files: new Set<string>(), commits: 0, churn: 0 },
+      configuration: { files: new Set<string>(), commits: 0, churn: 0 },
+      tests: { files: new Set<string>(), commits: 0, churn: 0 },
+      other: { files: new Set<string>(), commits: 0, churn: 0 },
+    };
+
+    // Aggregate stats by file extension
+    for (const commit of commits) {
+      for (const file of commit.files) {
+        const ext = this.getFileExtension(file.path);
+        const churn = file.insertions + file.deletions;
+
+        // Track by extension
+        if (!fileTypeStats.has(ext)) {
+          fileTypeStats.set(ext, { commits: 0, files: new Set(), churn: 0 });
+        }
+        const stats = fileTypeStats.get(ext)!;
+        stats.commits++;
+        stats.files.add(file.path);
+        stats.churn += churn;
+
+        // Categorize file
+        const category = this.categorizeFile(file.path, ext);
+        categoryStats[category].files.add(file.path);
+        categoryStats[category].commits++;
+        categoryStats[category].churn += churn;
+      }
+    }
+
+    // Calculate totals for percentages
+    const totalFiles = new Set(commits.flatMap(c => c.files.map((f: any) => f.path))).size;
+    const totalCommits = commits.length;
+    const totalChurn = commits.reduce(
+      (sum, c) =>
+        sum + c.files.reduce((fSum: number, f: any) => fSum + f.insertions + f.deletions, 0),
+      0
+    );
+
+    // Convert to final format with percentages based on file count, not commit count
+    const byExtension = Array.from(fileTypeStats.entries())
+      .map(([ext, stats]) => ({
+        extension: ext,
+        language: this.detectLanguage(`file.${ext}`) || 'Unknown',
+        commits: stats.commits,
+        files: stats.files.size,
+        churn: stats.churn,
+        percentage: totalFiles > 0 ? (stats.files.size / totalFiles) * 100 : 0,
+      }))
+      .sort((a, b) => b.files - a.files);
+
+    const categories = {
+      sourceCode: {
+        files: categoryStats.sourceCode.files.size,
+        commits: categoryStats.sourceCode.commits,
+        churn: categoryStats.sourceCode.churn,
+        percentage: totalFiles > 0 ? (categoryStats.sourceCode.files.size / totalFiles) * 100 : 0,
+      },
+      documentation: {
+        files: categoryStats.documentation.files.size,
+        commits: categoryStats.documentation.commits,
+        churn: categoryStats.documentation.churn,
+        percentage:
+          totalFiles > 0 ? (categoryStats.documentation.files.size / totalFiles) * 100 : 0,
+      },
+      configuration: {
+        files: categoryStats.configuration.files.size,
+        commits: categoryStats.configuration.commits,
+        churn: categoryStats.configuration.churn,
+        percentage:
+          totalFiles > 0 ? (categoryStats.configuration.files.size / totalFiles) * 100 : 0,
+      },
+      tests: {
+        files: categoryStats.tests.files.size,
+        commits: categoryStats.tests.commits,
+        churn: categoryStats.tests.churn,
+        percentage: totalFiles > 0 ? (categoryStats.tests.files.size / totalFiles) * 100 : 0,
+      },
+      other: {
+        files: categoryStats.other.files.size,
+        commits: categoryStats.other.commits,
+        churn: categoryStats.other.churn,
+        percentage: totalFiles > 0 ? (categoryStats.other.files.size / totalFiles) * 100 : 0,
+      },
+    };
+
+    return {
+      byExtension,
+      categories,
+      totals: {
+        files: totalFiles,
+        commits: totalCommits,
+        churn: totalChurn,
+      },
+    };
+  }
+
+  private getFileExtension(filePath: string): string {
+    const parts = filePath.split('.');
+    return parts.length > 1 ? parts[parts.length - 1].toLowerCase() : 'no-extension';
+  }
+
+  private categorizeFile(
+    filePath: string,
+    extension: string
+  ): 'sourceCode' | 'documentation' | 'configuration' | 'tests' | 'other' {
+    const path = filePath.toLowerCase();
+
+    // Test files
+    if (
+      path.includes('test') ||
+      path.includes('spec') ||
+      path.includes('__tests__') ||
+      extension === 'test.js' ||
+      extension === 'spec.ts'
+    ) {
+      return 'tests';
+    }
+
+    // Documentation
+    if (['md', 'txt', 'rst', 'adoc', 'asciidoc'].includes(extension)) {
+      return 'documentation';
+    }
+
+    // Configuration
+    if (
+      ['json', 'yaml', 'yml', 'toml', 'ini', 'conf', 'config', 'env', 'properties'].includes(
+        extension
+      ) ||
+      path.includes('config') ||
+      path.includes('.env') ||
+      path.includes('package') ||
+      path.includes('tsconfig') ||
+      path.includes('webpack') ||
+      path.includes('babel') ||
+      path.includes('eslint') ||
+      path.includes('prettier')
+    ) {
+      return 'configuration';
+    }
+
+    // Source code
+    if (
+      [
+        'js',
+        'ts',
+        'tsx',
+        'jsx',
+        'py',
+        'java',
+        'cs',
+        'php',
+        'rb',
+        'go',
+        'rs',
+        'cpp',
+        'c',
+        'swift',
+        'kt',
+        'scala',
+        'css',
+        'scss',
+        'sass',
+        'less',
+      ].includes(extension)
+    ) {
+      return 'sourceCode';
+    }
+
+    return 'other';
+  }
+
   private detectLanguage(filePath: string): string | undefined {
     const ext = filePath.split('.').pop()?.toLowerCase();
     const languageMap: { [key: string]: string } = {
@@ -2147,5 +2330,160 @@ export class GitAnalyzer {
     });
 
     return trendsData;
+  }
+
+  /**
+   * Analyze the current state of files in the repository
+   * This provides a snapshot of what files exist right now, regardless of Git history
+   */
+  private async analyzeCurrentRepositoryState(repoPath: string): Promise<CurrentRepositoryState> {
+    const extensionStats = new Map<
+      string,
+      { fileCount: number; totalSizeBytes: number; files: string[] }
+    >();
+    const categoryStats = {
+      sourceCode: { fileCount: 0, totalSizeBytes: 0, files: [] as string[] },
+      documentation: { fileCount: 0, totalSizeBytes: 0, files: [] as string[] },
+      configuration: { fileCount: 0, totalSizeBytes: 0, files: [] as string[] },
+      tests: { fileCount: 0, totalSizeBytes: 0, files: [] as string[] },
+      other: { fileCount: 0, totalSizeBytes: 0, files: [] as string[] },
+    };
+    const directoryStats = new Map<string, number>();
+
+    let totalFiles = 0;
+    let totalSizeBytes = 0;
+
+    const shouldIgnore = (filePath: string): boolean => {
+      const normalizedPath = filePath.replace(/\\/g, '/');
+      return (
+        normalizedPath.includes('/.git/') ||
+        normalizedPath.includes('/node_modules/') ||
+        normalizedPath.includes('/.vscode/') ||
+        normalizedPath.includes('/dist/') ||
+        normalizedPath.includes('/build/') ||
+        normalizedPath.includes('/coverage/') ||
+        normalizedPath.includes('/.nyc_output/') ||
+        normalizedPath.includes('/tmp/') ||
+        normalizedPath.includes('/temp/') ||
+        normalizedPath.startsWith('.git') ||
+        normalizedPath.includes('/.next/') ||
+        normalizedPath.includes('/__pycache__/')
+      );
+    };
+
+    const walkDirectory = (dirPath: string): void => {
+      try {
+        const items = fs.readdirSync(dirPath);
+
+        for (const item of items) {
+          const fullPath = path.join(dirPath, item);
+          const relativePath = path.relative(repoPath, fullPath);
+
+          if (shouldIgnore(relativePath)) {
+            continue;
+          }
+
+          try {
+            const stats = fs.statSync(fullPath);
+
+            if (stats.isDirectory()) {
+              walkDirectory(fullPath);
+            } else if (stats.isFile()) {
+              totalFiles++;
+              totalSizeBytes += stats.size;
+
+              // Track directory
+              const dirName = path.dirname(relativePath);
+              directoryStats.set(dirName, (directoryStats.get(dirName) || 0) + 1);
+
+              // Get file extension
+              const ext = this.getFileExtension(relativePath);
+
+              // Track by extension
+              if (!extensionStats.has(ext)) {
+                extensionStats.set(ext, { fileCount: 0, totalSizeBytes: 0, files: [] });
+              }
+              const extData = extensionStats.get(ext)!;
+              extData.fileCount++;
+              extData.totalSizeBytes += stats.size;
+              extData.files.push(relativePath);
+
+              // Categorize file
+              const category = this.categorizeFile(relativePath, ext);
+              categoryStats[category].fileCount++;
+              categoryStats[category].totalSizeBytes += stats.size;
+              categoryStats[category].files.push(relativePath);
+            }
+          } catch (error) {
+            // Skip files that can't be accessed
+            continue;
+          }
+        }
+      } catch (error) {
+        // Skip directories that can't be accessed
+        return;
+      }
+    };
+
+    // Start analysis
+    walkDirectory(repoPath);
+
+    // Convert to final format
+    const byExtension = Array.from(extensionStats.entries())
+      .map(([ext, stats]) => ({
+        extension: ext,
+        language: this.detectLanguage(`file.${ext}`) || 'Unknown',
+        fileCount: stats.fileCount,
+        totalSizeBytes: stats.totalSizeBytes,
+        percentage: totalFiles > 0 ? (stats.fileCount / totalFiles) * 100 : 0,
+        averageFileSize: stats.fileCount > 0 ? stats.totalSizeBytes / stats.fileCount : 0,
+      }))
+      .sort((a, b) => b.fileCount - a.fileCount);
+
+    const categories = {
+      sourceCode: {
+        fileCount: categoryStats.sourceCode.fileCount,
+        totalSizeBytes: categoryStats.sourceCode.totalSizeBytes,
+        percentage: totalFiles > 0 ? (categoryStats.sourceCode.fileCount / totalFiles) * 100 : 0,
+      },
+      documentation: {
+        fileCount: categoryStats.documentation.fileCount,
+        totalSizeBytes: categoryStats.documentation.totalSizeBytes,
+        percentage: totalFiles > 0 ? (categoryStats.documentation.fileCount / totalFiles) * 100 : 0,
+      },
+      configuration: {
+        fileCount: categoryStats.configuration.fileCount,
+        totalSizeBytes: categoryStats.configuration.totalSizeBytes,
+        percentage: totalFiles > 0 ? (categoryStats.configuration.fileCount / totalFiles) * 100 : 0,
+      },
+      tests: {
+        fileCount: categoryStats.tests.fileCount,
+        totalSizeBytes: categoryStats.tests.totalSizeBytes,
+        percentage: totalFiles > 0 ? (categoryStats.tests.fileCount / totalFiles) * 100 : 0,
+      },
+      other: {
+        fileCount: categoryStats.other.fileCount,
+        totalSizeBytes: categoryStats.other.totalSizeBytes,
+        percentage: totalFiles > 0 ? (categoryStats.other.fileCount / totalFiles) * 100 : 0,
+      },
+    };
+
+    const topDirectories = Array.from(directoryStats.entries())
+      .map(([dirPath, fileCount]) => ({
+        path: dirPath === '.' ? '(root)' : dirPath,
+        fileCount,
+        percentage: totalFiles > 0 ? (fileCount / totalFiles) * 100 : 0,
+      }))
+      .sort((a, b) => b.fileCount - a.fileCount)
+      .slice(0, 10); // Top 10 directories
+
+    return {
+      totalFiles,
+      totalSizeBytes,
+      byExtension,
+      categories,
+      topDirectories,
+      analyzedAt: new Date(),
+    };
   }
 }

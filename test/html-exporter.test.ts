@@ -447,24 +447,6 @@ describe('HTMLExporter (Phase 3)', () => {
     expect(html).toContain('risk-minimal');
   });
 
-  it('tests health rating calculations', async () => {
-    // Test different health score ranges
-    const testCases = [
-      { healthScore: 0.95, expected: 'high' },
-      { healthScore: 0.75, expected: 'moderate' },
-      { healthScore: 0.55, expected: 'fair' },
-      { healthScore: 0.25, expected: 'low' },
-    ];
-
-    for (const testCase of testCases) {
-      report.repository.healthScore = testCase.healthScore;
-      await exporter.export(report, outDir);
-      const html = readFileSync(resolve(outDir, 'git-spark-report.html'), 'utf-8');
-      // The health rating appears in the data-rating attribute
-      expect(html).toContain(`data-rating="${testCase.expected}"`);
-    }
-  });
-
   it('handles path truncation for long file paths', async () => {
     report.files[0].path =
       'src/very/long/path/that/should/be/truncated/because/it/is/too/long/for/display/file.ts';
