@@ -2,6 +2,7 @@ import { Command } from 'commander';
 import { GitSparkOptions, LogLevel, OutputFormat } from '../types';
 import { validateOptions, validateNodeVersion, validateGitInstallation } from '../utils/validation';
 import { setGlobalLogLevel, createLogger } from '../utils/logger';
+import { getVersion } from '../version-fallback';
 import chalk from 'chalk';
 import boxen from 'boxen';
 import ora from 'ora';
@@ -410,7 +411,7 @@ async function executeAnalysis(options: any): Promise<void> {
     spinner.text = 'Generating output';
     await gitSpark.export(gitSparkOptions.format || 'html', gitSparkOptions.output || './reports');
 
-    spinner.succeed('Analysis completed successfully');
+    spinner.succeed(`Analysis completed successfully (git-spark v${getVersion()})`);
 
     // Display summary
     displaySummary(report);
@@ -555,12 +556,10 @@ function displaySummary(report: any): void {
   console.log(
     '\n' +
       boxen(
-        chalk.bold('📊 Git Spark Analysis Summary\n\n') +
-          chalk.cyan(`Health Rating: ${summary.healthRating.toUpperCase()}\n`) +
+        chalk.bold(`📊 Git Spark Analysis Summary (v${getVersion()})\n\n`) +
           chalk.blue(`Total Commits: ${repository.totalCommits}\n`) +
           chalk.blue(`Active Contributors: ${repository.totalAuthors}\n`) +
           chalk.blue(`Files Changed: ${repository.totalFiles}\n`) +
-          chalk.blue(`Activity Index: ${Math.round(repository.healthScore * 100)}%\n`) +
           chalk.blue(
             `Bus Factor: ${Math.round((repository.busFactor / repository.totalAuthors) * 100)}%`
           ),
@@ -568,14 +567,7 @@ function displaySummary(report: any): void {
           padding: 1,
           margin: 1,
           borderStyle: 'round',
-          borderColor:
-            summary.healthRating === 'excellent'
-              ? 'green'
-              : summary.healthRating === 'good'
-                ? 'blue'
-                : summary.healthRating === 'fair'
-                  ? 'yellow'
-                  : 'red',
+          borderColor: 'blue',
         }
       )
   );

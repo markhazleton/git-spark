@@ -50,18 +50,12 @@ export class ConsoleExporter {
     process.stdout.write(chalk.bold.cyan('📊 EXECUTIVE SUMMARY') + '\n');
     process.stdout.write(chalk.blue('─'.repeat(40)) + '\n');
 
-    const healthColor = this.getHealthColor(summary.healthRating);
-    process.stdout.write(
-      `${chalk.bold('Repository Health:')} ${healthColor(summary.healthRating.toUpperCase())}\n`
-    );
-
     const summaryData = [
       ['Metric', 'Value'],
       ['Total Commits', repository.totalCommits.toLocaleString()],
       ['Contributors', repository.totalAuthors.toString()],
       ['Files Changed', repository.totalFiles.toLocaleString()],
       ['Code Churn', repository.totalChurn.toLocaleString() + ' lines'],
-      ['Activity Index', Math.round(repository.healthScore * 100) + '%'],
       ['Bus Factor', Math.round((repository.busFactor / repository.totalAuthors) * 100) + '%'],
       ['Active Days', repository.activeDays.toString()],
     ];
@@ -216,23 +210,6 @@ export class ConsoleExporter {
     );
     process.stdout.write(chalk.blue('═'.repeat(60)) + '\n');
     process.stdout.write('\n');
-  }
-
-  /**
-   * Get color function based on health rating
-   * @private
-   */
-  private getHealthColor(rating: string): (text: string) => string {
-    switch (rating.toLowerCase()) {
-      case 'excellent':
-        return chalk.green;
-      case 'good':
-        return chalk.yellow;
-      case 'poor':
-        return chalk.red;
-      default:
-        return chalk.gray;
-    }
   }
 
   /**

@@ -2,9 +2,9 @@
 
 # 🔥 Git Spark
 
-### Enterprise-Grade Git Repository Analytics & Reporting
+### Git Repository Analytics & Reporting
 
-**Transform your Git history into actionable insights with beautiful, interactive reports**
+**Analyze commit patterns and contributor activity with interactive reports**
 
 [![npm version](https://img.shields.io/npm/v/git-spark.svg?style=flat-square)](https://www.npmjs.com/package/git-spark)
 [![npm downloads](https://img.shields.io/npm/dm/git-spark.svg?style=flat-square)](https://www.npmjs.com/package/git-spark)
@@ -15,72 +15,52 @@
 
 **[🎨 Live Demo](https://markhazleton.github.io/git-spark/)** •
 **[📖 Documentation](#-documentation)** •
-**[🚀 Quick Start](#-quick-start)** •
-**[💡 Examples](#-examples)**
+**[🚀 Quick Start](#-quick-start)**
 
 ---
 
 </div>
 
-## 🌟 Why Git Spark?
+## 📊 What is Git Spark?
 
-Git Spark provides **transparent, honest insights** into Git repository health, team organization patterns, and code quality through comprehensive analysis of commit history. Built for enterprise environments with performance, reliability, security, and **analytical integrity** in mind.
+Git Spark analyzes Git repository commit history to provide insights into contributor activity, code changes, and development patterns. It generates interactive HTML reports with charts, contributor statistics, and file analysis based on Git commit data.
 
-### ✨ What Makes Git Spark Special
+### ✨ Key Features
 
-- 🎯 **Analytical Honesty** - Report only what can be accurately derived from Git data, never guess or fabricate metrics
-- 🎨 **Beautiful Reports** - Interactive HTML dashboards with GitHub-style contributions calendar and dark mode
-- ⚡ **Lightning Fast** - Process 100k+ commits in minutes with intelligent caching and streaming
-- 🔒 **Security First** - CSP/SRI hardened reports, input validation, and optional email redaction
-- 📊 **Multiple Formats** - HTML, JSON, Markdown, CSV, and console output for any workflow
-- 🛠️ **Developer Friendly** - Intuitive CLI and TypeScript API with comprehensive documentation
+- **Interactive Reports** - HTML dashboards with charts and activity visualizations
+- **Multiple Formats** - Export to HTML, JSON, CSV, and Markdown
+- **CLI & API** - Command-line tool and Node.js library
+- **File Analysis** - Directory structure and change patterns
+- **Git-only Data** - Analysis based solely on commit history
 
-> **Current Version**: v1.0 - Full-featured analytics with daily trends, contributions calendar, and complete transparency
+## 🎨 Live Demo
 
-## 🎨 Live Demo & Examples
+**[📊 View Interactive Demo →](https://markhazleton.github.io/git-spark/)**
 
-**[📊 View Live Interactive Demo →](https://markhazleton.github.io/git-spark/)**
-
-Experience the full Git Spark analytics dashboard with real data:
+See Git Spark in action with a sample report showing:
 
 - Interactive charts and visualizations
-- GitHub-style contributions calendar  
-- Detailed author profiles and metrics
-- Dark mode toggle
-- Real-time data export
-
-> Sample reports generated from open-source repositories to showcase all features
+- Contributor activity and statistics  
+- File and directory analysis
+- Dark mode support
+- Data export options
 
 ## ✨ Features
 
-### 📊 Comprehensive Analytics
+### 📊 Analytics & Reports
 
-- **Repository Health Scoring** - Overall health assessment with actionable recommendations
-- **Daily Activity Trends** - Comprehensive day-by-day analysis including all days in the specified range (not just active days)
-- **GitHub-style Contributions Calendar** - Visual activity heatmap with GitHub-style color coding and intensity levels
-- **Team Organization Analysis** - File ownership patterns, developer specialization, and team structure
-- **Code Quality Metrics** - Risk assessment, hotspot identification, and governance scoring
-- **Timeline Visualization** - Activity patterns and trend analysis
-- **Bus Factor Calculation** - Knowledge concentration and team resilience metrics
+- **Repository Statistics** - Commit counts, contributor activity, and file changes
+- **Daily Trends** - Activity patterns over time with visual charts
+- **Contributor Analysis** - Individual contributor statistics and activity
+- **File Analysis** - Directory structure, file types, and change patterns
+- **Interactive HTML** - Charts, tables, and dark mode support
 
-> **🔍 Analytical Integrity Promise**: All metrics are transparently calculated from Git repository data only. We clearly document what each metric measures, its limitations, and what it cannot determine. No guesswork, no extrapolation beyond available data.
+### �️ Usage Options
 
-### 🎯 Enterprise-Ready
-
-- **High Performance** - Process 100k+ commits efficiently with memory optimization
-- **Multiple Output Formats** - HTML, JSON, Markdown, CSV, and console output
-- **Configurable Analysis** - Customizable thresholds, weights, and filtering options
-- **Security Focused** - Input validation, safe file handling, and email redaction
-- **CI/CD Integration** - JSON output for automated analysis and reporting
-- **Email Privacy** - Optional email redaction via `--redact-emails` flag
-
-### 🛠️ Developer Experience
-
-- **CLI Interface** - Intuitive command-line tool with progress indicators and multiple commands
-- **Programmatic API** - TypeScript/JavaScript library for custom integrations
-- **Interactive Reports** - Rich, security‑hardened HTML reports with advanced visualizations
-- **Comprehensive Documentation** - Examples, tutorials, and best practices
-- **Live Development Server** - Built-in HTTP server for local report viewing
+- **Command Line** - Simple CLI commands with progress indicators
+- **Node.js API** - Programmatic access for custom integrations
+- **Multiple Formats** - HTML, JSON, CSV, and Markdown output
+- **Configuration** - Customizable analysis periods and options
 
 ### 🖥️ Interactive HTML Report (v1.0)
 
@@ -121,32 +101,11 @@ npm install git-spark
 # Analyze current repository (last 30 days)
 git-spark --days=30
 
-# Generate HTML report with built-in command
-git-spark html --days=30 --output=./reports
-
-# Serve HTML report with live HTTP server
-git-spark html --days=30 --serve --port=3000
-
-# Open HTML report in browser automatically
-git-spark html --days=30 --open
+# Generate HTML report
+git-spark --format=html --output=./reports
 
 # Analyze specific date range
-git-spark --since=2024-01-01 --until=2024-12-31 --format=html
-
-# Quick health check
-git-spark health
-
-# Validate environment and Git repository
-git-spark validate
-
-# Enable heavy analysis for detailed insights  
-git-spark --heavy --format=html --output=./reports
-
-# Analyze with comprehensive daily trends (shows all days, not just active days)
-git-spark --days=60 --format=html --output=./reports
-
-# Generate report with email redaction for privacy
-git-spark --days=30 --format=html --redact-emails
+git-spark --since=2024-01-01 --until=2024-12-31
 ```
 
 ### Programmatic Usage

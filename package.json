@@ -1,17 +1,15 @@
 {
   "name": "git-spark",
-  "version": "1.0.185",
-  "description": "Enterprise-grade Git repository analytics and reporting tool",
+  "version": "1.0.211",
+  "description": "Git repository analytics and reporting tool for analyzing commit patterns and contributor activity",
   "keywords": [
     "git",
     "analytics",
     "repository",
     "reporting",
     "metrics",
-    "team",
-    "collaboration",
-    "code-quality",
-    "enterprise"
+    "commit-analysis",
+    "developer-tools"
   ],
   "author": "Mark Hazleton <mark@markhazleton.com>",
   "license": "MIT",
@@ -75,7 +73,7 @@
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",
-    "@types/node": "^24.7.0",
+    "@types/node": "^24.7.1",
     "@types/semver": "^7.7.1",
     "@typescript-eslint/eslint-plugin": "^8.46.0",
     "@typescript-eslint/parser": "^8.46.0",
@@ -86,7 +84,7 @@
     "jest": "^30.2.0",
     "prettier": "^3.6.2",
     "rimraf": "^6.0.1",
-    "ts-jest": "^29.4.4",
+    "ts-jest": "^29.4.5",
     "typedoc": "^0.28.13",
     "typescript": "^5.9.3"
   },

@@ -202,6 +202,33 @@ export interface AuthorContributionMetrics {
       publishedCommits: number;
       publishedLines: { insertions: number; deletions: number };
     };
+    fileTypeBreakdown: FileTypeBreakdown;
+  };
+}
+
+export interface FileTypeBreakdown {
+  /** File types by extension with activity metrics */
+  byExtension: Array<{
+    extension: string;
+    language: string;
+    commits: number;
+    files: number;
+    churn: number;
+    percentage: number;
+  }>;
+  /** Summary categories */
+  categories: {
+    sourceCode: { files: number; commits: number; churn: number; percentage: number };
+    documentation: { files: number; commits: number; churn: number; percentage: number };
+    configuration: { files: number; commits: number; churn: number; percentage: number };
+    tests: { files: number; commits: number; churn: number; percentage: number };
+    other: { files: number; commits: number; churn: number; percentage: number };
+  };
+  /** Total activity for percentage calculations */
+  totals: {
+    files: number;
+    commits: number;
+    churn: number;
   };
 }
 
@@ -352,9 +379,63 @@ export interface RepositoryStats {
   governanceScore: number;
 }
 
+export interface CurrentRepositoryState {
+  /** Total files currently in the repository */
+  totalFiles: number;
+  /** Total size of all files in bytes */
+  totalSizeBytes: number;
+  /** Breakdown by file extension with counts */
+  byExtension: Array<{
+    extension: string;
+    language: string;
+    fileCount: number;
+    totalSizeBytes: number;
+    percentage: number;
+    averageFileSize: number;
+  }>;
+  /** Breakdown by file category */
+  categories: {
+    sourceCode: {
+      fileCount: number;
+      totalSizeBytes: number;
+      percentage: number;
+    };
+    documentation: {
+      fileCount: number;
+      totalSizeBytes: number;
+      percentage: number;
+    };
+    configuration: {
+      fileCount: number;
+      totalSizeBytes: number;
+      percentage: number;
+    };
+    tests: {
+      fileCount: number;
+      totalSizeBytes: number;
+      percentage: number;
+    };
+    other: {
+      fileCount: number;
+      totalSizeBytes: number;
+      percentage: number;
+    };
+  };
+  /** Top directories by file count */
+  topDirectories: Array<{
+    path: string;
+    fileCount: number;
+    percentage: number;
+  }>;
+  /** Analysis timestamp */
+  analyzedAt: Date;
+}
+
 export interface AnalysisReport {
   metadata: ReportMetadata;
   repository: RepositoryStats;
+  /** Current state of files in the repository (filesystem-based, not Git history) */
+  currentState: CurrentRepositoryState;
   timeline: TimelineData[];
   authors: AuthorStats[];
   files: FileStats[];
@@ -489,6 +570,29 @@ export interface TeamWorkLifeBalanceMetrics {
     burnoutDetection: string;
     recommendedApproach: string;
     knownLimitations: string[];
+  };
+}
+
+export interface TeamFileTypeMetrics {
+  /** Team-wide file type breakdown across all contributors */
+  teamFileTypeBreakdown: FileTypeBreakdown;
+  /** Individual contributor file type specializations */
+  authorSpecializations: Array<{
+    authorName: string;
+    authorEmail: string;
+    primaryFileTypes: Array<{
+      extension: string;
+      language: string;
+      percentage: number;
+      commits: number;
+    }>;
+    specializationScore: number; // 0-1, how specialized vs. generalist
+  }>;
+  /** Cross-pollination metrics */
+  crossPollinationMetrics: {
+    generalMultiLanguageAuthors: number;
+    languageSpecialists: number;
+    averageLanguagesPerAuthor: number;
   };
 }
 

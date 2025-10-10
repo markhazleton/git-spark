@@ -336,7 +336,6 @@ export class HTMLExporter {
   private generateHTML(report: AnalysisReport, fileFilteringConfig?: FileFilteringConfig): string {
     const repoName = basename(report.metadata.repoPath || '.') || 'repository';
     const generatedAt = report.metadata.generatedAt.toISOString();
-    const healthPct = Math.round(report.repository.healthScore * 100);
     const numberFmt = (n: number) => new Intl.NumberFormat().format(n);
     const compactFmt = (n: number) =>
       new Intl.NumberFormat(undefined, { notation: 'compact', maximumFractionDigits: 1 }).format(n);
@@ -363,7 +362,6 @@ export class HTMLExporter {
         value: compactFmt(report.repository.totalChurn),
         raw: report.repository.totalChurn,
       },
-      { label: 'Health', value: `${healthPct}%`, raw: healthPct },
       {
         label: 'Bus Factor',
         value: `${Math.round((report.repository.busFactor / report.repository.totalAuthors) * 100)}%`,
@@ -408,7 +406,7 @@ export class HTMLExporter {
       .join('');
 
     // Simple SVG OG image summarizing key stats
-    const ogSvg = `<svg xmlns='http://www.w3.org/2000/svg' width='800' height='418' viewBox='0 0 800 418' role='img'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop stop-color='%230066cc' offset='0'/><stop stop-color='%2328a745' offset='1'/></linearGradient></defs><rect width='800' height='418' fill='%231e2227'/><text x='40' y='80' font-family='Segoe UI,Roboto,Arial,sans-serif' font-size='42' fill='white'>Git Activity Report</text><text x='40' y='140' font-size='26' fill='white'>${this.escapeHtml(repoName)}</text><text x='40' y='200' font-size='20' fill='white'>Commits: ${report.repository.totalCommits}</text><text x='40' y='235' font-size='20' fill='white'>Authors: ${report.repository.totalAuthors}</text><text x='40' y='270' font-size='20' fill='white'>Health: ${healthPct}%</text><text x='40' y='320' font-size='16' fill='#bbb'>Generated ${new Date(report.metadata.generatedAt).toISOString().split('T')[0]}</text><rect x='600' y='60' width='160' height='160' rx='8' fill='url(#g)' opacity='0.8'/><text x='680' y='160' text-anchor='middle' font-size='54' fill='white' font-weight='700'>${healthPct}%</text></svg>`;
+    const ogSvg = `<svg xmlns='http://www.w3.org/2000/svg' width='800' height='418' viewBox='0 0 800 418' role='img'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop stop-color='%230066cc' offset='0'/><stop stop-color='%2328a745' offset='1'/></linearGradient></defs><rect width='800' height='418' fill='%231e2227'/><text x='40' y='80' font-family='Segoe UI,Roboto,Arial,sans-serif' font-size='42' fill='white'>Git Activity Report</text><text x='40' y='140' font-size='26' fill='white'>${this.escapeHtml(repoName)}</text><text x='40' y='200' font-size='20' fill='white'>Commits: ${report.repository.totalCommits}</text><text x='40' y='235' font-size='20' fill='white'>Authors: ${report.repository.totalAuthors}</text><text x='40' y='270' font-size='20' fill='white'>Files: ${report.repository.totalFiles}</text><text x='40' y='320' font-size='16' fill='#bbb'>Generated ${new Date(report.metadata.generatedAt).toISOString().split('T')[0]}</text><rect x='600' y='60' width='160' height='160' rx='8' fill='url(#g)' opacity='0.8'/><text x='680' y='160' text-anchor='middle' font-size='32' fill='white' font-weight='700'>${compactFmt(report.repository.totalChurn)}</text><text x='680' y='185' text-anchor='middle' font-size='14' fill='white'>Lines Changed</text></svg>`;
     const ogImage = 'data:image/svg+xml;base64,' + Buffer.from(ogSvg).toString('base64');
 
     // Analysis period (based on analysis options, not just commit range)
@@ -495,7 +493,7 @@ export class HTMLExporter {
   <meta name="repository" content="${this.escapeHtml(repoName)}">
   <meta property="og:title" content="GitSpark Report - ${this.escapeHtml(repoName)}">
   <meta property="og:type" content="article">
-  <meta property="og:description" content="${this.escapeHtml(`${report.repository.totalCommits} commits • ${report.repository.totalAuthors} contributors • Activity Index ${healthPct}%`)}">
+  <meta property="og:description" content="${this.escapeHtml(`${report.repository.totalCommits} commits • ${report.repository.totalAuthors} contributors • ${report.repository.totalFiles} files changed`)}">
   <meta property="og:image" content="${ogImage}">
   <meta http-equiv="Content-Security-Policy" content="${csp}">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
@@ -535,40 +533,12 @@ export class HTMLExporter {
           )
           .join('')}
       </div>
+    </section>
 
-      ${(() => {
-        const breakdown = this.calculateActivityIndexBreakdown(report);
-        return `
-        <div class="activity-breakdown">
-          <h3>Activity Index Calculation</h3>
-          <div class="activity-explanation">
-            <p><strong>Note:</strong> This index measures repository activity patterns from Git commit data only. Higher values indicate more frequent commits and broader author participation. This is not a measure of code quality, team performance, or project success.</p>
-          </div>
-          <div class="breakdown-components">
-            <div class="component">
-              <div class="component-label">Commit Frequency</div>
-              <div class="component-value">${breakdown.commitFrequency}%</div>
-              <div class="component-detail">${breakdown.commitFrequencyRaw.toFixed(2)} commits/day (normalized)</div>
-            </div>
-            <div class="component">
-              <div class="component-label">Author Participation</div>
-              <div class="component-value">${breakdown.authorParticipation}%</div>
-              <div class="component-detail">${breakdown.authorParticipationRaw.toFixed(2)} participation ratio</div>
-            </div>
-            <div class="component">
-              <div class="component-label">Change Consistency</div>
-              <div class="component-value">${breakdown.consistencyIndex}%</div>
-              <div class="component-detail">Commit size variation index</div>
-            </div>
-          </div>
-          <div class="formula-line">
-            <div class="formula">
-              <strong>Formula:</strong> <code>${breakdown.formula}</code>
-            </div>
-            <div class="health-score" data-rating="${this.getHealthRating(healthPct)}" title="Repository activity index based on commit frequency and author participation">${healthPct}% <span>Activity Index</span></div>
-          </div>
-        </div>`;
-      })()}
+    <section id="current-state" class="section">
+      <h2>Current Repository State</h2>
+      <p class="section-description">Current filesystem analysis showing all files present in the repository today, regardless of Git history.</p>
+      ${this.generateCurrentStateSection(report.currentState)}
     </section>
 
     <section id="authors" class="section">
@@ -1150,6 +1120,103 @@ export class HTMLExporter {
         font-style:italic;
       }
       
+      /* File Type Breakdown Styles */
+      .file-type-breakdown {
+        margin-top: 1rem;
+        padding: 1rem;
+        background: var(--color-bg);
+        border: 1px solid var(--color-border);
+        border-radius: 8px;
+      }
+      .file-type-breakdown h4 {
+        margin: 0 0 1rem;
+        font-size: 1.1rem;
+        color: var(--color-text);
+        border-bottom: 1px solid var(--color-border);
+        padding-bottom: 0.5rem;
+      }
+      .file-type-categories {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1rem;
+      }
+      .category-item {
+        padding: 0.75rem;
+        background: var(--color-surface);
+        border-radius: 6px;
+        border: 1px solid var(--color-border);
+      }
+      .category-name {
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: var(--color-primary);
+        margin-bottom: 0.5rem;
+        text-transform: capitalize;
+      }
+      .category-percentage {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--color-text);
+      }
+      .file-type-extensions {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--color-border);
+      }
+      .file-type-extensions h5 {
+        margin: 0 0 0.75rem;
+        font-size: 0.95rem;
+        color: var(--color-text-secondary);
+      }
+      .extensions-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 0.5rem;
+      }
+      .file-type-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem 0.75rem;
+        background: var(--color-bg);
+        border-radius: 4px;
+        border: 1px solid var(--color-border);
+        font-size: 0.85rem;
+      }
+      .file-extension {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-weight: 600;
+        color: var(--color-primary);
+      }
+      .file-percentage {
+        font-weight: 600;
+        color: var(--color-text);
+      }
+      
+      /* Repository details styling */
+      .repository-details {
+        margin-top: 1.5rem;
+      }
+      .repository-details .table-wrapper {
+        margin-bottom: 2rem;
+      }
+      .repository-details h3 {
+        margin: 0 0 0.5rem;
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--color-text);
+      }
+      .directory-path {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 0.9rem;
+        color: var(--color-text-muted);
+        background: var(--color-surface);
+        padding: 0.125rem 0.375rem;
+        border-radius: 3px;
+        border: 1px solid var(--color-border);
+      }
+      
       .team-insights { margin-top:2rem; }
       .insights-section h3 { margin:0 0 1rem; font-size:1.3rem; }
       .dynamic-badges { display:flex; gap:.75rem; flex-wrap:wrap; margin-bottom:1.5rem; }
@@ -1338,7 +1405,7 @@ export class HTMLExporter {
       
       /* Responsive design for author profiles */
       @media (max-width: 768px) { 
-        .metrics-grid { grid-template-columns:repeat(2, 1fr); }
+        .metrics-grid { grid-template-columns:repeat(auto-fit, minmax(100px, 1fr)); }
         .size-bar { flex-direction:column; align-items:flex-start; gap:.25rem; }
         .size-label { min-width:auto; }
         .size-bar-container { width:100%; }
@@ -1668,13 +1735,6 @@ export class HTMLExporter {
     return 'minimal';
   }
 
-  private getHealthRating(scorePercent: number): string {
-    if (scorePercent >= 80) return 'high';
-    if (scorePercent >= 60) return 'moderate';
-    if (scorePercent >= 40) return 'fair';
-    return 'low';
-  }
-
   private generateDetailedAuthorProfiles(authors: any[]): string {
     // Normalize and merge authors with same email (case-insensitive)
     const mergedAuthors = this.mergeAuthorsByEmail(authors);
@@ -1785,6 +1845,10 @@ export class HTMLExporter {
             <div class="metric-value">-${numberFmt(author.deletions)}</div>
             <div class="metric-label">Lines Deleted</div>
           </div>
+          <div class="metric-box">
+            <div class="metric-value">${numberFmt(author.churn)}</div>
+            <div class="metric-label">Code Churn</div>
+          </div>
         </div>
         <div class="summary-stats">
           Avg: ${author.avgCommitSize.toFixed(1)} lines/commit • 
@@ -1813,6 +1877,8 @@ export class HTMLExporter {
           -${numberFmt(contribution.filesAndScope?.sourceVsPublishedRatio?.sourceLines?.deletions || 0)} 
           (${numberFmt(contribution.filesAndScope?.sourceVsPublishedRatio?.sourceCommits || 0)} commits)</div>
         </div>
+
+        ${this.generateFileTypeBreakdown(contribution.filesAndScope?.fileTypeBreakdown)}
       </div>
 
       <div class="commit-distribution">
@@ -2080,61 +2146,6 @@ export class HTMLExporter {
    * Calculate Activity Index breakdown components for display
    * @private
    */
-  private calculateActivityIndexBreakdown(report: AnalysisReport): {
-    commitFrequency: number;
-    commitFrequencyRaw: number;
-    authorParticipation: number;
-    authorParticipationRaw: number;
-    consistencyIndex: number;
-    consistencyIndexRaw: number;
-    formula: string;
-  } {
-    const commits = report.repository.totalCommits;
-    const authors = report.repository.totalAuthors;
-    const activeDays = Math.max(report.repository.activeDays, 1);
-
-    if (commits === 0 || activeDays === 0) {
-      return {
-        commitFrequency: 0,
-        commitFrequencyRaw: 0,
-        authorParticipation: 0,
-        authorParticipationRaw: 0,
-        consistencyIndex: 0,
-        consistencyIndexRaw: 0,
-        formula: '(0.000 + 0.000 + 0.000) ÷ 3 = 0.000',
-      };
-    }
-
-    // Component 1: Commit frequency (commits per day) - normalized to 0-1 scale
-    const commitFrequencyRaw = commits / activeDays;
-    const commitFrequency = Math.min(commitFrequencyRaw / 5, 1); // Cap at 5 commits/day for normalization
-
-    // Component 2: Author participation ratio - normalized to 0-1 scale
-    const authorParticipationRaw = authors / Math.max(commits / 20, 1); // 1 author per 20 commits baseline
-    const authorParticipation = Math.min(authorParticipationRaw, 1);
-
-    // Component 3: Change consistency - derive from final score
-    // Since we don't have access to individual commit sizes in the report summary,
-    // we calculate this as the remaining component to reach the final score
-    const finalScore = report.repository.healthScore;
-    const consistencyIndexRaw = Math.max(
-      0,
-      Math.min(1, finalScore * 3 - commitFrequency - authorParticipation)
-    );
-
-    const formula = `(${commitFrequency.toFixed(3)} + ${authorParticipation.toFixed(3)} + ${consistencyIndexRaw.toFixed(3)}) ÷ 3 = ${finalScore.toFixed(3)}`;
-
-    return {
-      commitFrequency: Math.round(commitFrequency * 100),
-      commitFrequencyRaw,
-      authorParticipation: Math.round(authorParticipation * 100),
-      authorParticipationRaw,
-      consistencyIndex: Math.round(consistencyIndexRaw * 100),
-      consistencyIndexRaw,
-      formula,
-    };
-  }
-
   /**
    * Generate activity visuals (overview, calendar, charts) for Team Patterns section
    * @private
@@ -2197,7 +2208,7 @@ export class HTMLExporter {
       </div>
 
       <!-- Contributions Calendar -->
-      ${this.generateContributionsGraphSection(trends.contributionsGraph, metadata)}
+      ${this.generateContributionsGraphSection(trends.contributionsGraph)}
 
       <!-- Visual Trend Charts -->
       <div class="visual-trends">
@@ -2527,12 +2538,21 @@ export class HTMLExporter {
   /**
    * Generate GitHub-style contributions graph section
    */
-  private generateContributionsGraphSection(contributionsGraph: any, metadata: any): string {
+  private generateContributionsGraphSection(contributionsGraph: any): string {
     if (!contributionsGraph || !contributionsGraph.calendar) {
       return '';
     }
 
-    const { totalCommits, weeks } = contributionsGraph;
+    const { totalCommits, weeks, calendar } = contributionsGraph;
+
+    // Calculate actual date range from the calendar data (first commit to last commit)
+    // This ensures we show the actual activity period, not the requested analysis range
+    const datesWithCommits = calendar.filter((day: any) => day.count > 0);
+    const actualDays = datesWithCommits.length > 0 ? datesWithCommits.length : calendar.length;
+    const dateRangeText =
+      datesWithCommits.length > 0
+        ? `${datesWithCommits[0].date} to ${datesWithCommits[datesWithCommits.length - 1].date}`
+        : `${calendar[0]?.date || ''} to ${calendar[calendar.length - 1]?.date || ''}`;
 
     // Generate week columns
     const weekColumns = weeks
@@ -2553,7 +2573,7 @@ export class HTMLExporter {
       <div class="contributions-graph">
         <h3>🗓️ Contributions Calendar</h3>
         <div class="contributions-header">
-          <span>Activity over the last ${metadata.totalDays} days</span>
+          <span>Activity from ${this.escapeHtml(dateRangeText)} (${actualDays} active days)</span>
           <span>${totalCommits} total commits</span>
         </div>
         <div class="contributions-calendar">
@@ -2811,6 +2831,219 @@ export class HTMLExporter {
             <div class="sparkline-summary">Peak: ${maxFiles}</div>
           </div>
         </div>
+      </div>
+    `;
+  }
+
+  /**
+   * Generate file type breakdown visualization
+   * @private
+   */
+  private generateFileTypeBreakdown(fileTypeBreakdown?: any): string {
+    if (!fileTypeBreakdown || !fileTypeBreakdown.byExtension?.length) {
+      return '<div class="file-type-breakdown"><h4>File Type Activity</h4><p>No file type data available</p></div>';
+    }
+
+    const { byExtension, categories } = fileTypeBreakdown;
+    const pctFmt = (value: number) => `${value.toFixed(1)}%`;
+
+    // Top 5 file types by file count
+    const topFileTypes = byExtension
+      .slice(0, 5)
+      .map(
+        (ft: any) =>
+          `<div class="file-type-item">
+        <span class="file-extension">.${ft.extension}</span>
+        <span class="file-percentage">${pctFmt(ft.percentage)}</span>
+      </div>`
+      )
+      .join('');
+
+    // Category breakdown
+    const categoryItems = Object.entries(categories)
+      .filter(([_, stats]: [string, any]) => stats.files > 0) // Only show categories with files
+      .sort((a: any, b: any) => b[1].files - a[1].files) // Sort by file count
+      .map(
+        ([name, stats]: [string, any]) =>
+          `<div class="category-item">
+          <div class="category-name">${name.charAt(0).toUpperCase() + name.slice(1)}</div>
+          <div class="category-percentage">${pctFmt(stats.percentage)}</div>
+        </div>`
+      )
+      .join('');
+
+    return `
+      <div class="file-type-breakdown">
+        <h4>File Type Activity</h4>
+        <div class="file-type-categories">
+          ${categoryItems}
+        </div>
+        <div class="file-type-extensions">
+          <h5>Top File Extensions</h5>
+          <div class="extensions-grid">
+            ${topFileTypes}
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  private generateCurrentStateSection(currentState: any): string {
+    if (!currentState) {
+      return '<div class="alert alert-warning">Current repository state data is not available.</div>';
+    }
+
+    const { totalFiles, totalSizeBytes, byExtension, categories, topDirectories } = currentState;
+    const pctFmt = (value: number) => `${value.toFixed(1)}%`;
+    const sizeFmt = (bytes: number) => {
+      if (bytes >= 1024 * 1024 * 1024) {
+        return `${(bytes / (1024 * 1024 * 1024)).toFixed(1)} GB`;
+      } else if (bytes >= 1024 * 1024) {
+        return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+      } else if (bytes >= 1024) {
+        return `${(bytes / 1024).toFixed(1)} KB`;
+      }
+      return `${bytes} B`;
+    };
+
+    // High-level metrics in Executive Summary style
+    const keyMetrics = [
+      { value: totalFiles.toLocaleString(), label: 'Total Files' },
+      { value: sizeFmt(totalSizeBytes), label: 'Total Size' },
+      { value: byExtension.length.toString(), label: 'File Types' },
+      {
+        value: topDirectories ? topDirectories.length.toString() : 'N/A',
+        label: 'Directories',
+      },
+    ];
+
+    // Top 10 file extensions by count - formatted as nice table rows
+    const topExtensions = byExtension
+      .slice(0, 10)
+      .map(
+        (ext: any) =>
+          `<tr>
+            <td><span class="file-extension">.${ext.extension}</span></td>
+            <td class="num">${ext.fileCount.toLocaleString()}</td>
+            <td class="num">${pctFmt(ext.percentage)}</td>
+            <td class="num">${sizeFmt(ext.totalSizeBytes)}</td>
+          </tr>`
+      )
+      .join('');
+
+    // Categories breakdown - only show if categories exist
+    let categoryRows = '';
+    if (categories && Object.keys(categories).length > 0) {
+      categoryRows = Object.entries(categories)
+        .filter(([_, stats]: [string, any]) => stats.fileCount > 0)
+        .sort((a: any, b: any) => b[1].fileCount - a[1].fileCount)
+        .slice(0, 8) // Limit to top 8 categories
+        .map(
+          ([name, stats]: [string, any]) =>
+            `<tr>
+              <td>${name.charAt(0).toUpperCase() + name.slice(1)}</td>
+              <td class="num">${stats.fileCount.toLocaleString()}</td>
+              <td class="num">${pctFmt(stats.percentage)}</td>
+              <td class="num">${sizeFmt(stats.totalSizeBytes)}</td>
+            </tr>`
+        )
+        .join('');
+    }
+
+    // Top directories by file count - only show if topDirectories exists
+    let topDirectoriesHTML = '';
+    if (topDirectories && topDirectories.length > 0) {
+      topDirectoriesHTML = topDirectories
+        .filter((dir: any) => dir.fileCount > 1) // Only show directories with multiple files
+        .slice(0, 8)
+        .map(
+          (dir: any) =>
+            `<tr>
+              <td><code class="directory-path">${dir.path}</code></td>
+              <td class="num">${dir.fileCount.toLocaleString()}</td>
+              <td class="num">${pctFmt(dir.percentage)}</td>
+            </tr>`
+        )
+        .join('');
+    }
+
+    return `
+      <!-- Executive Summary style metrics grid -->
+      <div class="summary-grid">
+        ${keyMetrics
+          .map(
+            m =>
+              `<div class="metric-card" tabindex="0">
+                <div class="metric-value">${m.value}</div>
+                <div class="metric-label">${m.label}</div>
+              </div>`
+          )
+          .join('')}
+      </div>
+
+      <!-- Repository details in clean table layout -->
+      <div class="repository-details">
+        <div class="table-wrapper" role="region" aria-label="File extensions breakdown">
+          <h3>File Extensions</h3>
+          <p class="section-description">Most common file types in the repository</p>
+          <table class="data-table" data-sortable data-initial-limit="10" data-table="file-extensions">
+            <thead>
+              <tr>
+                <th scope="col">Extension</th>
+                <th class="num" scope="col">Files</th>
+                <th class="num" scope="col">%</th>
+                <th class="num" scope="col">Size</th>
+              </tr>
+            </thead>
+            <tbody>${topExtensions}</tbody>
+          </table>
+          <button class="show-more" data-target-table="file-extensions" hidden>Show more</button>
+        </div>
+
+        ${
+          categoryRows
+            ? `
+        <div class="table-wrapper" role="region" aria-label="File categories breakdown">
+          <h3>File Categories</h3>
+          <p class="section-description">Files grouped by type and purpose</p>
+          <table class="data-table" data-sortable data-initial-limit="8" data-table="file-categories">
+            <thead>
+              <tr>
+                <th scope="col">Category</th>
+                <th class="num" scope="col">Files</th>
+                <th class="num" scope="col">%</th>
+                <th class="num" scope="col">Size</th>
+              </tr>
+            </thead>
+            <tbody>${categoryRows}</tbody>
+          </table>
+          <button class="show-more" data-target-table="file-categories" hidden>Show more</button>
+        </div>
+        `
+            : ''
+        }
+
+        ${
+          topDirectoriesHTML
+            ? `
+        <div class="table-wrapper" role="region" aria-label="Directory breakdown">
+          <h3>Directory Breakdown</h3>
+          <p class="section-description">Largest directories by file count</p>
+          <table class="data-table" data-sortable data-initial-limit="8" data-table="directories">
+            <thead>
+              <tr>
+                <th scope="col">Directory</th>
+                <th class="num" scope="col">Files</th>
+                <th class="num" scope="col">%</th>
+              </tr>
+            </thead>
+            <tbody>${topDirectoriesHTML}</tbody>
+          </table>
+          <button class="show-more" data-target-table="directories" hidden>Show more</button>
+        </div>
+        `
+            : ''
+        }
       </div>
     `;
   }

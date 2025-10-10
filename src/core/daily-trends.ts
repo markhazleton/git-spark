@@ -558,20 +558,39 @@ export class DailyTrendsAnalyzer {
    */
   private generateContributionsGraph(
     commitsByDay: Map<string, CommitData[]>,
-    startDate: Date,
-    endDate: Date
+    _startDate: Date,
+    _endDate: Date
   ): ContributionGraphData {
     const calendar: ContributionDay[] = [];
     const weeks: ContributionWeek[] = [];
     let totalCommits = 0;
     let maxCommits = 0;
 
-    // Generate all days in the range
-    const current = new Date(startDate);
+    // Find actual range of commits (first commit to last commit)
+    const commitDates = Array.from(commitsByDay.keys())
+      .filter(date => commitsByDay.get(date)!.length > 0)
+      .sort();
+
+    if (commitDates.length === 0) {
+      // No commits, return empty calendar
+      return {
+        calendar: [],
+        maxCommits: 0,
+        totalCommits: 0,
+        weeks: [],
+      };
+    }
+
+    // Use actual commit range instead of requested analysis range
+    const actualStartDate = new Date(commitDates[0]);
+    const actualEndDate = new Date(commitDates[commitDates.length - 1]);
+
+    // Generate calendar only for the actual commit range
+    const current = new Date(actualStartDate);
     const currentWeek: ContributionDay[] = [];
     let weekNumber = this.getWeekNumber(current);
 
-    while (current <= endDate) {
+    while (current <= actualEndDate) {
       const dateStr = current.toISOString().split('T')[0];
       const commits = commitsByDay.get(dateStr) || [];
       const count = commits.length;
@@ -599,7 +618,7 @@ export class DailyTrendsAnalyzer {
       nextDate.setDate(nextDate.getDate() + 1);
       const nextWeekNumber = this.getWeekNumber(nextDate);
 
-      if (nextWeekNumber !== weekNumber || nextDate > endDate) {
+      if (nextWeekNumber !== weekNumber || nextDate > actualEndDate) {
         weeks.push({
           weekNumber,
           days: [...currentWeek],

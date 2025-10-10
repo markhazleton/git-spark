@@ -74,6 +74,49 @@ describe('ConsoleExporter', () => {
         healthScore: 0.85,
         governanceScore: 0.75,
       },
+      currentState: {
+        totalFiles: 18,
+        totalSizeBytes: 1024000,
+        byExtension: [
+          {
+            extension: 'ts',
+            language: 'TypeScript',
+            fileCount: 10,
+            totalSizeBytes: 600000,
+            percentage: 55.6,
+            averageFileSize: 60000,
+          },
+          {
+            extension: 'md',
+            language: 'Markdown',
+            fileCount: 5,
+            totalSizeBytes: 200000,
+            percentage: 27.8,
+            averageFileSize: 40000,
+          },
+          {
+            extension: 'json',
+            language: 'JSON',
+            fileCount: 3,
+            totalSizeBytes: 224000,
+            percentage: 16.7,
+            averageFileSize: 74667,
+          },
+        ],
+        categories: {
+          sourceCode: { fileCount: 10, totalSizeBytes: 600000, percentage: 55.6 },
+          documentation: { fileCount: 5, totalSizeBytes: 200000, percentage: 27.8 },
+          configuration: { fileCount: 3, totalSizeBytes: 224000, percentage: 16.7 },
+          tests: { fileCount: 0, totalSizeBytes: 0, percentage: 0 },
+          other: { fileCount: 0, totalSizeBytes: 0, percentage: 0 },
+        },
+        topDirectories: [
+          { path: 'src', fileCount: 10, percentage: 55.6 },
+          { path: 'docs', fileCount: 5, percentage: 27.8 },
+          { path: '(root)', fileCount: 3, percentage: 16.7 },
+        ],
+        analyzedAt: new Date('2024-01-15T10:30:00Z'),
+      },
       summary: {
         healthRating: 'good' as const,
         keyMetrics: {
@@ -329,10 +372,9 @@ describe('ConsoleExporter', () => {
 
       const output = stdoutSpy.mock.calls.map(call => call[0]).join('');
       expect(output).toContain('EXECUTIVE SUMMARY');
-      expect(output).toContain('Repository Health:');
-      expect(output).toContain('GOOD');
       expect(output).toContain('Total Commits');
       expect(output).toContain('42');
+      expect(output).toContain('Bus Factor');
     });
 
     it('should display author statistics table', () => {
@@ -403,13 +445,6 @@ describe('ConsoleExporter', () => {
       expect(output).toContain('Repository shows consistent activity');
       expect(output).toContain('Action Items:');
       expect(output).toContain('Consider improving test coverage');
-    });
-
-    it('should show health score percentage', () => {
-      consoleExporter.export(mockReport);
-
-      const output = stdoutSpy.mock.calls.map(call => call[0]).join('');
-      expect(output).toContain('85%'); // health score
     });
 
     it('should display processing time in footer', () => {
