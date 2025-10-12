@@ -19,6 +19,7 @@ import {
   CurrentRepositoryState,
 } from '../types';
 import { DataCollector } from './collector';
+import { GitIgnore } from '../utils/gitignore';
 import { DailyTrendsAnalyzer } from './daily-trends';
 import { createLogger } from '../utils/logger';
 import { validateCommitMessage, sanitizeEmail } from '../utils/validation';
@@ -142,10 +143,10 @@ export class GitAnalyzer {
     const repositoryStats = await this.analyzeRepository(commits, options);
 
     this.reportProgress('Analyzing authors', 40, 100);
-    const authors = this.analyzeAuthors(commits);
+    const authors = this.analyzeAuthors(commits, this.collector.getRepositoryPath());
 
     this.reportProgress('Analyzing files', 50, 100);
-    const files = this.analyzeFiles(commits);
+    const files = this.analyzeFiles(commits, this.collector.getRepositoryPath());
 
     this.reportProgress('Generating timeline', 60, 100);
     const timeline = this.generateTimeline(commits);
@@ -276,7 +277,7 @@ export class GitAnalyzer {
     };
   }
 
-  private analyzeAuthors(commits: CommitData[]): AuthorStats[] {
+  private analyzeAuthors(commits: CommitData[], repoPath?: string): AuthorStats[] {
     const authorMap = new Map<string, AuthorStats>();
     const filesByAuthor = new Map<string, Set<string>>();
     const commitsByAuthor = new Map<string, CommitData[]>();
@@ -364,7 +365,7 @@ export class GitAnalyzer {
       const authorCommits = commitsByAuthor.get(email) || [];
       const authorFiles = filesByAuthor.get(email) || new Set();
 
-      this.calculateDetailedAuthorMetrics(author, authorCommits, authorFiles, commits);
+      this.calculateDetailedAuthorMetrics(author, authorCommits, authorFiles, commits, repoPath);
     }
 
     // Third pass: calculate comparative metrics (requires all authors to be processed first)
@@ -535,7 +536,8 @@ export class GitAnalyzer {
     author: AuthorStats,
     authorCommits: CommitData[],
     authorFiles: Set<string>,
-    allCommits: CommitData[]
+    allCommits: CommitData[],
+    repoPath?: string
   ): void {
     const metrics = author.detailed;
 
@@ -545,7 +547,8 @@ export class GitAnalyzer {
       author,
       authorCommits,
       authorFiles,
-      allCommits
+      allCommits,
+      repoPath
     );
 
     // Collaboration metrics
@@ -566,7 +569,8 @@ export class GitAnalyzer {
     author: AuthorStats,
     authorCommits: CommitData[],
     authorFiles: Set<string>,
-    allCommits: CommitData[]
+    allCommits: CommitData[],
+    repoPath?: string
   ): void {
     metrics.totalCommits = author.commits;
     metrics.commitFrequency = author.activeDays > 0 ? author.commits / author.activeDays : 0;
@@ -682,7 +686,7 @@ export class GitAnalyzer {
         publishedCommits,
         publishedLines,
       },
-      fileTypeBreakdown: this.calculateFileTypeBreakdown(authorCommits),
+      fileTypeBreakdown: this.calculateFileTypeBreakdown(authorCommits, repoPath),
     };
   }
 
@@ -1143,11 +1147,44 @@ export class GitAnalyzer {
     };
   }
 
-  private analyzeFiles(commits: CommitData[]): FileStats[] {
+  private analyzeFiles(commits: CommitData[], repoPath?: string): FileStats[] {
     const fileMap = new Map<string, FileStats>();
+
+    // Load .gitignore patterns if repoPath is provided
+    const gitIgnore = repoPath ? GitIgnore.fromRepository(repoPath) : null;
+
+    const shouldIgnoreFile = (filePath: string): boolean => {
+      const normalizedPath = filePath.replace(/\\/g, '/');
+
+      // First check .gitignore patterns if available
+      if (gitIgnore && gitIgnore.isIgnored(normalizedPath)) {
+        return true;
+      }
+
+      // Legacy fallback patterns for basic system directories
+      return (
+        normalizedPath.includes('/.git/') ||
+        normalizedPath.includes('/node_modules/') ||
+        normalizedPath.includes('/.vscode/') ||
+        normalizedPath.includes('/dist/') ||
+        normalizedPath.includes('/build/') ||
+        normalizedPath.includes('/coverage/') ||
+        normalizedPath.includes('/.nyc_output/') ||
+        normalizedPath.includes('/tmp/') ||
+        normalizedPath.includes('/temp/') ||
+        normalizedPath.startsWith('.git') ||
+        normalizedPath.includes('/.next/') ||
+        normalizedPath.includes('/__pycache__/')
+      );
+    };
 
     for (const commit of commits) {
       for (const file of commit.files) {
+        // Skip files that should be ignored
+        if (shouldIgnoreFile(file.path)) {
+          continue;
+        }
+
         if (!fileMap.has(file.path)) {
           const fileStats: FileStats = {
             path: file.path,
@@ -1461,7 +1498,7 @@ export class GitAnalyzer {
     return normalizedCommits * 0.4 + normalizedAuthors * 0.35 + normalizedChurn * 0.25;
   }
 
-  private calculateFileTypeBreakdown(commits: any[]): any {
+  private calculateFileTypeBreakdown(commits: any[], repoPath?: string): any {
     const fileTypeStats = new Map<string, { commits: number; files: Set<string>; churn: number }>();
     const categoryStats = {
       sourceCode: { files: new Set<string>(), commits: 0, churn: 0 },
@@ -1471,9 +1508,42 @@ export class GitAnalyzer {
       other: { files: new Set<string>(), commits: 0, churn: 0 },
     };
 
+    // Load .gitignore patterns if repoPath is provided
+    const gitIgnore = repoPath ? GitIgnore.fromRepository(repoPath) : null;
+
+    const shouldIgnoreFile = (filePath: string): boolean => {
+      const normalizedPath = filePath.replace(/\\/g, '/');
+
+      // First check .gitignore patterns if available
+      if (gitIgnore && gitIgnore.isIgnored(normalizedPath)) {
+        return true;
+      }
+
+      // Legacy fallback patterns for basic system directories
+      return (
+        normalizedPath.includes('/.git/') ||
+        normalizedPath.includes('/node_modules/') ||
+        normalizedPath.includes('/.vscode/') ||
+        normalizedPath.includes('/dist/') ||
+        normalizedPath.includes('/build/') ||
+        normalizedPath.includes('/coverage/') ||
+        normalizedPath.includes('/.nyc_output/') ||
+        normalizedPath.includes('/tmp/') ||
+        normalizedPath.includes('/temp/') ||
+        normalizedPath.startsWith('.git') ||
+        normalizedPath.includes('/.next/') ||
+        normalizedPath.includes('/__pycache__/')
+      );
+    };
+
     // Aggregate stats by file extension
     for (const commit of commits) {
       for (const file of commit.files) {
+        // Skip files that should be ignored
+        if (shouldIgnoreFile(file.path)) {
+          continue;
+        }
+
         const ext = this.getFileExtension(file.path);
         const churn = file.insertions + file.deletions;
 
@@ -2353,8 +2423,18 @@ export class GitAnalyzer {
     let totalFiles = 0;
     let totalSizeBytes = 0;
 
+    // Load .gitignore patterns
+    const gitIgnore = GitIgnore.fromRepository(repoPath);
+
     const shouldIgnore = (filePath: string): boolean => {
       const normalizedPath = filePath.replace(/\\/g, '/');
+
+      // First check .gitignore patterns
+      if (gitIgnore.isIgnored(normalizedPath)) {
+        return true;
+      }
+
+      // Legacy fallback patterns for basic system directories
       return (
         normalizedPath.includes('/.git/') ||
         normalizedPath.includes('/node_modules/') ||

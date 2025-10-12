@@ -40,6 +40,7 @@ export class DataCollector {
   private git: GitExecutor;
   private progressCallback?: ProgressCallback | undefined;
   private lastWarnings: string[] = [];
+  private repoPath: string;
 
   /**
    * Create a new DataCollector instance
@@ -60,8 +61,17 @@ export class DataCollector {
    * ```
    */
   constructor(repoPath: string, progressCallback?: ProgressCallback | undefined) {
+    this.repoPath = repoPath;
     this.git = new GitExecutor(repoPath);
     this.progressCallback = progressCallback;
+  }
+
+  /**
+   * Get the repository path
+   * @returns The absolute path to the Git repository
+   */
+  getRepositoryPath(): string {
+    return this.repoPath;
   }
 
   /**
