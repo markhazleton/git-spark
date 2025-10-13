@@ -7,12 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.221] - 2025-10-13
+
 ### Added
 
 - **Current Repository State Enhancements**
   - Executive Summary-style metrics grid layout for consistency
   - Professional table layouts with data-table styling throughout
   - Repository filesystem statistics with extension, category, and directory breakdowns
+- **GitIgnore Utility Testing**
+  - Added comprehensive test suite for GitIgnore utility functionality
+  - Improved test coverage for ignore pattern matching and file filtering
 
 ### Fixed
 
@@ -24,6 +29,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Repository Organization**
+  - Cleaned up repository structure by removing 18 temporary test output folders
+  - Removed clutter from root directory (test-*, demo-* folders)
+  - Improved .gitignore patterns to prevent future test output pollution
+  - Maintained all essential functionality while achieving cleaner project structure
 - **Layout Improvements**
   - Current Repository State section now matches Executive Summary styling
   - Consistent metric-card design across all summary sections
