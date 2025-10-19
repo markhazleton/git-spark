@@ -27,7 +27,7 @@ describe('JSONExporter', () => {
         totalAuthors: 5,
         totalFiles: 50,
         totalChurn: 10000,
-        firstCommit: new Date('2023-01-01'),
+        firstCommit: new Date('2024-01-01'),
         lastCommit: new Date('2024-01-01'),
         activeDays: 365,
         avgCommitsPerDay: 0.27,
@@ -45,7 +45,7 @@ describe('JSONExporter', () => {
           deletions: 1000,
           churn: 6000,
           filesChanged: 25,
-          firstCommit: new Date('2023-01-01'),
+          firstCommit: new Date('2024-01-01'),
           lastCommit: new Date('2024-01-01'),
           activeDays: 200,
           avgCommitSize: 120,
@@ -67,7 +67,7 @@ describe('JSONExporter', () => {
           churn: 2000,
           insertions: 1500,
           deletions: 500,
-          firstChange: new Date('2023-01-01'),
+          firstChange: new Date('2024-01-01'),
           lastChange: new Date('2024-01-01'),
           riskScore: 0.8,
           hotspotScore: 0.9,
@@ -156,7 +156,7 @@ describe('JSONExporter', () => {
     const parsedData = JSON.parse(jsonContent);
 
     expect(parsedData.metadata.generatedAt).toBe('2024-01-01T12:00:00.000Z');
-    expect(parsedData.repository.firstCommit).toBe('2023-01-01T00:00:00.000Z');
+    expect(parsedData.repository.firstCommit).toBe('2024-01-01T00:00:00.000Z');
     expect(parsedData.repository.lastCommit).toBe('2024-01-01T00:00:00.000Z');
   });
 

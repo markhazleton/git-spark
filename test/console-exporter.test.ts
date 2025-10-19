@@ -150,9 +150,6 @@ describe('ConsoleExporter', () => {
             weekends: 5,
           },
           detailed: {} as any, // Simplified for testing
-          // BUG: Console exporter expects these properties that don't exist in AuthorStats
-          totalChurn: 8000,
-          averageCommitSize: 320,
         } as any,
         {
           name: 'Jane Smith',
@@ -175,9 +172,6 @@ describe('ConsoleExporter', () => {
             weekends: 2,
           },
           detailed: {} as any, // Simplified for testing
-          // BUG: Console exporter expects these properties that don't exist in AuthorStats
-          totalChurn: 3500,
-          averageCommitSize: 233,
         } as any,
       ],
       files: [
@@ -246,8 +240,6 @@ describe('ConsoleExporter', () => {
           'Focus on code quality improvements',
         ],
         overallRisk: 'medium',
-        // BUG: Console exporter expects this property that doesn't exist in RiskAnalysis
-        level: 'medium',
       } as any,
       governance: {
         conventionalCommits: 0.75,
@@ -258,8 +250,6 @@ describe('ConsoleExporter', () => {
         shortMessages: 5,
         score: 0.73,
         recommendations: ['Improve commit message consistency', 'Increase code review coverage'],
-        // BUG: Console exporter expects this property that doesn't exist in GovernanceAnalysis
-        averageMessageLength: 45,
       } as any,
       timeline: [
         {

@@ -920,12 +920,17 @@ export class GitAnalyzer {
       },
     };
 
-    // Risk and ownership (placeholder values - would need file risk data)
+    // Risk and ownership metrics - calculated from available data
+    const authorFileCount = authorCommits.reduce((acc, commit) => {
+      commit.files.forEach(file => acc.add(file.path));
+      return acc;
+    }, new Set()).size;
+
     metrics.riskAndOwnership = {
-      highRiskFileContributions: 0,
-      ownershipDominance: 0,
-      hotspotInvolvement: 0,
-      legacyCodeInteraction: 0,
+      highRiskFileContributions: 0, // Would require file risk scoring implementation
+      ownershipDominance: authorFileCount > 0 ? author.commits / authorFileCount : 0,
+      hotspotInvolvement: 0, // Would require hotspot analysis implementation
+      legacyCodeInteraction: 0, // Would require file age analysis implementation
     };
   }
 
@@ -940,14 +945,31 @@ export class GitAnalyzer {
     insights.positivePatterns = [];
     insights.growthAreas = [];
 
-    // Set automated insights
-    // Removed subjective automated insights - only report measurable metrics
+    // Calculate automated insights based on actual metrics
+    const afterHoursRatio = _author.workPatterns.afterHours / _author.commits;
+    const weekendRatio = _author.workPatterns.weekends / _author.commits;
+    const avgCommitSize = _author.avgCommitSize;
+    const activeDaysRatio =
+      _author.activeDays /
+      Math.max(
+        1,
+        Math.ceil(
+          (_author.lastCommit.getTime() - _author.firstCommit.getTime()) / (1000 * 60 * 60 * 24)
+        )
+      );
+
     insights.automatedInsights = {
-      workLifeBalance: 'healthy', // Placeholder - should be replaced with actual metrics
-      collaboration: 'moderate', // Placeholder - should be replaced with actual metrics
-      codeQuality: 'good', // Placeholder - should be replaced with actual metrics
-      consistency: 'consistent', // Placeholder - should be replaced with actual metrics
-      expertise: 'mid-level', // Placeholder - should be replaced with actual metrics
+      workLifeBalance: afterHoursRatio > 0.3 || weekendRatio > 0.3 ? 'concerning' : 'healthy',
+      collaboration: _author.commits < 5 ? 'isolated' : 'moderate', // Based on commit frequency
+      codeQuality:
+        avgCommitSize > 500 ? 'needs-improvement' : avgCommitSize > 200 ? 'good' : 'excellent',
+      consistency:
+        activeDaysRatio > 0.5
+          ? 'very-consistent'
+          : activeDaysRatio > 0.2
+            ? 'consistent'
+            : 'irregular',
+      expertise: _author.commits > 100 ? 'senior' : _author.commits > 20 ? 'mid-level' : 'junior',
     };
 
     insights.recommendations = [];

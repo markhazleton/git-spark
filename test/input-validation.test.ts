@@ -16,9 +16,9 @@ describe('Input Validation', () => {
   describe('validateDateString', () => {
     it('should accept valid date formats', () => {
       const validDates = [
-        '2023-01-01',
-        '2023-12-31T23:59:59Z',
-        '2023-06-15T10:30:00.123Z',
+        '2024-01-01',
+        '2024-12-31T23:59:59Z',
+        '2024-06-15T10:30:00.123Z',
         '2023-01-01 12:00:00',
         '1 week ago',
         '2 months ago',

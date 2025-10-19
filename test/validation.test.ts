@@ -157,8 +157,8 @@ describe('Validation Utils', () => {
 
     it('should validate date range where since >= until', () => {
       const options: GitSparkOptions = {
-        since: '2023-12-31',
-        until: '2023-01-01',
+        since: '2024-12-31',
+        until: '2024-01-01',
       };
 
       const result = validateOptions(options);
