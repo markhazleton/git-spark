@@ -1,8 +1,11 @@
-#!/bin/sh
+# !/bin/sh
+
 # Husky pre-commit hook for git-spark
 
 # Run linting to ensure code quality
+
 npm run lint
 
-# Run tests to ensure nothing is broken  
+# Run tests to ensure nothing is broken
+
 npm test

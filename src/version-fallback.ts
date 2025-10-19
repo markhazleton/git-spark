@@ -37,15 +37,7 @@ export function getVersion(): string {
       // If all else fails, return a default version
     }
 
-    // Method 3: Try to resolve git-spark module
-    try {
-      const gitSparkPkgPath = require.resolve('git-spark/package.json');
-      const pkgContent = readFileSync(gitSparkPkgPath, 'utf-8');
-      const pkg = JSON.parse(pkgContent);
-      return pkg.version;
-    } catch {
-      // Final fallback
-    }
+    // If we get here, we couldn't find version info
   }
 
   return '0.0.0';
