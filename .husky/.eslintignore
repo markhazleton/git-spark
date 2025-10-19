@@ -1,0 +1,2 @@
+# Ignore husky hook files (they are shell scripts, not JS/TS)
+*

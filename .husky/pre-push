@@ -1,0 +1,4 @@
+#!/bin/sh
+# Husky pre-push hook - run full build before pushing
+
+npm run build
