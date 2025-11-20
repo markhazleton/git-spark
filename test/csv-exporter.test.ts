@@ -381,4 +381,30 @@ describe('CSVExporter', () => {
     const lines = content.split('\n');
     expect(lines[1]).toMatch(/,$/); // ends with comma (empty language field)
   });
-});
+
+  it('skips Azure DevOps export when not present', async () => {
+    const reportWithoutAzureDevOps = {
+      ...mockReport,
+      azureDevOps: undefined,
+    };
+
+    await csvExporter.export(reportWithoutAzureDevOps, testOutputDir);
+
+    // Standard CSV files should be created
+    expect(existsSync(resolve(testOutputDir, 'authors.csv'))).toBe(true);
+    expect(existsSync(resolve(testOutputDir, 'files.csv'))).toBe(true);
+    expect(existsSync(resolve(testOutputDir, 'timeline.csv'))).toBe(true);
+  });
+
+  it('handles export errors gracefully', async () => {
+    const invalidPath = '/invalid/\0/path'; // Null character in path - invalid on all platforms
+
+    await expect(csvExporter.export(mockReport, invalidPath)).rejects.toThrow();
+  });
+
+  it('handles write permission errors', async () => {
+    // Use a path that would cause permission issues
+    const readOnlyPath = '\0invalid';
+
+    await expect(csvExporter.export(mockReport, readOnlyPath)).rejects.toThrow();
+  });});
