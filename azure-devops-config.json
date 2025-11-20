@@ -1,0 +1,10 @@
+{
+  "organization": "bswdev",
+  "project": "HealthSource",
+  "repositories": [
+    {
+      "name": "bsw.category",
+      "id": "bsw.category"
+    }
+  ]
+}

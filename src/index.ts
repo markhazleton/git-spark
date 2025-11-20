@@ -9,6 +9,9 @@ export * from './core/collector';
 export * from './utils/git';
 export * from './utils/logger';
 export * from './utils/validation';
+export * from './integrations/azure-devops/collector';
+export * from './integrations/azure-devops/config';
+export * from './integrations/azure-devops/client';
 
 import {
   GitSparkOptions,
@@ -86,6 +89,7 @@ export class GitSpark {
         commits: report.repository.totalCommits,
         authors: report.repository.totalAuthors,
         files: report.repository.totalFiles,
+        azureDevOpsEnabled: !!report.azureDevOps,
       });
 
       return report;
@@ -101,7 +105,17 @@ export class GitSpark {
             : error,
       });
       throw error;
+    } finally {
+      // Cleanup resources
+      await this.cleanup();
     }
+  }
+
+  /**
+   * Cleanup analyzer resources
+   */
+  async cleanup(): Promise<void> {
+    await this.analyzer.cleanup();
   }
 
   /**

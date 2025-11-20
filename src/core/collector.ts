@@ -118,16 +118,27 @@ export class DataCollector {
     const firstCommitDate = await this.git.getFirstCommitDate(options.branch);
     logger.debug(`Repository first commit date: ${firstCommitDate?.toISOString() || 'null'}`);
 
+    // Preserve original dates for Azure DevOps - they should use user-requested dates
+    // regardless of local Git repository constraints
+    if (!options.originalSince && options.since) {
+      options.originalSince = options.since;
+    }
+    if (!options.originalUntil && options.until) {
+      options.originalUntil = options.until;
+    }
+
     // Derive since date from --days if user supplied days but not an explicit since
     if (!options.since && options.days && options.days > 0) {
       const d = new Date();
       d.setDate(d.getDate() - options.days);
       // Use ISO date (no time) to let git interpret midnight boundary
       options.since = d.toISOString().split('T')[0];
+      // Also preserve this calculated date as original for Azure DevOps
+      options.originalSince = options.since;
       logger.debug(`Calculated since date from --days=${options.days}: ${options.since}`);
     }
 
-    // Cap the analysis range to repository lifetime
+    // Cap the analysis range to repository lifetime (for Git analysis only)
     if (options.since && firstCommitDate) {
       const requestedStartDate = new Date(options.since);
       logger.debug(
@@ -141,8 +152,8 @@ export class DataCollector {
         adjustedDate.setDate(adjustedDate.getDate() - 1);
         options.since = adjustedDate.toISOString().split('T')[0];
         logger.info(
-          `Analysis start date (${originalSince}) is before repository first commit. ` +
-            `Adjusting range to start from ${options.since}.`
+          `Git analysis start date (${originalSince}) is before repository first commit. ` +
+            `Adjusting Git range to start from ${options.since}. Azure DevOps will use original dates.`
         );
       }
     }

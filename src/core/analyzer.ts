@@ -17,10 +17,12 @@ import {
   TeamWorkLifeBalanceMetrics,
   TeamInsights,
   CurrentRepositoryState,
+  AzureDevOpsAnalytics,
 } from '../types';
 import { DataCollector } from './collector';
 import { GitIgnore } from '../utils/gitignore';
 import { DailyTrendsAnalyzer } from './daily-trends';
+import { AzureDevOpsCollector } from '../integrations/azure-devops/collector';
 import { createLogger } from '../utils/logger';
 import { validateCommitMessage, sanitizeEmail } from '../utils/validation';
 import * as fs from 'fs';
@@ -61,6 +63,7 @@ const logger = createLogger('analyzer');
 export class GitAnalyzer {
   private collector: DataCollector;
   private progressCallback?: ProgressCallback | undefined;
+  private azureDevOpsCollector?: AzureDevOpsCollector;
 
   /**
    * Create a new GitAnalyzer instance
@@ -168,6 +171,13 @@ export class GitAnalyzer {
     this.reportProgress('Analyzing current repository state', 92, 100);
     const currentState = await this.analyzeCurrentRepositoryState(options.repoPath || '.');
 
+    // Azure DevOps integration (if enabled)
+    let azureDevOpsAnalytics: AzureDevOpsAnalytics | undefined;
+    if (options.azureDevOps) {
+      this.reportProgress('Collecting Azure DevOps data', 94, 100);
+      azureDevOpsAnalytics = await this.analyzeAzureDevOps(options, commits);
+    }
+
     this.reportProgress('Generating report', 95, 100);
 
     // Generate metadata
@@ -192,6 +202,7 @@ export class GitAnalyzer {
       teamScore,
       summary,
       dailyTrends,
+      azureDevOps: azureDevOpsAnalytics,
     };
 
     // Attach any warnings emitted during collection for downstream exporters (HTML etc.)
@@ -2587,5 +2598,80 @@ export class GitAnalyzer {
       topDirectories,
       analyzedAt: new Date(),
     };
+  }
+
+  /**
+   * Analyze Azure DevOps integration data
+   */
+  private async analyzeAzureDevOps(
+    options: GitSparkOptions,
+    commits: CommitData[]
+  ): Promise<AzureDevOpsAnalytics | undefined> {
+    try {
+      logger.info('Starting Azure DevOps analysis');
+
+      // Initialize Azure DevOps collector if not already done
+      if (!this.azureDevOpsCollector) {
+        const repoPath = options.repoPath || this.collector.getRepositoryPath();
+        this.azureDevOpsCollector = new AzureDevOpsCollector(
+          repoPath,
+          options,
+          commits,
+          this.progressCallback
+        );
+
+        await this.azureDevOpsCollector.initialize();
+      }
+
+      // Collect and process pull request data
+      const processedPRData = await this.azureDevOpsCollector.collectPullRequestData();
+
+      // Generate comprehensive analytics
+      const analytics = await this.azureDevOpsCollector.generateAnalytics(processedPRData);
+
+      logger.info('Azure DevOps analysis completed', {
+        totalPRs: analytics.summary.totalPullRequests,
+        gitCommitCoverage: analytics.summary.coverage.gitCommitCoverage,
+      });
+
+      // Debug: Check analytics structure
+      logger.info('Azure DevOps analytics structure for HTML report', {
+        hasSummary: !!analytics.summary,
+        totalPRs: analytics.summary.totalPullRequests,
+        hasPullRequests: !!analytics.pullRequests,
+        statusBreakdown: analytics.pullRequests?.statusBreakdown,
+        hasDataQuality: !!analytics.dataQuality,
+      });
+
+      return analytics;
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorStack = error instanceof Error ? error.stack : undefined;
+      logger.error('Azure DevOps analysis failed', {
+        error: errorMessage,
+        stack: errorStack,
+        type: error?.constructor?.name,
+      });
+
+      // Add warning to report instead of failing completely
+      if (this.progressCallback) {
+        this.progressCallback(
+          'Azure DevOps analysis failed - continuing without integration',
+          94,
+          100
+        );
+      }
+
+      return undefined;
+    }
+  }
+
+  /**
+   * Cleanup resources, including Azure DevOps collector
+   */
+  async cleanup(): Promise<void> {
+    if (this.azureDevOpsCollector) {
+      await this.azureDevOpsCollector.cleanup();
+    }
   }
 }

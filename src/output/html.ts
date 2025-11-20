@@ -513,6 +513,7 @@ export class HTMLExporter {
           <li><a href="#team-patterns">Team Patterns</a></li>
           <li><a href="#files">File Hotspots</a></li>
           <li><a href="#author-details">Author Details</a></li>
+          ${report.azureDevOps ? '<li><a href="#azure-devops">Azure DevOps Integration</a></li>' : ''}
           ${report.dailyTrends ? '<li><a href="#daily-trends">Detailed Daily Tables</a></li>' : ''}
           <li><a href="#limitations">Limitations</a></li>
           <li><a href="#documentation">Documentation</a></li>
@@ -629,6 +630,8 @@ export class HTMLExporter {
     </section>
 
     ${report.dailyTrends ? this.generateDailyTrendsSection(report.dailyTrends) : ''}
+
+    ${report.azureDevOps ? this.generateAzureDevOpsSection(report.azureDevOps) : ''}
 
     <section id="limitations" class="section">
       <h2>⚠️ Important: Measurement Limitations</h2>
@@ -1701,6 +1704,418 @@ export class HTMLExporter {
         .trend-chart { 
           width: 100%; 
           height: auto; 
+        }
+      }
+
+      /* Azure DevOps Integration Styles */
+      .azure-devops-grid { 
+        display: grid; 
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); 
+        gap: 1.5rem; 
+        margin: 2rem 0; 
+      }
+      .devops-card { 
+        background: var(--color-surface); 
+        border: 1px solid var(--color-border); 
+        border-radius: 8px; 
+        padding: 1.5rem; 
+        box-shadow: var(--shadow-sm); 
+        border-left: 4px solid #0078d4; 
+      }
+      .devops-card.full-width { 
+        grid-column: 1 / -1; 
+      }
+      .devops-card h3 { 
+        margin: 0 0 1rem; 
+        font-size: 1.1rem; 
+        color: #0078d4; 
+        border-bottom: 1px solid var(--color-border); 
+        padding-bottom: .5rem; 
+      }
+      .devops-card h4 { 
+        margin: 1rem 0 .75rem; 
+        font-size: 1rem; 
+        color: var(--color-text); 
+      }
+
+      /* Metric Grid Styles */
+      .metric-grid { 
+        display: grid; 
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); 
+        gap: 1rem; 
+        margin-bottom: 1.5rem; 
+      }
+      .metric-item { 
+        display: flex; 
+        flex-direction: column; 
+        align-items: center; 
+        text-align: center; 
+        background: var(--color-bg); 
+        padding: 1rem; 
+        border-radius: 6px; 
+        border: 1px solid var(--color-border); 
+      }
+      .metric-label { 
+        font-size: .8rem; 
+        color: var(--color-text-secondary); 
+        margin-bottom: .5rem; 
+      }
+      .metric-value { 
+        font-size: 1.5rem; 
+        font-weight: 700; 
+        color: var(--color-text); 
+      }
+
+      /* PR Size Distribution */
+      .size-bars .size-bar { 
+        display: flex; 
+        align-items: center; 
+        margin: .5rem 0; 
+        gap: .75rem; 
+      }
+      .size-bars .size-label { 
+        min-width: 120px; 
+        font-size: .75rem; 
+        color: var(--color-text-secondary); 
+      }
+      .size-bars .bar { 
+        flex: 1; 
+        background: var(--color-border); 
+        height: 20px; 
+        border-radius: 10px; 
+        overflow: hidden; 
+        position: relative; 
+      }
+      .size-bars .bar-fill { 
+        height: 100%; 
+        background: linear-gradient(90deg, #28a745, #20c997); 
+        border-radius: 10px; 
+        transition: width 0.3s ease; 
+      }
+      .size-bars .size-count { 
+        min-width: 30px; 
+        font-size: .8rem; 
+        font-weight: 600; 
+        color: var(--color-text); 
+      }
+
+      /* Timing and Quality Grids */
+      .timing-grid, .quality-grid, .participation-grid, .health-grid { 
+        display: grid; 
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); 
+        gap: .75rem; 
+      }
+      .timing-metric, .quality-metric, .participation-metric, .health-metric { 
+        background: var(--color-bg); 
+        padding: .75rem; 
+        border-radius: 4px; 
+        text-align: center; 
+        border: 1px solid var(--color-border); 
+      }
+      .timing-label, .quality-label, .participation-label, .health-label { 
+        display: block; 
+        font-size: .7rem; 
+        color: var(--color-text-secondary); 
+        margin-bottom: .25rem; 
+      }
+      .timing-value, .quality-value, .participation-value, .health-value { 
+        font-size: 1.2rem; 
+        font-weight: 600; 
+        color: var(--color-text); 
+      }
+
+      /* Status Grid */
+      .status-grid { 
+        display: grid; 
+        grid-template-columns: repeat(3, 1fr); 
+        gap: .75rem; 
+      }
+      .status-item { 
+        padding: .75rem; 
+        border-radius: 4px; 
+        text-align: center; 
+        border: 1px solid var(--color-border); 
+      }
+      .status-item.completed { 
+        background: #d4edda; 
+        color: #155724; 
+        border-color: #28a745; 
+      }
+      .status-item.active { 
+        background: #d1ecf1; 
+        color: #0c5460; 
+        border-color: #17a2b8; 
+      }
+      .status-item.abandoned { 
+        background: #f8d7da; 
+        color: #721c24; 
+        border-color: #dc3545; 
+      }
+      :root.dark .status-item.completed { 
+        background: #1e3a29; 
+        color: #6fb877; 
+      }
+      :root.dark .status-item.active { 
+        background: #1e2a32; 
+        color: #5bc0de; 
+      }
+      :root.dark .status-item.abandoned { 
+        background: #3a1e20; 
+        color: #f5c6cb; 
+      }
+      .status-label { 
+        display: block; 
+        font-size: .8rem; 
+        margin-bottom: .25rem; 
+      }
+      .status-count { 
+        font-size: 1.4rem; 
+        font-weight: 700; 
+      }
+
+      /* Integration Methods and Quality */
+      .method-grid { 
+        display: grid; 
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); 
+        gap: .75rem; 
+        margin-bottom: 1rem; 
+      }
+      .method-item { 
+        background: var(--color-bg); 
+        padding: .75rem; 
+        border-radius: 4px; 
+        text-align: center; 
+        border: 1px solid var(--color-border); 
+      }
+      .method-label { 
+        display: block; 
+        font-size: .7rem; 
+        color: var(--color-text-secondary); 
+        margin-bottom: .25rem; 
+      }
+      .method-count { 
+        font-size: 1.2rem; 
+        font-weight: 600; 
+        color: var(--color-text); 
+      }
+
+      /* Quality Indicators */
+      .quality-indicators { 
+        display: grid; 
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); 
+        gap: .5rem; 
+      }
+      .quality-item { 
+        padding: .5rem; 
+        border-radius: 4px; 
+        text-align: center; 
+        border: 1px solid var(--color-border); 
+      }
+      .quality-item.high { 
+        background: #d4edda; 
+        color: #155724; 
+        border-color: #28a745; 
+      }
+      .quality-item.medium { 
+        background: #fff3cd; 
+        color: #856404; 
+        border-color: #ffc107; 
+      }
+      .quality-item.low { 
+        background: #ffeaa7; 
+        color: #6c5400; 
+        border-color: #fd7e14; 
+      }
+      .quality-item.unmapped { 
+        background: #f8d7da; 
+        color: #721c24; 
+        border-color: #dc3545; 
+      }
+      :root.dark .quality-item.high { 
+        background: #1e3a29; 
+        color: #6fb877; 
+      }
+      :root.dark .quality-item.medium { 
+        background: #2d2419; 
+        color: #ffeaa7; 
+      }
+      :root.dark .quality-item.low { 
+        background: #2a1f15; 
+        color: #ffb84d; 
+      }
+      :root.dark .quality-item.unmapped { 
+        background: #3a1e20; 
+        color: #f5c6cb; 
+      }
+      .quality-label { 
+        display: block; 
+        font-size: .7rem; 
+        margin-bottom: .25rem; 
+      }
+      .quality-count { 
+        font-size: 1rem; 
+        font-weight: 600; 
+      }
+
+      /* Team Collaboration */
+      .top-creators { 
+        margin-bottom: 1rem; 
+      }
+      .creator-item { 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+        padding: .5rem .75rem; 
+        margin: .25rem 0; 
+        background: var(--color-bg); 
+        border-radius: 4px; 
+        border: 1px solid var(--color-border); 
+      }
+      .creator-name { 
+        font-size: .85rem; 
+        color: var(--color-text); 
+      }
+      .creator-count { 
+        font-size: .8rem; 
+        font-weight: 600; 
+        color: var(--color-primary); 
+      }
+      .distribution-metric { 
+        background: var(--color-bg); 
+        padding: .75rem; 
+        border-radius: 4px; 
+        text-align: center; 
+        border: 1px solid var(--color-border); 
+      }
+
+      /* Data Quality Assessment */
+      .data-quality-grid { 
+        display: grid; 
+        grid-template-columns: 1fr 1fr; 
+        gap: 2rem; 
+        margin-bottom: 2rem; 
+      }
+      .completeness-bars { 
+        margin-bottom: 1rem; 
+      }
+      .completeness-bar { 
+        display: flex; 
+        align-items: center; 
+        margin: .75rem 0; 
+        gap: .75rem; 
+      }
+      .completeness-label { 
+        min-width: 160px; 
+        font-size: .8rem; 
+        color: var(--color-text-secondary); 
+      }
+      .completeness-value { 
+        min-width: 40px; 
+        font-size: .8rem; 
+        font-weight: 600; 
+        color: var(--color-text); 
+      }
+
+      /* Confidence Badges */
+      .confidence-grid { 
+        display: grid; 
+        gap: .75rem; 
+      }
+      .confidence-item { 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+        padding: .5rem .75rem; 
+        background: var(--color-bg); 
+        border-radius: 4px; 
+        border: 1px solid var(--color-border); 
+      }
+      .confidence-label { 
+        font-size: .8rem; 
+        color: var(--color-text); 
+      }
+      .confidence-badge { 
+        padding: .25rem .5rem; 
+        border-radius: 12px; 
+        font-size: .7rem; 
+        font-weight: 600; 
+        text-transform: uppercase; 
+      }
+      .confidence-badge.high { 
+        background: #28a745; 
+        color: white; 
+      }
+      .confidence-badge.medium { 
+        background: #ffc107; 
+        color: #212529; 
+      }
+      .confidence-badge.low { 
+        background: #dc3545; 
+        color: white; 
+      }
+
+      /* Recommendations */
+      .recommendations { 
+        margin-top: 2rem; 
+        padding: 1.5rem; 
+        background: var(--color-bg); 
+        border-radius: 6px; 
+        border: 1px solid var(--color-border); 
+      }
+      .recommendation-list { 
+        margin: 0; 
+        padding-left: 1.5rem; 
+      }
+      .recommendation-list li { 
+        margin: .5rem 0; 
+        font-size: .9rem; 
+        line-height: 1.4; 
+      }
+
+      /* Azure DevOps Notice */
+      .azure-devops-notice { 
+        margin-top: 2rem; 
+        padding: 1.5rem; 
+        background: #e7f3ff; 
+        border: 1px solid #b3d9ff; 
+        border-radius: 8px; 
+        border-left: 4px solid #0078d4; 
+      }
+      :root.dark .azure-devops-notice { 
+        background: #1a2533; 
+        border-color: #2a3441; 
+      }
+      .azure-devops-notice h4 { 
+        margin: 0 0 1rem; 
+        color: #0078d4; 
+        font-size: 1.1rem; 
+      }
+      .azure-devops-notice p { 
+        margin: .75rem 0; 
+        font-size: .9rem; 
+        line-height: 1.4; 
+      }
+
+      /* Responsive Design for Azure DevOps */
+      @media (max-width: 768px) { 
+        .azure-devops-grid { 
+          grid-template-columns: 1fr; 
+        }
+        .metric-grid { 
+          grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); 
+        }
+        .data-quality-grid { 
+          grid-template-columns: 1fr; 
+          gap: 1rem; 
+        }
+        .timing-grid, .quality-grid, .participation-grid, .health-grid { 
+          grid-template-columns: 1fr; 
+        }
+        .status-grid { 
+          grid-template-columns: 1fr; 
+        }
+        .method-grid { 
+          grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); 
         }
       }
     `;
@@ -3045,6 +3460,324 @@ export class HTMLExporter {
             : ''
         }
       </div>
+    `;
+  }
+
+  /**
+   * Generate Azure DevOps integration section
+   */
+  private generateAzureDevOpsSection(azureDevOps: any): string {
+    const summary = azureDevOps.summary;
+    const pullRequests = azureDevOps.pullRequests;
+    const reviewProcess = azureDevOps.reviewProcess;
+    const gitIntegration = azureDevOps.gitIntegration;
+    const teamCollaboration = azureDevOps.teamCollaboration;
+    const dataQuality = azureDevOps.dataQuality;
+
+    const formatDate = (date: Date) => date.toLocaleDateString();
+    const formatPercent = (value: number) => `${Math.round(value * 100)}%`;
+    const formatNumber = (n: number) => new Intl.NumberFormat().format(n);
+
+    return `
+    <section id="azure-devops" class="section">
+      <h2>🔗 Azure DevOps Integration</h2>
+      <p class="section-description">
+        Pull request analytics and team collaboration insights from Azure DevOps, correlated with Git commit data.
+      </p>
+
+      <div class="azure-devops-grid">
+        <!-- Summary Metrics -->
+        <div class="devops-card">
+          <h3>📊 Overview</h3>
+          <div class="metric-grid">
+            <div class="metric-item">
+              <span class="metric-label">Total Pull Requests</span>
+              <span class="metric-value">${formatNumber(summary.totalPullRequests)}</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-label">Analysis Period</span>
+              <span class="metric-value">${formatDate(summary.dateRange.start)} - ${formatDate(summary.dateRange.end)}</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-label">Git Commit Coverage</span>
+              <span class="metric-value">${formatPercent(summary.coverage.gitCommitCoverage)}</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-label">Data Freshness</span>
+              <span class="metric-value">${formatPercent(summary.dataFreshness.cacheHitRate)} cache hit rate</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pull Request Analytics -->
+        <div class="devops-card">
+          <h3>📋 Pull Request Metrics</h3>
+          <div class="pr-metrics">
+            <div class="pr-size-distribution">
+              <h4>Size Distribution</h4>
+              <div class="size-bars">
+                <div class="size-bar">
+                  <span class="size-label">Small (&lt;10 files)</span>
+                  <div class="bar"><div class="bar-fill" style="width: ${(pullRequests.sizeDistribution.small / summary.totalPullRequests) * 100}%"></div></div>
+                  <span class="size-count">${pullRequests.sizeDistribution.small}</span>
+                </div>
+                <div class="size-bar">
+                  <span class="size-label">Medium (10-50 files)</span>
+                  <div class="bar"><div class="bar-fill" style="width: ${(pullRequests.sizeDistribution.medium / summary.totalPullRequests) * 100}%"></div></div>
+                  <span class="size-count">${pullRequests.sizeDistribution.medium}</span>
+                </div>
+                <div class="size-bar">
+                  <span class="size-label">Large (50-200 files)</span>
+                  <div class="bar"><div class="bar-fill" style="width: ${(pullRequests.sizeDistribution.large / summary.totalPullRequests) * 100}%"></div></div>
+                  <span class="size-count">${pullRequests.sizeDistribution.large}</span>
+                </div>
+                <div class="size-bar">
+                  <span class="size-label">X-Large (&gt;200 files)</span>
+                  <div class="bar"><div class="bar-fill" style="width: ${(pullRequests.sizeDistribution.xlarge / summary.totalPullRequests) * 100}%"></div></div>
+                  <span class="size-count">${pullRequests.sizeDistribution.xlarge}</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="pr-timing">
+              <h4>Timing Metrics</h4>
+              <div class="timing-grid">
+                <div class="timing-metric">
+                  <span class="timing-label">Avg Time to Merge</span>
+                  <span class="timing-value">${pullRequests.timing.averageTimeToMerge.toFixed(1)}h</span>
+                </div>
+                <div class="timing-metric">
+                  <span class="timing-label">Median Time to Merge</span>
+                  <span class="timing-value">${pullRequests.timing.medianTimeToMerge.toFixed(1)}h</span>
+                </div>
+                <div class="timing-metric">
+                  <span class="timing-label">90th Percentile</span>
+                  <span class="timing-value">${pullRequests.timing.percentileMetrics.p90TimeToMerge.toFixed(1)}h</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="pr-status">
+              <h4>Status Breakdown</h4>
+              <div class="status-grid">
+                <div class="status-item completed">
+                  <span class="status-label">Completed</span>
+                  <span class="status-count">${pullRequests.statusBreakdown.completed}</span>
+                </div>
+                <div class="status-item active">
+                  <span class="status-label">Active</span>
+                  <span class="status-count">${pullRequests.statusBreakdown.active}</span>
+                </div>
+                <div class="status-item abandoned">
+                  <span class="status-label">Abandoned</span>
+                  <span class="status-count">${pullRequests.statusBreakdown.abandoned}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Review Process Analytics -->
+        <div class="devops-card">
+          <h3>👥 Review Process</h3>
+          <div class="review-metrics">
+            <div class="review-participation">
+              <h4>Review Participation</h4>
+              <div class="participation-grid">
+                <div class="participation-metric">
+                  <span class="metric-label">Avg Reviewers per PR</span>
+                  <span class="metric-value">${reviewProcess.participation.averageReviewersPerPR.toFixed(1)}</span>
+                </div>
+                <div class="participation-metric">
+                  <span class="metric-label">Self-Approval Rate</span>
+                  <span class="metric-value">${formatPercent(reviewProcess.participation.selfApprovalRate)}</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="review-quality">
+              <h4>Review Quality</h4>
+              <div class="quality-grid">
+                <div class="quality-metric">
+                  <span class="metric-label">Approval Rate</span>
+                  <span class="metric-value">${formatPercent(reviewProcess.quality.approvalRate)}</span>
+                </div>
+                <div class="quality-metric">
+                  <span class="metric-label">Rejection Rate</span>
+                  <span class="metric-value">${formatPercent(reviewProcess.quality.rejectionRate)}</span>
+                </div>
+                <div class="quality-metric">
+                  <span class="metric-label">Thoroughness Score</span>
+                  <span class="metric-value">${formatPercent(reviewProcess.quality.thoroughnessScore)}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Git Integration Analysis -->
+        <div class="devops-card">
+          <h3>🔗 Git Integration</h3>
+          <div class="integration-metrics">
+            <div class="integration-success">
+              <h4>Association Success</h4>
+              <div class="success-metric">
+                <span class="metric-label">Mapping Success Rate</span>
+                <span class="metric-value">${formatPercent(gitIntegration.mappingSuccessRate)}</span>
+              </div>
+            </div>
+            
+            <div class="integration-methods">
+              <h4>Integration Methods</h4>
+              <div class="method-grid">
+                <div class="method-item">
+                  <span class="method-label">Merge Commits</span>
+                  <span class="method-count">${gitIntegration.integrationMethods.mergeCommit}</span>
+                </div>
+                <div class="method-item">
+                  <span class="method-label">Squash Commits</span>
+                  <span class="method-count">${gitIntegration.integrationMethods.squashCommit}</span>
+                </div>
+                <div class="method-item">
+                  <span class="method-label">Branch Analysis</span>
+                  <span class="method-count">${gitIntegration.integrationMethods.branchAnalysis}</span>
+                </div>
+                <div class="method-item">
+                  <span class="method-label">Manual Links</span>
+                  <span class="method-count">${gitIntegration.integrationMethods.manualLink}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="integration-quality">
+              <h4>Integration Quality</h4>
+              <div class="quality-indicators">
+                <div class="quality-item high">
+                  <span class="quality-label">High Confidence</span>
+                  <span class="quality-count">${gitIntegration.integrationQuality.highConfidenceAssociations}</span>
+                </div>
+                <div class="quality-item medium">
+                  <span class="quality-label">Medium Confidence</span>
+                  <span class="quality-count">${gitIntegration.integrationQuality.mediumConfidenceAssociations}</span>
+                </div>
+                <div class="quality-item low">
+                  <span class="quality-label">Low Confidence</span>
+                  <span class="quality-count">${gitIntegration.integrationQuality.lowConfidenceAssociations}</span>
+                </div>
+                <div class="quality-item unmapped">
+                  <span class="quality-label">Unmapped</span>
+                  <span class="quality-count">${gitIntegration.integrationQuality.unmappedCommits}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Team Collaboration -->
+        <div class="devops-card">
+          <h3>🤝 Team Collaboration</h3>
+          <div class="collaboration-metrics">
+            <div class="creation-patterns">
+              <h4>PR Creation Patterns</h4>
+              <div class="top-creators">
+                ${teamCollaboration.creationPatterns.mostActivePRCreators
+                  .slice(0, 5)
+                  .map(
+                    (creator: { creator: string; prCount: number }) => `
+                    <div class="creator-item">
+                      <span class="creator-name">${this.escapeHtml(creator.creator)}</span>
+                      <span class="creator-count">${creator.prCount} PRs</span>
+                    </div>
+                  `
+                  )
+                  .join('')}
+              </div>
+              <div class="distribution-metric">
+                <span class="metric-label">Creation Distribution (Gini)</span>
+                <span class="metric-value">${teamCollaboration.creationPatterns.creationDistribution.toFixed(3)}</span>
+              </div>
+            </div>
+            
+            <div class="team-dynamics">
+              <h4>Team Health</h4>
+              <div class="health-grid">
+                <div class="health-metric">
+                  <span class="metric-label">Collaboration Score</span>
+                  <span class="metric-value">${formatPercent(teamCollaboration.teamDynamics.collaborationScore)}</span>
+                </div>
+                <div class="health-metric">
+                  <span class="metric-label">Cross-Review Rate</span>
+                  <span class="metric-value">${formatPercent(teamCollaboration.crossTeamCollaboration.crossReviewRate)}</span>
+                </div>
+                <div class="health-metric">
+                  <span class="metric-label">Knowledge Sharing</span>
+                  <span class="metric-value">${formatPercent(teamCollaboration.crossTeamCollaboration.knowledgeSharingScore)}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Data Quality Assessment -->
+        <div class="devops-card full-width">
+          <h3>📈 Data Quality Assessment</h3>
+          <div class="data-quality-grid">
+            <div class="completeness-metrics">
+              <h4>Data Completeness</h4>
+              <div class="completeness-bars">
+                <div class="completeness-bar">
+                  <span class="completeness-label">PR Data Completeness</span>
+                  <div class="bar"><div class="bar-fill" style="width: ${dataQuality.completeness.prDataCompleteness * 100}%"></div></div>
+                  <span class="completeness-value">${formatPercent(dataQuality.completeness.prDataCompleteness)}</span>
+                </div>
+                <div class="completeness-bar">
+                  <span class="completeness-label">Review Data Completeness</span>
+                  <div class="bar"><div class="bar-fill" style="width: ${dataQuality.completeness.reviewDataCompleteness * 100}%"></div></div>
+                  <span class="completeness-value">${formatPercent(dataQuality.completeness.reviewDataCompleteness)}</span>
+                </div>
+                <div class="completeness-bar">
+                  <span class="completeness-label">Commit Association Rate</span>
+                  <div class="bar"><div class="bar-fill" style="width: ${dataQuality.completeness.commitAssociationRate * 100}%"></div></div>
+                  <span class="completeness-value">${formatPercent(dataQuality.completeness.commitAssociationRate)}</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="confidence-levels">
+              <h4>Confidence Levels</h4>
+              <div class="confidence-grid">
+                <div class="confidence-item">
+                  <span class="confidence-label">Timing Metrics</span>
+                  <span class="confidence-badge ${dataQuality.confidence.timingMetrics}">${dataQuality.confidence.timingMetrics}</span>
+                </div>
+                <div class="confidence-item">
+                  <span class="confidence-label">Review Metrics</span>
+                  <span class="confidence-badge ${dataQuality.confidence.reviewMetrics}">${dataQuality.confidence.reviewMetrics}</span>
+                </div>
+                <div class="confidence-item">
+                  <span class="confidence-label">Collaboration Metrics</span>
+                  <span class="confidence-badge ${dataQuality.confidence.collaborationMetrics}">${dataQuality.confidence.collaborationMetrics}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="recommendations">
+            <h4>Recommendations</h4>
+            <ul class="recommendation-list">
+              ${dataQuality.recommendations.map((rec: string) => `<li>${this.escapeHtml(rec)}</li>`).join('')}
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="azure-devops-notice">
+        <h4>🔍 Azure DevOps Integration Notes</h4>
+        <p>This analysis combines Azure DevOps pull request data with Git commit history to provide comprehensive insights into development workflows and team collaboration patterns.</p>
+        <p><strong>Data Sources:</strong> Azure DevOps REST API (pull requests, reviewers) + Git repository (commits, file changes)</p>
+        <p><strong>Limitations:</strong> Review timing data requires additional API calls not currently implemented. Team structure and organizational context not available from API data alone.</p>
+      </div>
+    </section>
     `;
   }
 }

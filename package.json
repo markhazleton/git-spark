@@ -1,6 +1,6 @@
 {
   "name": "git-spark",
-  "version": "1.0.227",
+  "version": "1.0.262",
   "description": "Git repository analytics and reporting tool for analyzing commit patterns and contributor activity",
   "keywords": [
     "git",
@@ -38,7 +38,7 @@
     "CHANGELOG.md"
   ],
   "scripts": {
-    "prebuild": "npm version patch --no-git-tag-version && node scripts/generate-version.js",
+    "prebuild": "node scripts/generate-version.js",
     "build": "tsc",
     "build:watch": "tsc --watch",
     "dev": "npm run build && node bin/git-spark.js",
@@ -64,19 +64,19 @@
   "dependencies": {
     "boxen": "^8.0.1",
     "chalk": "^5.6.2",
-    "commander": "^14.0.1",
+    "commander": "^14.0.2",
     "ora": "^9.0.0",
     "semver": "^7.7.3",
     "table": "^6.9.0"
   },
   "devDependencies": {
-    "@eslint/js": "^9.38.0",
+    "@eslint/js": "^9.39.1",
     "@types/jest": "^30.0.0",
-    "@types/node": "^24.8.1",
+    "@types/node": "^24.10.1",
     "@types/semver": "^7.7.1",
-    "@typescript-eslint/eslint-plugin": "^8.46.1",
-    "@typescript-eslint/parser": "^8.46.1",
-    "eslint": "^9.38.0",
+    "@typescript-eslint/eslint-plugin": "^8.47.0",
+    "@typescript-eslint/parser": "^8.47.0",
+    "eslint": "^9.39.1",
     "husky": "^9.1.7",
     "jest": "^30.2.0",
     "prettier": "^3.6.2",

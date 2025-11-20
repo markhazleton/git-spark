@@ -69,6 +69,12 @@ export async function createCLI(): Promise<Command> {
     .option('--compare <branch>', 'compare with another branch')
     .option('--watch', 'continuous monitoring mode')
     .option('--redact-emails', 'redact email addresses in reports')
+    .option('--azure-devops', 'enable Azure DevOps integration')
+    .option('--devops-org <org>', 'Azure DevOps organization name')
+    .option('--devops-project <project>', 'Azure DevOps project name')
+    .option('--devops-repo <repo>', 'Azure DevOps repository name')
+    .option('--devops-pat <token>', 'Azure DevOps Personal Access Token')
+    .option('--devops-config <path>', 'Azure DevOps configuration file')
     .action(async options => {
       await executeAnalysis(options);
     });
@@ -141,6 +147,11 @@ async function executeHTMLReport(options: any): Promise<void> {
       output: options.output || './reports',
       heavy: options.heavy,
       logLevel: 'info' as LogLevel,
+      azureDevOps: options.azureDevops,
+      devopsOrg: options.devopsOrg,
+      devopsProject: options.devopsProject,
+      devopsPat: options.devopsPat,
+      devopsConfig: options.devopsConfig,
     };
 
     spinner.text = 'Validating options and repository';
@@ -374,6 +385,12 @@ async function executeAnalysis(options: any): Promise<void> {
       noCache: !options.cache,
       compare: options.compare,
       watch: options.watch,
+      azureDevOps: options.azureDevops,
+      devopsOrg: options.devopsOrg,
+      devopsProject: options.devopsProject,
+      devopsRepo: options.devopsRepo,
+      devopsPat: options.devopsPat,
+      devopsConfig: options.devopsConfig,
     };
 
     spinner.text = 'Validating options';

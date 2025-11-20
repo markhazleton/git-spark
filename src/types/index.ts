@@ -94,6 +94,16 @@ export interface GitSparkOptions {
   watch?: boolean;
   /** Redact author emails in all outputs */
   redactEmails?: boolean;
+  /** Azure DevOps integration options */
+  azureDevOps?: boolean;
+  devopsOrg?: string;
+  devopsProject?: string;
+  devopsRepo?: string;
+  devopsPat?: string;
+  devopsConfig?: string;
+  /** Preserve original user-requested dates for Azure DevOps (before Git repo adjustment) */
+  originalSince?: string;
+  originalUntil?: string;
 }
 
 export type LogLevel = 'error' | 'warn' | 'info' | 'debug' | 'verbose';
@@ -446,6 +456,8 @@ export interface AnalysisReport {
   summary: ReportSummary;
   /** Daily trending metrics for comprehensive trend analysis */
   dailyTrends?: DailyTrendsData | undefined;
+  /** Azure DevOps integration analytics (when enabled) */
+  azureDevOps?: AzureDevOpsAnalytics | undefined;
 }
 
 export interface ReportMetadata {
@@ -897,4 +909,514 @@ export class PerformanceError extends GitSparkError {
     super(message, 'PERFORMANCE_ERROR');
     this.name = 'PerformanceError';
   }
+}
+
+// Azure DevOps Integration Types
+
+export interface AzureDevOpsConfig {
+  /** Azure DevOps organization name */
+  organization: string;
+  /** Azure DevOps project name */
+  project: string;
+  /** Personal Access Token for authentication */
+  personalAccessToken?: string;
+  /** Repository name (defaults to Git remote) */
+  repository?: string;
+  /** Cache configuration for Azure DevOps data */
+  cache?: AzureDevOpsCacheConfig;
+  /** API configuration and limits */
+  api?: AzureDevOpsApiConfig;
+  /** Data filtering options */
+  filters?: AzureDevOpsFilters;
+  /** Integration behavior settings */
+  integration?: AzureDevOpsIntegrationConfig;
+}
+
+export interface AzureDevOpsCacheConfig {
+  /** Enable caching (default: true) */
+  enabled: boolean;
+  /** Cache directory (default: .git-spark/cache/azure-devops) */
+  directory: string;
+  /** Cache TTL in milliseconds (default: 1 hour) */
+  ttlMs: number;
+  /** Enable incremental updates (default: true) */
+  incremental: boolean;
+  /** Maximum cache size in MB (default: 100) */
+  maxSizeMB: number;
+  /** Background cache warming (default: false) */
+  backgroundWarmup: boolean;
+}
+
+export interface AzureDevOpsApiConfig {
+  /** API base URL (default: dev.azure.com) */
+  baseUrl: string;
+  /** API version (default: 7.0) */
+  version: string;
+  /** Request timeout in milliseconds (default: 30000) */
+  timeoutMs: number;
+  /** Max retries for failed requests (default: 3) */
+  maxRetries: number;
+  /** Rate limiting configuration */
+  rateLimit: {
+    /** Requests per minute (default: 180) */
+    requestsPerMinute: number;
+    /** Enable rate limiting (default: true) */
+    enabled: boolean;
+  };
+  /** Pagination configuration */
+  pagination: {
+    /** Default page size (default: 100) */
+    pageSize: number;
+    /** Maximum page size (default: 1000) */
+    maxPageSize: number;
+    /** Enable time partitioning for large datasets (default: true) */
+    enableTimePartitioning: boolean;
+  };
+}
+
+export interface AzureDevOpsFilters {
+  /** Pull request state filter */
+  pullRequestStates?: ('active' | 'abandoned' | 'completed')[];
+  /** Minimum PR creation date */
+  minCreatedDate?: Date;
+  /** Maximum PR creation date */
+  maxCreatedDate?: Date;
+  /** Source branch patterns to include */
+  sourceBranchPatterns?: string[];
+  /** Target branch patterns to include */
+  targetBranchPatterns?: string[];
+  /** Creator email patterns to include */
+  creatorPatterns?: string[];
+  /** Exclude automated PRs (default: false) */
+  excludeAutomated?: boolean;
+}
+
+export interface AzureDevOpsIntegrationConfig {
+  /** Enable pull request analytics (default: true) */
+  enablePullRequests: boolean;
+  /** Enable work item linking analysis (default: false) */
+  enableWorkItems: boolean;
+  /** Enable reviewer analytics (default: true) */
+  enableReviewers: boolean;
+  /** Enable build integration analytics (default: false) */
+  enableBuilds: boolean;
+  /** Merge commit analytics integration (default: true) */
+  mergeCommitIntegration: boolean;
+  /** Progress reporting during data collection */
+  progressReporting: boolean;
+}
+
+export interface AzureDevOpsPullRequest {
+  /** Pull request ID */
+  pullRequestId: number;
+  /** Pull request title */
+  title: string;
+  /** Pull request description */
+  description?: string;
+  /** Current status */
+  status: 'active' | 'abandoned' | 'completed';
+  /** Creation date */
+  creationDate: Date;
+  /** Closed date (if completed/abandoned) */
+  closedDate?: Date;
+  /** Source branch reference */
+  sourceRefName: string;
+  /** Target branch reference */
+  targetRefName: string;
+  /** Creator information */
+  createdBy: AzureDevOpsIdentity;
+  /** Merge commit (if completed via merge) */
+  lastMergeCommit?: AzureDevOpsCommitRef;
+  /** Reviewer information */
+  reviewers: AzureDevOpsPullRequestReviewer[];
+  /** Work item links */
+  workItemRefs?: AzureDevOpsWorkItemRef[];
+  /** Completion options */
+  completionOptions?: AzureDevOpsCompletionOptions;
+  /** Auto-complete settings */
+  autoCompleteSetBy?: AzureDevOpsIdentity;
+  /** Labels */
+  labels?: AzureDevOpsLabel[];
+  /** PR URL */
+  url: string;
+  /** Is draft PR */
+  isDraft: boolean;
+  /** Supports iterations */
+  supportsIterations: boolean;
+}
+
+export interface AzureDevOpsIdentity {
+  /** Display name */
+  displayName: string;
+  /** Unique identifier */
+  id: string;
+  /** Email address */
+  uniqueName?: string;
+  /** Profile image URL */
+  imageUrl?: string;
+  /** User descriptor */
+  descriptor?: string;
+}
+
+export interface AzureDevOpsCommitRef {
+  /** Commit ID */
+  commitId: string;
+  /** Commit URL */
+  url: string;
+  /** Author information */
+  author?: AzureDevOpsGitUserInfo;
+  /** Committer information */
+  committer?: AzureDevOpsGitUserInfo;
+  /** Commit comment/message */
+  comment?: string;
+}
+
+export interface AzureDevOpsGitUserInfo {
+  /** Display name */
+  name: string;
+  /** Email address */
+  email: string;
+  /** Date */
+  date: Date;
+}
+
+export interface AzureDevOpsPullRequestReviewer {
+  /** Reviewer identity */
+  reviewer: AzureDevOpsIdentity;
+  /** Review vote (-10 to 10) */
+  vote: number;
+  /** Review status */
+  votedFor?: AzureDevOpsIdentity[];
+  /** Has declined */
+  hasDeclined: boolean;
+  /** Is flagged */
+  isFlagged: boolean;
+  /** Review URL */
+  reviewerUrl?: string;
+}
+
+export interface AzureDevOpsWorkItemRef {
+  /** Work item ID */
+  id: string;
+  /** Work item URL */
+  url: string;
+}
+
+export interface AzureDevOpsCompletionOptions {
+  /** Merge strategy */
+  mergeStrategy: 'NoFastForward' | 'Squash' | 'Rebase' | 'RebaseMerge';
+  /** Delete source branch */
+  deleteSourceBranch: boolean;
+  /** Transition work items */
+  transitionWorkItems: boolean;
+  /** Squash merge commit message */
+  squashMergeCommitMessage?: string;
+}
+
+export interface AzureDevOpsLabel {
+  /** Label ID */
+  id: string;
+  /** Label name */
+  name: string;
+  /** Label description */
+  description?: string;
+  /** Label color */
+  color?: string;
+}
+
+export interface ProcessedPRData {
+  /** Original PR data */
+  pullRequest: AzureDevOpsPullRequest;
+  /** Calculated metrics */
+  metrics: PullRequestMetrics;
+  /** Git commit associations */
+  gitCommitAssociations: GitCommitAssociation[];
+  /** Processing metadata */
+  processingMetadata: PRProcessingMetadata;
+}
+
+export interface PullRequestMetrics {
+  /** Time to merge (in hours) */
+  timeToMerge?: number;
+  /** Time to first review (in hours) */
+  timeToFirstReview?: number;
+  /** Number of reviewers */
+  reviewerCount: number;
+  /** Number of comments/iterations */
+  iterationCount: number;
+  /** Size metrics */
+  size: {
+    /** Files changed */
+    filesChanged: number;
+    /** Lines added */
+    linesAdded: number;
+    /** Lines deleted */
+    linesDeleted: number;
+    /** Total churn */
+    totalChurn: number;
+  };
+  /** Complexity indicators */
+  complexity: {
+    /** Cross-directory changes */
+    crossDirectoryChanges: boolean;
+    /** Multiple file types */
+    multipleFileTypes: boolean;
+    /** High-risk files touched */
+    highRiskFilesTouched: number;
+  };
+  /** Review quality indicators */
+  reviewQuality: {
+    /** Had approvals */
+    hadApprovals: boolean;
+    /** Had rejections */
+    hadRejections: boolean;
+    /** Self-approved */
+    selfApproved: boolean;
+    /** Review coverage score (0-1) */
+    reviewCoverage: number;
+  };
+  /** Integration metrics */
+  integration: {
+    /** Merge strategy used */
+    mergeStrategy?: string;
+    /** Source branch deleted */
+    sourceBranchDeleted: boolean;
+    /** Had conflicts */
+    hadConflicts: boolean;
+    /** Build status */
+    buildStatus?: 'succeeded' | 'failed' | 'canceled' | 'none';
+  };
+}
+
+export interface GitCommitAssociation {
+  /** Git commit hash */
+  commitHash: string;
+  /** Association confidence (0-1) */
+  confidence: number;
+  /** Association method */
+  method: 'merge-commit' | 'squash-commit' | 'branch-analysis' | 'manual-link';
+  /** Additional metadata */
+  metadata?: Record<string, any>;
+}
+
+export interface PRProcessingMetadata {
+  /** Processing timestamp */
+  processedAt: Date;
+  /** Data source version */
+  apiVersion: string;
+  /** Limitations encountered */
+  limitations: string[];
+  /** Warnings */
+  warnings: string[];
+  /** Cache hit/miss info */
+  cacheInfo: {
+    hit: boolean;
+    source: 'memory' | 'file' | 'api';
+    age?: number;
+  };
+}
+
+export interface AzureDevOpsAnalytics {
+  /** Summary metrics */
+  summary: AzureDevOpsSummary;
+  /** Pull request analytics */
+  pullRequests: PullRequestAnalytics;
+  /** Review process analytics */
+  reviewProcess: ReviewProcessAnalytics;
+  /** Integration with Git data */
+  gitIntegration: GitIntegrationAnalytics;
+  /** Team collaboration insights */
+  teamCollaboration: TeamCollaborationInsights;
+  /** Limitations and data quality */
+  dataQuality: DataQualityReport;
+}
+
+export interface AzureDevOpsSummary {
+  /** Total PRs analyzed */
+  totalPullRequests: number;
+  /** Date range of analysis */
+  dateRange: {
+    start: Date;
+    end: Date;
+  };
+  /** Data freshness */
+  dataFreshness: {
+    cacheHitRate: number;
+    oldestDataAge: number;
+    newestDataAge: number;
+  };
+  /** Coverage metrics */
+  coverage: {
+    /** Percentage of Git commits associated with PRs */
+    gitCommitCoverage: number;
+    /** PR states included */
+    prStatesIncluded: string[];
+  };
+}
+
+export interface PullRequestAnalytics {
+  /** Size distribution */
+  sizeDistribution: {
+    small: number; // <10 files
+    medium: number; // 10-50 files
+    large: number; // 50-200 files
+    xlarge: number; // >200 files
+  };
+  /** Timing metrics */
+  timing: {
+    averageTimeToMerge: number;
+    medianTimeToMerge: number;
+    averageTimeToFirstReview: number;
+    percentileMetrics: {
+      p50TimeToMerge: number;
+      p90TimeToMerge: number;
+      p50TimeToReview: number;
+      p90TimeToReview: number;
+    };
+  };
+  /** Status breakdown */
+  statusBreakdown: {
+    completed: number;
+    active: number;
+    abandoned: number;
+  };
+  /** Merge strategy distribution */
+  mergeStrategies: {
+    merge: number;
+    squash: number;
+    rebase: number;
+    rebaseMerge: number;
+  };
+}
+
+export interface ReviewProcessAnalytics {
+  /** Review participation */
+  participation: {
+    averageReviewersPerPR: number;
+    reviewCoverageDistribution: number[]; // [0-20%, 20-40%, 40-60%, 60-80%, 80-100%]
+    selfApprovalRate: number;
+  };
+  /** Review quality indicators */
+  quality: {
+    approvalRate: number;
+    rejectionRate: number;
+    averageReviewCycles: number;
+    thoroughnessScore: number; // Based on time spent and feedback
+  };
+  /** Reviewer workload */
+  workload: {
+    topReviewers: Array<{
+      reviewer: string;
+      reviewCount: number;
+      averageResponseTime: number;
+    }>;
+    workloadDistribution: number; // Gini coefficient for review distribution
+  };
+}
+
+export interface GitIntegrationAnalytics {
+  /** Commit-to-PR mapping success rate */
+  mappingSuccessRate: number;
+  /** Integration methods used */
+  integrationMethods: {
+    mergeCommit: number;
+    squashCommit: number;
+    branchAnalysis: number;
+    manualLink: number;
+  };
+  /** Quality of integration */
+  integrationQuality: {
+    highConfidenceAssociations: number;
+    mediumConfidenceAssociations: number;
+    lowConfidenceAssociations: number;
+    unmappedCommits: number;
+  };
+  /** Branch strategy insights */
+  branchStrategy: {
+    featureBranchPattern: string;
+    commonSourceBranches: string[];
+    commonTargetBranches: string[];
+    branchLifetime: {
+      average: number;
+      median: number;
+    };
+  };
+}
+
+export interface TeamCollaborationInsights {
+  /** PR creation patterns */
+  creationPatterns: {
+    mostActivePRCreators: Array<{
+      creator: string;
+      prCount: number;
+      averagePRSize: number;
+    }>;
+    creationDistribution: number; // Gini coefficient for PR creation
+  };
+  /** Cross-team collaboration */
+  crossTeamCollaboration: {
+    crossReviewRate: number; // Reviews across different areas
+    knowledgeSharingScore: number;
+    mentorshipIndicators: {
+      seniorToJuniorReviews: number;
+      juniorToSeniorPRs: number;
+    };
+  };
+  /** Team dynamics */
+  teamDynamics: {
+    collaborationScore: number;
+    bottleneckIndicators: string[];
+    teamHealthScore: number;
+  };
+}
+
+export interface DataQualityReport {
+  /** Data completeness */
+  completeness: {
+    prDataCompleteness: number;
+    reviewDataCompleteness: number;
+    commitAssociationRate: number;
+  };
+  /** Known limitations */
+  limitations: {
+    apiLimitations: string[];
+    dataSourceLimitations: string[];
+    calculationLimitations: string[];
+  };
+  /** Confidence intervals */
+  confidence: {
+    timingMetrics: 'high' | 'medium' | 'low';
+    reviewMetrics: 'high' | 'medium' | 'low';
+    collaborationMetrics: 'high' | 'medium' | 'low';
+  };
+  /** Recommendations */
+  recommendations: string[];
+}
+
+export class AzureDevOpsError extends GitSparkError {
+  constructor(
+    message: string,
+    public errorCode?: string,
+    public statusCode?: number,
+    cause?: Error
+  ) {
+    super(message, 'AZURE_DEVOPS_ERROR', cause);
+    this.name = 'AzureDevOpsError';
+  }
+}
+
+export interface AzureDevOpsValidationResult extends ValidationResult {
+  /** Configuration validation details */
+  configValidation?: {
+    organizationValid: boolean;
+    projectValid: boolean;
+    tokenValid: boolean;
+    repositoryValid: boolean;
+  };
+  /** API connectivity test results */
+  connectivityTest?: {
+    canConnect: boolean;
+    responseTime?: number;
+    apiVersion?: string;
+  };
 }
