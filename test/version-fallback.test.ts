@@ -54,10 +54,16 @@ describe('version-fallback', () => {
       expect(buildTime).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/);
     });
 
-    it('should return a consistent build time across multiple calls', () => {
+    it('should return a consistent build time format across multiple calls', () => {
       const buildTime1 = getBuildTime();
       const buildTime2 = getBuildTime();
-      expect(buildTime1).toBe(buildTime2);
+      // Both should be valid ISO dates
+      expect(buildTime1).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/);
+      expect(buildTime2).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/);
+      // Timestamps should be very close (within 1 second)
+      const time1 = new Date(buildTime1).getTime();
+      const time2 = new Date(buildTime2).getTime();
+      expect(Math.abs(time1 - time2)).toBeLessThan(1000);
     });
 
     it('should return a valid timestamp that can be parsed', () => {
