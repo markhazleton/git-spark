@@ -81,6 +81,17 @@ test-*.html
 test*.html
 *-test-*.html
 
+# Test and development files
+test-*.js
+azure-devops-config.json
+.azure-devops.json
+
+# Visual Studio artifacts
+.vs/
+
+# Git Spark cache directory
+.git-spark/
+
 # dotenv environment variable files
 .env
 .env.*

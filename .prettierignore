@@ -1,0 +1,45 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+build/
+
+# Coverage reports
+coverage/
+
+# Test output
+reports/
+test-output/
+test-*-output/
+demo-*/
+*-demo-*
+
+# Generated files
+src/version.ts
+
+# Lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Logs
+*.log
+
+# Cache directories
+.git-spark/
+.nyc_output/
+
+# Editor directories
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Documentation output
+docs/api/
+
+# HTML reports
+*.html
