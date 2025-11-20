@@ -102,12 +102,16 @@ export class GitCommitAssociator {
   private async findByMergeCommit(pr: AzureDevOpsPullRequest): Promise<GitCommitAssociation[]> {
     const associations: GitCommitAssociation[] = [];
 
-    // Common merge commit message patterns
+    // Escape special regex characters to prevent ReDoS attacks
+    const escapedPrId = String(pr.pullRequestId).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const escapedSourceRef = pr.sourceRefName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+    // Common merge commit message patterns with escaped user input
     const mergePatterns = [
-      new RegExp(`Merged PR ${pr.pullRequestId}`, 'i'),
-      new RegExp(`Merge pull request #${pr.pullRequestId}`, 'i'),
-      new RegExp(`Merged in ${pr.sourceRefName}`, 'i'),
-      new RegExp(`Merge branch '${pr.sourceRefName}'`, 'i'),
+      new RegExp(`Merged PR ${escapedPrId}`, 'i'),
+      new RegExp(`Merge pull request #${escapedPrId}`, 'i'),
+      new RegExp(`Merged in ${escapedSourceRef}`, 'i'),
+      new RegExp(`Merge branch '${escapedSourceRef}'`, 'i'),
     ];
 
     // Look for merge commits around the PR completion time

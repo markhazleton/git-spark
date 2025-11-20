@@ -331,29 +331,47 @@ async function startHTMLServer(reportPath: string, port: number): Promise<void> 
 
 async function openHTMLReport(reportPath: string): Promise<void> {
   try {
-    const { exec } = require('child_process');
+    const { spawn } = require('child_process');
     const os = require('os');
+    const { resolve } = require('path');
+
+    // Sanitize the file path by resolving to absolute path
+    const sanitizedPath = resolve(reportPath);
 
     let command: string;
+    let args: string[];
+    
     switch (os.platform()) {
       case 'win32':
-        command = `start "" "${reportPath}"`;
+        command = 'cmd.exe';
+        args = ['/c', 'start', '', sanitizedPath];
         break;
       case 'darwin':
-        command = `open "${reportPath}"`;
+        command = 'open';
+        args = [sanitizedPath];
         break;
       default:
-        command = `xdg-open "${reportPath}"`;
+        command = 'xdg-open';
+        args = [sanitizedPath];
         break;
     }
 
-    exec(command, (error: any) => {
-      if (error) {
-        console.log(chalk.yellow(`⚠️  Could not auto-open browser. Please open: ${reportPath}`));
-      } else {
-        console.log(chalk.green('✓ Report opened in browser'));
-      }
+    // Use spawn with argument array instead of exec with string to prevent command injection
+    const child = spawn(command, args, {
+      detached: true,
+      stdio: 'ignore'
     });
+    
+    child.unref();
+    
+    child.on('error', () => {
+      console.log(chalk.yellow(`⚠️  Could not auto-open browser. Please open: ${reportPath}`));
+    });
+    
+    // Give it a moment to start, then assume success if no error
+    setTimeout(() => {
+      console.log(chalk.green('✓ Report opened in browser'));
+    }, 100);
   } catch (error) {
     console.log(chalk.yellow(`⚠️  Could not auto-open browser. Please open: ${reportPath}`));
   }

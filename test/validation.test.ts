@@ -94,13 +94,35 @@ describe('Validation Utils', () => {
       expect(result.warnings.some(w => w.includes('Author filter is very short'))).toBe(true);
     });
 
-    it('should warn about invalid path pattern', () => {
+    it('should reject invalid path pattern', () => {
       const options: GitSparkOptions = {
         path: '[invalid-regex',
       };
 
       const result = validateOptions(options);
-      expect(result.warnings.some(w => w.includes('Path pattern may not be a valid'))).toBe(true);
+      expect(result.errors.some(e => e.includes('Path pattern'))).toBe(true);
+      expect(result.isValid).toBe(false);
+    });
+
+    it('should reject ReDoS patterns in path', () => {
+      const dangerousPatterns = [
+        '(.*)+test',
+        '(.*)*.js',
+        '.+.+.+',
+        '.*.*.*',
+        '(\\w+*)+',
+        '([a-z]+)+',
+      ];
+
+      dangerousPatterns.forEach(pattern => {
+        const options: GitSparkOptions = {
+          path: pattern,
+        };
+
+        const result = validateOptions(options);
+        expect(result.isValid).toBe(false);
+        expect(result.errors.some(e => e.includes('dangerous regex'))).toBe(true);
+      });
     });
 
     it('should validate negative days', () => {

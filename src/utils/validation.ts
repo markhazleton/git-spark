@@ -92,9 +92,24 @@ export function validateOptions(options: GitSparkOptions): ValidationResult {
   // Validate path pattern
   if (options.path) {
     try {
-      new RegExp(options.path);
-    } catch {
-      warnings.push('Path pattern may not be a valid glob or regex pattern');
+      // Check for potentially dangerous regex patterns that could cause ReDoS
+      const dangerousPatterns = [
+        /(\(.*\)\+)+/, // Nested quantifiers like (.*)+
+        /(\(.*\)\*)+/, // Nested quantifiers like (.*)*
+        /(\.\+)+/, // Repeated .+ like .+.+
+        /(\.\*)+/, // Repeated .* like .*.*
+        /(\w+\*)+/, // Repeated word quantifiers
+        /(\[.*\]\+)+/, // Repeated character class quantifiers
+      ];
+      
+      const hasReDoSRisk = dangerousPatterns.some(pattern => pattern.test(options.path!));
+      if (hasReDoSRisk) {
+        errors.push('Path pattern contains potentially dangerous regex that could cause performance issues');
+      } else {
+        new RegExp(options.path);
+      }
+    } catch (e) {
+      errors.push('Path pattern is not a valid regex pattern');
     }
   }
 
