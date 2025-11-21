@@ -6,6 +6,32 @@ const tsparser = require('@typescript-eslint/parser');
 module.exports = [
   js.configs.recommended,
   {
+    ignores: [
+      'node_modules/',
+      'dist/',
+      'build/',
+      'coverage/',
+      'reports/',
+      'test-output/',
+      'test-*-output/',
+      'demo-*/',
+      '*-demo-*',
+      'src/version.ts',
+      '.git-spark/',
+      '.nyc_output/',
+      '.vscode/',
+      '.idea/',
+      '*.config.js',
+      '*.config.cjs',
+      'package-lock.json',
+      'yarn.lock',
+      'pnpm-lock.yaml',
+      '*.log',
+      '*.html',
+      'docs/'
+    ]
+  },
+  {
     files: ['src/**/*.ts'],
     languageOptions: {
       parser: tsparser,
