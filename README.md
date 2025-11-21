@@ -556,6 +556,8 @@ Git Spark is designed with security in mind:
 - **Single External Origin** - Minimizes supply chain surface
 - **Escaped Dynamic Content** - All user / repo derived strings safely encoded in HTML output
 
+**Security Reporting:** Please review our [Security Policy](SECURITY.md) for information on reporting vulnerabilities and our security practices.
+
 ## 🎯 Performance
 
 Optimized for large repositories:

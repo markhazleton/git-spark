@@ -63,6 +63,10 @@
     "pack:test": "npm pack && tar -tf git-spark-1.0.0.tgz | head -20",
     "docs": "typedoc src/index.ts",
     "docs:update-version": "node scripts/update-docs-version.js",
+    "security:audit": "npm audit --audit-level=moderate",
+    "security:check": "npx audit-ci --moderate",
+    "security:update": "npx npm-check-updates -u && npm install && npm test",
+    "security:verify": "node scripts/check-security.js",
     "postinstall": "node -e \"if (process.env.INIT_CWD === process.cwd() && require('fs').existsSync('.git')) { import('husky').then(h => h.default()).catch(() => {}) }\""
   },
   "dependencies": {
