@@ -41,6 +41,7 @@ jobs:
         run: npm run build
 
       - name: Test CLI installation
+        shell: bash
         run: |
           npm pack
           npm install -g git-spark-*.tgz
