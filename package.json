@@ -37,6 +37,10 @@
     "LICENSE",
     "CHANGELOG.md"
   ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "scripts": {
     "prebuild": "node scripts/generate-version.js",
     "build": "tsc",
