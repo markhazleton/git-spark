@@ -62,6 +62,7 @@
     "prepack": "npm run build",
     "pack:test": "npm pack && tar -tf git-spark-1.0.0.tgz | head -20",
     "docs": "typedoc src/index.ts",
+    "docs:update-version": "node scripts/update-docs-version.js",
     "postinstall": "node -e \"if (process.env.INIT_CWD === process.cwd() && require('fs').existsSync('.git')) { import('husky').then(h => h.default()).catch(() => {}) }\""
   },
   "dependencies": {

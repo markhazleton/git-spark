@@ -1,0 +1,86 @@
+name: Update Docs Site
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to update (e.g., 1.0.265)'
+        required: true
+
+jobs:
+  update-docs:
+    name: Update Documentation Site
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: main
+      
+      - name: Extract version from tag
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            VERSION="${{ github.event.inputs.version }}"
+          else
+            VERSION="${GITHUB_REF#refs/tags/v}"
+          fi
+          echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
+          echo "Updating docs to version: ${VERSION}"
+      
+      - name: Update version in docs/index.html
+        run: |
+          VERSION="${{ steps.version.outputs.VERSION }}"
+          sed -i "s/version-badge\">v[0-9]\+\.[0-9]\+\.[0-9]\+/version-badge\">v${VERSION}/g" docs/index.html
+          
+          # Verify the change
+          if grep -q "v${VERSION}" docs/index.html; then
+            echo "✅ Successfully updated version to v${VERSION}"
+            cat docs/index.html | grep "version-badge"
+          else
+            echo "❌ Failed to update version"
+            exit 1
+          fi
+      
+      - name: Commit and push changes
+        run: |
+          VERSION="${{ steps.version.outputs.VERSION }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          if git diff --quiet docs/index.html; then
+            echo "No changes to commit"
+          else
+            git add docs/index.html
+            git commit -m "docs: update version badge to v${VERSION}"
+            git push origin main
+            echo "✅ Pushed version update to main branch"
+          fi
+      
+      - name: Generate analytics report
+        run: |
+          npm ci
+          npm run build
+          node bin/git-spark.js analyze . --format html --output docs/git-spark-report.html --include-analysis
+          
+          # Commit updated report if changed
+          if git diff --quiet docs/git-spark-report.html; then
+            echo "No report changes to commit"
+          else
+            git add docs/git-spark-report.html
+            git commit -m "docs: update analytics report for v${{ steps.version.outputs.VERSION }}"
+            git push origin main
+            echo "✅ Updated analytics report"
+          fi
+      
+      - name: Verify GitHub Pages
+        run: |
+          echo "📊 Docs site should be live at: https://markhazleton.github.io/git-spark/"
+          echo "🔄 GitHub Pages will automatically deploy the updated docs from the main branch"
