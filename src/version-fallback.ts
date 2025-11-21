@@ -9,7 +9,9 @@ import { resolve } from 'path';
 export async function getVersion(): Promise<string> {
   // Method 1: Try to import the generated version file
   try {
-    const versionModule = await import('./version.js');
+    // Use dynamic import to avoid TypeScript compile-time checking
+    const versionPath = './version.js';
+    const versionModule = await import(versionPath);
     return versionModule.VERSION;
   } catch {
     // Method 2: Try to read package.json directly
@@ -44,7 +46,9 @@ export async function getVersion(): Promise<string> {
 
 export async function getBuildTime(): Promise<string> {
   try {
-    const versionModule = await import('./version.js');
+    // Use dynamic import to avoid TypeScript compile-time checking
+    const versionPath = './version.js';
+    const versionModule = await import(versionPath);
     return versionModule.BUILD_TIME;
   } catch {
     return new Date().toISOString();
