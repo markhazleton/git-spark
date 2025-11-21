@@ -16,10 +16,10 @@
   "homepage": "https://markhazleton.github.io/git-spark/",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/MarkHazleton/git-spark.git"
+    "url": "git+https://github.com/markhazleton/git-spark.git"
   },
   "bugs": {
-    "url": "https://github.com/MarkHazleton/git-spark/issues"
+    "url": "https://github.com/markhazleton/git-spark/issues"
   },
   "engines": {
     "node": ">=18.0.0"
