@@ -7,6 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.263] - 2025-11-20
+
+### Security
+
+- **Command Injection Prevention**
+  - Implemented robust sanitization for Git operations to prevent command injection vulnerabilities
+  - Enhanced regex validation security
+
+### Added
+
+- **Team Metrics Enhancements**
+  - Implemented comprehensive updates for team metrics transparency and accuracy
+- **CI Reliability**
+  - Added robust version fallback mechanism to enhance CI reliability
+- **Project Hygiene**
+  - Updated ignore files to better exclude test, config, and IDE artifacts
+
+### Fixed
+
+- **Test Stability**
+  - Resolved flaky timestamp tests
+  - Adjusted coverage thresholds to match CI environments
+- **CI Workflow**
+  - Made macOS tests non-blocking to prevent false negatives in CI pipelines
+
+### Technical
+
+- Added comprehensive test coverage for daily-trends and CSV exporters
+
 ## [1.0.221] - 2025-10-13
 
 ### Added
@@ -181,7 +210,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safe shell command execution
 - Security-focused HTML output (CSP headers)
 
-[Unreleased]: https://github.com/MarkHazleton/git-spark/compare/v1.0.183...HEAD
+[Unreleased]: https://github.com/MarkHazleton/git-spark/compare/v1.0.263...HEAD
+[1.0.263]: https://github.com/MarkHazleton/git-spark/compare/v1.0.221...v1.0.263
+[1.0.221]: https://github.com/MarkHazleton/git-spark/compare/v1.0.183...v1.0.221
 [1.0.183]: https://github.com/MarkHazleton/git-spark/compare/v1.0.170...v1.0.183
 [1.0.170]: https://github.com/MarkHazleton/git-spark/compare/v1.0.0...v1.0.170
 [1.0.0]: https://github.com/MarkHazleton/git-spark/releases/tag/v1.0.0
