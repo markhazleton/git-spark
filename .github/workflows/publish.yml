@@ -46,8 +46,6 @@ jobs:
 
             - name: Publish to NPM
               run: npm publish --provenance
-              env:
-                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
             - name: Create GitHub deployment
               uses: actions/github-script@v7
@@ -105,16 +103,9 @@ jobs:
               id: version
               run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
 
-            - name: Setup Node.js
-              uses: actions/setup-node@v4
-              with:
-                  node-version: "20.x"
-                  registry-url: "https://registry.npmjs.org"
-
-            - name: Unpublish failed release (within 24 hours)
+            - name: Alert for manual intervention
               run: |
                   echo "⚠️ Publication failed for version ${{ steps.version.outputs.VERSION }}"
-                  echo "Manual intervention may be required to unpublish if needed"
-                  echo "Run: npm unpublish git-spark@${{ steps.version.outputs.VERSION }}"
-              env:
-                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+                  echo "Manual intervention is required."
+                  echo "Check the logs to see if the package was partially published."
+                  echo "If needed, run locally: npm unpublish git-spark@${{ steps.version.outputs.VERSION }}"
