@@ -1,8 +1,8 @@
-import { CommitData, FileChange, GitSparkOptions, ProgressCallback } from '../types';
-import { GitExecutor } from '../utils/git';
-import { validateGitOptions } from '../utils/input-validation';
-import { createLogger } from '../utils/logger';
-// import { validateCommitMessage } from '../utils/validation';
+import { CommitData, FileChange, GitSparkOptions, ProgressCallback } from '../types/index.js';
+import { GitExecutor } from '../utils/git.js';
+import { validateGitOptions } from '../utils/input-validation.js';
+import { createLogger } from '../utils/logger.js';
+// import { validateCommitMessage } from '../utils/validation.js';
 
 const logger = createLogger('collector');
 
@@ -200,7 +200,7 @@ export class DataCollector {
     if (safeOptions.path) args.push('--', safeOptions.path);
     if (safeOptions.branch) args.push(safeOptions.branch);
 
-    const spawn = require('child_process').spawn;
+    const { spawn } = await import('child_process');
     const child = spawn('git', args, { cwd: (this.git as any).repoPath });
 
     const commits: CommitData[] = [];

@@ -1,5 +1,5 @@
-import { MarkdownExporter } from '../src/output/markdown';
-import { AnalysisReport } from '../src/types';
+import { MarkdownExporter } from '../src/output/markdown.js';
+import { AnalysisReport } from '../src/types/index.js';
 import { existsSync, readFileSync, rmSync } from 'fs';
 import { resolve } from 'path';
 

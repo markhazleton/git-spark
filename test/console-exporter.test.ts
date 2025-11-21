@@ -1,4 +1,4 @@
-import { AnalysisReport } from '../src/types';
+import { AnalysisReport } from '../src/types/index.js';
 import * as process from 'process';
 
 // Mock chalk and table modules to avoid ESM import issues
@@ -35,7 +35,7 @@ jest.mock('table', () => ({
 }));
 
 // Import after mocking
-import { ConsoleExporter } from '../src/output/console';
+import { ConsoleExporter } from '../src/output/console.js';
 
 describe('ConsoleExporter', () => {
   let consoleExporter: ConsoleExporter;

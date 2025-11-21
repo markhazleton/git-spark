@@ -1,7 +1,7 @@
-import { AzureDevOpsConfig, AzureDevOpsPullRequest, ProcessedPRData } from '../../types';
-import { createLogger } from '../../utils/logger';
-import { MemoryCache, MemoryCacheStats } from './memory-cache';
-import { FileCache, FileCacheStats, FileCacheCleanupResult } from './file-cache';
+import { AzureDevOpsConfig, AzureDevOpsPullRequest, ProcessedPRData } from '../../types/index.js';
+import { createLogger } from '../../utils/logger.js';
+import { MemoryCache, MemoryCacheStats } from './memory-cache.js';
+import { FileCache, FileCacheStats, FileCacheCleanupResult } from './file-cache.js';
 import { join } from 'path';
 
 const logger = createLogger('azure-devops-cache-manager');

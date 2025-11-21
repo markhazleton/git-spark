@@ -2,39 +2,39 @@
  * Tests for version-fallback module
  */
 
-import { getVersion, getBuildTime } from '../src/version-fallback';
+import { getVersion, getBuildTime } from '../src/version-fallback.js';
 
 describe('version-fallback', () => {
   describe('getVersion', () => {
-    it('should return a valid version string', () => {
-      const version = getVersion();
+    it('should return a valid version string', async () => {
+      const version = await getVersion();
       expect(typeof version).toBe('string');
       expect(version.length).toBeGreaterThan(0);
       // Should be either from version module or default
       expect(version).toMatch(/^\d+\.\d+\.\d+/);
     });
 
-    it('should not return an empty string', () => {
-      const version = getVersion();
+    it('should not return an empty string', async () => {
+      const version = await getVersion();
       expect(version).not.toBe('');
     });
 
-    it('should return a consistent version across multiple calls', () => {
-      const version1 = getVersion();
-      const version2 = getVersion();
+    it('should return a consistent version across multiple calls', async () => {
+      const version1 = await getVersion();
+      const version2 = await getVersion();
       expect(version1).toBe(version2);
     });
 
-    it('should return a semantic version format', () => {
-      const version = getVersion();
+    it('should return a semantic version format', async () => {
+      const version = await getVersion();
       // Should match semantic version pattern (x.y.z)
       expect(version).toMatch(/^\d+\.\d+\.\d+/);
     });
   });
 
   describe('getBuildTime', () => {
-    it('should return a valid ISO date string', () => {
-      const buildTime = getBuildTime();
+    it('should return a valid ISO date string', async () => {
+      const buildTime = await getBuildTime();
       expect(typeof buildTime).toBe('string');
       expect(buildTime.length).toBeGreaterThan(0);
 
@@ -43,20 +43,20 @@ describe('version-fallback', () => {
       expect(date.toString()).not.toBe('Invalid Date');
     });
 
-    it('should not return an empty string', () => {
-      const buildTime = getBuildTime();
+    it('should not return an empty string', async () => {
+      const buildTime = await getBuildTime();
       expect(buildTime).not.toBe('');
     });
 
-    it('should return an ISO format date', () => {
-      const buildTime = getBuildTime();
+    it('should return an ISO format date', async () => {
+      const buildTime = await getBuildTime();
       // Should match ISO format (allow for timezone variations)
       expect(buildTime).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/);
     });
 
-    it('should return a consistent build time format across multiple calls', () => {
-      const buildTime1 = getBuildTime();
-      const buildTime2 = getBuildTime();
+    it('should return a consistent build time format across multiple calls', async () => {
+      const buildTime1 = await getBuildTime();
+      const buildTime2 = await getBuildTime();
       // Both should be valid ISO dates
       expect(buildTime1).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/);
       expect(buildTime2).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/);
@@ -66,8 +66,8 @@ describe('version-fallback', () => {
       expect(Math.abs(time1 - time2)).toBeLessThan(1000);
     });
 
-    it('should return a valid timestamp that can be parsed', () => {
-      const buildTime = getBuildTime();
+    it('should return a valid timestamp that can be parsed', async () => {
+      const buildTime = await getBuildTime();
       const timestamp = Date.parse(buildTime);
       expect(timestamp).not.toBeNaN();
       expect(timestamp).toBeGreaterThan(0);
@@ -75,15 +75,15 @@ describe('version-fallback', () => {
   });
 
   describe('error handling', () => {
-    it('should handle missing version module gracefully', () => {
+    it('should handle missing version module gracefully', async () => {
       // Since the actual file may or may not exist, just ensure functions don't throw
-      expect(() => getVersion()).not.toThrow();
-      expect(() => getBuildTime()).not.toThrow();
+      await expect(getVersion()).resolves.not.toThrow();
+      await expect(getBuildTime()).resolves.not.toThrow();
     });
 
-    it('should return reasonable defaults when modules are missing', () => {
-      const version = getVersion();
-      const buildTime = getBuildTime();
+    it('should return reasonable defaults when modules are missing', async () => {
+      const version = await getVersion();
+      const buildTime = await getBuildTime();
 
       // Should have reasonable fallback values
       expect(version).toMatch(/^\d+\.\d+\.\d+/);
@@ -92,10 +92,10 @@ describe('version-fallback', () => {
   });
 
   describe('integration scenarios', () => {
-    it('should work with current project structure', () => {
+    it('should work with current project structure', async () => {
       // Test that the functions work in the current project context
-      const version = getVersion();
-      const buildTime = getBuildTime();
+      const version = await getVersion();
+      const buildTime = await getBuildTime();
 
       expect(version).toBeDefined();
       expect(buildTime).toBeDefined();
@@ -103,9 +103,9 @@ describe('version-fallback', () => {
       expect(typeof buildTime).toBe('string');
     });
 
-    it('should return valid data for package operations', () => {
-      const version = getVersion();
-      const buildTime = getBuildTime();
+    it('should return valid data for package operations', async () => {
+      const version = await getVersion();
+      const buildTime = await getBuildTime();
 
       // Version should be valid for npm/package.json
       expect(version.split('.').length).toBeGreaterThanOrEqual(3);

@@ -1,7 +1,7 @@
-import { AnalysisReport } from '../types';
+import { AnalysisReport } from '../types/index.js';
 import { writeFileSync, mkdirSync } from 'fs';
 import { resolve, dirname } from 'path';
-import { createLogger } from '../utils/logger';
+import { createLogger } from '../utils/logger.js';
 
 const logger = createLogger('json-exporter');
 

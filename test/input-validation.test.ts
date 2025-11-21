@@ -10,7 +10,7 @@ import {
   validatePathString,
   validateBranchString,
   validateGitOptions,
-} from '../src/utils/input-validation';
+} from '../src/utils/input-validation.js';
 
 describe('Input Validation', () => {
   describe('validateDateString', () => {

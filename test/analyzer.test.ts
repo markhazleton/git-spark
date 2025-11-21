@@ -1,4 +1,4 @@
-import { GitAnalyzer } from '../src/core/analyzer';
+import { GitAnalyzer } from '../src/core/analyzer.js';
 
 describe('GitAnalyzer Coverage Tests', () => {
   let analyzer: GitAnalyzer;

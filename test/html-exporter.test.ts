@@ -1,5 +1,5 @@
-import { HTMLExporter } from '../src/output/html';
-import { AnalysisReport } from '../src/types';
+import { HTMLExporter } from '../src/output/html.js';
+import { AnalysisReport } from '../src/types/index.js';
 import { existsSync, readFileSync, unlinkSync, rmSync } from 'fs';
 import { resolve } from 'path';
 

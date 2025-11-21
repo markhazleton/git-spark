@@ -6,20 +6,19 @@
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
 
-export function getVersion(): string {
+export async function getVersion(): Promise<string> {
   // Method 1: Try to import the generated version file
   try {
-    const versionModule = require('./version');
+    const versionModule = await import('./version.js');
     return versionModule.VERSION;
   } catch {
     // Method 2: Try to read package.json directly
     try {
-      // Try from various potential locations
+      // Try from various potential locations relative to cwd
       const possiblePaths = [
-        resolve(__dirname, '../package.json'),
-        resolve(__dirname, '../../package.json'),
-        resolve(__dirname, '../../../package.json'),
         resolve(process.cwd(), 'package.json'),
+        resolve(process.cwd(), '../package.json'),
+        resolve(process.cwd(), '../../package.json'),
       ];
 
       for (const pkgPath of possiblePaths) {
@@ -43,9 +42,9 @@ export function getVersion(): string {
   return '0.0.0';
 }
 
-export function getBuildTime(): string {
+export async function getBuildTime(): Promise<string> {
   try {
-    const versionModule = require('./version');
+    const versionModule = await import('./version.js');
     return versionModule.BUILD_TIME;
   } catch {
     return new Date().toISOString();

@@ -1,5 +1,5 @@
-import { AzureDevOpsConfig, AzureDevOpsValidationResult, GitSparkOptions } from '../../types';
-import { createLogger } from '../../utils/logger';
+import { AzureDevOpsConfig, AzureDevOpsValidationResult, GitSparkOptions } from '../../types/index.js';
+import { createLogger } from '../../utils/logger.js';
 import { readFileSync, existsSync } from 'fs';
 import { resolve } from 'path';
 

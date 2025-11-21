@@ -4,10 +4,10 @@ import {
   AzureDevOpsError,
   AzureDevOpsFilters,
   ProgressCallback,
-} from '../../types';
-import { createLogger } from '../../utils/logger';
-import { RateLimiter } from './rate-limiter';
-import { PaginationManager } from './pagination';
+} from '../../types/index.js';
+import { createLogger } from '../../utils/logger.js';
+import { RateLimiter } from './rate-limiter.js';
+import { PaginationManager } from './pagination.js';
 
 const logger = createLogger('azure-devops-client');
 

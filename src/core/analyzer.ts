@@ -18,13 +18,13 @@ import {
   TeamInsights,
   CurrentRepositoryState,
   AzureDevOpsAnalytics,
-} from '../types';
-import { DataCollector } from './collector';
-import { GitIgnore } from '../utils/gitignore';
-import { DailyTrendsAnalyzer } from './daily-trends';
-import { AzureDevOpsCollector } from '../integrations/azure-devops/collector';
-import { createLogger } from '../utils/logger';
-import { validateCommitMessage, sanitizeEmail } from '../utils/validation';
+} from '../types/index.js';
+import { DataCollector } from './collector.js';
+import { GitIgnore } from '../utils/gitignore.js';
+import { DailyTrendsAnalyzer } from './daily-trends.js';
+import { AzureDevOpsCollector } from '../integrations/azure-devops/collector.js';
+import { createLogger } from '../utils/logger.js';
+import { validateCommitMessage, sanitizeEmail } from '../utils/validation.js';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -1812,8 +1812,8 @@ export class GitAnalyzer {
     const branch = await this.collector.getCurrentBranch();
 
     // Use the version fallback utility for more robust version detection
-    const { getVersion } = await import('../version-fallback');
-    const version = getVersion();
+    const { getVersion } = await import('../version-fallback.js');
+    const version = await getVersion();
 
     let gitVersion = '';
     try {
@@ -1824,7 +1824,7 @@ export class GitAnalyzer {
 
     let commit = '';
     try {
-      const { spawnSync } = require('child_process');
+      const { spawnSync } = await import('child_process');
       const r = spawnSync('git', ['rev-parse', 'HEAD'], { cwd: options.repoPath || process.cwd() });
       if (r.status === 0) commit = String(r.stdout).trim();
     } catch {

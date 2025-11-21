@@ -1,7 +1,7 @@
-import { AnalysisReport, FileFilteringConfig } from '../types';
+import { AnalysisReport, FileFilteringConfig } from '../types/index.js';
 import { writeFileSync, mkdirSync } from 'fs';
 import { resolve, dirname, basename } from 'path';
-import { createLogger } from '../utils/logger';
+import { createLogger } from '../utils/logger.js';
 import { createHash } from 'crypto';
 
 const logger = createLogger('html-exporter');

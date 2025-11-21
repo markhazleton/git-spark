@@ -1,5 +1,5 @@
-import { JSONExporter } from '../src/output/json';
-import { AnalysisReport } from '../src/types';
+import { JSONExporter } from '../src/output/json.js';
+import { AnalysisReport } from '../src/types/index.js';
 import { existsSync, readFileSync, rmSync } from 'fs';
 import { resolve } from 'path';
 

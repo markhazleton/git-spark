@@ -6,8 +6,8 @@ import {
   sanitizeInput,
   sanitizePath,
   sanitizeEmail,
-} from '../src/utils/validation';
-import { GitSparkOptions } from '../src/types';
+} from '../src/utils/validation.js';
+import { GitSparkOptions } from '../src/types/index.js';
 import * as process from 'process';
 
 describe('Validation Utils', () => {

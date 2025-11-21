@@ -12,8 +12,8 @@ import {
   ContributionDay,
   ContributionWeek,
   ProgressCallback,
-} from '../types';
-import { createLogger } from '../utils/logger';
+} from '../types/index.js';
+import { createLogger } from '../utils/logger.js';
 
 const logger = createLogger('daily-trends');
 

@@ -1,5 +1,5 @@
-import { CSVExporter } from '../src/output/csv';
-import { AnalysisReport } from '../src/types';
+import { CSVExporter } from '../src/output/csv.js';
+import { AnalysisReport } from '../src/types/index.js';
 import { existsSync, readFileSync, rmSync } from 'fs';
 import { resolve } from 'path';
 

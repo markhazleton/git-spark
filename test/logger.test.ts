@@ -1,4 +1,4 @@
-import { createLogger, setGlobalLogLevel } from '../src/utils/logger';
+import { createLogger, setGlobalLogLevel } from '../src/utils/logger.js';
 
 // Simplified console mocking that bypasses the TypeScript issue
 const mockConsole = {

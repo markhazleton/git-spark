@@ -7,13 +7,13 @@ import {
   ProgressCallback,
   AzureDevOpsError,
   AzureDevOpsAnalytics,
-} from '../../types';
-import { createLogger } from '../../utils/logger';
-import { createAzureDevOpsConfig } from './config';
-import { AzureDevOpsClient } from './client';
-import { CacheManager } from './cache-manager';
-import { GitCommitAssociator } from './git-integration';
-import { AzureDevOpsAnalyticsProcessor } from './analytics';
+} from '../../types/index.js';
+import { createLogger } from '../../utils/logger.js';
+import { createAzureDevOpsConfig } from './config.js';
+import { AzureDevOpsClient } from './client.js';
+import { CacheManager } from './cache-manager.js';
+import { GitCommitAssociator } from './git-integration.js';
+import { AzureDevOpsAnalyticsProcessor } from './analytics.js';
 
 const logger = createLogger('azure-devops-collector');
 

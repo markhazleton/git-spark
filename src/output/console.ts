@@ -1,7 +1,7 @@
-import { AnalysisReport } from '../types';
+import { AnalysisReport } from '../types/index.js';
 import chalk from 'chalk';
 import { table } from 'table';
-import { createLogger } from '../utils/logger';
+import { createLogger } from '../utils/logger.js';
 const logger = createLogger('console-exporter');
 
 /**

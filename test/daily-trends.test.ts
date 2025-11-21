@@ -1,5 +1,5 @@
-import { DailyTrendsAnalyzer } from '../src/core/daily-trends';
-import { CommitData } from '../src/types';
+import { DailyTrendsAnalyzer } from '../src/core/daily-trends.js';
+import { CommitData } from '../src/types/index.js';
 
 describe('DailyTrendsAnalyzer', () => {
   let analyzer: DailyTrendsAnalyzer;

@@ -1,8 +1,8 @@
 import { Command } from 'commander';
-import { GitSparkOptions, LogLevel, OutputFormat } from '../types';
-import { validateOptions, validateNodeVersion, validateGitInstallation } from '../utils/validation';
-import { setGlobalLogLevel, createLogger } from '../utils/logger';
-import { getVersion } from '../version-fallback';
+import { GitSparkOptions, LogLevel, OutputFormat } from '../types/index.js';
+import { validateOptions, validateNodeVersion, validateGitInstallation } from '../utils/validation.js';
+import { setGlobalLogLevel, createLogger } from '../utils/logger.js';
+import { getVersion } from '../version-fallback.js';
 import chalk from 'chalk';
 import boxen from 'boxen';
 import ora from 'ora';
@@ -35,13 +35,15 @@ export async function createCLI(): Promise<Command> {
   // Get version dynamically
   let version = '1.0.0';
   try {
-    const versionModule = await import('../version');
+    const versionModule = await import('../version.js');
     version = versionModule.VERSION;
   } catch {
     // Try to read from package.json as fallback
     try {
       const { readFileSync } = await import('fs');
-      const { resolve } = await import('path');
+      const { resolve, dirname } = await import('path');
+      const { fileURLToPath } = await import('url');
+      const __dirname = dirname(fileURLToPath(import.meta.url));
       const pkgPath = resolve(__dirname, '../../package.json');
       const pkg = JSON.parse(readFileSync(pkgPath, 'utf-8'));
       version = pkg.version || version;
@@ -176,7 +178,7 @@ async function executeHTMLReport(options: any): Promise<void> {
     spinner.text = 'Loading git-spark analysis engine';
 
     // Import GitSpark properly
-    const { GitSpark } = await import('../index');
+    const { GitSpark } = await import('../index.js');
 
     spinner.text = 'Starting repository analysis';
     const gitSpark = new GitSpark(
@@ -194,7 +196,7 @@ async function executeHTMLReport(options: any): Promise<void> {
     await gitSpark.export('html', gitSparkOptions.output || './reports');
 
     // Construct the full path to the generated report
-    const { resolve } = require('path');
+    const { resolve } = await import('path');
     const outputPath = resolve(gitSparkOptions.output || './reports', 'git-spark-report.html');
 
     spinner.succeed('HTML report generated successfully!');
@@ -331,9 +333,9 @@ async function startHTMLServer(reportPath: string, port: number): Promise<void> 
 
 async function openHTMLReport(reportPath: string): Promise<void> {
   try {
-    const { spawn } = require('child_process');
-    const os = require('os');
-    const { resolve } = require('path');
+    const { spawn } = await import('child_process');
+    const os = await import('os');
+    const { resolve } = await import('path');
 
     // Sanitize the file path by resolving to absolute path
     const sanitizedPath = resolve(reportPath);
@@ -430,7 +432,7 @@ async function executeAnalysis(options: any): Promise<void> {
     }
 
     // Dynamic import to avoid circular dependencies
-    const GitSpark = require('../index').GitSpark || require('../../dist/src/index').GitSpark;
+    const { GitSpark } = await import('../index.js');
 
     spinner.text = 'Starting analysis';
     const gitSpark = new GitSpark(
@@ -482,7 +484,7 @@ async function executeHealthCheck(options: any): Promise<void> {
       format: 'console',
     };
 
-    const GitSpark = require('../../dist/index').GitSpark || require('../index').GitSpark;
+    const { GitSpark } = await import('../index.js');
 
     const gitSpark = new GitSpark(
       gitSparkOptions,

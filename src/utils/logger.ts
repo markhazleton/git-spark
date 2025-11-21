@@ -1,4 +1,4 @@
-import { LogLevel } from '../types';
+import { LogLevel } from '../types/index.js';
 
 interface LogEntry {
   timestamp: Date;

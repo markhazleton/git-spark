@@ -1,9 +1,8 @@
 #!/usr/bin/env node
 
-// Adjusted paths: TypeScript compilation preserves 'src' directory in dist (dist/src/...)
-// so we require from dist/src to locate emitted JS modules.
-const { createCLI } = require('../dist/src/cli/commands');
-const { setGlobalLogLevel } = require('../dist/src/utils/logger');
+// ESM entry point for git-spark CLI
+import { createCLI } from '../dist/src/cli/commands.js';
+import { setGlobalLogLevel } from '../dist/src/utils/logger.js';
 
 // Handle uncaught exceptions
 process.on('uncaughtException', (error) => {

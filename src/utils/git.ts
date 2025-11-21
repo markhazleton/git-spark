@@ -1,7 +1,7 @@
 import { spawn, ChildProcess } from 'child_process';
-import { GitCommand, GitError } from '../types';
-import { createLogger } from './logger';
-import { validateGitOptions } from './input-validation';
+import { GitCommand, GitError } from '../types/index.js';
+import { createLogger } from './logger.js';
+import { validateGitOptions } from './input-validation.js';
 
 const logger = createLogger('git');
 

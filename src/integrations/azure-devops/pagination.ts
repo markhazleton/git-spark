@@ -1,4 +1,4 @@
-import { AzureDevOpsConfig } from '../../types';
+import { AzureDevOpsConfig } from '../../types/index.js';
 
 /**
  * Manages optimal page sizes for different API endpoints

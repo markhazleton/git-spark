@@ -3,15 +3,15 @@
  * Main entry point for the library
  */
 
-export * from './types';
-export * from './core/analyzer';
-export * from './core/collector';
-export * from './utils/git';
-export * from './utils/logger';
-export * from './utils/validation';
-export * from './integrations/azure-devops/collector';
-export * from './integrations/azure-devops/config';
-export * from './integrations/azure-devops/client';
+export * from './types/index.js';
+export * from './core/analyzer.js';
+export * from './core/collector.js';
+export * from './utils/git.js';
+export * from './utils/logger.js';
+export * from './utils/validation.js';
+export * from './integrations/azure-devops/collector.js';
+export * from './integrations/azure-devops/config.js';
+export * from './integrations/azure-devops/client.js';
 
 import {
   GitSparkOptions,
@@ -19,10 +19,10 @@ import {
   GitSparkConfig,
   OutputFormat,
   ProgressCallback,
-} from './types';
-import { GitAnalyzer } from './core/analyzer';
-import { validateOptions } from './utils/validation';
-import { createLogger } from './utils/logger';
+} from './types/index.js';
+import { GitAnalyzer } from './core/analyzer.js';
+import { validateOptions } from './utils/validation.js';
+import { createLogger } from './utils/logger.js';
 
 const logger = createLogger('git-spark');
 

@@ -1,4 +1,4 @@
-import { GitSparkOptions, ValidationResult, ValidationError } from '../types';
+import { GitSparkOptions, ValidationResult, ValidationError } from '../types/index.js';
 import { existsSync, statSync } from 'fs';
 import { resolve } from 'path';
 import * as semver from 'semver';
@@ -138,9 +138,10 @@ export function validateNodeVersion(): ValidationResult {
   };
 }
 
-export function validateGitInstallation(): Promise<ValidationResult> {
-  return new Promise(resolve => {
-    const { spawn } = require('child_process');
+export async function validateGitInstallation(): Promise<ValidationResult> {
+  const { spawn } = await import('child_process');
+  
+  return new Promise((resolve) => {
     const git = spawn('git', ['--version']);
 
     let output = '';

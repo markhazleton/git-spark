@@ -1,5 +1,5 @@
-import { GitExecutor } from '../src/utils/git';
-import { GitCommand } from '../src/types';
+import { GitExecutor } from '../src/utils/git.js';
+import { GitCommand } from '../src/types/index.js';
 import * as childProcess from 'child_process';
 import { EventEmitter } from 'events';
 import { Buffer } from 'buffer';

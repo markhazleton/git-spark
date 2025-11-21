@@ -1,5 +1,5 @@
-import { GitSpark, analyze, exportReport } from '../src/index';
-import { GitSparkOptions, AnalysisReport, OutputFormat } from '../src/types';
+import { GitSpark, analyze, exportReport } from '../src/index.js';
+import { GitSparkOptions, AnalysisReport, OutputFormat } from '../src/types/index.js';
 import * as process from 'process';
 
 // Mock the output modules to avoid file system operations

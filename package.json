@@ -24,7 +24,7 @@
   "engines": {
     "node": ">=18.0.0"
   },
-  "type": "commonjs",
+  "type": "module",
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
   "bin": {
@@ -88,7 +88,8 @@
     "typescript": "^5.9.3"
   },
   "jest": {
-    "preset": "ts-jest",
+    "preset": "ts-jest/presets/default-esm",
+    "extensionsToTreatAsEsm": [".ts"],
     "testEnvironment": "node",
     "testTimeout": 30000,
     "forceExit": true,
@@ -100,6 +101,14 @@
       "**/__tests__/**/*.ts",
       "**/*.test.ts"
     ],
+    "moduleNameMapper": {
+      "^(\\.{1,2}/.*)\\.js$": "$1"
+    },
+    "transform": {
+      "^.+\\.ts$": ["ts-jest", {
+        "useESM": true
+      }]
+    },
     "collectCoverageFrom": [
       "src/**/*.ts",
       "!src/**/*.d.ts",

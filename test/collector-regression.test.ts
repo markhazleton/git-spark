@@ -1,4 +1,4 @@
-import { DataCollector } from '../src/core/collector';
+import { DataCollector } from '../src/core/collector.js';
 import { mkdirSync, writeFileSync, rmSync } from 'fs';
 import { join, dirname } from 'path';
 import { execSync } from 'child_process';

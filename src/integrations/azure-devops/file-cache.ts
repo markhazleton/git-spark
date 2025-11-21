@@ -9,7 +9,7 @@ import {
 } from 'fs';
 import { join, dirname } from 'path';
 import { createHash } from 'crypto';
-import { createLogger } from '../../utils/logger';
+import { createLogger } from '../../utils/logger.js';
 
 const logger = createLogger('azure-devops-file-cache');
 

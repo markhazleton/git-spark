@@ -9,8 +9,8 @@ import {
   GitIntegrationAnalytics,
   TeamCollaborationInsights,
   DataQualityReport,
-} from '../../types';
-import { createLogger } from '../../utils/logger';
+} from '../../types/index.js';
+import { createLogger } from '../../utils/logger.js';
 
 const logger = createLogger('azure-devops-analytics');
 
