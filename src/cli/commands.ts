@@ -66,6 +66,7 @@ export async function createCLI(): Promise<Command> {
     .option('-a, --author <name>', 'filter by author')
     .option('-p, --path <glob>', 'filter by file path pattern')
     .option('--heavy', 'enable expensive analyses')
+    .option('--open', 'open HTML report in browser after generation')
     .option('--log-level <level>', 'logging verbosity (error|warn|info|debug|verbose)', 'info')
     .option('--no-cache', 'disable caching')
     .option('--compare <branch>', 'compare with another branch')
@@ -452,6 +453,13 @@ async function executeAnalysis(options: any): Promise<void> {
 
     // Display summary
     displaySummary(report);
+
+    // Handle --open flag for HTML reports
+    if (options.open && (gitSparkOptions.format === 'html' || !gitSparkOptions.format)) {
+      const { resolve } = await import('path');
+      const outputPath = resolve(gitSparkOptions.output || './reports', 'git-spark-report.html');
+      await openHTMLReport(outputPath);
+    }
   } catch (error) {
     spinner.fail('Analysis failed');
     if (error instanceof Error) {

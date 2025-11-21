@@ -41,12 +41,14 @@ describe('ConsoleExporter', () => {
   let consoleExporter: ConsoleExporter;
   let mockReport: AnalysisReport;
   let stdoutSpy: jest.SpyInstance;
+  let consoleLogSpy: jest.SpyInstance;
 
   beforeEach(() => {
     consoleExporter = new ConsoleExporter();
 
     // Mock process.stdout.write to capture console output
     stdoutSpy = jest.spyOn(process.stdout, 'write').mockImplementation(() => true);
+    consoleLogSpy = jest.spyOn(console, 'log').mockImplementation();
 
     // Create simplified mock report matching actual structure
     mockReport = {
@@ -339,6 +341,7 @@ describe('ConsoleExporter', () => {
 
   afterEach(() => {
     stdoutSpy.mockRestore();
+    consoleLogSpy.mockRestore();
   });
 
   describe('export', () => {
@@ -467,6 +470,97 @@ describe('ConsoleExporter', () => {
       (lowRiskReport.risks as any).level = 'low';
 
       expect(() => consoleExporter.export(lowRiskReport)).not.toThrow();
+    });
+
+    it('should handle empty arrays gracefully', () => {
+      const emptyReport = {
+        ...mockReport,
+        authors: [],
+        files: [],
+        hotspots: [],
+        timeline: [],
+      };
+
+      expect(() => consoleExporter.export(emptyReport)).not.toThrow();
+      expect(stdoutSpy).toHaveBeenCalled();
+    });
+
+    it('should display insights when available', () => {
+      const reportWithInsights = {
+        ...mockReport,
+        summary: {
+          ...mockReport.summary,
+          insights: ['Good commit patterns', 'Active maintenance'],
+          actionItems: ['Improve documentation', 'Add more tests'],
+        },
+      };
+
+      expect(() => consoleExporter.export(reportWithInsights)).not.toThrow();
+      expect(stdoutSpy).toHaveBeenCalled();
+    });
+
+    it('should display recommendations when available', () => {
+      const reportWithRecommendations = {
+        ...mockReport,
+        risks: {
+          ...mockReport.risks,
+          recommendations: ['Review high-risk files', 'Improve test coverage'],
+        },
+        governance: {
+          ...mockReport.governance,
+          recommendations: ['Use conventional commits', 'Improve message length'],
+        },
+      };
+
+      expect(() => consoleExporter.export(reportWithRecommendations)).not.toThrow();
+      expect(stdoutSpy).toHaveBeenCalled();
+    });
+
+    it('should handle missing insights and recommendations', () => {
+      const reportWithoutRecommendations = {
+        ...mockReport,
+        summary: {
+          ...mockReport.summary,
+          insights: [],
+          actionItems: [],
+        },
+        risks: {
+          ...mockReport.risks,
+          recommendations: [],
+        },
+        governance: {
+          ...mockReport.governance,
+          recommendations: [],
+        },
+      };
+
+      expect(() => consoleExporter.export(reportWithoutRecommendations)).not.toThrow();
+      expect(stdoutSpy).toHaveBeenCalled();
+    });
+
+    it('should handle report with timeline data', () => {
+      const reportWithTimeline = {
+        ...mockReport,
+        timeline: [
+          {
+            date: new Date('2024-01-01'),
+            commits: 10,
+            authors: 3,
+            churn: 1000,
+            files: 15,
+          },
+          {
+            date: new Date('2024-01-02'),
+            commits: 5,
+            authors: 2,
+            churn: 500,
+            files: 8,
+          },
+        ],
+      };
+
+      expect(() => consoleExporter.export(reportWithTimeline)).not.toThrow();
+      expect(stdoutSpy).toHaveBeenCalled();
     });
   });
 });

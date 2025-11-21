@@ -701,5 +701,291 @@ describe('HTMLExporter (Phase 3)', () => {
         htmlExporter.generateVolumeSparklines(mockFlowMetrics);
       }).not.toThrow();
     });
+    it('handles export errors gracefully', async () => {
+      const invalidPath = '\0invalid';
+      await expect(exporter.export(report, invalidPath)).rejects.toThrow();
+    });
+
+    it('handles different date range options', async () => {
+      const outDir = './test-html-output';
+
+      // Test with since and until
+      const reportWithSinceUntil = {
+        ...report,
+        metadata: {
+          ...report.metadata,
+          analysisOptions: {
+            ...report.metadata.analysisOptions,
+            since: '2024-01-01',
+            until: '2024-12-31',
+          },
+        },
+      };
+      await exporter.export(reportWithSinceUntil, outDir);
+      expect(existsSync(resolve(outDir, 'git-spark-report.html'))).toBe(true);
+
+      // Test with only since
+      const reportWithSince = {
+        ...report,
+        metadata: {
+          ...report.metadata,
+          analysisOptions: {
+            ...report.metadata.analysisOptions,
+            since: '2024-01-01',
+          },
+        },
+      };
+      await exporter.export(reportWithSince, outDir);
+      expect(existsSync(resolve(outDir, 'git-spark-report.html'))).toBe(true);
+
+      // Test with only until
+      const reportWithUntil = {
+        ...report,
+        metadata: {
+          ...report.metadata,
+          analysisOptions: {
+            ...report.metadata.analysisOptions,
+            until: '2024-12-31',
+          },
+        },
+      };
+      await exporter.export(reportWithUntil, outDir);
+      expect(existsSync(resolve(outDir, 'git-spark-report.html'))).toBe(true);
+
+      // Test with days
+      const reportWithDays = {
+        ...report,
+        metadata: {
+          ...report.metadata,
+          analysisOptions: {
+            ...report.metadata.analysisOptions,
+            days: 30,
+          },
+        },
+      };
+      await exporter.export(reportWithDays, outDir);
+      expect(existsSync(resolve(outDir, 'git-spark-report.html'))).toBe(true);
+
+      // Clean up
+      if (existsSync(outDir)) {
+        rmSync(outDir, { recursive: true });
+      }
+    });
+
+    it('handles stability metrics in daily trends', async () => {
+      const outDir = './test-html-output';
+      const reportWithStability = {
+        ...report,
+        teamScore: report.teamScore, // Include teamScore
+        dailyTrends: {
+          analysisMetadata: {
+            timezone: 'UTC',
+            totalDays: 1,
+            activeDays: 1,
+          },
+          flowMetrics: [],
+          stabilityMetrics: [
+            {
+              day: '2024-01-01',
+              revertsPerDay: 1,
+              mergeRatioPerDay: 0.8,
+              retouchRate: 0.15,
+              renamesPerDay: 2,
+              outOfHoursShare: 0.12,
+            },
+          ],
+          ownershipMetrics: [],
+          couplingMetrics: [],
+          hygieneMetrics: [],
+          contributionsGraph: { weeks: [], totalContributions: 0 },
+        } as any,
+      };
+
+      await exporter.export(reportWithStability, outDir);
+      const html = readFileSync(resolve(outDir, 'git-spark-report.html'), 'utf-8');
+      expect(html).toContain('Reverts');
+
+      if (existsSync(outDir)) {
+        rmSync(outDir, { recursive: true });
+      }
+    });
+
+    it('handles file type breakdown', async () => {
+      const outDir = './test-html-output';
+      const reportWithFileTypes = {
+        ...report,
+        dailyTrends: report.dailyTrends, // Include analysisMetadata
+        currentState: {
+          totalFiles: 100,
+          totalSizeBytes: 1000000,
+          byExtension: [
+            { extension: 'ts', language: 'TypeScript', fileCount: 50, totalSizeBytes: 500000, percentage: 50, averageFileSize: 10000 },
+          ],
+          fileTypeBreakdown: {
+            byExtension: [{ extension: 'ts', percentage: 50 }],
+            categories: {
+              code: { files: 80, percentage: 80 },
+            },
+          },
+        } as any,
+        teamScore: report.teamScore, // Include teamScore to avoid errors
+      };
+
+      await exporter.export(reportWithFileTypes, outDir);
+      const html = readFileSync(resolve(outDir, 'git-spark-report.html'), 'utf-8');
+      expect(html).toBeTruthy();
+
+      if (existsSync(outDir)) {
+        rmSync(outDir, { recursive: true });
+      }
+    });
+
+    it('handles ownership metrics in daily trends', async () => {
+      const outDir = './test-html-output';
+      const reportWithOwnership = {
+        ...report,
+        teamScore: report.teamScore,
+        dailyTrends: {
+          analysisMetadata: {
+            timezone: 'UTC',
+            totalDays: 2,
+            activeDays: 2,
+          },
+          flowMetrics: [],
+          stabilityMetrics: [],
+          ownershipMetrics: [
+            {
+              day: '2024-01-01',
+              knowledgeConcentration: 0.65,
+              busFactor: 3,
+              primaryOwnerCoverage: 0.85,
+              sharedOwnership: 0.55,
+              newFilesCreatedPerDay: 5,
+              singleOwnerFilesTouched: 12,
+              filesTouchedToday: 20,
+              singleOwnerShare: 0.60,
+              avgAuthorsPerFile: 1.8,
+            },
+            {
+              day: '2024-01-02',
+              knowledgeConcentration: 0.70,
+              busFactor: 2,
+              primaryOwnerCoverage: 0.90,
+              sharedOwnership: 0.50,
+              newFilesCreatedPerDay: 3,
+              singleOwnerFilesTouched: 15,
+              filesTouchedToday: 18,
+              singleOwnerShare: 0.83,
+              avgAuthorsPerFile: 1.5,
+            },
+          ],
+          couplingMetrics: [],
+          hygieneMetrics: [],
+          contributionsGraph: { weeks: [], totalContributions: 0 },
+        } as any,
+      };
+
+      await exporter.export(reportWithOwnership, outDir);
+      const html = readFileSync(resolve(outDir, 'git-spark-report.html'), 'utf-8');
+      expect(html).toContain('Daily Ownership Patterns');
+      expect(html).toContain('Single Owner Files');
+
+      if (existsSync(outDir)) {
+        rmSync(outDir, { recursive: true });
+      }
+    });
+
+    it('handles coupling metrics in daily trends', async () => {
+      const outDir = './test-html-output';
+      const reportWithCoupling = {
+        ...report,
+        teamScore: report.teamScore,
+        dailyTrends: {
+          analysisMetadata: {
+            timezone: 'UTC',
+            totalDays: 2,
+            activeDays: 2,
+          },
+          flowMetrics: [],
+          stabilityMetrics: [],
+          ownershipMetrics: [],
+          couplingMetrics: [
+            {
+              day: '2024-01-01',
+              avgCouplingStrength: 0.45,
+              strongCouplingCount: 5,
+              avgFilesPerChange: 3.2,
+              coChangeDensityPerDay: 0.35,
+              totalCoChangePairs: 45,
+              multiFileCommits: 12,
+            },
+            {
+              day: '2024-01-02',
+              avgCouplingStrength: 0.50,
+              strongCouplingCount: 6,
+              avgFilesPerChange: 3.5,
+              coChangeDensityPerDay: 0.40,
+              totalCoChangePairs: 52,
+              multiFileCommits: 15,
+            },
+          ],
+          hygieneMetrics: [],
+          contributionsGraph: { weeks: [], totalContributions: 0 },
+        } as any,
+      };
+
+      await exporter.export(reportWithCoupling, outDir);
+      const html = readFileSync(resolve(outDir, 'git-spark-report.html'), 'utf-8');
+      expect(html).toContain('Daily Coupling Indicators');
+      expect(html).toContain('Co-change Density');
+
+      if (existsSync(outDir)) {
+        rmSync(outDir, { recursive: true });
+      }
+    });
+
+    it('handles hygiene metrics in daily trends', async () => {
+      const outDir = './test-html-output';
+      const reportWithHygiene = {
+        ...report,
+        teamScore: report.teamScore,
+        dailyTrends: {
+          analysisMetadata: {
+            timezone: 'UTC',
+            totalDays: 2,
+            activeDays: 2,
+          },
+          flowMetrics: [],
+          stabilityMetrics: [],
+          ownershipMetrics: [],
+          couplingMetrics: [],
+          hygieneMetrics: [
+            {
+              day: '2024-01-01',
+              conventionalCommitShare: 0.75,
+              semanticCommitShare: 0.80,
+              longMessageShare: 0.65,
+              typedCommitShare: 0.70,
+            },
+            {
+              day: '2024-01-02',
+              conventionalCommitShare: 0.78,
+              semanticCommitShare: 0.82,
+              longMessageShare: 0.68,
+              typedCommitShare: 0.72,
+            },
+          ],
+          contributionsGraph: { weeks: [], totalContributions: 0 },
+        } as any,
+      };
+
+      await exporter.export(reportWithHygiene, outDir);
+      const html = readFileSync(resolve(outDir, 'git-spark-report.html'), 'utf-8');
+      expect(html).toContain('Conventional Commits');
+
+      if (existsSync(outDir)) {
+        rmSync(outDir, { recursive: true });
+      }
+    });
   });
 });

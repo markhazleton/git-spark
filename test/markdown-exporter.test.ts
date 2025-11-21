@@ -463,4 +463,117 @@ describe('MarkdownExporter', () => {
     expect(content).toContain('10,000'); // Alice's churn
     expect(content).toContain('3,000'); // main.ts churn
   });
+
+  it('handles risk level variations', async () => {
+    const riskLevels = ['low', 'medium', 'high', 'critical'];
+
+    for (const riskLevel of riskLevels) {
+      const reportWithRisk = {
+        ...mockReport,
+        risks: {
+          ...mockReport.risks,
+          overallRisk: riskLevel as any,
+        },
+      };
+
+      await markdownExporter.export(reportWithRisk, testOutputDir);
+
+      const outputPath = resolve(testOutputDir, 'git-spark-report.md');
+      const content = readFileSync(outputPath, 'utf-8');
+
+      expect(content).toContain(`Overall Risk Level: ${riskLevel.toUpperCase()}`);
+    }
+  });
+
+  it('handles health rating variations', async () => {
+    const healthRatings = ['excellent', 'good', 'fair', 'poor', 'critical'];
+
+    for (const rating of healthRatings) {
+      const reportWithRating = {
+        ...mockReport,
+        summary: {
+          ...mockReport.summary,
+          healthRating: rating as any,
+        },
+      };
+
+      await markdownExporter.export(reportWithRating, testOutputDir);
+
+      const outputPath = resolve(testOutputDir, 'git-spark-report.md');
+      const content = readFileSync(outputPath, 'utf-8');
+
+      expect(content).toContain(`Repository Health: ${rating.toUpperCase()}`);
+    }
+  });
+
+  it('handles reports with recommendations', async () => {
+    const reportWithRecommendations = {
+      ...mockReport,
+      risks: {
+        ...mockReport.risks,
+        recommendations: ['Review high-risk files', 'Improve test coverage'],
+      },
+      governance: {
+        ...mockReport.governance,
+        recommendations: ['Use conventional commits', 'Improve traceability'],
+      },
+    };
+
+    await markdownExporter.export(reportWithRecommendations, testOutputDir);
+
+    const outputPath = resolve(testOutputDir, 'git-spark-report.md');
+    const content = readFileSync(outputPath, 'utf-8');
+
+    // Should be present (not removed in recent updates)
+    expect(content).toBeTruthy();
+  });
+
+  it('handles different date formats correctly', async () => {
+    const reportWithDates = {
+      ...mockReport,
+      repository: {
+        ...mockReport.repository,
+        firstCommit: new Date('2023-01-15T10:30:00Z'),
+        lastCommit: new Date('2024-12-20T14:45:00Z'),
+      },
+    };
+
+    await markdownExporter.export(reportWithDates, testOutputDir);
+
+    const outputPath = resolve(testOutputDir, 'git-spark-report.md');
+    const content = readFileSync(outputPath, 'utf-8');
+
+    // Check that dates are formatted
+    expect(content).toContain('365 days'); // activeDays
+  });
+
+  it('handles export errors gracefully', async () => {
+    const invalidPath = '\0invalid';
+
+    await expect(markdownExporter.export(mockReport, invalidPath)).rejects.toThrow();
+  });
+
+  it('handles various language distributions', async () => {
+    const reportWithLanguages = {
+      ...mockReport,
+      repository: {
+        ...mockReport.repository,
+        languages: {
+          typescript: 10000,
+          javascript: 5000,
+          python: 3000,
+          go: 2000,
+          rust: 1000,
+        },
+      },
+    };
+
+    await markdownExporter.export(reportWithLanguages, testOutputDir);
+
+    const outputPath = resolve(testOutputDir, 'git-spark-report.md');
+    const content = readFileSync(outputPath, 'utf-8');
+
+    expect(content).toContain('typescript: 10000');
+    expect(content).toContain('javascript: 5000');
+  });
 });

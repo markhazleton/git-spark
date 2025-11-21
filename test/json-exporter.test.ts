@@ -304,4 +304,55 @@ describe('JSONExporter', () => {
     expect(parsedData.repository.healthScore).toBe(0.7532891);
     expect(parsedData.repository.avgCommitsPerDay).toBe(2.3456789);
   });
+
+  it('handles file system errors gracefully', async () => {
+    const invalidPath = '\0invalid'; // Null character in path - invalid
+
+    await expect(jsonExporter.export(mockReport, invalidPath)).rejects.toThrow();
+  });
+
+  it('handles serialization of complex nested objects', async () => {
+    const complexReport = {
+      ...mockReport,
+      metadata: {
+        ...mockReport.metadata,
+        nested: {
+          deep: {
+            value: 'test',
+            date: new Date('2024-01-01'),
+            map: new Map([['key', 'value']]) as any,
+          },
+        },
+      },
+    } as any;
+
+    await jsonExporter.export(complexReport, testOutputDir);
+
+    const outputPath = resolve(testOutputDir, 'git-spark-report.json');
+    const jsonContent = readFileSync(outputPath, 'utf-8');
+    const parsedData = JSON.parse(jsonContent);
+
+    expect(parsedData.metadata.nested.deep.date).toBe('2024-01-01T00:00:00.000Z');
+    expect(parsedData.metadata.nested.deep.map).toEqual({ key: 'value' });
+  });
+
+  it('handles undefined and null values', async () => {
+    const reportWithNulls = {
+      ...mockReport,
+      metadata: {
+        ...mockReport.metadata,
+        optionalField: undefined,
+        nullField: null,
+      },
+    } as any;
+
+    await jsonExporter.export(reportWithNulls, testOutputDir);
+
+    const outputPath = resolve(testOutputDir, 'git-spark-report.json');
+    const jsonContent = readFileSync(outputPath, 'utf-8');
+    const parsedData = JSON.parse(jsonContent);
+
+    expect(parsedData.metadata.nullField).toBeNull();
+    expect(parsedData.metadata.optionalField).toBeUndefined();
+  });
 });

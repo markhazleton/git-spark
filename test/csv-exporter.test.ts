@@ -396,6 +396,32 @@ describe('CSVExporter', () => {
     expect(existsSync(resolve(testOutputDir, 'timeline.csv'))).toBe(true);
   });
 
+  it('handles authors with zero commits gracefully', async () => {
+    const reportWithZeroCommits = {
+      ...mockReport,
+      authors: [
+        {
+          ...mockReport.authors[0],
+          commits: 0,
+          workPatterns: {
+            ...mockReport.authors[0].workPatterns,
+            afterHours: 0,
+            weekends: 0,
+          },
+        },
+      ],
+    };
+
+    await csvExporter.export(reportWithZeroCommits, testOutputDir);
+
+    const authorsPath = resolve(testOutputDir, 'authors.csv');
+    const content = readFileSync(authorsPath, 'utf-8');
+
+    // Should handle division by zero gracefully (NaN should become 0 or similar)
+    expect(content).toBeTruthy();
+    expect(content.split('\n')).toHaveLength(2); // header + 1 author
+  });
+
   it('handles export errors gracefully', async () => {
     const invalidPath = '/invalid/\0/path'; // Null character in path - invalid on all platforms
 

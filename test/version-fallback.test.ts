@@ -113,5 +113,65 @@ describe('version-fallback', () => {
       // Build time should be valid ISO string
       expect(new Date(buildTime).toISOString()).toBe(buildTime);
     });
+
+    it('should handle corrupt package.json gracefully', async () => {
+      // Mock the file system to return corrupt JSON
+      const fs = require('fs');
+      const originalReadFileSync = fs.readFileSync;
+      
+      jest.spyOn(fs, 'readFileSync').mockImplementation((...args: any[]) => {
+        const path = args[0];
+        if (typeof path === 'string' && path.includes('package.json')) {
+          return '{invalid json}';
+        }
+        return originalReadFileSync(...args);
+      });
+
+      const version = await getVersion();
+      expect(version).toBeDefined();
+      expect(typeof version).toBe('string');
+
+      fs.readFileSync.mockRestore();
+    });
+
+    it('should handle missing package.json files', async () => {
+      // Mock the file system to throw errors for package.json
+      const fs = require('fs');
+      const originalReadFileSync = fs.readFileSync;
+      
+      jest.spyOn(fs, 'readFileSync').mockImplementation((...args: any[]) => {
+        const path = args[0];
+        if (typeof path === 'string' && path.includes('package.json')) {
+          throw new Error('ENOENT: no such file or directory');
+        }
+        return originalReadFileSync(...args);
+      });
+
+      const version = await getVersion();
+      expect(version).toBeDefined();
+      expect(typeof version).toBe('string');
+
+      fs.readFileSync.mockRestore();
+    });
+
+    it('should handle wrong package in package.json', async () => {
+      // Mock the file system to return different package
+      const fs = require('fs');
+      const originalReadFileSync = fs.readFileSync;
+      
+      jest.spyOn(fs, 'readFileSync').mockImplementation((...args: any[]) => {
+        const path = args[0];
+        if (typeof path === 'string' && path.includes('package.json')) {
+          return JSON.stringify({ name: 'other-package', version: '1.0.0' });
+        }
+        return originalReadFileSync(...args);
+      });
+
+      const version = await getVersion();
+      expect(version).toBeDefined();
+      expect(typeof version).toBe('string');
+
+      fs.readFileSync.mockRestore();
+    });
   });
 });

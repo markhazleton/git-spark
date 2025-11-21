@@ -149,7 +149,7 @@ export class GitSpark {
    * Export as HTML report
    */
   private async exportHTML(report: AnalysisReport, outputPath: string): Promise<void> {
-    const { HTMLExporter } = await import('./output/html');
+    const { HTMLExporter } = await import('./output/html.js');
     const exporter = new HTMLExporter();
     const defaultConfig = GitSpark.getDefaultConfig();
     await exporter.export(report, outputPath, defaultConfig.output.fileFiltering);
@@ -160,7 +160,7 @@ export class GitSpark {
    * Export as JSON
    */
   private async exportJSON(report: AnalysisReport, outputPath: string): Promise<void> {
-    const { JSONExporter } = await import('./output/json');
+    const { JSONExporter } = await import('./output/json.js');
     const exporter = new JSONExporter();
     await exporter.export(report, outputPath);
     logger.info('JSON report exported', { outputPath });
@@ -170,7 +170,7 @@ export class GitSpark {
    * Export as Markdown
    */
   private async exportMarkdown(report: AnalysisReport, outputPath: string): Promise<void> {
-    const { MarkdownExporter } = await import('./output/markdown');
+    const { MarkdownExporter } = await import('./output/markdown.js');
     const exporter = new MarkdownExporter();
     await exporter.export(report, outputPath);
     logger.info('Markdown report exported', { outputPath });
@@ -180,7 +180,7 @@ export class GitSpark {
    * Export as CSV
    */
   private async exportCSV(report: AnalysisReport, outputPath: string): Promise<void> {
-    const { CSVExporter } = await import('./output/csv');
+    const { CSVExporter } = await import('./output/csv.js');
     const exporter = new CSVExporter();
     await exporter.export(report, outputPath);
     logger.info('CSV report exported', { outputPath });
@@ -484,12 +484,12 @@ export async function exportReport(
   // This is a simplified export that doesn't re-analyze
   switch (format) {
     case 'html':
-      const { HTMLExporter } = await import('./output/html');
+      const { HTMLExporter } = await import('./output/html.js');
       const defaultConfig = GitSpark.getDefaultConfig();
       await new HTMLExporter().export(report, outputPath, defaultConfig.output.fileFiltering);
       break;
     case 'json':
-      const { JSONExporter } = await import('./output/json');
+      const { JSONExporter } = await import('./output/json.js');
       await new JSONExporter().export(report, outputPath);
       break;
     default:
