@@ -27,17 +27,28 @@ class AzureDevOpsClient {
     // Handle different Azure DevOps URL formats
     let baseUrl: string;
     if (config.organization.startsWith('http')) {
-      // Full URL format (e.g., "https://dev.azure.com/bswdev" or "https://bswdev.visualstudio.com")
+      // Full URL format - validate it's an Azure DevOps domain
+      const url = new URL(config.organization);
+      const validDomains = ['dev.azure.com', 'visualstudio.com'];
+      const isValidAzureDomain = validDomains.some(domain => 
+        url.hostname === domain || url.hostname.endsWith(`.${domain}`)
+      );
+      if (!isValidAzureDomain) {
+        throw new Error(`Invalid Azure DevOps URL: ${config.organization}`);
+      }
       baseUrl = `${config.organization}/${config.project}/_apis`;
     } else {
       // Organization name only - use detected base URL format
       const apiBaseUrl = config.api?.baseUrl || 'https://dev.azure.com';
-      if (apiBaseUrl.includes('.visualstudio.com')) {
+      const url = new URL(apiBaseUrl);
+      if (url.hostname.endsWith('.visualstudio.com')) {
         // Legacy format: organization.visualstudio.com
         baseUrl = `${apiBaseUrl}/${config.project}/_apis`;
-      } else {
+      } else if (url.hostname === 'dev.azure.com') {
         // Modern format: dev.azure.com/organization
         baseUrl = `${apiBaseUrl}/${config.organization}/${config.project}/_apis`;
+      } else {
+        throw new Error(`Invalid Azure DevOps base URL: ${apiBaseUrl}`);
       }
     }
     this.baseUrl = baseUrl;

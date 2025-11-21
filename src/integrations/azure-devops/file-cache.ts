@@ -47,12 +47,16 @@ export class FileCache {
     try {
       const filePath = this.getFilePath(key);
 
-      if (!existsSync(filePath)) {
-        logger.debug('File cache miss (file not found)', { key, filePath });
+      // Read file directly without separate existence check to avoid race condition
+      let rawData: string;
+      try {
+        rawData = readFileSync(filePath, 'utf-8');
+      } catch (error) {
+        // File doesn't exist or can't be read
+        logger.debug('File cache miss (file not found or unreadable)', { key, filePath });
         return null;
       }
 
-      const rawData = readFileSync(filePath, 'utf-8');
       const cacheEntry: FileCacheEntry = JSON.parse(rawData);
 
       // Check if entry has expired

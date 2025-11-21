@@ -278,9 +278,13 @@ export class AzureDevOpsConfigResolver {
 
           // Determine the correct base URL format based on the detected pattern
           let baseUrl: string;
-          if (remoteUrl.includes('.visualstudio.com')) {
+          // Check for proper Azure DevOps domains with protocol and full match
+          if (remoteUrl.startsWith('https://') && remoteUrl.match(/https:\/\/[^.]+\.visualstudio\.com/)) {
             baseUrl = `https://${organization}.visualstudio.com`;
+          } else if (remoteUrl.startsWith('https://dev.azure.com') || remoteUrl.startsWith('git@ssh.dev.azure.com')) {
+            baseUrl = 'https://dev.azure.com';
           } else {
+            // Fallback to modern format
             baseUrl = 'https://dev.azure.com';
           }
 

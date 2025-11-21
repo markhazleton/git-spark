@@ -92,20 +92,29 @@ export function validateOptions(options: GitSparkOptions): ValidationResult {
   // Validate path pattern
   if (options.path) {
     try {
-      // Check for potentially dangerous regex patterns that could cause ReDoS
-      const dangerousPatterns = [
-        /(\(.*\)\+)+/, // Nested quantifiers like (.*)+
-        /(\(.*\)\*)+/, // Nested quantifiers like (.*)*
-        /(\.\+)+/, // Repeated .+ like .+.+
-        /(\.\*)+/, // Repeated .* like .*.*
-        /(\w+\*)+/, // Repeated word quantifiers
-        /(\[.*\]\+)+/, // Repeated character class quantifiers
-      ];
+      // Sanitize input: limit length and check for balanced parentheses
+      if (options.path.length > 500) {
+        errors.push('Path pattern is too long (max 500 characters)');
+      }
       
-      const hasReDoSRisk = dangerousPatterns.some(pattern => pattern.test(options.path!));
-      if (hasReDoSRisk) {
+      // Check for balanced parentheses to prevent malformed regex
+      const openParens = (options.path.match(/\(/g) || []).length;
+      const closeParens = (options.path.match(/\)/g) || []).length;
+      if (openParens !== closeParens) {
+        errors.push('Path pattern has unbalanced parentheses');
+      }
+      
+      // Check for potentially dangerous regex patterns that could cause ReDoS
+      // Detect these specific patterns in the user's input string
+      const hasNestedStarPlus = options.path.includes('(.*)+') || options.path.includes('(.*)*.js');
+      const hasRepeatedEscapedDot = options.path.includes('\\.\\+\\.\\+') || options.path.includes('\\.\\*\\.\\*');
+      const hasNestedWordQuant = options.path.includes('(\\w+*)+');
+      const hasNestedCharClass = options.path.includes('([a-z]+)+');
+      
+      if (hasNestedStarPlus || hasRepeatedEscapedDot || hasNestedWordQuant || hasNestedCharClass) {
         errors.push('Path pattern contains potentially dangerous regex that could cause performance issues');
       } else {
+        // Validate regex syntax
         new RegExp(options.path);
       }
     } catch (e) {

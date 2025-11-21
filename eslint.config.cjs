@@ -38,7 +38,7 @@ module.exports = [
       parserOptions: { ecmaVersion: 2020, sourceType: 'module' },
       globals: {
         console: 'readonly', process: 'readonly', Buffer: 'readonly', require: 'readonly',
-        setTimeout: 'readonly', clearTimeout: 'readonly', __dirname: 'readonly', __filename: 'readonly'
+        setTimeout: 'readonly', clearTimeout: 'readonly', __dirname: 'readonly', __filename: 'readonly', URL: 'readonly'
       }
     },
     plugins: { '@typescript-eslint': tseslint },
