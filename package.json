@@ -1,6 +1,6 @@
 {
   "name": "git-spark",
-  "version": "1.0.266",
+  "version": "1.0.267",
   "description": "Git repository analytics and reporting tool for analyzing commit patterns and contributor activity",
   "keywords": [
     "git",
@@ -22,7 +22,7 @@
     "url": "https://github.com/markhazleton/git-spark/issues"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=20.6.0"
   },
   "type": "module",
   "main": "dist/src/index.js",
@@ -94,7 +94,9 @@
   },
   "jest": {
     "preset": "ts-jest/presets/default-esm",
-    "extensionsToTreatAsEsm": [".ts"],
+    "extensionsToTreatAsEsm": [
+      ".ts"
+    ],
     "testEnvironment": "node",
     "testTimeout": 30000,
     "forceExit": true,
@@ -110,9 +112,12 @@
       "^(\\.{1,2}/.*)\\.js$": "$1"
     },
     "transform": {
-      "^.+\\.ts$": ["ts-jest", {
-        "useESM": true
-      }]
+      "^.+\\.ts$": [
+        "ts-jest",
+        {
+          "useESM": true
+        }
+      ]
     },
     "collectCoverageFrom": [
       "src/**/*.ts",
