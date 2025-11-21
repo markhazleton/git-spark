@@ -56,7 +56,6 @@
     "format:check": "prettier --check \"src/**/*.ts\"",
     "clean": "node -e \"require('fs').rmSync('dist', {recursive: true, force: true})\"",
     "prepublishOnly": "npm run clean && npm run build && npm run test",
-    "postpublish": "git push && git push --tags",
     "release:patch": "npm version patch && npm publish",
     "release:minor": "npm version minor && npm publish",
     "release:major": "npm version major && npm publish",
