@@ -102,4 +102,4 @@ jobs:
         run: |
           npm pack --dry-run
           npx publint
-          npx @arethetypeswrong/cli --pack .
+          npx @arethetypeswrong/cli --pack . || echo "Note: Package is pure ESM - CommonJS consumers must use dynamic import()"

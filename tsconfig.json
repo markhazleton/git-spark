@@ -19,7 +19,7 @@
     "noUnusedParameters": true,
     "exactOptionalPropertyTypes": true,
     "resolveJsonModule": true,
-    "moduleResolution": "node"
+    "moduleResolution": "bundler"
   },
   "include": ["src/**/*", "test/**/*", "scripts/**/*"],
   "exclude": ["node_modules", "dist"]
