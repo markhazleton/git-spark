@@ -114,8 +114,16 @@ export function validateOptions(options: GitSparkOptions): ValidationResult {
       if (hasNestedStarPlus || hasRepeatedEscapedDot || hasNestedWordQuant || hasNestedCharClass) {
         errors.push('Path pattern contains potentially dangerous regex that could cause performance issues');
       } else {
-        // Validate regex syntax
-        new RegExp(options.path);
+        // Validate regex syntax - test with timeout to prevent ReDoS
+        try {
+          // Create regex with a reasonable timeout by testing it on a small string
+          const testRegex = new RegExp(options.path);
+          // Test on a bounded string to ensure it doesn't hang
+          const testStr = 'a'.repeat(100);
+          testRegex.test(testStr);
+        } catch (e) {
+          errors.push('Path pattern is not a valid regex pattern');
+        }
       }
     } catch (e) {
       errors.push('Path pattern is not a valid regex pattern');

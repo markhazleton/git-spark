@@ -108,10 +108,10 @@ describe('Validation Utils', () => {
       const dangerousPatterns = [
         '(.*)+test',
         '(.*)*.js',
-        '\\.\\+\\.\\+\\.\\+',
-        '\\.\\*\\.\\*\\.\\*',
-        '(\\w+*)+',
-        '([a-z]+)+',
+        String.raw`\.\+\.\+\.\+`,
+        String.raw`\.\*\.\*\.\*`,
+        String.raw`(\w+*)+`,
+        String.raw`([a-z]+)+`,
       ];
 
       dangerousPatterns.forEach(pattern => {

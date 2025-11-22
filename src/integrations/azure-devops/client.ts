@@ -26,7 +26,7 @@ class AzureDevOpsClient {
   ) {
     // Handle different Azure DevOps URL formats
     let baseUrl: string;
-    if (config.organization.startsWith('http')) {
+    if (config.organization.startsWith('http://') || config.organization.startsWith('https://')) {
       // Full URL format - validate it's an Azure DevOps domain
       const url = new URL(config.organization);
       const validDomains = ['dev.azure.com', 'visualstudio.com'];
@@ -36,7 +36,7 @@ class AzureDevOpsClient {
       if (!isValidAzureDomain) {
         throw new Error(`Invalid Azure DevOps URL: ${config.organization}`);
       }
-      baseUrl = `${config.organization}/${config.project}/_apis`;
+      baseUrl = `${url.protocol}//${url.host}/${config.project}/_apis`;
     } else {
       // Organization name only - use detected base URL format
       const apiBaseUrl = config.api?.baseUrl || 'https://dev.azure.com';

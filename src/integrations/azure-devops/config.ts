@@ -279,9 +279,9 @@ export class AzureDevOpsConfigResolver {
           // Determine the correct base URL format based on the detected pattern
           let baseUrl: string;
           // Check for proper Azure DevOps domains with protocol and full match
-          if (remoteUrl.startsWith('https://') && remoteUrl.match(/https:\/\/[^.]+\.visualstudio\.com/)) {
+          if (remoteUrl.startsWith('https://') && /^https:\/\/[^.]+\.visualstudio\.com\//.test(remoteUrl)) {
             baseUrl = `https://${organization}.visualstudio.com`;
-          } else if (remoteUrl.startsWith('https://dev.azure.com') || remoteUrl.startsWith('git@ssh.dev.azure.com')) {
+          } else if (/^https:\/\/dev\.azure\.com\//.test(remoteUrl) || remoteUrl.startsWith('git@ssh.dev.azure.com:')) {
             baseUrl = 'https://dev.azure.com';
           } else {
             // Fallback to modern format
@@ -396,8 +396,12 @@ export class AzureDevOpsConfigResolver {
     }
 
     // Validate organization name format
-    if (config.organization && !/^[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]$/.test(config.organization)) {
-      errors.push('Azure DevOps organization name contains invalid characters');
+    if (config.organization) {
+      // Ensure full string match with proper anchors and validate format
+      const orgNameRegex = /^[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?$/;
+      if (!orgNameRegex.test(config.organization)) {
+        errors.push('Azure DevOps organization name contains invalid characters');
+      }
     }
 
     // Check for Personal Access Token
