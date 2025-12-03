@@ -9,7 +9,7 @@
 [![npm version](https://img.shields.io/npm/v/git-spark.svg?style=flat-square)](https://www.npmjs.com/package/git-spark)
 [![npm downloads](https://img.shields.io/npm/dm/git-spark.svg?style=flat-square)](https://www.npmjs.com/package/git-spark)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
-[![Node.js Version](https://img.shields.io/node/v/git-spark.svg?style=flat-square)](https://nodejs.org)
+[![Node.js Version](https://img.shields.io/badge/node-%3E%3D20.6.0-brightgreen?style=flat-square)](https://nodejs.org)
 [![GitHub issues](https://img.shields.io/github/issues/MarkHazleton/git-spark.svg?style=flat-square)](https://github.com/MarkHazleton/git-spark/issues)
 [![GitHub stars](https://img.shields.io/github/stars/MarkHazleton/git-spark.svg?style=flat-square)](https://github.com/MarkHazleton/git-spark/stargazers)
 
@@ -105,7 +105,7 @@ git-spark --days=30
 git-spark --format=html --output=./reports
 
 # Analyze specific date range
-git-spark --since=2024-01-01 --until=2024-12-31
+git-spark --since=2025-01-01 --until=2025-12-31
 ```
 
 ### Programmatic Usage
@@ -119,7 +119,7 @@ const report = await analyze('/path/to/repo', { days: 30 });
 // Advanced usage with options
 const gitSpark = new GitSpark({
   repoPath: '/path/to/repo',
-  since: '2024-01-01',
+  since: '2025-01-01',
   format: 'html',
   output: './reports'
 });
@@ -153,6 +153,11 @@ Options:
   --log-level <level>        logging verbosity (error|warn|info|debug|verbose)
   --no-cache                 disable caching
   --redact-emails            redact email addresses in reports
+  --azure-devops             enable Azure DevOps pull request analytics
+  --devops-org <org>         Azure DevOps organization name
+  --devops-project <project> Azure DevOps project name
+  --devops-repo <repo>       Azure DevOps repository (auto-detected if not specified)
+  --devops-token <token>     Azure DevOps Personal Access Token
   -h, --help                 display help for command
 ```
 
@@ -215,6 +220,73 @@ git-spark html --days=60 --serve --port=8080
 
 # Heavy analysis with detailed insights
 git-spark html --days=90 --heavy --output=./detailed-reports
+
+# With Azure DevOps pull request analytics
+git-spark html --days=30 --azure-devops --devops-org=myorg --devops-project=myproject
+```
+
+### Azure DevOps Integration
+
+Git Spark includes optional Azure DevOps integration for comprehensive pull request analytics alongside Git commit analysis.
+
+#### Setup
+
+1. **Create a Personal Access Token (PAT)** in Azure DevOps with 'Code (Read)' scope
+2. **Set environment variable** or pass token via CLI:
+
+   ```bash
+   export AZURE_DEVOPS_TOKEN=your-pat-token
+   # or
+   git-spark --azure-devops --devops-token=your-pat-token
+   ```
+
+#### Usage Examples
+
+```bash
+# Auto-detect organization, project, and repo from Git remote
+git-spark --azure-devops --days=30
+
+# Specify Azure DevOps details explicitly
+git-spark --azure-devops --devops-org=myorg --devops-project=myproject --devops-repo=myrepo
+
+# Generate HTML report with PR analytics
+git-spark html --azure-devops --days=60 --output=./reports
+
+# Use token from environment variable
+export AZURE_DEVOPS_TOKEN=your-pat-token
+git-spark --azure-devops --days=30
+```
+
+#### Features
+
+- **Pull Request Analytics**: Comprehensive PR workflow analysis including cycle times, review metrics
+- **Work Item Tracking**: Link PRs to work items and requirements
+- **Review Metrics**: Review efficiency and collaboration patterns
+- **Intelligent Caching**: Multi-level caching reduces API calls and respects rate limits
+- **Graceful Degradation**: Continues Git analysis if Azure DevOps is unavailable
+- **Automatic Configuration**: Auto-detects Azure DevOps settings from Git remotes
+
+#### Configuration
+
+Add Azure DevOps settings to `.git-spark.json`:
+
+```json
+{
+  "azureDevOps": {
+    "enabled": true,
+    "organization": "myorg",
+    "project": "myproject",
+    "repository": "myrepo",
+    "auth": {
+      "method": "pat",
+      "tokenEnvVar": "AZURE_DEVOPS_TOKEN"
+    },
+    "cache": {
+      "enabled": true,
+      "ttlMinutes": 60
+    }
+  }
+}
 ```
 
 #### `git-spark validate`
@@ -645,6 +717,9 @@ npm run dev
 - **CLI Commands** - Main analysis, health check, validation, and dedicated HTML report generation
 - **HTTP Server** - Built-in web server for local report viewing (`--serve` option)
 - **Auto-Open Browser** - Automatic browser launch after report generation (`--open` option)
+- **Azure DevOps Integration** - Optional pull request analytics with comprehensive PR workflow insights
+- **Multi-Source Analytics** - Unified Git + Azure DevOps analytics with intelligent correlation
+- **Intelligent Caching** - Multi-level caching for Azure DevOps API with rate limiting
 
 These capabilities establish a foundation of **analytical honesty and transparency** that guides all development.
 
@@ -655,12 +730,14 @@ These capabilities establish a foundation of **analytical honesty and transparen
 - [ ] Historical trend analysis and forecasting
 - [ ] Advanced temporal coupling analysis
 - [ ] Custom risk scoring models
+- [ ] GitHub pull request integration
 
 ### v1.2 (Future)
 
 - [ ] API server mode for remote analysis
 - [ ] Machine learning-based anomaly detection
 - [ ] Integration with code quality tools (SonarQube, CodeClimate)
+- [ ] GitLab merge request integration
 - [ ] Real-time monitoring and alerting
 - [ ] Multi-repository analysis and benchmarking
 - [ ] Advanced visualization with D3.js

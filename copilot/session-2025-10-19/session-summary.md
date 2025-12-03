@@ -1,5 +1,9 @@
 # Azure DevOps Integration - Session Summary
 
+> **📋 DOCUMENT STATUS**: This is a historical planning summary from October 2025.  
+> **✅ IMPLEMENTATION STATUS**: Azure DevOps integration has been **COMPLETED** as of v1.0.  
+> See `azure-devops-integration-complete.md` in this session folder for final implementation details.
+
 ## Overview
 
 This session has produced a comprehensive plan for integrating Azure DevOps Pull Request analytics into git-spark, transforming it from a Git-only analytics tool into a complete repository and workflow analytics platform.

@@ -1,5 +1,10 @@
 # Azure DevOps Pull Request Integration - Implementation Plan
 
+> **📋 DOCUMENT STATUS**: This is a historical planning document from the initial design phase (October 2025).  
+> **✅ IMPLEMENTATION STATUS**: Azure DevOps integration has been **COMPLETED** as of v1.0.  
+> See `azure-devops-integration-complete.md` in this session folder for implementation summary.  
+> This document is retained for historical reference and architectural context.
+
 ## Overview
 
 This document outlines the plan for integrating Azure DevOps Pull Request analytics into git-spark, combining Git commit data with pull request workflow insights for comprehensive repository analysis.

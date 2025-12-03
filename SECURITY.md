@@ -20,11 +20,11 @@ We take security vulnerabilities seriously and appreciate your efforts to respon
 Instead, please report them using one of the following methods:
 
 1. **GitHub Security Advisories (Preferred)**
-   - Visit https://github.com/markhazleton/git-spark/security/advisories/new
+   - Visit <https://github.com/markhazleton/git-spark/security/advisories/new>
    - This is the most secure and efficient way to report vulnerabilities
 
 2. **Email**
-   - Send details to: mark@markhazleton.com
+   - Send details to: <mark@markhazleton.com>
    - Use subject line: `[SECURITY] Git Spark Vulnerability Report`
    - Encrypt sensitive information using GPG if possible
 
@@ -116,6 +116,7 @@ Git Spark reads from Git repositories and writes report files. It validates all 
 ### Data Privacy
 
 Generated reports may contain:
+
 - Author names and email addresses
 - Commit messages
 - File paths and names
@@ -126,6 +127,7 @@ Use the `--redact-emails` option when sharing reports publicly.
 ### Dependencies
 
 We regularly audit dependencies using:
+
 - `npm audit` for known vulnerabilities
 - CodeQL for code analysis
 - Snyk for dependency scanning
@@ -162,15 +164,16 @@ Security updates are released as:
 - **Emergency releases** for critical vulnerabilities
 
 Subscribe to releases and security advisories:
-- Watch the repository: https://github.com/markhazleton/git-spark
-- GitHub Security Advisories: https://github.com/markhazleton/git-spark/security/advisories
-- npm security advisories: https://www.npmjs.com/package/git-spark
+
+- Watch the repository: <https://github.com/markhazleton/git-spark>
+- GitHub Security Advisories: <https://github.com/markhazleton/git-spark/security/advisories>
+- npm security advisories: <https://www.npmjs.com/package/git-spark>
 
 ## Contact
 
-- **Security Issues**: mark@markhazleton.com
-- **GitHub Security**: https://github.com/markhazleton/git-spark/security/advisories/new
-- **General Issues**: https://github.com/markhazleton/git-spark/issues
+- **Security Issues**: <mark@markhazleton.com>
+- **GitHub Security**: <https://github.com/markhazleton/git-spark/security/advisories/new>
+- **General Issues**: <https://github.com/markhazleton/git-spark/issues>
 
 ## Acknowledgments
 
@@ -178,4 +181,4 @@ We appreciate the security research community's efforts to keep Git Spark secure
 
 ---
 
-Last Updated: November 21, 2025
+Last Updated: December 2, 2025

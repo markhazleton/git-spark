@@ -1,5 +1,9 @@
 # Azure DevOps Data Collection Architecture
 
+> **📋 DOCUMENT STATUS**: This is a historical design document from October 2025.  
+> **✅ IMPLEMENTATION STATUS**: Data collection architecture has been **FULLY IMPLEMENTED**.  
+> This document is retained for architectural reference and system design documentation.
+
 ## Overview
 
 This document outlines the architecture for integrating Azure DevOps Pull Request data collection into git-spark, ensuring efficient, reliable, and scalable data gathering that complements existing Git analytics.
