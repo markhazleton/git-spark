@@ -19,7 +19,8 @@
     "noUnusedParameters": true,
     "exactOptionalPropertyTypes": true,
     "resolveJsonModule": true,
-    "moduleResolution": "bundler"
+    "moduleResolution": "bundler",
+    "noFallthroughCasesInSwitch": true
   },
   "include": ["src/**/*", "test/**/*", "scripts/**/*"],
   "exclude": [

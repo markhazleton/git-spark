@@ -77,7 +77,7 @@ Enterprise-focused, accessible, and secure analytics dashboard:
 - **Dataset Toggles & Live Updates** – Enable/disable series without reloading page
 - **Open Graph Preview Image** – Auto‑generated SVG summary for social sharing & link unfurling
 - **Accessibility Enhancements** – ARIA live region announcements for sorting; keyboard focus management; reduced‑motion compliance
-- **Security‑First Delivery** – Strict CSP with SHA‑256 hashed inline script & style blocks (no `unsafe-inline`), SRI‑pinned Chart.js, single trusted CDN origin
+- **Security‑First Delivery** – Strict CSP with SHA‑256 hashed inline script & style blocks (no `unsafe-inline`), native SVG charts (no external chart library), fully self-contained reports
 - **Email Redaction Option** – Controlled via CLI flag (`--redact-emails`) for privacy sensitive audits
 - **Transparent Metrics Documentation** – Every team metric includes comprehensive limitations and data source explanations
 
@@ -645,7 +645,7 @@ Git Spark is designed with security in mind:
 - **No Arbitrary Execution** - Git commands are parameterized and safe
 - **Dependency Security** - Minimal dependencies with security auditing
 - **Strict Content Security Policy** - Inline script & style blocks hashed (SHA‑256); no `unsafe-inline` or dynamic eval
-- **Subresource Integrity (SRI)** - External Chart.js resource locked to integrity hash
+- **Native SVG Charts** - Self-contained visualizations with no external dependencies
 - **Single External Origin** - Minimizes supply chain surface
 - **Escaped Dynamic Content** - All user / repo derived strings safely encoded in HTML output
 
@@ -666,6 +666,8 @@ Optimized for large repositories:
 - 10k commits: ~10 seconds
 - 100k commits: ~2 minutes
 - Memory usage: <500MB for 100k commits
+
+**📖 For detailed performance optimization strategies, see the [Performance Tuning Guide](docs/performance-tuning.md)**
 
 ## 🧪 Testing
 

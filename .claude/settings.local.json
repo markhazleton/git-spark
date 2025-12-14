@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find:*)",
+      "Bash(npm test:*)",
+      "Bash(npm run test:coverage:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm run lint)",
+      "Bash(tree:*)",
+      "Bash(npm audit:*)",
+      "Bash(wc:*)",
+      "Bash(npm run test:*)",
+      "Bash(cat:*)",
+      "Bash(npm show:*)"
+    ]
+  }
+}

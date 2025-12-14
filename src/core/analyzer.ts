@@ -304,8 +304,8 @@ export class GitAnalyzer {
     const totalChurn = commits.reduce((sum, c) => sum + c.insertions + c.deletions, 0);
 
     const dates = commits.map(c => c.date).sort((a, b) => a.getTime() - b.getTime());
-    const firstCommit = dates[0];
-    const lastCommit = dates[dates.length - 1];
+    const firstCommit = dates[0] || new Date();
+    const lastCommit = dates[dates.length - 1] || new Date();
 
     const timeDiff = lastCommit.getTime() - firstCommit.getTime();
     const activeDays = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));

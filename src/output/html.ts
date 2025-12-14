@@ -11,7 +11,7 @@ const logger = createLogger('html-exporter');
  *
  * The HTMLExporter generates comprehensive HTML reports featuring:
  * - Executive summary with health metrics
- * - Interactive charts using Chart.js
+ * - Interactive native SVG charts
  * - Detailed author and file analysis tables
  * - Risk assessment with color-coded indicators
  * - Repository activity and contribution patterns
@@ -324,9 +324,9 @@ export class HTMLExporter {
    *
    * Creates a self-contained HTML file with:
    * - Bootstrap CSS for responsive layout
-   * - Chart.js for interactive visualizations
+   * - Native SVG charts for visualizations
    * - Custom CSS for git-spark branding
-   * - JavaScript for chart rendering and interactions
+   * - JavaScript for dark mode toggle and interactions
    *
    * @param report - Analysis report data to render
    * @param fileFilteringConfig - Optional configuration for file filtering in hotspots
