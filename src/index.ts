@@ -152,7 +152,7 @@ export class GitSpark {
     const { HTMLExporter } = await import('./output/html.js');
     const exporter = new HTMLExporter();
     const defaultConfig = GitSpark.getDefaultConfig();
-    await exporter.export(report, outputPath, defaultConfig.output.fileFiltering);
+    await exporter.export(report, outputPath, defaultConfig.output.fileFiltering, this.options.teamwork);
     logger.info('HTML report exported', { outputPath });
   }
 
@@ -479,7 +479,8 @@ export async function analyze(
 export async function exportReport(
   report: AnalysisReport,
   format: OutputFormat,
-  outputPath: string
+  outputPath: string,
+  teamwork?: boolean
 ): Promise<void> {
   // const gitSpark = new GitSpark({ repoPath: process.cwd() });
   // This is a simplified export that doesn't re-analyze
@@ -487,7 +488,7 @@ export async function exportReport(
     case 'html':
       const { HTMLExporter } = await import('./output/html.js');
       const defaultConfig = GitSpark.getDefaultConfig();
-      await new HTMLExporter().export(report, outputPath, defaultConfig.output.fileFiltering);
+      await new HTMLExporter().export(report, outputPath, defaultConfig.output.fileFiltering, teamwork);
       break;
     case 'json':
       const { JSONExporter } = await import('./output/json.js');

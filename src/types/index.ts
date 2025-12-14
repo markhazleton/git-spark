@@ -97,6 +97,8 @@ export interface GitSparkOptions {
   redactEmails?: boolean;
   /** File extensions to exclude from analysis (e.g., ['.md', '.txt']) */
   excludeExtensions?: string[];
+  /** Focus on team success - removes individual contributor sections */
+  teamwork?: boolean;
   /** Azure DevOps integration options */
   azureDevOps?: boolean;
   devopsOrg?: string;

@@ -35,13 +35,15 @@ export class HTMLExporter {
    * @param report - The complete analysis report to export
    * @param outputPath - Directory path where HTML file will be created
    * @param fileFilteringConfig - Optional configuration for file filtering in hotspots
+   * @param teamwork - When true, focuses on team success by removing individual contributor sections
    * @throws {Error} When output directory cannot be created or file cannot be written
    * @returns Promise that resolves when export is complete
    */
   async export(
     report: AnalysisReport,
     outputPath: string,
-    fileFilteringConfig?: FileFilteringConfig
+    fileFilteringConfig?: FileFilteringConfig,
+    teamwork?: boolean
   ): Promise<void> {
     try {
       const fullPath = resolve(outputPath, 'git-spark-report.html');
@@ -50,7 +52,7 @@ export class HTMLExporter {
       mkdirSync(dirname(fullPath), { recursive: true });
 
       // Generate HTML content
-      const htmlContent = this.generateHTML(report, fileFilteringConfig);
+      const htmlContent = this.generateHTML(report, fileFilteringConfig, teamwork);
 
       // Write to file
       writeFileSync(fullPath, htmlContent, 'utf-8');
@@ -333,7 +335,7 @@ export class HTMLExporter {
    * @returns Complete HTML document as string
    * @private
    */
-  private generateHTML(report: AnalysisReport, fileFilteringConfig?: FileFilteringConfig): string {
+  private generateHTML(report: AnalysisReport, fileFilteringConfig?: FileFilteringConfig, teamwork?: boolean): string {
     const repoName = basename(report.metadata.repoPath || '.') || 'repository';
     const generatedAt = report.metadata.generatedAt.toISOString();
     const numberFmt = (n: number) => new Intl.NumberFormat().format(n);
@@ -509,10 +511,10 @@ export class HTMLExporter {
       <nav class="main-nav" aria-label="Section navigation">
         <ul>
           <li><a href="#summary">Summary</a></li>
-          <li><a href="#authors">Authors</a></li>
+          ${!teamwork ? '<li><a href="#authors">Authors</a></li>' : ''}
           <li><a href="#team-patterns">Team Patterns</a></li>
           <li><a href="#files">File Hotspots</a></li>
-          <li><a href="#author-details">Author Details</a></li>
+          ${!teamwork ? '<li><a href="#author-details">Author Details</a></li>' : ''}
           ${report.azureDevOps ? '<li><a href="#azure-devops">Azure DevOps Integration</a></li>' : ''}
           ${report.dailyTrends ? '<li><a href="#daily-trends">Detailed Daily Tables</a></li>' : ''}
           <li><a href="#limitations">Limitations</a></li>
@@ -542,7 +544,7 @@ export class HTMLExporter {
       ${this.generateCurrentStateSection(report.currentState)}
     </section>
 
-    <section id="authors" class="section">
+    ${!teamwork ? `<section id="authors" class="section">
       <h2>Top Contributors (Author Metrics)</h2>
       <p class="section-description">Individual developer metrics calculated from Git commit data. These represent observable activity patterns, not productivity or performance.</p>
       <div class="table-wrapper" role="region" aria-label="Top authors table">
@@ -552,7 +554,7 @@ export class HTMLExporter {
         </table>
       </div>
       <button class="show-more" data-target-table="authors" hidden>Show more</button>
-    </section>
+    </section>` : ''}
 
     <section id="team-patterns" class="section">
       <h2>Team Activity Patterns (Aggregate Metrics)</h2>
@@ -620,14 +622,15 @@ export class HTMLExporter {
         </table>
       </div>
       <button class="show-more" data-target-table="files" hidden>Show more</button>
+    </section>
 
-    <section id="author-details" class="section">
+    ${!teamwork ? `<section id="author-details" class="section">
       <h2>Author Activity Details</h2>
       <p class="section-description">Detailed activity patterns for individual contributors. All metrics are derived from Git commit data and represent observable patterns only.</p>
       <div class="author-profiles">
         ${this.generateDetailedAuthorProfiles(report.authors)}
       </div>
-    </section>
+    </section>` : ''}
 
     ${report.dailyTrends ? this.generateDailyTrendsSection(report.dailyTrends) : ''}
 

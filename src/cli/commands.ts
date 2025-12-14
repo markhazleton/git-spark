@@ -80,6 +80,7 @@ export async function createCLI(): Promise<Command> {
       '--exclude-extensions <extensions>',
       'comma-separated list of file extensions to exclude (e.g., .md,.txt)'
     )
+    .option('--teamwork', 'focus on team success - removes individual contributor sections')
     .option('--azure-devops', 'enable Azure DevOps integration')
     .option('--devops-org <org>', 'Azure DevOps organization name')
     .option('--devops-project <project>', 'Azure DevOps project name')
@@ -164,6 +165,7 @@ async function executeHTMLReport(options: any): Promise<void> {
       heavy: options.heavy,
       logLevel: 'info' as LogLevel,
       excludeExtensions,
+      teamwork: options.teamwork,
       azureDevOps: options.azureDevops,
       devopsOrg: options.devopsOrg,
       devopsProject: options.devopsProject,
@@ -426,6 +428,7 @@ async function executeAnalysis(options: any): Promise<void> {
       compare: options.compare,
       watch: options.watch,
       excludeExtensions,
+      teamwork: options.teamwork,
       azureDevOps: options.azureDevops,
       devopsOrg: options.devopsOrg,
       devopsProject: options.devopsProject,

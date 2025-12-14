@@ -1,371 +1,190 @@
-# Git Spark - Copilot Instructions
+# Git Spark - AI Agent Instructions
 
-## Project Overview
+Git Spark is an enterprise-grade Git repository analytics tool (TypeScript, Node.js 20+) that analyzes Git commit history to generate comprehensive reports (HTML, JSON, CSV, Markdown, Console). It emphasizes **analytical transparency** - never guessing metrics that can't be derived from Git data alone.
 
-Git Spark is an enterprise-grade Git repository analytics and reporting tool built with TypeScript. It provides comprehensive repository health scoring, team collaboration analysis, and code quality metrics through CLI and programmatic interfaces.
+## Core Architecture & Data Flow
 
-## Copilot Document Organization
+**Three-Layer Pipeline**: CLI → Analyzer → Output Exporters
 
-**CRITICAL**: All Copilot-generated documentation and markdown files (`.md`) MUST be placed in a dedicated session folder structure:
+1. **CLI Layer** ([src/cli/commands.ts](src/cli/commands.ts)): Commander.js argument parsing, option validation, progress callbacks
+2. **Core Analysis** (`src/core/`):
+   - [collector.ts](src/core/collector.ts): Raw Git data extraction via spawned `git log` commands (parameterized, never shell strings)
+   - [analyzer.ts](src/core/analyzer.ts): Metric calculation - author stats, file risk scores, governance analysis, team collaboration patterns
+   - [daily-trends.ts](src/core/daily-trends.ts): Timeline generation with complete date range coverage (including zero-activity days)
+3. **Export Layer** (`src/output/`): Format-specific serialization with security hardening (HTML uses CSP + SHA-256 hashed inline content)
 
-```
-/copilot/session-{YYYY-MM-DD}/
-├── analysis-documents.md
-├── feature-specifications.md
-├── implementation-notes.md
-└── session-summary.md
-```
+**Key Design Pattern**: Progress callbacks flow through all layers (`ProgressCallback` type) for real-time user feedback during long-running Git operations.
 
-### Rules for Document Placement:
+## Development Workflow Essentials
 
-- **NEVER** place Copilot-generated `.md` files in existing code folders (`src/`, `test/`, `scripts/`, etc.)
-- **NEVER** place Copilot-generated `.md` files in the repository root
-- **ALWAYS** use the format `/copilot/session-{YYYY-MM-DD}/` for new sessions
-- **ALWAYS** organize documents by session date to maintain chronological order
-- **Exception**: Only the `.github/copilot-instructions.md` file should exist outside the `/copilot/` structure
-
-This organization ensures:
-
-- Clean separation between code and AI-generated documentation
-- Easy identification and management of AI session artifacts
-- Prevention of repository root clutter
-- Clear audit trail of AI assistance sessions
-
-## Architecture & Core Components
-
-### Project Structure
-
-```
-src/
-├── cli/           # Command-line interface and argument parsing
-├── core/          # Core analysis engine and GitSpark class
-├── output/        # Export formats (HTML, JSON, CSV, Markdown, Console)
-├── types/         # TypeScript type definitions and interfaces
-├── utils/         # Utility functions and helpers
-└── index.ts       # Main public API exports
-```
-
-### Key Design Patterns
-
-- **Modular Architecture**: Separate concerns across CLI, core analysis, and output formatting
-- **TypeScript-First**: Full type safety with comprehensive interfaces in `src/types/`
-- **Streaming Processing**: Handle large repositories efficiently with chunked analysis
-- **Progress Callbacks**: Real-time feedback for long-running operations
-- **Configuration-Driven**: Flexible analysis through `.git-spark.json` config files
-
-## Development Workflow
-
-### Building & Testing
-
+### Build & Test Cycle
 ```bash
-npm run build          # TypeScript compilation to dist/
-npm test              # Jest test suite with 80%+ coverage requirement
-npm run test:coverage # Coverage reporting
-npm run lint          # ESLint + Prettier code quality
+npm run prebuild  # Auto-generates src/version.ts from package.json
+npm run build     # TypeScript → dist/ (ES2020 modules, bundler resolution)
+npm test          # Jest with ts-jest, 30s timeout, enforces 75-87% coverage
+npm run lint      # ESLint with @typescript-eslint plugin (no unsafe-any)
 ```
 
-### CLI Development
+**Critical**: [scripts/generate-version.js](scripts/generate-version.js) MUST run before build/test. Version detection uses fallback chain: `src/version.ts` → `package.json` → `1.0.0` default.
 
-- Main CLI entry: `bin/git-spark.js` → `src/cli/index.ts`
-- Use Commander.js for argument parsing with TypeScript types
-- HTML demo CLI: `scripts/cli-html-demo.ts` with comprehensive features
-- Cross-platform scripts: PowerShell (`scripts/git-spark-html.ps1`) and Batch (`scripts/git-spark-html.bat`)
+### Git Command Safety
+All Git operations in [src/utils/git.ts](src/utils/git.ts) use `child_process.spawn()` with argument arrays:
+```typescript
+spawn('git', ['log', '--format=%H', '--', filePath], { cwd: repoPath })
+```
+Never concatenate user input into shell strings. Buffer limits (200MB default) prevent DoS attacks.
 
-### API Development
+## Project-Specific Conventions
 
-- Public API surface in `src/index.ts`
-- Main class: `GitSpark` in `src/core/`
-- Quick functions: `analyze()` and `exportReport()` for simple usage
-- Progress callbacks for UI integration
+### TypeScript Configuration
+- Strict mode enabled (`noImplicitAny`, `noUnusedLocals`, `exactOptionalPropertyTypes`)
+- Module resolution: `bundler` (not Node16)
+- Excluded from compilation: `src/integrations/azure-devops/**` (feature flag)
+- Test files use ESM with Jest transform: `moduleNameMapper` strips `.js` extensions
 
-## Code Quality Standards
+### File Filtering Architecture
+**Two-Stage Exclusion Process** (order matters):
 
-### TypeScript Conventions
+1. **Extension Filtering** (`--exclude-extensions`): Applied during commit parsing in [analyzer.ts](src/core/analyzer.ts) before metric calculation
+2. **Path Pattern Filtering**: `.gitignore` patterns handled by [utils/gitignore.ts](src/utils/gitignore.ts) during file analysis
 
-- Strict TypeScript configuration with full type coverage
-- Interface definitions in `src/types/` for all major data structures
-- Generic types for flexible, reusable components
-- No `any` types - use proper type definitions
+Example: `--exclude-extensions=.md` removes markdown files from ALL metrics, while `.gitignore` only affects file-level stats.
 
-### Testing Requirements
+### Analytical Integrity Rules
+**Fundamental Constraint**: Git data CANNOT provide code review participation, actual work hours, test coverage, or deployment info. 
 
-- Jest testing framework with ts-jest preset
-- Minimum 80% code coverage (branches, functions, lines, statements)
-- Test files: `**/__tests__/**/*.ts` and `**/*.test.ts`
-- Integration tests for CLI and core functionality
+When adding metrics:
+1. Validate data is in Git commit metadata (author, date, files, message)
+2. Use honest naming: `commitTimePattern` not `workingHours`, `reviewWorkflowDetection` not `codeReviewCoverage`
+3. Include `limitations` object with `dataSource`, `knownLimitations[]`, `recommendedApproach`
+4. Test against real repository to verify calculation accuracy
 
-### Performance Considerations
-
-- Memory-efficient processing for 100k+ commits
-- Configurable chunking (default: 1000 commits per batch)
-- Buffer limits to prevent DoS attacks (default: 200MB)
-- Caching system for redundant Git operations
-- Streaming output generation for large reports
-
-## Output Format Implementation
-
-### HTML Reports (Primary Format)
-
-- Bootstrap 5.1.3 for styling with CDN links
-- Interactive charts and visualizations
-- Security: HTML escaping for all user content
-- Template-based generation with embedded CSS/JS
-- Location: `src/output/html.ts`
-
-### Export Formats
-
-- **JSON**: Machine-readable for CI/CD integration
-- **Console**: Color-coded terminal output with tables
-- **Markdown**: Documentation-friendly format
-- **CSV**: Separate files for authors, files, timeline data
-
-## Git Repository Analytics Accuracy & Limitations
-
-**CRITICAL PRINCIPLE**: Git Spark MUST maintain complete honesty and transparency about what can and cannot be determined from Git repository data alone. Never guess, estimate, or fabricate metrics that cannot be accurately derived from a standalone Git repository.
-
-### Fundamental Git Data Limitations
-
-#### What Git DOES Store:
-
-- Commit metadata (author, committer, timestamp, message)
-- File changes (additions, deletions, modifications)
-- Branch and merge history
-- Tag information
-- Commit relationships and ancestry
-
-#### What Git DOES NOT Store:
-
-- **Code review data**: No reviewer information, approval status, or review comments
-- **Pull/merge request metadata**: No PR numbers, descriptions, or review workflows
-- **Issue tracking**: No bug reports, feature requests, or issue relationships
-- **Deployment information**: No production deployments, rollbacks, or environment data
-- **Team structure**: No organizational hierarchy, roles, or responsibilities
-- **Work hours/timezone**: No actual working hours, time zones, or availability
-- **Performance metrics**: No build times, test results, or runtime performance
-- **External tool data**: No CI/CD results, monitoring data, or third-party integrations
-
-### Honest Metric Naming & Reporting
-
-#### ✅ CORRECT Approach:
-
-- Use descriptive, limitation-aware naming: `reviewWorkflowParticipation` not `codeReviewCoverage`
-- Include comprehensive limitations documentation for all metrics
-- Clearly state estimation methods and data sources
-- Provide warnings about metric reliability and interpretation
-- Use qualifiers like "pattern", "workflow", "detected", "estimated"
-
-#### ❌ INCORRECT Approach:
-
-- Never claim to measure actual code review participation without platform API data
-- Never report "test coverage" when only detecting test file patterns
-- Never claim to measure "overtime" or "burnout" from commit timing alone
-- Never report "vacation coverage" without actual HR/calendar data
-- Never imply Git data provides complete team performance insights
-
-### Required Transparency Features
-
-#### Limitations Objects
-
-All team metrics MUST include comprehensive limitations metadata:
-
+Example limitation structure (from [src/types/index.ts](src/types/index.ts)):
 ```typescript
 limitations: {
-  dataSource: 'git-commits-only';
-  estimationMethod: string;
-  platformSpecific?: {
-    detected: string;
-    accuracy: 'high' | 'medium' | 'low';
-    notes: string;
-  };
-  knownLimitations: string[];
-  recommendedApproach: string;
+  dataSource: 'git-commits-only',
+  estimationMethod: 'commit message pattern analysis',
+  knownLimitations: [
+    'Cannot detect actual code review participation',
+    'Timing reflects commit timestamp, not work hours'
+  ],
+  recommendedApproach: 'Supplement with platform API data (GitHub/GitLab)'
 }
 ```
 
-#### User Education
+## Testing Strategy
 
-- Clearly explain what each metric actually measures
-- Provide context about Git data constraints
-- Offer guidance on supplementing Git data with other sources
-- Include warnings about misinterpretation risks
+### Coverage Requirements (Jest config in [package.json](package.json))
+- Branches: 75%, Functions: 87%, Lines: 86%, Statements: 85%
+- **Excluded**: `src/types/**`, `src/cli/**`, `src/integrations/azure-devops/**`
+- Test timeout: 30 seconds (handles Git operations on real repos)
 
-#### Platform Detection
+### Test Patterns
+```typescript
+// Use test helpers in test/helpers/ for Git repo setup
+describe('GitAnalyzer', () => {
+  it('should filter excluded extensions from commits', async () => {
+    // Mock Git operations or use test-tmp/cli-test-repo/
+    const commits = await collector.collectCommits({ excludeExtensions: ['.md'] });
+    expect(commits.every(c => c.files.every(f => !f.path.endsWith('.md')))).toBe(true);
+  });
+});
+```
 
-- Recognize different Git hosting platforms (GitHub, GitLab, Azure DevOps)
-- Acknowledge that Git data is fundamentally the same across platforms
-- Explain that platform-specific features require API integration
-- Provide accuracy indicators based on detected patterns
+**Anti-pattern**: Don't test Git command parsing - test metric calculations with known commit data.
 
-### Implementation Guidelines
+## HTML Report Security Model
 
-#### When Adding New Metrics:
+**Zero Trust Approach** ([src/output/html.ts](src/output/html.ts)):
+- Content Security Policy: `script-src 'sha256-...'` for all inline JS (no `unsafe-inline`)
+- All user/repo content HTML-escaped before template insertion
+- No external CDN dependencies except Bootstrap CSS (integrity-checked)
+- Native SVG charts - no client-side charting libraries
 
-1. **Validate Data Availability**: Ensure the metric can be accurately calculated from Git data alone
-2. **Honest Naming**: Use descriptive names that reflect actual capabilities
-3. **Document Limitations**: Include comprehensive limitation warnings
-4. **Provide Context**: Explain what the metric does and doesn't measure
-5. **Test Accuracy**: Validate metric calculations against known repositories
+**Dark Mode Pattern**: Theme persists via `localStorage`, charts redraw on toggle using CSS custom properties.
 
-#### When Reviewing Existing Metrics:
+## Azure DevOps Integration (Optional Feature)
 
-1. **Audit Accuracy**: Verify metrics don't overstate capabilities
-2. **Update Names**: Change misleading names to honest descriptions
-3. **Add Warnings**: Include limitation documentation where missing
-4. **Enhance Education**: Improve user understanding of metric constraints
+**Architecture**: Parallel data collection with graceful degradation
+- [src/integrations/azure-devops/collector.ts](src/integrations/azure-devops/collector.ts): REST API client with multi-level caching
+- Cache hierarchy: Memory → File system (`.git-spark-cache/`) → API calls
+- Rate limiting: 200 req/min default, respects `Retry-After` headers
+- **Activation**: `--azure-devops` flag + `AZURE_DEVOPS_TOKEN` env var or `--devops-pat`
 
-## Git Integration Patterns
-
-### Safe Git Operations
-
-- All Git commands are parameterized and validated
-- Use `child_process.spawn()` with argument arrays (never shell strings)
-- Comprehensive error handling for Git operation failures
-- Repository validation before analysis
-
-### Analysis Capabilities
-
-- Commit history analysis with date range filtering
-- Author and file-level metrics with risk scoring
-- Temporal coupling analysis (expensive, requires `--heavy` flag)
-- Branch comparison and diff analysis
-- Governance scoring based on commit message patterns
-
-### Ethical Analytics Principles
-
-#### Transparency First
-
-- Always declare data sources and limitations upfront
-- Never obscure or minimize metric constraints
-- Provide clear guidance on appropriate metric usage
-- Educate users about Git analytics capabilities and boundaries
-
-#### Prevent Misuse
-
-- Include warnings against using metrics for performance reviews without context
-- Emphasize that Git data reflects workflow patterns, not team performance
-- Recommend supplementing Git analytics with other data sources
-- Discourage drawing conclusions beyond what the data supports
-
-#### Honest Communication
-
-- Use precise language that reflects actual measurement capabilities
-- Avoid marketing-speak or inflated claims about metric accuracy
-- Acknowledge uncertainty and estimation in all derived metrics
-- Provide confidence levels where applicable
-
-### User Education Requirements
-
-#### Documentation Standards
-
-- Every metric must include clear explanation of calculation method
-- Provide examples of what the metric does and doesn't indicate
-- Include common misinterpretation warnings
-- Offer guidance on combining metrics for better insights
-
-#### Error Prevention
-
-- Clear naming conventions that prevent confusion
-- Prominent limitation warnings in user interfaces
-- Educational tooltips and help text
-- Examples of appropriate and inappropriate metric usage
-
-## Configuration & Extensibility
-
-### Configuration Schema
-
-- `.git-spark.json` for project-specific settings
-- Hierarchical config: CLI args → config file → defaults
-- Configurable thresholds, weights, and exclusion patterns
-- Example config structure in README.md
-
-### Adding New Analysis Features
-
-1. Define types in `src/types/`
-2. Implement core logic in `src/core/`
-3. Add output formatting in `src/output/`
-4. Update CLI options in `src/cli/`
-5. Add comprehensive tests
-6. Update documentation
-
-## Security & Enterprise Requirements
-
-### Input Validation
-
-- Sanitize all user inputs and file paths
-- Path traversal protection for output directories
-- Email redaction capability (`--redact-emails`)
-- Buffer size limits for Git command output
-
-### Error Handling
-
-- Graceful degradation for missing Git repository
-- Comprehensive error messages with actionable guidance
-- Progress indicators for long-running operations
-- Proper cleanup on interruption (SIGINT handling)
-
-## Dependencies & Maintenance
-
-### Core Dependencies
-
-- **Commander.js**: CLI argument parsing and command structure
-- **Chalk**: Terminal color output and formatting
-- **Boxen**: Professional CLI output presentation
-- **Date-fns**: Date manipulation and formatting
-- **Glob**: File pattern matching for exclusions
-
-### Development Dependencies
-
-- **TypeScript 5.9+**: Latest TypeScript features and strict checking
-- **Jest**: Testing framework with ts-jest integration
-- **ESLint + Prettier**: Code quality and formatting
-- **Rimraf**: Cross-platform file cleanup
-
-### Version Requirements
-
-- Node.js 18+ (specified in engines field)
-- NPM package compatibility with modern toolchains
-- Semantic versioning for releases
+Auto-detection logic (from `.git/config`):
+```
+git config --get remote.origin.url → Parse Azure DevOps URL → Extract org/project/repo
+```
 
 ## Common Development Tasks
 
-### Adding New Output Format
+### Adding New Metric to Author Analysis
+1. Define interface in [src/types/index.ts](src/types/index.ts) (add to `AuthorStats.detailed`)
+2. Implement calculation in [analyzer.ts](src/core/analyzer.ts) → `calculateDetailedAuthorMetrics()`
+3. Add limitations documentation: `AuthorStats.limitations?: MetricLimitations`
+4. Update HTML exporter template in [src/output/html.ts](src/output/html.ts) (Author Profile Cards section)
+5. Add test case validating calculation with known commit data
+6. Update [README.md](README.md) metric documentation
 
-1. Create exporter class in `src/output/`
-2. Implement interface with `generateOutput()` method
-3. Add format option to CLI and types
-4. Update factory pattern in core
-5. Add format-specific tests
+### Extending File Risk Scoring
+Risk calculated in `calculateFileRiskScore()` with weighted factors:
+- Churn (35%): `min(file.churn / 5000, 1)`
+- Authors (25%): `min(file.authors.length / 10, 1)`
+- Commits (25%): `min(file.commits / 100, 1)`
+- Recency (15%): `1 - daysSince / 365` (capped at 1 year)
 
-### Extending Analysis Metrics
+Modify weights in `GitSparkConfig.analysis.weights.risk` to adjust sensitivity.
 
-1. Define metric interfaces in `src/types/`
-2. Implement calculation logic in `src/core/`
-3. Add configuration options for thresholds
-4. Update all output formats to display new metrics
-5. Add comprehensive test coverage
+### CLI Command Enhancement
+1. Add option to `createCLI()` in [src/cli/commands.ts](src/cli/commands.ts): `.option('--new-flag <value>', 'description')`
+2. Update `GitSparkOptions` interface in [src/types/index.ts](src/types/index.ts)
+3. Add validation in [utils/validation.ts](src/utils/validation.ts) → `validateOptions()`
+4. Handle in `executeAnalysis()` or create new command with `.command('name').action()`
+5. Add integration test in [test/cli-commands.test.ts](test/cli-commands.test.ts)
 
-### CLI Enhancement
+## Copilot Session Documentation
 
-1. Add new commands/options in `src/cli/`
-2. Update TypeScript types for options
-3. Maintain backward compatibility
-4. Update help documentation and README
-5. Add integration tests for new functionality
+**CRITICAL RULE**: AI-generated markdown MUST go to `/copilot/session-{YYYY-MM-DD}/`
+- ✅ Allowed: `/copilot/session-2025-12-14/feature-design.md`
+- ❌ Forbidden: `/src/docs/notes.md`, `/implementation-plan.md` (root)
+- Exception: Only `.github/copilot-instructions.md` lives outside `/copilot/`
 
-## Testing Guidelines
+Rationale: Prevents documentation clutter in code directories, maintains audit trail of AI sessions.
 
-### Unit Testing
+## Key Dependencies & Purpose
 
-- Test all public methods and error conditions
-- Mock Git operations for consistent testing
-- Use descriptive test names and organize in suites
-- Maintain 80%+ coverage requirement
+- **Commander.js**: CLI framework (subcommands, option parsing, help generation)
+- **Chalk 5.x**: Terminal colors (ESM-only, no CommonJS compatibility)
+- **Boxen**: Bordered CLI output boxes (used in health check command)
+- **Ora**: Terminal spinners for progress indication
+- **Table**: ASCII table formatting for console output
+- **Semver**: Version comparison for compatibility checks
 
-### Integration Testing
+## Pitfalls to Avoid
 
-- Test complete workflows end-to-end
-- Validate CLI interface with real Git repositories
-- Test all output formats with sample data
-- Performance testing with large datasets
+1. **ESM Module Resolution**: All imports require `.js` extension even for `.ts` files (bundler resolution mode)
+2. **Version Detection**: Always use `getVersion()` from [version-fallback.ts](src/version-fallback.ts), never hard-code version strings
+3. **Git Command Timeouts**: Operations on large repos (100k+ commits) can take minutes - use progress callbacks
+4. **File Filtering Order**: Apply `excludeExtensions` before `.gitignore` patterns (different scopes)
+5. **Metric Honesty**: NEVER claim to measure code quality, developer performance, or test coverage from Git data alone
+6. **HTML Security**: All new template variables MUST be HTML-escaped, all inline scripts MUST update CSP hashes
 
-Remember: Git Spark prioritizes enterprise reliability, performance at scale, comprehensive analytics, and **absolute honesty about data limitations**. All code should reflect these values with proper error handling, type safety, thorough testing, and transparent reporting of what can and cannot be determined from Git repository data alone. Never guess, estimate, or fabricate metrics that cannot be accurately derived from a standalone Git repository.
+## Performance Optimization Patterns
+
+See [docs/performance-tuning.md](docs/performance-tuning.md) for full guide. Key strategies:
+- Chunked commit processing (1000 commits/batch default)
+- Sparse checkout for file content analysis
+- Memoization of Git command results (`.git-spark-cache/`)
+- Streaming JSON export for large reports
+
+## Release Process
+
+1. Update [CHANGELOG.md](CHANGELOG.md) with version notes
+2. Run `npm run prepublishOnly` (clean + build + test)
+3. `npm version [patch|minor|major]` (updates package.json + creates Git tag)
+4. `npm publish` (uses `publishConfig.provenance: true` for supply chain security)
+5. GitHub Actions auto-publishes on tag push (trusted publishing via OIDC)
+
+---
+
+**Philosophy**: Git Spark prioritizes transparency over completeness. Better to clearly explain what we CAN'T measure than to provide misleading "insights" from insufficient data. All features should help developers understand their Git history honestly, not make them feel judged.
