@@ -153,6 +153,7 @@ Options:
   --log-level <level>        logging verbosity (error|warn|info|debug|verbose)
   --no-cache                 disable caching
   --redact-emails            redact email addresses in reports
+  --exclude-extensions <ext> comma-separated list of file extensions to exclude (e.g., .md,.txt)
   --azure-devops             enable Azure DevOps pull request analytics
   --devops-org <org>         Azure DevOps organization name
   --devops-project <project> Azure DevOps project name
@@ -313,6 +314,22 @@ git-spark --days=30 --format=json --output=./data
 git-spark --days=30 --heavy --format=html
 ```
 
+#### File Exclusion Examples
+
+```bash
+# Exclude markdown files from analysis
+git-spark --days=30 --exclude-extensions=.md
+
+# Exclude multiple file types
+git-spark --days=30 --exclude-extensions=.md,.txt,.log
+
+# Exclude documentation files for code-focused analysis
+git-spark html --days=60 --exclude-extensions=.md,.rst,.adoc
+
+# Combine with other filters
+git-spark --days=30 --exclude-extensions=.md --branch=main --author=john@example.com
+```
+
 ### Configuration
 
 Create a `.git-spark.json` configuration file to customize analysis:
@@ -328,6 +345,10 @@ Create a `.git-spark.json` configuration file to customize analysis:
       "dist/**",
       "build/**",
       ".git/**"
+    ],
+    "excludeExtensions": [
+      ".md",
+      ".txt"
     ],
     "excludeAuthors": [
       "dependabot[bot]",

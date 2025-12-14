@@ -66,6 +66,47 @@ export class GitAnalyzer {
   private azureDevOpsCollector?: AzureDevOpsCollector;
 
   /**
+   * Check if a file should be excluded based on extension
+   */
+  private shouldExcludeFile(filePath: string, excludeExtensions: string[]): boolean {
+    if (!excludeExtensions || excludeExtensions.length === 0) {
+      return false;
+    }
+    const ext = path.extname(filePath).toLowerCase();
+    if (!ext) {
+      return false;
+    }
+    return excludeExtensions.some(excl => excl.toLowerCase() === ext);
+  }
+
+  /**
+   * Filter excluded files from commits
+   */
+  private filterCommitFiles(commits: CommitData[], excludeExtensions: string[]): CommitData[] {
+    if (!excludeExtensions || excludeExtensions.length === 0) {
+      return commits;
+    }
+
+    return commits.map(commit => {
+      const filteredFiles = commit.files.filter(
+        file => !this.shouldExcludeFile(file.path, excludeExtensions)
+      );
+
+      // Recalculate insertions, deletions, and filesChanged based on filtered files
+      const insertions = filteredFiles.reduce((sum, f) => sum + f.insertions, 0);
+      const deletions = filteredFiles.reduce((sum, f) => sum + f.deletions, 0);
+
+      return {
+        ...commit,
+        files: filteredFiles,
+        insertions,
+        deletions,
+        filesChanged: filteredFiles.length,
+      };
+    });
+  }
+
+  /**
    * Create a new GitAnalyzer instance
    *
    * @param repoPath - Absolute path to the Git repository to analyze
@@ -139,7 +180,17 @@ export class GitAnalyzer {
 
     // Collect commit data
     this.reportProgress('Collecting commits', 10, 100);
-    const commits = await this.collector.collectCommits(options);
+    let commits = await this.collector.collectCommits(options);
+
+    // Filter excluded file extensions from all commits
+    if (options.excludeExtensions && options.excludeExtensions.length > 0) {
+      this.reportProgress('Filtering excluded file extensions', 20, 100);
+      commits = this.filterCommitFiles(commits, options.excludeExtensions);
+      logger.info('Filtered excluded extensions from commits', {
+        excludeExtensions: options.excludeExtensions,
+        totalCommits: commits.length,
+      });
+    }
 
     // Generate analysis components
     this.reportProgress('Analyzing repository stats', 30, 100);
@@ -169,7 +220,7 @@ export class GitAnalyzer {
       commits.length > 0 ? await this.analyzeDailyTrends(commits, options) : undefined;
 
     this.reportProgress('Analyzing current repository state', 92, 100);
-    const currentState = await this.analyzeCurrentRepositoryState(options.repoPath || '.');
+    const currentState = await this.analyzeCurrentRepositoryState(options.repoPath || '.', options);
 
     // Azure DevOps integration (if enabled)
     let azureDevOpsAnalytics: AzureDevOpsAnalytics | undefined;
@@ -1185,6 +1236,9 @@ export class GitAnalyzer {
 
     // Load .gitignore patterns if repoPath is provided
     const gitIgnore = repoPath ? GitIgnore.fromRepository(repoPath) : null;
+
+    // Note: excludeExtensions filtering already applied at commit level
+    // This only handles .gitignore and legacy directory patterns
 
     const shouldIgnoreFile = (filePath: string): boolean => {
       const normalizedPath = filePath.replace(/\\/g, '/');
@@ -2439,7 +2493,10 @@ export class GitAnalyzer {
    * Analyze the current state of files in the repository
    * This provides a snapshot of what files exist right now, regardless of Git history
    */
-  private async analyzeCurrentRepositoryState(repoPath: string): Promise<CurrentRepositoryState> {
+  private async analyzeCurrentRepositoryState(
+    repoPath: string,
+    options?: GitSparkOptions
+  ): Promise<CurrentRepositoryState> {
     const extensionStats = new Map<
       string,
       { fileCount: number; totalSizeBytes: number; files: string[] }
@@ -2456,6 +2513,9 @@ export class GitAnalyzer {
     let totalFiles = 0;
     let totalSizeBytes = 0;
 
+    // Get excluded extensions from options
+    const excludeExtensions = options?.excludeExtensions || [];
+
     // Load .gitignore patterns
     const gitIgnore = GitIgnore.fromRepository(repoPath);
 
@@ -2465,6 +2525,14 @@ export class GitAnalyzer {
       // First check .gitignore patterns
       if (gitIgnore.isIgnored(normalizedPath)) {
         return true;
+      }
+
+      // Check if file extension is in excluded list
+      if (excludeExtensions.length > 0) {
+        const ext = path.extname(normalizedPath).toLowerCase();
+        if (ext && excludeExtensions.some(excl => excl.toLowerCase() === ext)) {
+          return true;
+        }
       }
 
       // Legacy fallback patterns for basic system directories

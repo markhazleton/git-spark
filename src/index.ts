@@ -204,6 +204,7 @@ export class GitSpark {
       version: '1.0',
       analysis: {
         excludePaths: ['node_modules/**', 'dist/**', 'build/**', '.git/**'],
+        excludeExtensions: [],
         includeAuthors: [],
         excludeAuthors: [],
         thresholds: {

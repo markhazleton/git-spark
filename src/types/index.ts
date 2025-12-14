@@ -11,6 +11,7 @@ export interface GitSparkConfig {
 
 export interface AnalysisConfig {
   excludePaths: string[];
+  excludeExtensions: string[];
   includeAuthors: string[];
   excludeAuthors: string[];
   thresholds: AnalysisThresholds;
@@ -94,6 +95,8 @@ export interface GitSparkOptions {
   watch?: boolean;
   /** Redact author emails in all outputs */
   redactEmails?: boolean;
+  /** File extensions to exclude from analysis (e.g., ['.md', '.txt']) */
+  excludeExtensions?: string[];
   /** Azure DevOps integration options */
   azureDevOps?: boolean;
   devopsOrg?: string;

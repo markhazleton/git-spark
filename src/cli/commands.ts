@@ -1,6 +1,10 @@
 import { Command } from 'commander';
 import { GitSparkOptions, LogLevel, OutputFormat } from '../types/index.js';
-import { validateOptions, validateNodeVersion, validateGitInstallation } from '../utils/validation.js';
+import {
+  validateOptions,
+  validateNodeVersion,
+  validateGitInstallation,
+} from '../utils/validation.js';
 import { setGlobalLogLevel, createLogger } from '../utils/logger.js';
 import { getVersion } from '../version-fallback.js';
 import chalk from 'chalk';
@@ -72,6 +76,10 @@ export async function createCLI(): Promise<Command> {
     .option('--compare <branch>', 'compare with another branch')
     .option('--watch', 'continuous monitoring mode')
     .option('--redact-emails', 'redact email addresses in reports')
+    .option(
+      '--exclude-extensions <extensions>',
+      'comma-separated list of file extensions to exclude (e.g., .md,.txt)'
+    )
     .option('--azure-devops', 'enable Azure DevOps integration')
     .option('--devops-org <org>', 'Azure DevOps organization name')
     .option('--devops-project <project>', 'Azure DevOps project name')
@@ -138,6 +146,11 @@ async function executeHTMLReport(options: any): Promise<void> {
   try {
     // Parse and validate options
     const parsedDays = options.days ? parseInt(options.days, 10) : undefined;
+    const excludeExtensions = options.excludeExtensions
+      ? options.excludeExtensions
+          .split(',')
+          .map((ext: string) => (ext.trim().startsWith('.') ? ext.trim() : '.' + ext.trim()))
+      : undefined;
     const gitSparkOptions: GitSparkOptions = {
       repoPath: options.repo || process.cwd(),
       since: options.since,
@@ -150,6 +163,7 @@ async function executeHTMLReport(options: any): Promise<void> {
       output: options.output || './reports',
       heavy: options.heavy,
       logLevel: 'info' as LogLevel,
+      excludeExtensions,
       azureDevOps: options.azureDevops,
       devopsOrg: options.devopsOrg,
       devopsProject: options.devopsProject,
@@ -343,7 +357,7 @@ async function openHTMLReport(reportPath: string): Promise<void> {
 
     let command: string;
     let args: string[];
-    
+
     switch (os.platform()) {
       case 'win32':
         command = 'cmd.exe';
@@ -362,15 +376,15 @@ async function openHTMLReport(reportPath: string): Promise<void> {
     // Use spawn with argument array instead of exec with string to prevent command injection
     const child = spawn(command, args, {
       detached: true,
-      stdio: 'ignore'
+      stdio: 'ignore',
     });
-    
+
     child.unref();
-    
+
     child.on('error', () => {
       console.log(chalk.yellow(`⚠️  Could not auto-open browser. Please open: ${reportPath}`));
     });
-    
+
     // Give it a moment to start, then assume success if no error
     setTimeout(() => {
       console.log(chalk.green('✓ Report opened in browser'));
@@ -390,6 +404,11 @@ async function executeAnalysis(options: any): Promise<void> {
     }
 
     // Parse and validate options
+    const excludeExtensions = options.excludeExtensions
+      ? options.excludeExtensions
+          .split(',')
+          .map((ext: string) => (ext.trim().startsWith('.') ? ext.trim() : '.' + ext.trim()))
+      : undefined;
     const gitSparkOptions: GitSparkOptions = {
       repoPath: options.repo || process.cwd(),
       since: options.since,
@@ -406,6 +425,7 @@ async function executeAnalysis(options: any): Promise<void> {
       noCache: !options.cache,
       compare: options.compare,
       watch: options.watch,
+      excludeExtensions,
       azureDevOps: options.azureDevops,
       devopsOrg: options.devopsOrg,
       devopsProject: options.devopsProject,
