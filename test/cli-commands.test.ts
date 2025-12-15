@@ -345,10 +345,11 @@ describe('CLI Integration Tests', () => {
 
   describe('Author Filtering', () => {
     it('should filter by author', async () => {
+      // The test repo is created with test@example.com as the author
+      // So we should have commits from that author
       const gitSpark = new GitSpark({
         repoPath: testRepoPath,
         author: 'test@example.com',
-        days: 7,
         logLevel: 'error',
         noCache: true,
       });
@@ -391,7 +392,6 @@ describe('CLI Integration Tests', () => {
     it('should handle redact-emails option', async () => {
       const gitSpark = new GitSpark({
         repoPath: testRepoPath,
-        days: 7,
         redactEmails: true,
         logLevel: 'error',
         noCache: true,
