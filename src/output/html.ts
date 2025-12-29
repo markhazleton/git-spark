@@ -452,10 +452,8 @@ export class HTMLExporter {
 
         const firstStr = startDate.toISOString().split('T')[0];
         const lastStr = endDate.toISOString().split('T')[0];
-        const days = Math.max(
-          1,
-          Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1
-        );
+        const diffDays = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+        const days = Math.max(1, diffDays === 0 ? 1 : diffDays + 1);
         // Show commits within the analyzed period
         const commitsInPeriod = report.repository.totalCommits;
         analysisPeriod = `Analyzed Period: ${firstStr} → ${lastStr} (${days} day${days !== 1 ? 's' : ''}, ${commitsInPeriod} commit${commitsInPeriod !== 1 ? 's' : ''})`;

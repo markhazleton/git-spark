@@ -217,7 +217,7 @@ export class GitAnalyzer {
     // Calculate daily trends if there are commits
     this.reportProgress('Analyzing daily trends', 88, 100);
     const dailyTrends =
-      commits.length > 0 ? await this.analyzeDailyTrends(commits, options) : undefined;
+      commits.length > 0 ? await this.analyzeDailyTrends(commits, options, repositoryStats) : undefined;
 
     this.reportProgress('Analyzing current repository state', 92, 100);
     const currentState = await this.analyzeCurrentRepositoryState(options.repoPath || '.', options);
@@ -2451,7 +2451,7 @@ export class GitAnalyzer {
    * @param commits - All commits to analyze for trends
    * @returns Daily trends data or undefined if no commits
    */
-  private async analyzeDailyTrends(commits: CommitData[], options: GitSparkOptions) {
+  private async analyzeDailyTrends(commits: CommitData[], options: GitSparkOptions, repository: RepositoryStats) {
     if (commits.length === 0) {
       return undefined;
     }
@@ -2471,6 +2471,12 @@ export class GitAnalyzer {
       const endDate = new Date();
       const startDate = new Date();
       startDate.setDate(startDate.getDate() - options.days + 1); // +1 to include today
+      
+      // Don't go back before the repository's first commit
+      if (repository.firstCommit && startDate < repository.firstCommit) {
+        startDate.setTime(repository.firstCommit.getTime());
+      }
+      
       analysisRange = { startDate, endDate };
     }
 
