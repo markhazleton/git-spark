@@ -14,7 +14,7 @@ import {
   addTestCommit,
 } from './helpers/cli-test-helpers.js';
 import { GitSpark } from '../src/index.js';
-import { existsSync, rmSync } from 'fs';
+import { existsSync, rmSync, writeFileSync } from 'fs';
 import { join } from 'path';
 
 describe('CLI Integration Tests', () => {
@@ -77,6 +77,11 @@ describe('CLI Integration Tests', () => {
     it('should parse --exclude-extensions option', () => {
       const args = parseArgs(['--exclude-extensions', '.md,.txt']);
       expect(args['exclude-extensions']).toBe('.md,.txt');
+    });
+
+    it('should parse --timezone option', () => {
+      const args = parseArgs(['--timezone', 'America/Chicago']);
+      expect(args.timezone).toBe('America/Chicago');
     });
 
     it('should parse boolean flags', () => {
@@ -174,8 +179,8 @@ describe('CLI Integration Tests', () => {
         noCache: true,
       });
 
-      await gitSpark.analyze();
-      await gitSpark.export('json', outputDir);
+      const report = await gitSpark.analyze();
+      await gitSpark.export('json', outputDir, report);
 
       const reportPath = join(outputDir, 'git-spark-report.json');
       expect(existsSync(reportPath)).toBe(true);
@@ -191,8 +196,8 @@ describe('CLI Integration Tests', () => {
         noCache: true,
       });
 
-      await gitSpark.analyze();
-      await gitSpark.export('html', outputDir);
+      const report = await gitSpark.analyze();
+      await gitSpark.export('html', outputDir, report);
 
       const reportPath = join(outputDir, 'git-spark-report.html');
       expect(existsSync(reportPath)).toBe(true);
@@ -208,8 +213,8 @@ describe('CLI Integration Tests', () => {
         noCache: true,
       });
 
-      await gitSpark.analyze();
-      await gitSpark.export('csv', outputDir);
+      const report = await gitSpark.analyze();
+      await gitSpark.export('csv', outputDir, report);
 
       const authorsPath = join(outputDir, 'authors.csv');
       const filesPath = join(outputDir, 'files.csv');
@@ -230,8 +235,8 @@ describe('CLI Integration Tests', () => {
         noCache: true,
       });
 
-      await gitSpark.analyze();
-      await gitSpark.export('markdown', outputDir);
+      const report = await gitSpark.analyze();
+      await gitSpark.export('markdown', outputDir, report);
 
       const reportPath = join(outputDir, 'git-spark-report.md');
       expect(existsSync(reportPath)).toBe(true);
@@ -297,6 +302,24 @@ describe('CLI Integration Tests', () => {
       expect(report.metadata).toBeDefined();
       expect(report.metadata.analysisOptions.since).toBeDefined();
       expect(report.metadata.analysisOptions.until).toBeDefined();
+    });
+
+    it('should handle date range with no commits', async () => {
+      const future = new Date();
+      future.setDate(future.getDate() + 10);
+      const futureDate = future.toISOString().split('T')[0];
+
+      const gitSpark = new GitSpark({
+        repoPath: testRepoPath,
+        since: futureDate,
+        logLevel: 'error',
+        noCache: true,
+      });
+
+      const report = await gitSpark.analyze();
+
+      expect(report.repository.totalCommits).toBe(0);
+      expect(Number.isFinite(report.teamScore.consistency.velocityConsistency)).toBe(true);
     });
   });
 
@@ -408,6 +431,40 @@ describe('CLI Integration Tests', () => {
 
       // Email should still be defined (redaction format or original)
       expect(authors[0].email).toBeDefined();
+      expect(authors[0].email).not.toBe('test@example.com');
+      expect(authors[0].email).toContain('*');
+    });
+
+    it('should apply config file defaults', async () => {
+      const configPath = join(testRepoPath, '.git-spark.json');
+      const config = {
+        version: '1.0',
+        analysis: {
+          excludeExtensions: ['.md'],
+        },
+        output: {
+          defaultFormat: 'json',
+          outputDir: './reports',
+          redactEmails: true,
+        },
+        performance: {
+          enableCaching: false,
+        },
+      };
+      writeFileSync(configPath, JSON.stringify(config, null, 2));
+
+      const gitSpark = new GitSpark({
+        repoPath: testRepoPath,
+        days: 7,
+        logLevel: 'error',
+      });
+
+      const report = await gitSpark.analyze();
+
+      expect(report.metadata.resolvedConfig).toBeDefined();
+      expect(report.metadata.analysisOptions.excludeExtensions).toContain('.md');
+      expect(report.metadata.analysisOptions.redactEmails).toBe(true);
+      expect(report.metadata.analysisOptions.noCache).toBe(true);
     });
 
     it('should handle no-cache option', async () => {
@@ -434,12 +491,12 @@ describe('CLI Integration Tests', () => {
         noCache: true,
       });
 
-      await gitSpark.analyze();
+      const report = await gitSpark.analyze();
 
       // Export to multiple formats
-      await gitSpark.export('json', outputDir);
-      await gitSpark.export('html', outputDir);
-      await gitSpark.export('markdown', outputDir);
+      await gitSpark.export('json', outputDir, report);
+      await gitSpark.export('html', outputDir, report);
+      await gitSpark.export('markdown', outputDir, report);
 
       const jsonPath = join(outputDir, 'git-spark-report.json');
       const htmlPath = join(outputDir, 'git-spark-report.html');

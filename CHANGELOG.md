@@ -7,6 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-01-25
+
+### Added
+
+- **Interactive Configuration Wizard**
+  - New `git-spark init` command for interactive project setup
+  - Creates `.git-spark.json` configuration file with sensible defaults
+  - Options for repository path (`-r, --repo`), non-interactive mode (`-y, --yes`)
+  - Guided prompts for days to analyze, output format, and extension exclusions
+
+- **CLI Entry Point**
+  - Created `bin/git-spark.js` for proper global npm installation support
+  - Ensures `npx git-spark` and global installs work correctly
+
+- **Enhanced Package Configuration**
+  - Added modern `exports` field for better ESM/bundler compatibility
+  - Added `module` field pointing to ESM entry point
+  - Added `sideEffects: false` for improved tree-shaking
+  - Added `funding` field for sponsor information
+  - Improved npm discoverability with additional keywords
+  - Added `postversion` script for automatic documentation version sync
+
+### Fixed
+
+- **npm Package Installation**
+  - Fixed missing CLI entry point that prevented global installations from working
+
+### Technical
+
+- Updated package.json with modern npm best practices
+- Improved `pack:test` script for better local testing workflow
+
 ## [1.0.263] - 2025-11-20
 
 ### Security

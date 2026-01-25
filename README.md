@@ -98,6 +98,9 @@ npm install git-spark
 ### Basic Usage
 
 ```bash
+# Initialize Git Spark configuration (interactive wizard)
+git-spark init
+
 # Analyze current repository (last 30 days)
 git-spark --days=30
 
@@ -152,6 +155,7 @@ Options:
   --heavy                    enable expensive analyses
   --log-level <level>        logging verbosity (error|warn|info|debug|verbose)
   --no-cache                 disable caching
+  --timezone <tz>            IANA timezone for daily trends (e.g., America/Chicago)
   --redact-emails            redact email addresses in reports
   --exclude-extensions <ext> comma-separated list of file extensions to exclude (e.g., .md,.txt)
   --azure-devops             enable Azure DevOps pull request analytics
@@ -184,6 +188,36 @@ git-spark health [options]
 Options:
   -r, --repo <path>          repository path (default: current directory)
 ```
+
+#### `git-spark init`
+
+Interactive configuration wizard to set up Git Spark for your project:
+
+```bash
+git-spark init [options]
+
+Options:
+  -r, --repo <path>          repository path (default: current directory)
+  -y, --yes                  use defaults without prompts
+```
+
+Creates a `.git-spark.json` configuration file with your preferred settings:
+
+```bash
+# Interactive setup with prompts
+git-spark init
+
+# Quick setup with defaults
+git-spark init --yes
+
+# Initialize in a specific directory
+git-spark init --repo /path/to/repo
+```
+
+The wizard guides you through:
+- **Days to analyze**: Number of days for analysis (default: 30)
+- **Output format**: Report format preference (html, json, markdown, csv, console)
+- **Excluded extensions**: File extensions to skip (e.g., .md, .txt, .json)
 
 #### `git-spark html`
 
@@ -332,7 +366,13 @@ git-spark --days=30 --exclude-extensions=.md --branch=main --author=john@example
 
 ### Configuration
 
-Create a `.git-spark.json` configuration file to customize analysis:
+Create a `.git-spark.json` configuration file to customize analysis using the interactive wizard:
+
+```bash
+git-spark init
+```
+
+Alternatively, create the file manually. If `--config` is not provided, git-spark will look for `.git-spark.json` in the repository root.
 
 > **Note**: Configuration file support is available for basic analysis options. The configuration system supports custom thresholds, weights, and exclusion patterns for fine-tuned analysis.
 
@@ -350,6 +390,7 @@ Create a `.git-spark.json` configuration file to customize analysis:
       ".md",
       ".txt"
     ],
+    "timezone": "America/Chicago",
     "excludeAuthors": [
       "dependabot[bot]",
       "github-actions[bot]"
@@ -394,7 +435,7 @@ class GitSpark {
   constructor(options: GitSparkOptions, progressCallback?: ProgressCallback)
   
   async analyze(): Promise<AnalysisReport>
-  async export(format: OutputFormat, outputPath: string): Promise<void>
+  async export(format: OutputFormat, outputPath: string, report?: AnalysisReport): Promise<void>
   
   static getDefaultConfig(): GitSparkConfig
 }
@@ -414,6 +455,7 @@ interface GitSparkOptions {
   format?: OutputFormat;       // Output format
   output?: string;             // Output directory
   config?: string;             // Config file path
+  timezone?: string;           // IANA timezone for daily trends
   heavy?: boolean;             // Enable expensive analyses
   logLevel?: LogLevel;         // Log level
   noCache?: boolean;           // Disable caching

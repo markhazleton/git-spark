@@ -81,6 +81,16 @@ describe('GitSpark', () => {
       gitSpark = new GitSpark({ repoPath: process.cwd(), days: 7 });
     });
 
+    it('should export using a provided report without reanalysis', async () => {
+      const report = await gitSpark.analyze();
+      const analyzeSpy = jest.spyOn(gitSpark, 'analyze');
+
+      await expect(gitSpark.export('json', './test-output', report)).resolves.not.toThrow();
+      expect(analyzeSpy).not.toHaveBeenCalled();
+
+      analyzeSpy.mockRestore();
+    }, 15000);
+
     it('should export HTML format', async () => {
       await expect(gitSpark.export('html', './test-output')).resolves.not.toThrow();
     }, 15000);

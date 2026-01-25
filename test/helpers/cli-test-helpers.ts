@@ -29,7 +29,8 @@ export function createTestRepo(name: string = 'test-repo'): string {
   // Create initial commit
   writeFileSync(join(tmpDir, 'README.md'), '# Test Repository\n');
   execSync('git add .', { cwd: tmpDir });
-  execSync('git commit -m "Initial commit"', { cwd: tmpDir });
+  // Explicitly set author to ensure consistent test behavior across different environments
+  execSync('git commit --author="Test User <test@example.com>" -m "Initial commit"', { cwd: tmpDir });
 
   return tmpDir;
 }
@@ -70,7 +71,8 @@ export function addTestCommit(
   const filePath = join(repoPath, fileName);
   writeFileSync(filePath, content);
   execSync(`git add "${fileName}"`, { cwd: repoPath });
-  execSync(`git commit -m "${message}"`, { cwd: repoPath });
+  // Explicitly set author to ensure consistent test behavior across different environments
+  execSync(`git commit --author="Test User <test@example.com>" -m "${message}"`, { cwd: repoPath });
 }
 
 /**

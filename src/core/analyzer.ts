@@ -197,10 +197,10 @@ export class GitAnalyzer {
     const repositoryStats = await this.analyzeRepository(commits, options);
 
     this.reportProgress('Analyzing authors', 40, 100);
-    const authors = this.analyzeAuthors(commits, this.collector.getRepositoryPath());
+    const authors = this.analyzeAuthors(commits, this.collector.getRepositoryPath(), options);
 
     this.reportProgress('Analyzing files', 50, 100);
-    const files = this.analyzeFiles(commits, this.collector.getRepositoryPath());
+    const files = this.analyzeFiles(commits, this.collector.getRepositoryPath(), options);
 
     this.reportProgress('Generating timeline', 60, 100);
     const timeline = this.generateTimeline(commits);
@@ -339,14 +339,14 @@ export class GitAnalyzer {
     };
   }
 
-  private analyzeAuthors(commits: CommitData[], repoPath?: string): AuthorStats[] {
+  private analyzeAuthors(commits: CommitData[], repoPath?: string, options?: GitSparkOptions): AuthorStats[] {
     const authorMap = new Map<string, AuthorStats>();
     const filesByAuthor = new Map<string, Set<string>>();
     const commitsByAuthor = new Map<string, CommitData[]>();
 
     // First pass: collect basic data
     for (const commit of commits) {
-      const email = (this as any).options?.redactEmails
+      const email = options?.redactEmails
         ? sanitizeEmail(commit.authorEmail, true)
         : commit.authorEmail;
 
@@ -1231,7 +1231,7 @@ export class GitAnalyzer {
     };
   }
 
-  private analyzeFiles(commits: CommitData[], repoPath?: string): FileStats[] {
+  private analyzeFiles(commits: CommitData[], repoPath?: string, options?: GitSparkOptions): FileStats[] {
     const fileMap = new Map<string, FileStats>();
 
     // Load .gitignore patterns if repoPath is provided
@@ -1309,7 +1309,7 @@ export class GitAnalyzer {
         }
 
         // Track authors
-        const authorDisplay = (this as any).options?.redactEmails
+        const authorDisplay = options?.redactEmails
           ? sanitizeEmail(commit.authorEmail, true)
           : commit.author;
         if (!fileStats.authors.includes(authorDisplay)) {

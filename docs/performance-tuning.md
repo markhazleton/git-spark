@@ -28,7 +28,7 @@ The most effective way to improve performance is to limit the analysis window:
 git-spark --days=30
 
 # Analyze a specific quarter
-git-spark --since=2025-01-01 --until=2025-03-31
+git-spark --since=2026-01-01 --until=2026-03-31
 
 # Analyze last 7 days for quick health checks
 git-spark --days=7 --format=console
@@ -291,6 +291,20 @@ Place cache on fastest available disk:
 
 ## Configuration Reference
 
+### Creating Your Configuration
+
+The easiest way to create a `.git-spark.json` configuration file is with the interactive wizard:
+
+```bash
+# Interactive setup with prompts
+git-spark init
+
+# Quick setup with defaults
+git-spark init --yes
+```
+
+The wizard guides you through setting days to analyze, output format, and file exclusions.
+
 ### Sample High-Performance Configuration
 
 ```json
@@ -354,7 +368,7 @@ Place cache on fastest available disk:
 ### Real-World Examples
 
 **Git Spark Repository** (small):
-- Commits: ~266 (at v1.0.266)
+- Commits: ~300+ (at v1.2.0)
 - Analysis time: 2-3 seconds
 - HTML size: ~500KB
 - Memory: ~50MB
@@ -387,5 +401,5 @@ If you experience persistent performance issues:
 
 ---
 
-**Last Updated:** December 2025
-**Git Spark Version:** 1.0.266+
+**Last Updated:** January 2026
+**Git Spark Version:** 1.2.0+

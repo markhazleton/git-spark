@@ -208,6 +208,16 @@ describe('Validation Utils', () => {
       const result = validateOptions(options);
       expect(result.warnings.some(w => w.includes('more than 10 years'))).toBe(true);
     });
+
+    it('should reject invalid timezone', () => {
+      const options: GitSparkOptions = {
+        timezone: 'Invalid/Zone',
+      };
+
+      const result = validateOptions(options);
+      expect(result.isValid).toBe(false);
+      expect(result.errors.some(e => e.includes('Invalid timezone'))).toBe(true);
+    });
   });
 
   describe('validateNodeVersion', () => {

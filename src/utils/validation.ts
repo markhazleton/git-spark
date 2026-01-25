@@ -80,6 +80,14 @@ export function validateOptions(options: GitSparkOptions): ValidationResult {
     }
   }
 
+  if (options.timezone) {
+    try {
+      new Intl.DateTimeFormat('en-US', { timeZone: options.timezone }).format(new Date());
+    } catch {
+      errors.push(`Invalid timezone: ${options.timezone}`);
+    }
+  }
+
   // redaction flag requires no validation now; future: ensure not combined with raw mode exports
 
   // Validate author pattern
@@ -142,7 +150,7 @@ export function validateNodeVersion(): ValidationResult {
   const warnings: string[] = [];
 
   const nodeVersion = process.version;
-  const requiredVersion = '>=18.0.0';
+  const requiredVersion = '>=20.6.0';
 
   if (!semver.satisfies(nodeVersion, requiredVersion)) {
     errors.push(`Node.js ${requiredVersion} is required. Current version: ${nodeVersion}`);

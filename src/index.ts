@@ -23,6 +23,7 @@ import {
 import { GitAnalyzer } from './core/analyzer.js';
 import { validateOptions } from './utils/validation.js';
 import { createLogger } from './utils/logger.js';
+import { resolveOptionsWithConfig } from './utils/config.js';
 
 const logger = createLogger('git-spark');
 
@@ -63,16 +64,26 @@ const logger = createLogger('git-spark');
 export class GitSpark {
   private analyzer: GitAnalyzer;
   private options: GitSparkOptions;
+  private resolvedConfig?: Partial<GitSparkConfig>;
 
   constructor(options: GitSparkOptions, progressCallback?: ProgressCallback) {
+    const resolved = resolveOptionsWithConfig(options);
+
     // Validate options
-    const validation = validateOptions(options);
+    const validation = validateOptions(resolved.options);
     if (!validation.isValid) {
       throw new Error(`Invalid options: ${validation.errors.join(', ')}`);
     }
 
-    this.options = { ...options };
-    this.analyzer = new GitAnalyzer(options.repoPath || process.cwd(), progressCallback);
+    const cleanOptions = { ...resolved.options };
+    delete (cleanOptions as Partial<GitSparkOptions>).resolvedConfig;
+    delete (cleanOptions as Partial<GitSparkOptions>).configResolved;
+    this.options = cleanOptions;
+    const configToStore = resolved.resolvedConfig ?? resolved.options.resolvedConfig;
+    if (configToStore) {
+      this.resolvedConfig = configToStore;
+    }
+    this.analyzer = new GitAnalyzer(this.options.repoPath || process.cwd(), progressCallback);
 
     logger.info('GitSpark initialized', { options: this.options });
   }
@@ -85,6 +96,9 @@ export class GitSpark {
 
     try {
       const report = await this.analyzer.analyze(this.options);
+      if (this.resolvedConfig) {
+        report.metadata.resolvedConfig = this.resolvedConfig;
+      }
       logger.info('Analysis completed successfully', {
         commits: report.repository.totalCommits,
         authors: report.repository.totalAuthors,
@@ -121,24 +135,28 @@ export class GitSpark {
   /**
    * Export analysis report in specified format
    */
-  async export(format: OutputFormat, outputPath: string): Promise<void> {
-    const report = await this.analyze();
+  async export(
+    format: OutputFormat,
+    outputPath: string,
+    report?: AnalysisReport
+  ): Promise<void> {
+    const exportReport = report ?? (await this.analyze());
 
     switch (format) {
       case 'html':
-        await this.exportHTML(report, outputPath);
+        await this.exportHTML(exportReport, outputPath);
         break;
       case 'json':
-        await this.exportJSON(report, outputPath);
+        await this.exportJSON(exportReport, outputPath);
         break;
       case 'markdown':
-        await this.exportMarkdown(report, outputPath);
+        await this.exportMarkdown(exportReport, outputPath);
         break;
       case 'csv':
-        await this.exportCSV(report, outputPath);
+        await this.exportCSV(exportReport, outputPath);
         break;
       case 'console':
-        this.exportConsole(report);
+        await this.exportConsole(exportReport);
         break;
       default:
         throw new Error(`Unsupported format: ${format}`);
@@ -152,7 +170,9 @@ export class GitSpark {
     const { HTMLExporter } = await import('./output/html.js');
     const exporter = new HTMLExporter();
     const defaultConfig = GitSpark.getDefaultConfig();
-    await exporter.export(report, outputPath, defaultConfig.output.fileFiltering, this.options.teamwork);
+    const fileFiltering =
+      this.resolvedConfig?.output?.fileFiltering || defaultConfig.output.fileFiltering;
+    await exporter.export(report, outputPath, fileFiltering, this.options.teamwork);
     logger.info('HTML report exported', { outputPath });
   }
 
@@ -189,8 +209,8 @@ export class GitSpark {
   /**
    * Export to console
    */
-  private exportConsole(report: AnalysisReport): void {
-    const { ConsoleExporter } = require('./output/console');
+  private async exportConsole(report: AnalysisReport): Promise<void> {
+    const { ConsoleExporter } = await import('./output/console.js');
     const exporter = new ConsoleExporter();
     exporter.export(report);
     logger.info('Console report displayed');
@@ -207,6 +227,7 @@ export class GitSpark {
         excludeExtensions: [],
         includeAuthors: [],
         excludeAuthors: [],
+        timezone: 'America/Chicago',
         thresholds: {
           largeCommitLines: 500,
           smallCommitLines: 50,

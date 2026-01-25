@@ -7,6 +7,7 @@ import {
 } from '../utils/validation.js';
 import { setGlobalLogLevel, createLogger } from '../utils/logger.js';
 import { getVersion } from '../version-fallback.js';
+import { resolveOptionsWithConfig } from '../utils/config.js';
 import chalk from 'chalk';
 import boxen from 'boxen';
 import ora from 'ora';
@@ -63,8 +64,8 @@ export async function createCLI(): Promise<Command> {
     .option('-d, --days <number>', 'analyze last N days', parseNumber)
     .option('-s, --since <date>', 'start date (YYYY-MM-DD)')
     .option('-u, --until <date>', 'end date (YYYY-MM-DD)')
-    .option('-f, --format <format>', 'output format (html|json|console|markdown|csv)', 'html')
-    .option('-o, --output <path>', 'output directory', './reports')
+    .option('-f, --format <format>', 'output format (html|json|console|markdown|csv)')
+    .option('-o, --output <path>', 'output directory')
     .option('-c, --config <path>', 'configuration file')
     .option('-b, --branch <name>', 'analyze specific branch')
     .option('-a, --author <name>', 'filter by author')
@@ -75,6 +76,7 @@ export async function createCLI(): Promise<Command> {
     .option('--no-cache', 'disable caching')
     .option('--compare <branch>', 'compare with another branch')
     .option('--watch', 'continuous monitoring mode')
+    .option('--timezone <tz>', 'IANA timezone for daily trends (e.g., America/Chicago)')
     .option('--redact-emails', 'redact email addresses in reports')
     .option(
       '--exclude-extensions <extensions>',
@@ -116,13 +118,22 @@ export async function createCLI(): Promise<Command> {
     });
 
   program
+    .command('init')
+    .description('Create a .git-spark.json configuration file interactively')
+    .option('-r, --repo <path>', 'repository path', process.cwd())
+    .option('-y, --yes', 'use defaults without prompting')
+    .action(async options => {
+      await executeInit(options);
+    });
+
+  program
     .command('html')
     .description('Generate comprehensive HTML report')
     .option('-r, --repo <path>', 'repository path', process.cwd())
     .option('-d, --days <number>', 'analyze last N days')
     .option('-s, --since <date>', 'start date (YYYY-MM-DD)')
     .option('-u, --until <date>', 'end date (YYYY-MM-DD)')
-    .option('-o, --output <path>', 'output directory', './reports')
+    .option('-o, --output <path>', 'output directory')
     .option('-b, --branch <name>', 'analyze specific branch')
     .option('-a, --author <name>', 'filter by author')
     .option('-p, --path <glob>', 'filter by file path pattern')
@@ -152,6 +163,7 @@ async function executeHTMLReport(options: any): Promise<void> {
           .split(',')
           .map((ext: string) => (ext.trim().startsWith('.') ? ext.trim() : '.' + ext.trim()))
       : undefined;
+    const noCache = options.cache === false ? true : undefined;
     const gitSparkOptions: GitSparkOptions = {
       repoPath: options.repo || process.cwd(),
       since: options.since,
@@ -161,10 +173,13 @@ async function executeHTMLReport(options: any): Promise<void> {
       author: options.author,
       path: options.path,
       format: 'html' as OutputFormat,
-      output: options.output || './reports',
+      output: options.output,
+      config: options.config,
       heavy: options.heavy,
       logLevel: 'info' as LogLevel,
-      excludeExtensions,
+      ...(noCache !== undefined ? { noCache } : {}),
+      ...(options.timezone ? { timezone: options.timezone } : {}),
+      ...(excludeExtensions ? { excludeExtensions } : {}),
       teamwork: options.teamwork,
       azureDevOps: options.azureDevops,
       devopsOrg: options.devopsOrg,
@@ -173,8 +188,13 @@ async function executeHTMLReport(options: any): Promise<void> {
       devopsConfig: options.devopsConfig,
     };
 
+    const resolved = resolveOptionsWithConfig(gitSparkOptions);
+    const resolvedOptions = resolved.options;
+    resolvedOptions.output = resolvedOptions.output || './reports';
+    resolvedOptions.format = resolvedOptions.format || 'html';
+
     spinner.text = 'Validating options and repository';
-    const validation = validateOptions(gitSparkOptions);
+    const validation = validateOptions(resolvedOptions);
     if (!validation.isValid) {
       spinner.fail('Validation failed');
       console.error(chalk.red('✗ Validation errors:'));
@@ -199,7 +219,7 @@ async function executeHTMLReport(options: any): Promise<void> {
 
     spinner.text = 'Starting repository analysis';
     const gitSpark = new GitSpark(
-      gitSparkOptions,
+      resolvedOptions,
       (phase: string, current: number, total: number) => {
         const percentage = Math.round((current / total) * 100);
         spinner.text = `${phase} (${percentage}%)`;
@@ -210,11 +230,11 @@ async function executeHTMLReport(options: any): Promise<void> {
     const report = await gitSpark.analyze();
 
     spinner.text = 'Generating HTML report';
-    await gitSpark.export('html', gitSparkOptions.output || './reports');
+    await gitSpark.export('html', resolvedOptions.output, report);
 
     // Construct the full path to the generated report
     const { resolve } = await import('path');
-    const outputPath = resolve(gitSparkOptions.output || './reports', 'git-spark-report.html');
+    const outputPath = resolve(resolvedOptions.output, 'git-spark-report.html');
 
     spinner.succeed('HTML report generated successfully!');
 
@@ -282,10 +302,10 @@ async function startHTMLServer(reportPath: string, port: number): Promise<void> 
   const spinner = ora(`Starting HTTP server on port ${port}`).start();
 
   try {
-    const http = require('http');
-    const fs = require('fs');
+    const { createServer } = await import('http');
+    const { readFileSync } = await import('fs');
 
-    const server = http.createServer((req: any, res: any) => {
+    const server = createServer((req: any, res: any) => {
       // Add CORS headers
       res.setHeader('Access-Control-Allow-Origin', '*');
       res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -299,7 +319,7 @@ async function startHTMLServer(reportPath: string, port: number): Promise<void> 
 
       if (req.url === '/' || req.url === '/index.html') {
         try {
-          const htmlContent = fs.readFileSync(reportPath, 'utf-8');
+          const htmlContent = readFileSync(reportPath, 'utf-8');
           res.writeHead(200, { 'Content-Type': 'text/html' });
           res.end(htmlContent);
         } catch (error) {
@@ -411,6 +431,7 @@ async function executeAnalysis(options: any): Promise<void> {
           .split(',')
           .map((ext: string) => (ext.trim().startsWith('.') ? ext.trim() : '.' + ext.trim()))
       : undefined;
+    const noCache = options.cache === false ? true : undefined;
     const gitSparkOptions: GitSparkOptions = {
       repoPath: options.repo || process.cwd(),
       since: options.since,
@@ -424,10 +445,11 @@ async function executeAnalysis(options: any): Promise<void> {
       config: options.config,
       heavy: options.heavy,
       logLevel: options.logLevel as LogLevel,
-      noCache: !options.cache,
+      ...(noCache !== undefined ? { noCache } : {}),
       compare: options.compare,
       watch: options.watch,
-      excludeExtensions,
+      ...(options.timezone ? { timezone: options.timezone } : {}),
+      ...(excludeExtensions ? { excludeExtensions } : {}),
       teamwork: options.teamwork,
       azureDevOps: options.azureDevops,
       devopsOrg: options.devopsOrg,
@@ -437,8 +459,13 @@ async function executeAnalysis(options: any): Promise<void> {
       devopsConfig: options.devopsConfig,
     };
 
+    const resolved = resolveOptionsWithConfig(gitSparkOptions);
+    const resolvedOptions = resolved.options;
+    resolvedOptions.output = resolvedOptions.output || './reports';
+    resolvedOptions.format = resolvedOptions.format || 'html';
+
     spinner.text = 'Validating options';
-    const validation = validateOptions(gitSparkOptions);
+    const validation = validateOptions(resolvedOptions);
     if (!validation.isValid) {
       spinner.fail('Validation failed');
       console.error(chalk.red('✗ Validation errors:'));
@@ -460,7 +487,7 @@ async function executeAnalysis(options: any): Promise<void> {
 
     spinner.text = 'Starting analysis';
     const gitSpark = new GitSpark(
-      gitSparkOptions,
+      resolvedOptions,
       (phase: string, current: number, total: number) => {
         const percentage = Math.round((current / total) * 100);
         spinner.text = `${phase} (${percentage}%)`;
@@ -470,7 +497,7 @@ async function executeAnalysis(options: any): Promise<void> {
     const report = await gitSpark.analyze();
 
     spinner.text = 'Generating output';
-    await gitSpark.export(gitSparkOptions.format || 'html', gitSparkOptions.output || './reports');
+    await gitSpark.export(resolvedOptions.format, resolvedOptions.output, report);
 
     spinner.succeed(`Analysis completed successfully (git-spark v${getVersion()})`);
 
@@ -478,9 +505,9 @@ async function executeAnalysis(options: any): Promise<void> {
     displaySummary(report);
 
     // Handle --open flag for HTML reports
-    if (options.open && (gitSparkOptions.format === 'html' || !gitSparkOptions.format)) {
+    if (options.open && (resolvedOptions.format === 'html' || !resolvedOptions.format)) {
       const { resolve } = await import('path');
-      const outputPath = resolve(gitSparkOptions.output || './reports', 'git-spark-report.html');
+      const outputPath = resolve(resolvedOptions.output, 'git-spark-report.html');
       await openHTMLReport(outputPath);
     }
   } catch (error) {
@@ -693,4 +720,142 @@ function parseNumber(value: string): number {
   return parsed;
 }
 
-export { executeAnalysis, executeHealthCheck, validateEnvironment };
+async function executeInit(options: any): Promise<void> {
+  const { existsSync, writeFileSync } = await import('fs');
+  const { resolve } = await import('path');
+  const { createInterface } = await import('readline');
+
+  const repoPath = options.repo || process.cwd();
+  const configPath = resolve(repoPath, '.git-spark.json');
+
+  // Check if config already exists
+  if (existsSync(configPath)) {
+    console.log(chalk.yellow(`⚠️  Configuration file already exists: ${configPath}`));
+    if (!options.yes) {
+      const rl = createInterface({ input: process.stdin, output: process.stdout });
+      const answer = await new Promise<string>(res => {
+        rl.question(chalk.cyan('Overwrite? (y/N): '), res);
+      });
+      rl.close();
+      if (answer.toLowerCase() !== 'y') {
+        console.log(chalk.blue('Aborted.'));
+        return;
+      }
+    }
+  }
+
+  console.log(
+    boxen(chalk.bold('🔧 Git Spark Configuration Wizard\n\n') + chalk.blue('Create a .git-spark.json file to customize your analysis'), {
+      padding: 1,
+      margin: 1,
+      borderStyle: 'round',
+      borderColor: 'cyan',
+    })
+  );
+
+  let config: any = {
+    version: '1.0',
+    analysis: {
+      excludePaths: ['node_modules/**', 'dist/**', 'build/**', '.git/**'],
+      excludeExtensions: [],
+      excludeAuthors: [],
+      timezone: 'America/Chicago',
+      thresholds: {
+        largeCommitLines: 500,
+        smallCommitLines: 50,
+        staleBranchDays: 30,
+        largeFileKB: 300,
+        hotspotAuthorThreshold: 3,
+      },
+    },
+    output: {
+      defaultFormat: 'html',
+      outputDir: './reports',
+      redactEmails: false,
+    },
+    performance: {
+      maxBuffer: 200,
+      enableCaching: true,
+      cacheDir: '.git-spark-cache',
+      chunkSize: 1000,
+    },
+  };
+
+  if (!options.yes) {
+    const rl = createInterface({ input: process.stdin, output: process.stdout });
+
+    const ask = (question: string, defaultVal: string): Promise<string> => {
+      return new Promise(res => {
+        rl.question(chalk.cyan(`${question} [${defaultVal}]: `), answer => {
+          res(answer.trim() || defaultVal);
+        });
+      });
+    };
+
+    const askBool = (question: string, defaultVal: boolean): Promise<boolean> => {
+      const defStr = defaultVal ? 'Y/n' : 'y/N';
+      return new Promise(res => {
+        rl.question(chalk.cyan(`${question} (${defStr}): `), answer => {
+          if (!answer.trim()) {
+            res(defaultVal);
+          } else {
+            res(answer.toLowerCase() === 'y' || answer.toLowerCase() === 'yes');
+          }
+        });
+      });
+    };
+
+    console.log(chalk.bold('\n📁 Output Settings\n'));
+    config.output.defaultFormat = await ask('Default output format (html/json/csv/markdown)', 'html');
+    config.output.outputDir = await ask('Output directory', './reports');
+    config.output.redactEmails = await askBool('Redact email addresses in reports?', false);
+
+    console.log(chalk.bold('\n🔍 Analysis Settings\n'));
+    config.analysis.timezone = await ask('Timezone for daily trends (IANA format)', 'America/Chicago');
+
+    const excludeExtsInput = await ask('File extensions to exclude (comma-separated, e.g., .md,.txt)', '');
+    if (excludeExtsInput) {
+      config.analysis.excludeExtensions = excludeExtsInput.split(',').map((e: string) => {
+        const trimmed = e.trim();
+        return trimmed.startsWith('.') ? trimmed : `.${trimmed}`;
+      });
+    }
+
+    const excludeAuthorsInput = await ask('Authors to exclude (comma-separated, e.g., dependabot[bot])', '');
+    if (excludeAuthorsInput) {
+      config.analysis.excludeAuthors = excludeAuthorsInput.split(',').map((a: string) => a.trim());
+    }
+
+    console.log(chalk.bold('\n⚡ Performance Settings\n'));
+    config.performance.enableCaching = await askBool('Enable caching?', true);
+
+    rl.close();
+  }
+
+  // Write config file
+  try {
+    writeFileSync(configPath, JSON.stringify(config, null, 2) + '\n');
+    console.log(
+      '\n' +
+        boxen(
+          chalk.bold('✅ Configuration Created!\n\n') +
+            chalk.green(`📄 File: ${configPath}\n\n`) +
+            chalk.blue('Next steps:\n') +
+            chalk.blue('  • Edit the file to customize further\n') +
+            chalk.blue('  • Run: git-spark --days 30\n') +
+            chalk.blue('  • Or:  git-spark html --days 30 --open'),
+          {
+            padding: 1,
+            margin: 1,
+            borderStyle: 'round',
+            borderColor: 'green',
+          }
+        )
+    );
+  } catch (error) {
+    console.error(chalk.red(`Failed to write config file: ${error instanceof Error ? error.message : 'Unknown error'}`));
+    process.exit(1);
+  }
+}
+
+export { executeAnalysis, executeHealthCheck, validateEnvironment, executeInit };

@@ -14,6 +14,8 @@ export interface AnalysisConfig {
   excludeExtensions: string[];
   includeAuthors: string[];
   excludeAuthors: string[];
+  /** IANA timezone name for daily trends grouping */
+  timezone?: string;
   thresholds: AnalysisThresholds;
   weights: AnalysisWeights;
 }
@@ -88,6 +90,8 @@ export interface GitSparkOptions {
   format?: OutputFormat;
   output?: string;
   config?: string;
+  /** IANA timezone name for daily trends grouping */
+  timezone?: string;
   heavy?: boolean;
   logLevel?: LogLevel;
   noCache?: boolean;
@@ -109,6 +113,10 @@ export interface GitSparkOptions {
   /** Preserve original user-requested dates for Azure DevOps (before Git repo adjustment) */
   originalSince?: string;
   originalUntil?: string;
+  /** Resolved configuration snapshot (internal use) */
+  resolvedConfig?: Partial<GitSparkConfig>;
+  /** Marks config resolution completed (internal use) */
+  configResolved?: boolean;
 }
 
 export type LogLevel = 'error' | 'warn' | 'info' | 'debug' | 'verbose';
