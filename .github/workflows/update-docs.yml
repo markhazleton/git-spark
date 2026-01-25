@@ -68,7 +68,7 @@ jobs:
         run: |
           npm ci
           npm run build
-          node bin/git-spark.js analyze . --format html --output docs/git-spark-report.html --include-analysis
+          node bin/git-spark.js --format html --output docs --days 365
           
           # Commit updated report if changed
           if git diff --quiet docs/git-spark-report.html; then
