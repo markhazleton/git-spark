@@ -1,10 +1,19 @@
 <!--
-SYNC IMPACT REPORT - Constitution Finalization
+SYNC IMPACT REPORT - Constitution Amendments
 ==============================================
-Version Change: Template → 1.0.0 (initial ratification)
-Ratification Date: 2026-02-20
+Version: 1.1.0 (MINOR - new rules added to Documentation Standards)
+Last Amended: 2026-02-20
 
-Principles Formalized:
+Amendment History:
+- 1.1.0 (2026-02-20): Added documentation lifecycle rules to Documentation Standards
+  * Project docs must reflect current state
+  * Stale docs must be removed/archived (not maintained)
+  * Working docs must be cleaned up when obsolete
+  * Rationale: Stale documentation worse than no documentation
+
+- 1.0.0 (2026-02-20): Initial ratification via /speckit.discover-constitution
+
+Original Principles Formalized:
 - NEW: I. Type Safety (TypeScript Strict Mode)
 - NEW: II. Testing Standards (Jest + Coverage Thresholds)
 - NEW: III. Analytical Integrity (Git-Only Metrics) [Git Spark Specific]
@@ -237,22 +246,31 @@ All code **MUST** pass the complete CI/CD pipeline before merge to main branch.
 
 ### Documentation Standards (MANDATORY)
 
-All exported APIs **MUST** have JSDoc documentation with examples and parameter descriptions.
+All exported APIs **MUST** have JSDoc documentation. All project documentation **MUST** reflect current code state.
 
-**Non-Negotiable Rules:**
+**Non-Negotiable Rules (Code Documentation):**
 - All exported classes, interfaces, functions must have JSDoc comment blocks
 - Include `@param` for all parameters with descriptions
 - Include `@returns` for all return values with type information
 - Include `@example` for public APIs showing real usage
 - Document error conditions with `@throws`
 
+**Non-Negotiable Rules (Project Documentation):**
+- Documentation must accurately reflect current code state (README, guides, API docs)
+- Stale documentation must be removed or archived - never commit to maintaining outdated docs
+- Working documents (drafts, planning, discovery notes) must be archived or deleted when obsolete
+- AI session notes belong in `/copilot/session-YYYY-MM-DD/` (auto-scoped, time-bound)
+- Update or delete affected documentation when code changes (don't leave stale docs)
+
 **Encouraged Practices:**
 - Complex internal logic should have inline comments
 - Use meaningful variable/function names (self-documenting code)
 - Keep comments up-to-date during refactoring
-- Include links to relevant documentation in comments
+- Date-stamp working documents: `planning-2026-02-20.md`
+- Archive to `archive/YYYY/` only if historical value exists
+- Delete ruthlessly - clean repo over clutter
 
-**Rationale:** Documentation enables library consumers to use APIs correctly, reduces support burden, and serves as a contract for API stability.
+**Rationale:** Documentation enables library consumers to use APIs correctly and reduces support burden. Stale documentation is worse than no documentation - it misleads users and wastes time. Maintaining historical docs is too costly; better to keep only current, accurate docs.
 
 ---
 
@@ -348,13 +366,14 @@ This constitution supersedes all informal practices, preferences, and convention
 1. ✅ TypeScript strict mode compliance (all code compiles)
 2. ✅ Test coverage thresholds met (≥75% branches, ≥87% functions)
 3. ✅ Security patterns followed (parameterized commands, input validation)
-4. ✅ Documentation complete for exports (JSDoc with examples)
+4. ✅ Documentation complete & current (JSDoc for exports + project docs reflect code)
 5. ✅ CI pipeline passes (lint, test, build, security audit)
 6. ✅ Analytical integrity maintained (Git-only metrics, limitations documented)
 7. ✅ Architecture layers respected (no violations of CLI → Core → Output flow)
 8. ✅ Code quality checks pass (ESLint, Prettier)
 9. ✅ HTML security followed (CSP, escaping) if applicable
 10. ✅ Dependencies audit clean (no moderate+ vulnerabilities)
+11. ✅ Stale docs removed/archived (no obsolete working documents left behind)
 
 ### Violation Severity
 
@@ -366,6 +385,7 @@ This constitution supersedes all informal practices, preferences, and convention
 
 **HIGH** (Requires fix before merge):
 - Missing documentation on exports
+- Stale or inaccurate project documentation
 - Architecture layer violations
 - Analytical integrity compromises (misleading metrics)
 
@@ -405,4 +425,4 @@ When in doubt, prioritize the constitution's principles over convenience.
 
 ---
 
-**Version**: 1.0.0 | **Ratified**: 2026-02-20 | **Last Amended**: 2026-02-20
+**Version**: 1.1.0 | **Ratified**: 2026-02-20 | **Last Amended**: 2026-02-20
