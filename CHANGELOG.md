@@ -7,6 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-03-14
+
+### Added
+
+- **Release and Maintenance Tooling**
+  - Added dedicated HTML report command implementation to keep report generation, preview, and serving logic isolated from the main CLI flow
+  - Added Speckit agent and prompt definitions plus supporting documentation templates for structured project workflows
+  - Added repository constitution history and amendment proposal tracking for governance changes
+
+### Changed
+
+- **Internal Architecture Refactoring**
+  - Split large analyzer, daily trends, and HTML output modules into focused helper files for better maintainability
+  - Split shared type definitions into smaller domain-focused modules while preserving the public API surface
+  - Refined report and analysis utilities to improve readability and long-term maintainability
+
+- **Project Scope Cleanup**
+  - Removed Azure DevOps integration remnants and related cached artifacts to keep Git Spark focused on Git-derived analytics
+  - Updated documentation and site metadata to reflect the current release and repository state
+
+### Fixed
+
+- **Security and Validation Hardening**
+  - Resolved open CodeQL findings and patched a high-severity transitive dependency vulnerability
+  - Hardened path-pattern validation to better guard against malformed or dangerous regex input
+  - Removed an invalid CLI flag from workflow automation and refreshed publishing documentation
+
+### Technical
+
+- Upgraded ESLint to v10 and aligned the codebase with its updated defaults
+- Expanded coverage around CSV export and validation behavior while keeping the release build green
+
 ## [1.2.0] - 2026-01-25
 
 ### Added
@@ -242,7 +274,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safe shell command execution
 - Security-focused HTML output (CSP headers)
 
-[Unreleased]: https://github.com/MarkHazleton/git-spark/compare/v1.0.263...HEAD
+[Unreleased]: https://github.com/MarkHazleton/git-spark/compare/v1.3.0...HEAD
+[1.3.0]: https://github.com/MarkHazleton/git-spark/compare/v1.2.0...v1.3.0
+[1.2.0]: https://github.com/MarkHazleton/git-spark/compare/v1.0.263...v1.2.0
 [1.0.263]: https://github.com/MarkHazleton/git-spark/compare/v1.0.221...v1.0.263
 [1.0.221]: https://github.com/MarkHazleton/git-spark/compare/v1.0.183...v1.0.221
 [1.0.183]: https://github.com/MarkHazleton/git-spark/compare/v1.0.170...v1.0.183

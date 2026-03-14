@@ -322,7 +322,7 @@ The wizard guides you through setting days to analyze, output format, and file e
 ### Real-World Examples
 
 **Git Spark Repository** (small):
-- Commits: ~300+ (at v1.2.0)
+- Commits: ~138 (at v1.3.0)
 - Analysis time: 2-3 seconds
 - HTML size: ~500KB
 - Memory: ~50MB
@@ -356,4 +356,4 @@ If you experience persistent performance issues:
 ---
 
 **Last Updated:** March 2026
-**Git Spark Version:** 1.2.0+
+**Git Spark Version:** 1.3.0+

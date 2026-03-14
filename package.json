@@ -1,6 +1,6 @@
 {
   "name": "git-spark",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "Git repository analytics and reporting tool for analyzing commit patterns and contributor activity",
   "keywords": [
     "git",
@@ -63,7 +63,7 @@
   },
   "scripts": {
     "prebuild": "node scripts/generate-version.js",
-    "build": "tsc",
+    "build": "npm run clean && tsc",
     "postbuild": "node scripts/update-docs-version.js",
     "build:watch": "tsc --watch",
     "dev": "npm run build && node bin/git-spark.js",

@@ -224,10 +224,12 @@ async function executeAnalysis(options: any): Promise<void> {
     spinner.text = 'Generating output';
     await gitSpark.export(resolvedOptions.format, resolvedOptions.output, report);
 
-    spinner.succeed(`Analysis completed successfully (git-spark v${getVersion()})`);
+    const version = await getVersion();
+
+    spinner.succeed(`Analysis completed successfully (git-spark v${version})`);
 
     // Display summary
-    displaySummary(report);
+    displaySummary(report, version);
 
     // Handle --open flag for HTML reports
     if (options.open && (resolvedOptions.format === 'html' || !resolvedOptions.format)) {
@@ -369,14 +371,14 @@ async function validateEnvironment(): Promise<void> {
   }
 }
 
-function displaySummary(report: any): void {
+function displaySummary(report: any, version: string): void {
   const summary = report.summary;
   const repository = report.repository;
 
   console.log(
     '\n' +
       boxen(
-        chalk.bold(`📊 Git Spark Analysis Summary (v${getVersion()})\n\n`) +
+        chalk.bold(`📊 Git Spark Analysis Summary (v${version})\n\n`) +
           chalk.blue(`Total Commits: ${repository.totalCommits}\n`) +
           chalk.blue(`Active Contributors: ${repository.totalAuthors}\n`) +
           chalk.blue(`Files Changed: ${repository.totalFiles}\n`) +
