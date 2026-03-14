@@ -1,10 +1,17 @@
 <!--
 SYNC IMPACT REPORT - Constitution Amendments
 ==============================================
-Version: 1.1.0 (MINOR - new rules added to Documentation Standards)
-Last Amended: 2026-02-20
+Version: 1.2.0 (MINOR - module size guidelines added to Code Quality)
+Last Amended: 2026-03-14
 
 Amendment History:
+- 1.2.0 (2026-03-14): Added module size guidelines to Code Quality principle (CAP-2026-001)
+  * New files SHOULD NOT exceed 500 lines; MUST NOT exceed 1,000 without justification
+  * Existing oversized files grandfathered (html.ts, analyzer.ts, index.ts, commands.ts, daily-trends.ts)
+  * Added decomposition guidance and barrel export practices
+  * Added module size to Compliance Review checklist (item 12)
+  * Source: site audit 2026-03-14 flagged 5 files with no constitutional backing
+
 - 1.1.0 (2026-02-20): Added documentation lifecycle rules to Documentation Standards
   * Project docs must reflect current state
   * Stale docs must be removed/archived (not maintained)
@@ -13,38 +20,23 @@ Amendment History:
 
 - 1.0.0 (2026-02-20): Initial ratification via /speckit.discover-constitution
 
-Original Principles Formalized:
-- NEW: I. Type Safety (TypeScript Strict Mode)
-- NEW: II. Testing Standards (Jest + Coverage Thresholds)
-- NEW: III. Analytical Integrity (Git-Only Metrics) [Git Spark Specific]
-- NEW: IV. Layered Architecture (CLI → Core → Output)
-- NEW: V. ESM Module System
-
-Security Requirements Added:
-- Command Injection Prevention (Parameterized Execution)
-- HTML Report Security (CSP + Escaping)
-- Dependency Management (Weekly Audits)
-
-Development Standards Added:
-- CI/CD Pipeline (Multi-OS, Multi-Version)
-- Documentation Standards (JSDoc Required)
-- Code Quality (ESLint + Prettier)
-- Logging Strategy (CLI vs Internal)
-- Runtime Requirements (Node.js 20.19+)
+Modified Principles:
+- CLARIFIED: Code Quality - Linting & Formatting → Code Quality - Linting, Formatting & Module Size
+  * Added module size thresholds (500 SHOULD / 1,000 MUST)
+  * Added grandfathering clause for existing files
+  * Added decomposition encouraged practices
 
 Templates Status:
-✅ spec-template.md: Reviewed - no conflicts detected
-✅ plan-template.md: Reviewed - constitution check section aligns
-✅ tasks-template.md: Reviewed - task categorization compatible
-⚠️  commands/*.md: Reviewed - agent-specific references acceptable per project style
+✅ spec-template.md: Reviewed - no conflicts (uses dynamic constitution gates)
+✅ plan-template.md: Reviewed - constitution check section aligns (dynamic)
+✅ tasks-template.md: Reviewed - task categorization compatible (dynamic)
 
 Follow-up Required:
-- PR template: Add constitutional compliance checklist
-- CONTRIBUTING.md: Reference constitution in contribution guidelines
-- Review tooling: Consider automated checks for some MUST rules
+- Consider adding ESLint `max-lines` rule for automated enforcement
+- Create tracking issues for grandfathered oversized files
 
 Discovery Source: /speckit.discover-constitution (2026-02-20)
-Evidence: 15 source files, 15 test files, 100% pattern confidence
+Amendment Source: /speckit.evolve-constitution CAP-2026-001 (2026-03-14)
 ==============================================
 -->
 
@@ -274,16 +266,22 @@ All exported APIs **MUST** have JSDoc documentation. All project documentation *
 
 ---
 
-### Code Quality - Linting & Formatting (MANDATORY)
+### Code Quality - Linting, Formatting & Module Size (MANDATORY)
 
-All code **MUST** pass ESLint and Prettier checks with zero errors.
+All code **MUST** pass ESLint and Prettier checks with zero errors. Source files **MUST** stay within size limits to maintain reviewability.
 
-**Non-Negotiable Rules:**
+**Non-Negotiable Rules (Linting & Formatting):**
 - ESLint: No errors allowed (warnings should be minimized and justified)
 - Prettier: All files formatted with project configuration
 - Pre-commit hook enforces linting and blocks non-compliant commits
 - CI pipeline blocks merge if lint fails
 - Configuration: `eslint.config.cjs` (ESLint), `.prettierrc` (Prettier)
+
+**Non-Negotiable Rules (Module Size):**
+- New source files SHOULD NOT exceed 500 lines of code
+- New source files MUST NOT exceed 1,000 lines of code without documented justification
+- When modifying files that exceed 1,000 lines, contributors SHOULD extract changed logic into focused sub-modules where practical
+- **Grandfathered files** (exceeding thresholds at v1.2.0 ratification): `src/output/html.ts`, `src/core/analyzer.ts`, `src/types/index.ts`, `src/cli/commands.ts`, `src/core/daily-trends.ts` — these SHOULD be decomposed over time but are not blocking violations
 
 **Prettier Configuration:**
 - Semi-colons: required
@@ -292,7 +290,13 @@ All code **MUST** pass ESLint and Prettier checks with zero errors.
 - Tab width: 2 spaces
 - Trailing commas: ES5
 
-**Rationale:** Consistent code style reduces review friction, prevents style debates, and makes code easier to read and maintain.
+**Encouraged Practices:**
+- Split modules by single responsibility (e.g., separate chart rendering from HTML templating)
+- Use barrel exports (`index.ts`) to maintain clean public APIs after decomposition
+- Target <300 lines per module for optimal reviewability
+- When a file exceeds 500 lines, create a tracking issue for decomposition
+
+**Rationale:** Consistent code style reduces review friction, prevents style debates, and makes code easier to read and maintain. Large modules increase review cost, merge conflict frequency, and cognitive load. Explicit thresholds make the expectation testable and give contributors a clear signal for when decomposition is warranted.
 
 ---
 
@@ -371,9 +375,10 @@ This constitution supersedes all informal practices, preferences, and convention
 6. ✅ Analytical integrity maintained (Git-only metrics, limitations documented)
 7. ✅ Architecture layers respected (no violations of CLI → Core → Output flow)
 8. ✅ Code quality checks pass (ESLint, Prettier)
-9. ✅ HTML security followed (CSP, escaping) if applicable
-10. ✅ Dependencies audit clean (no moderate+ vulnerabilities)
-11. ✅ Stale docs removed/archived (no obsolete working documents left behind)
+9. ✅ Module size limits respected (new files ≤1,000 lines; ≤500 preferred)
+10. ✅ HTML security followed (CSP, escaping) if applicable
+11. ✅ Dependencies audit clean (no moderate+ vulnerabilities)
+12. ✅ Stale docs removed/archived (no obsolete working documents left behind)
 
 ### Violation Severity
 
@@ -388,11 +393,13 @@ This constitution supersedes all informal practices, preferences, and convention
 - Stale or inaccurate project documentation
 - Architecture layer violations
 - Analytical integrity compromises (misleading metrics)
+- New files exceeding 1,000-line MUST threshold without documented justification
 
 **MEDIUM** (Should fix before merge, can defer with justification):
 - Code style inconsistencies
 - Missing tests for edge cases
 - Incomplete error handling
+- New files exceeding 500-line SHOULD threshold (with justification)
 
 **LOW** (Nice-to-have, address in future PR):
 - Minor documentation improvements
@@ -425,4 +432,4 @@ When in doubt, prioritize the constitution's principles over convenience.
 
 ---
 
-**Version**: 1.1.0 | **Ratified**: 2026-02-20 | **Last Amended**: 2026-02-20
+**Version**: 1.2.0 | **Ratified**: 2026-02-20 | **Last Amended**: 2026-03-14
