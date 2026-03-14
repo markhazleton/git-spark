@@ -5,6 +5,14 @@ import { createLogger } from '../utils/logger.js';
 
 const logger = createLogger('csv-exporter');
 
+/**
+ * Exports Git Spark analysis reports to CSV format files.
+ * Generates multiple CSV files for authors, files, commits, and daily trends.
+ *
+ * @example
+ * const exporter = new CSVExporter();
+ * await exporter.export(report, './output/');
+ */
 export class CSVExporter {
   async export(report: AnalysisReport, outputPath: string): Promise<void> {
     try {

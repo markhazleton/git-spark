@@ -27,6 +27,17 @@ function resolveConfigPath(configPath: string | undefined, repoPath: string): st
   return existsSync(defaultPath) ? defaultPath : undefined;
 }
 
+/**
+ * Resolves CLI options with configuration file settings.
+ * Merges command-line options with configuration file values (CLI options take precedence).
+ *
+ * @param options - The CLI options to resolve/merge
+ * @returns Object containing merged options, resolved config, and config file path
+ * @throws {Error} If the configuration file cannot be read or parsed
+ * @example
+ * const { options, resolvedConfig } = resolveOptionsWithConfig({ repoPath: '.' });
+ * console.log(`Using config from: ${resolvedConfig?.name || 'defaults'}`);
+ */
 export function resolveOptionsWithConfig(
   options: GitSparkOptions
 ): {

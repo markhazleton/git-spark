@@ -6,6 +6,15 @@
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
 
+/**
+ * Retrieves the version of git-spark with multiple fallback strategies.
+ * Attempts: generated version.ts module → package.json → default fallback
+ *
+ * @returns Promise resolving to semantic version string (e.g., "1.2.3")
+ * @example
+ * const version = await getVersion();
+ * console.log(`Running git-spark v${version}`);
+ */
 export async function getVersion(): Promise<string> {
   // Method 1: Try to import the generated version file
   try {
@@ -44,6 +53,15 @@ export async function getVersion(): Promise<string> {
   return '0.0.0';
 }
 
+/**
+ * Retrieves the build timestamp of git-spark.
+ * Uses generated build time from version.ts or falls back to current time.
+ *
+ * @returns Promise resolving to ISO 8601 timestamp string
+ * @example
+ * const buildTime = await getBuildTime();
+ * console.log(`Built at: ${buildTime}`);
+ */
 export async function getBuildTime(): Promise<string> {
   try {
     // Use dynamic import to avoid TypeScript compile-time checking

@@ -1,7 +1,17 @@
 /**
  * Core types and interfaces for git-spark
+ * Re-exports domain-specific types and contains core configuration and utility types
  */
 
+// Re-export domain types for backward compatibility
+export * from './author.js';
+export * from './file.js';
+export * from './analyzer.js';
+
+/**
+ * Complete configuration for Git Spark analyzer and exporters.
+ * Contains nested configuration for analysis, output, and performance tuning.
+ */
 export interface GitSparkConfig {
   version: string;
   analysis: AnalysisConfig;
@@ -79,6 +89,10 @@ export interface PerformanceConfig {
 
 export type OutputFormat = 'html' | 'json' | 'console' | 'markdown' | 'csv';
 
+/**
+ * CLI options for Git Spark command-line interface.
+ * Supports repository analysis, filtering, output customization, and integrations.
+ */
 export interface GitSparkOptions {
   repoPath?: string;
   since?: string;
@@ -121,6 +135,10 @@ export interface GitSparkOptions {
 
 export type LogLevel = 'error' | 'warn' | 'info' | 'debug' | 'verbose';
 
+/**
+ * Raw commit data extracted from Git repository.
+ * Represents a single commit with metadata and file changes.
+ */
 export interface CommitData {
   hash: string;
   shortHash: string;
@@ -136,498 +154,7 @@ export interface CommitData {
   isMerge: boolean;
   isCoAuthored: boolean;
   coAuthors: string[];
-  files: FileChange[];
-}
-
-export interface FileChange {
-  path: string;
-  insertions: number;
-  deletions: number;
-  status: 'added' | 'modified' | 'deleted' | 'renamed' | 'copied';
-  oldPath?: string;
-}
-
-export interface AuthorStats {
-  name: string;
-  email: string;
-  commits: number;
-  insertions: number;
-  deletions: number;
-  churn: number;
-  filesChanged: number;
-  firstCommit: Date;
-  lastCommit: Date;
-  activeDays: number;
-  avgCommitSize: number;
-  largestCommit: number;
-  workPatterns: WorkPattern;
-  // Enhanced detailed metrics
-  detailed: AuthorDetailedMetrics;
-}
-
-export interface WorkPattern {
-  hourDistribution: number[];
-  dayDistribution: number[];
-  burstDays: number;
-  afterHours: number;
-  weekends: number;
-}
-
-export interface AuthorDetailedMetrics {
-  // Core contribution metrics
-  contribution: AuthorContributionMetrics;
-  // Collaboration metrics
-  collaboration: AuthorCollaborationMetrics;
-  // Work pattern metrics
-  workPattern: AuthorWorkPatternMetrics;
-  // Quality & impact metrics
-  quality: AuthorQualityMetrics;
-  // Comparative metrics
-  comparative: AuthorComparativeMetrics;
-  // Insights
-  insights: AuthorInsights;
-}
-
-export interface AuthorContributionMetrics {
-  totalCommits: number;
-  commitFrequency: number; // commits per day
-  activeDaysCount: number;
-  longestStreak: number;
-  commitSizeDistribution: {
-    micro: number; // <20 lines
-    small: number; // 20-50 lines
-    medium: number; // 51-200 lines
-    large: number; // 201-500 lines
-    veryLarge: number; // >500 lines
-  };
-  largestCommitDetails: {
-    size: number;
-    hash: string;
-    date: Date;
-    message: string;
-    filesCount: number;
-  };
-  codeVolumeMetrics: {
-    totalLinesChanged: number;
-    netChange: number; // insertions - deletions
-    churnTotal: number; // insertions + deletions
-    avgCommitSize: number;
-  };
-  filesAndScope: {
-    uniqueFiles: number;
-    avgFilesPerCommit: number;
-    fileDiversityScore: number; // percentage of codebase touched
-    mostModifiedFiles: Array<{ path: string; commits: number; percentage: number }>;
-    directoryFocus: Array<{ directory: string; percentage: number }>;
-    sourceVsPublishedRatio: {
-      sourceCommits: number;
-      sourceLines: { insertions: number; deletions: number };
-      publishedCommits: number;
-      publishedLines: { insertions: number; deletions: number };
-    };
-    fileTypeBreakdown: FileTypeBreakdown;
-  };
-}
-
-export interface FileTypeBreakdown {
-  /** File types by extension with activity metrics */
-  byExtension: Array<{
-    extension: string;
-    language: string;
-    commits: number;
-    files: number;
-    churn: number;
-    percentage: number;
-  }>;
-  /** Summary categories */
-  categories: {
-    sourceCode: { files: number; commits: number; churn: number; percentage: number };
-    documentation: { files: number; commits: number; churn: number; percentage: number };
-    configuration: { files: number; commits: number; churn: number; percentage: number };
-    tests: { files: number; commits: number; churn: number; percentage: number };
-    other: { files: number; commits: number; churn: number; percentage: number };
-  };
-  /** Total activity for percentage calculations */
-  totals: {
-    files: number;
-    commits: number;
-    churn: number;
-  };
-}
-
-export interface AuthorCollaborationMetrics {
-  coAuthorshipRate: number; // percentage of commits with co-authors
-  coAuthors: Array<{ name: string; count: number }>;
-  prIntegrationRate: number; // percentage via PR/merge commits
-  prBreakdown: {
-    mergeCommits: number;
-    squashMerges: number;
-    directCommits: number;
-  };
-  fileOwnership: {
-    exclusiveFiles: number; // files only this author touched
-    sharedFiles: number; // files with multiple authors
-    highTrafficFiles: number; // files with 5+ authors
-    ownershipStyle: 'collaborative' | 'specialized' | 'balanced';
-  };
-  knowledgeSharingIndex: number; // files shared with others / total files
-}
-
-export interface AuthorWorkPatternMetrics {
-  commitTiming: {
-    mostActiveDay: { day: string; percentage: number };
-    mostActiveTime: { timeRange: string; percentage: number };
-    workPattern: 'weekday-focused' | 'weekend-warrior' | 'distributed';
-    afterHoursRate: number;
-  };
-  temporalPatterns: {
-    burstDetection: Array<{ date: Date; commitCount: number; timeSpan: string }>;
-    longestGap: { days: number; startDate: Date; endDate: Date };
-    averageGap: number;
-    consistencyScore: number; // 0-100
-    velocityTrend: 'increasing' | 'stable' | 'decreasing';
-  };
-  workLifeBalance: {
-    afterHoursPercentage: number;
-    weekendPercentage: number;
-    lateNightCommits: number; // 10pm-6am
-    vacationBreaks: Array<{ startDate: Date; endDate: Date; days: number }>;
-  };
-}
-
-export interface AuthorQualityMetrics {
-  codeQuality: {
-    revertRate: number;
-    fixToFeatureRatio: number;
-    wipCommitFrequency: number;
-    refactoringActivity: {
-      refactorCommits: number;
-      linesRefactored: number;
-      percentage: number;
-    };
-    documentationContributions: {
-      docCommits: number;
-      docLinesChanged: number;
-      percentage: number;
-    };
-  };
-  riskAndOwnership: {
-    highRiskFileContributions: number;
-    ownershipDominance: number; // average dominance in contributed files
-    hotspotInvolvement: number;
-    legacyCodeInteraction: number; // commits to old files
-  };
-}
-
-export interface AuthorComparativeMetrics {
-  teamContext: {
-    relativeContribution: number; // percentage of team commits
-    commitRank: number;
-    linesChangedRank: number;
-    filesRank: number;
-    messageQualityRank: number;
-    percentileRankings: {
-      commits: number;
-      linesChanged: number;
-      filesTouched: number;
-      messageQuality: number;
-    };
-  };
-  specialization: {
-    focusIndex: number; // how focused vs distributed
-    specializationLevel: 'highly-specialized' | 'moderate' | 'generalist';
-  };
-  growth: {
-    periodOverPeriodGrowth: {
-      commits: number;
-      linesChanged: number;
-      filesTouched: number;
-      messageQuality: number;
-    };
-    complexityTrajectory: {
-      avgLinesPerCommitGrowth: number;
-      avgFilesPerCommitGrowth: number;
-    };
-    technologyBreadth: {
-      languages: Array<{ language: string; commits: number; percentage: number }>;
-      diversityScore: number;
-      trend: 'expanding' | 'stable' | 'narrowing';
-    };
-  };
-}
-
-export interface AuthorInsights {
-  positivePatterns: string[];
-  growthAreas: string[];
-  neutralObservations: string[];
-  concerningPatterns: string[];
-  automatedInsights: {
-    workLifeBalance: 'healthy' | 'concerning' | 'excellent';
-    collaboration: 'highly-collaborative' | 'moderate' | 'isolated';
-    codeQuality: 'excellent' | 'good' | 'needs-improvement';
-    consistency: 'very-consistent' | 'consistent' | 'irregular';
-    expertise: 'senior' | 'mid-level' | 'junior' | 'specialist';
-  };
-  recommendations: string[];
-}
-
-export interface FileStats {
-  path: string;
-  commits: number;
-  authors: string[];
-  churn: number;
-  insertions: number;
-  deletions: number;
-  firstChange: Date;
-  lastChange: Date;
-  riskScore: number;
-  hotspotScore: number;
-  ownership: { [author: string]: number };
-  language?: string;
-  size?: number;
-}
-
-export interface RepositoryStats {
-  totalCommits: number;
-  totalAuthors: number;
-  totalFiles: number;
-  totalChurn: number;
-  firstCommit: Date;
-  lastCommit: Date;
-  activeDays: number;
-  avgCommitsPerDay: number;
-  languages: { [language: string]: number };
-  busFactor: number;
-  healthScore: number;
-  governanceScore: number;
-}
-
-export interface CurrentRepositoryState {
-  /** Total files currently in the repository */
-  totalFiles: number;
-  /** Total size of all files in bytes */
-  totalSizeBytes: number;
-  /** Breakdown by file extension with counts */
-  byExtension: Array<{
-    extension: string;
-    language: string;
-    fileCount: number;
-    totalSizeBytes: number;
-    percentage: number;
-    averageFileSize: number;
-  }>;
-  /** Breakdown by file category */
-  categories: {
-    sourceCode: {
-      fileCount: number;
-      totalSizeBytes: number;
-      percentage: number;
-    };
-    documentation: {
-      fileCount: number;
-      totalSizeBytes: number;
-      percentage: number;
-    };
-    configuration: {
-      fileCount: number;
-      totalSizeBytes: number;
-      percentage: number;
-    };
-    tests: {
-      fileCount: number;
-      totalSizeBytes: number;
-      percentage: number;
-    };
-    other: {
-      fileCount: number;
-      totalSizeBytes: number;
-      percentage: number;
-    };
-  };
-  /** Top directories by file count */
-  topDirectories: Array<{
-    path: string;
-    fileCount: number;
-    percentage: number;
-  }>;
-  /** Analysis timestamp */
-  analyzedAt: Date;
-}
-
-export interface AnalysisReport {
-  metadata: ReportMetadata;
-  repository: RepositoryStats;
-  /** Current state of files in the repository (filesystem-based, not Git history) */
-  currentState: CurrentRepositoryState;
-  timeline: TimelineData[];
-  authors: AuthorStats[];
-  files: FileStats[];
-  hotspots: FileStats[];
-  risks: RiskAnalysis;
-  governance: GovernanceAnalysis;
-  teamScore: TeamScore;
-  summary: ReportSummary;
-  /** Daily trending metrics for comprehensive trend analysis */
-  dailyTrends?: DailyTrendsData | undefined;
-  /** Azure DevOps integration analytics (when enabled) */
-  azureDevOps?: AzureDevOpsAnalytics | undefined;
-}
-
-export interface ReportMetadata {
-  generatedAt: Date;
-  version: string;
-  repoPath: string;
-  analysisOptions: GitSparkOptions;
-  processingTime: number;
-  gitVersion: string;
-  commit: string;
-  branch: string;
-  /** CLI arguments used to generate this report */
-  cliArguments?: string[];
-  /** Non-fatal issues encountered during analysis */
-  warnings?: string[];
-  /** Derived configuration snapshot (after resolution/merge) */
-  resolvedConfig?: Partial<GitSparkConfig>;
-}
-
-export interface TimelineData {
-  date: Date;
-  commits: number;
-  authors: number;
-  churn: number;
-  files: number;
-}
-
-export interface RiskAnalysis {
-  highRiskFiles: FileStats[];
-  riskFactors: { [factor: string]: number };
-  recommendations: string[];
-  overallRisk: 'low' | 'medium' | 'high';
-}
-
-export interface GovernanceAnalysis {
-  conventionalCommits: number;
-  traceabilityScore: number;
-  avgMessageLength: number;
-  wipCommits: number;
-  revertCommits: number;
-  shortMessages: number;
-  score: number;
-  recommendations: string[];
-}
-
-export interface TeamScore {
-  overall: number;
-  collaboration: TeamCollaborationMetrics;
-  consistency: TeamConsistencyMetrics;
-  workLifeBalance: TeamWorkLifeBalanceMetrics;
-  insights: TeamInsights;
-  recommendations: string[];
-}
-
-export interface TeamCollaborationMetrics {
-  score: number;
-  crossTeamInteraction: number; // Files touched by multiple authors
-  knowledgeDistribution: number; // Distribution of file ownership
-  fileOwnershipDistribution: {
-    exclusive: number;
-    shared: number;
-    collaborative: number;
-  };
-  limitations: {
-    dataSource: 'git-file-authorship-only';
-    knownLimitations: string[];
-  };
-}
-
-export interface TeamConsistencyMetrics {
-  score: number;
-  velocityConsistency: number;
-  busFactorPercentage: number; // Percentage of authors who account for 80% of commits
-  activeContributorRatio: number;
-  deliveryCadence: number;
-  contributionDistribution: {
-    giniCoefficient: number;
-    topContributorDominance: number;
-  };
-}
-
-export interface TeamQualityMetrics {
-  score: number;
-  refactoringActivity: number;
-  bugFixRatio: number;
-  documentationContribution: number;
-  testFileDetection: {
-    hasTestFiles: boolean;
-    testFiles: number;
-    testFileToSourceRatio: number; // File count ratio, not execution coverage
-    limitations: {
-      note: string;
-      recommendedTools: string[];
-    };
-  };
-  limitations: {
-    qualityMeasurement: 'commit-message-pattern-analysis';
-    testCoverageNote: 'File detection only, not execution coverage';
-    knownLimitations: string[];
-  };
-}
-
-export interface TeamWorkLifeBalanceMetrics {
-  score: number;
-  commitTimePatterns: number; // Health score based on commit timing patterns
-  afterHoursCommitFrequency: number; // Commits outside standard hours
-  weekendCommitActivity: number; // Weekend commit percentage
-  commitTimingIndicators: {
-    highVelocityDays: number;
-    consecutiveCommitDays: number; // Days with commits in sequence
-    afterHoursCommits: number;
-  };
-  teamActiveCoverage: {
-    multiContributorDays: number;
-    soloContributorDays: number;
-    coveragePercentage: number;
-    note: string;
-  };
-  limitations: {
-    timezoneWarning: string;
-    workPatternNote: string;
-    burnoutDetection: string;
-    recommendedApproach: string;
-    knownLimitations: string[];
-  };
-}
-
-export interface TeamFileTypeMetrics {
-  /** Team-wide file type breakdown across all contributors */
-  teamFileTypeBreakdown: FileTypeBreakdown;
-  /** Individual contributor file type specializations */
-  authorSpecializations: Array<{
-    authorName: string;
-    authorEmail: string;
-    primaryFileTypes: Array<{
-      extension: string;
-      language: string;
-      percentage: number;
-      commits: number;
-    }>;
-    specializationScore: number; // 0-1, how specialized vs. generalist
-  }>;
-  /** Cross-pollination metrics */
-  crossPollinationMetrics: {
-    generalMultiLanguageAuthors: number;
-    languageSpecialists: number;
-    averageLanguagesPerAuthor: number;
-  };
-}
-
-export interface TeamInsights {
-  strengths: string[];
-  improvements: string[];
-  risks: string[];
-  teamDynamics: 'highly-collaborative' | 'balanced' | 'siloed' | 'fragmented';
-  maturityLevel: 'nascent' | 'developing' | 'mature' | 'optimized';
-  sustainabilityRating: 'excellent' | 'good' | 'concerning' | 'critical';
+  files: any[]; // FileChange[], imported from file.js
 }
 
 /**
@@ -820,45 +347,6 @@ export interface DailyTrendsLimitations {
   recommendedSupplementalData: string[];
 }
 
-export interface ReportSummary {
-  healthRating: 'excellent' | 'good' | 'fair' | 'poor';
-  keyMetrics: { [metric: string]: string | number };
-  insights: string[];
-  actionItems: string[];
-}
-
-export interface ComparisonReport {
-  base: AnalysisReport;
-  compare: AnalysisReport;
-  differences: ComparisonDifferences;
-}
-
-export interface ComparisonDifferences {
-  commits: {
-    added: number;
-    removed: number;
-    net: number;
-  };
-  authors: {
-    added: string[];
-    removed: string[];
-    common: string[];
-  };
-  files: {
-    added: string[];
-    removed: string[];
-    modified: string[];
-  };
-  metrics: {
-    [key: string]: {
-      base: number;
-      compare: number;
-      change: number;
-      changePercent: number;
-    };
-  };
-}
-
 export interface ProgressCallback {
   (phase: string, progress: number, total: number): void;
 }
@@ -880,12 +368,20 @@ export interface GitCommand {
   };
 }
 
+/**
+ * Result of validation operation with errors and warnings.
+ * Used by all validation functions to standardize error reporting.
+ */
 export interface ValidationResult {
   isValid: boolean;
   errors: string[];
   warnings: string[];
 }
 
+/**
+ * Base error class for all git-spark errors.
+ * Provides error codes and cause tracking for debugging.
+ */
 export class GitSparkError extends Error {
   constructor(
     message: string,
@@ -897,6 +393,10 @@ export class GitSparkError extends Error {
   }
 }
 
+/**
+ * Validation error indicating invalid options or configuration.
+ * Extends GitSparkError with field-level error context.
+ */
 export class ValidationError extends GitSparkError {
   constructor(
     message: string,

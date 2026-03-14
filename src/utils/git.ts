@@ -5,6 +5,15 @@ import { validateGitOptions } from './input-validation.js';
 
 const logger = createLogger('git');
 
+/**
+ * Executes Git commands against a repository with safety constraints.
+ * Supports parameterized command execution to prevent injection attacks.
+ * Implements buffer limits (200MB default) and timeout handling for DoS prevention.
+ *
+ * @example
+ * const executor = new GitExecutor('/path/to/repo');
+ * const commits = await executor.execute({ command: 'log', args: ['--oneline'] });
+ */
 export class GitExecutor {
   constructor(private repoPath: string) {}
 

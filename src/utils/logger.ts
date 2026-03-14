@@ -88,6 +88,16 @@ class Logger {
 
 const loggers = new Map<string, Logger>();
 
+/**
+ * Creates or retrieves a logger instance for a specific module.
+ * Uses singleton pattern to ensure consistent logging across the application.
+ *
+ * @param module - The module name for context in log messages
+ * @returns Logger instance for the specified module
+ * @example
+ * const logger = createLogger('git');
+ * logger.debug('Processing repository...');
+ */
 export function createLogger(module: string): Logger {
   if (!loggers.has(module)) {
     loggers.set(module, new Logger(module));

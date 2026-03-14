@@ -6,11 +6,11 @@ Git Spark is an enterprise-grade Git repository analytics tool (TypeScript, Node
 
 **Three-Layer Pipeline**: CLI → Analyzer → Output Exporters
 
-1. **CLI Layer** ([src/cli/commands.ts](src/cli/commands.ts)): Commander.js argument parsing, option validation, progress callbacks
+1. **CLI Layer** ([src/cli/commands.ts](../../src/cli/commands.ts)): Commander.js argument parsing, option validation, progress callbacks
 2. **Core Analysis** (`src/core/`):
-   - [collector.ts](src/core/collector.ts): Raw Git data extraction via spawned `git log` commands (parameterized, never shell strings)
-   - [analyzer.ts](src/core/analyzer.ts): Metric calculation - author stats, file risk scores, governance analysis, team collaboration patterns
-   - [daily-trends.ts](src/core/daily-trends.ts): Timeline generation with complete date range coverage (including zero-activity days)
+   - [collector.ts](../../src/core/collector.ts): Raw Git data extraction via spawned `git log` commands (parameterized, never shell strings)
+   - [analyzer.ts](../../src/core/analyzer.ts): Metric calculation - author stats, file risk scores, governance analysis, team collaboration patterns
+   - [daily-trends.ts](../../src/core/daily-trends.ts): Timeline generation with complete date range coverage (including zero-activity days)
 3. **Export Layer** (`src/output/`): Format-specific serialization with security hardening (HTML uses CSP + SHA-256 hashed inline content)
 
 **Key Design Pattern**: Progress callbacks flow through all layers (`ProgressCallback` type) for real-time user feedback during long-running Git operations.
@@ -25,10 +25,10 @@ npm test          # Jest with ts-jest, 30s timeout, enforces 75-87% coverage
 npm run lint      # ESLint with @typescript-eslint plugin (no unsafe-any)
 ```
 
-**Critical**: [scripts/generate-version.js](scripts/generate-version.js) MUST run before build/test. Version detection uses fallback chain: `src/version.ts` → `package.json` → `1.0.0` default.
+**Critical**: [scripts/generate-version.js](../../scripts/generate-version.js) MUST run before build/test. Version detection uses fallback chain: `src/version.ts` → `package.json` → `1.0.0` default.
 
 ### Git Command Safety
-All Git operations in [src/utils/git.ts](src/utils/git.ts) use `child_process.spawn()` with argument arrays:
+All Git operations in [src/utils/git.ts](../../src/utils/git.ts) use `child_process.spawn()` with argument arrays:
 ```typescript
 spawn('git', ['log', '--format=%H', '--', filePath], { cwd: repoPath })
 ```
@@ -45,8 +45,8 @@ Never concatenate user input into shell strings. Buffer limits (200MB default) p
 ### File Filtering Architecture
 **Two-Stage Exclusion Process** (order matters):
 
-1. **Extension Filtering** (`--exclude-extensions`): Applied during commit parsing in [analyzer.ts](src/core/analyzer.ts) before metric calculation
-2. **Path Pattern Filtering**: `.gitignore` patterns handled by [utils/gitignore.ts](src/utils/gitignore.ts) during file analysis
+1. **Extension Filtering** (`--exclude-extensions`): Applied during commit parsing in [analyzer.ts](../../src/core/analyzer.ts) before metric calculation
+2. **Path Pattern Filtering**: `.gitignore` patterns handled by [utils/gitignore.ts](../../src/utils/gitignore.ts) during file analysis
 
 Example: `--exclude-extensions=.md` removes markdown files from ALL metrics, while `.gitignore` only affects file-level stats.
 
@@ -59,7 +59,7 @@ When adding metrics:
 3. Include `limitations` object with `dataSource`, `knownLimitations[]`, `recommendedApproach`
 4. Test against real repository to verify calculation accuracy
 
-Example limitation structure (from [src/types/index.ts](src/types/index.ts)):
+Example limitation structure (from [src/types/index.ts](../../src/types/index.ts)):
 ```typescript
 limitations: {
   dataSource: 'git-commits-only',
@@ -74,7 +74,7 @@ limitations: {
 
 ## Testing Strategy
 
-### Coverage Requirements (Jest config in [package.json](package.json))
+### Coverage Requirements (Jest config in [package.json](../../package.json))
 - Branches: 75%, Functions: 87%, Lines: 86%, Statements: 85%
 - **Excluded**: `src/types/**`, `src/cli/**`, `src/integrations/azure-devops/**`
 - Test timeout: 30 seconds (handles Git operations on real repos)
@@ -95,7 +95,7 @@ describe('GitAnalyzer', () => {
 
 ## HTML Report Security Model
 
-**Zero Trust Approach** ([src/output/html.ts](src/output/html.ts)):
+**Zero Trust Approach** ([src/output/html.ts](../../src/output/html.ts)):
 - Content Security Policy: `script-src 'sha256-...'` for all inline JS (no `unsafe-inline`)
 - All user/repo content HTML-escaped before template insertion
 - No external CDN dependencies except Bootstrap CSS (integrity-checked)
@@ -106,7 +106,7 @@ describe('GitAnalyzer', () => {
 ## Azure DevOps Integration (Optional Feature)
 
 **Architecture**: Parallel data collection with graceful degradation
-- [src/integrations/azure-devops/collector.ts](src/integrations/azure-devops/collector.ts): REST API client with multi-level caching
+- [src/integrations/azure-devops/collector.ts](../../src/integrations/azure-devops/collector.ts): REST API client with multi-level caching
 - Cache hierarchy: Memory → File system (`.git-spark-cache/`) → API calls
 - Rate limiting: 200 req/min default, respects `Retry-After` headers
 - **Activation**: `--azure-devops` flag + `AZURE_DEVOPS_TOKEN` env var or `--devops-pat`
@@ -119,10 +119,10 @@ git config --get remote.origin.url → Parse Azure DevOps URL → Extract org/pr
 ## Common Development Tasks
 
 ### Adding New Metric to Author Analysis
-1. Define interface in [src/types/index.ts](src/types/index.ts) (add to `AuthorStats.detailed`)
-2. Implement calculation in [analyzer.ts](src/core/analyzer.ts) → `calculateDetailedAuthorMetrics()`
+1. Define interface in [src/types/index.ts](../../src/types/index.ts) (add to `AuthorStats.detailed`)
+2. Implement calculation in [analyzer.ts](../../src/core/analyzer.ts) → `calculateDetailedAuthorMetrics()`
 3. Add limitations documentation: `AuthorStats.limitations?: MetricLimitations`
-4. Update HTML exporter template in [src/output/html.ts](src/output/html.ts) (Author Profile Cards section)
+4. Update HTML exporter template in [src/output/html.ts](../../src/output/html.ts) (Author Profile Cards section)
 5. Add test case validating calculation with known commit data
 6. Update [README.md](README.md) metric documentation
 
@@ -136,11 +136,11 @@ Risk calculated in `calculateFileRiskScore()` with weighted factors:
 Modify weights in `GitSparkConfig.analysis.weights.risk` to adjust sensitivity.
 
 ### CLI Command Enhancement
-1. Add option to `createCLI()` in [src/cli/commands.ts](src/cli/commands.ts): `.option('--new-flag <value>', 'description')`
-2. Update `GitSparkOptions` interface in [src/types/index.ts](src/types/index.ts)
-3. Add validation in [utils/validation.ts](src/utils/validation.ts) → `validateOptions()`
+1. Add option to `createCLI()` in [src/cli/commands.ts](../../src/cli/commands.ts): `.option('--new-flag <value>', 'description')`
+2. Update `GitSparkOptions` interface in [src/types/index.ts](../../src/types/index.ts)
+3. Add validation in [utils/validation.ts](../../src/utils/validation.ts) → `validateOptions()`
 4. Handle in `executeAnalysis()` or create new command with `.command('name').action()`
-5. Add integration test in [test/cli-commands.test.ts](test/cli-commands.test.ts)
+5. Add integration test in [test/cli-commands.test.ts](../../test/cli-commands.test.ts)
 
 ## Copilot Session Documentation
 
@@ -163,7 +163,7 @@ Rationale: Prevents documentation clutter in code directories, maintains audit t
 ## Pitfalls to Avoid
 
 1. **ESM Module Resolution**: All imports require `.js` extension even for `.ts` files (bundler resolution mode)
-2. **Version Detection**: Always use `getVersion()` from [version-fallback.ts](src/version-fallback.ts), never hard-code version strings
+2. **Version Detection**: Always use `getVersion()` from [version-fallback.ts](../../src/version-fallback.ts), never hard-code version strings
 3. **Git Command Timeouts**: Operations on large repos (100k+ commits) can take minutes - use progress callbacks
 4. **File Filtering Order**: Apply `excludeExtensions` before `.gitignore` patterns (different scopes)
 5. **Metric Honesty**: NEVER claim to measure code quality, developer performance, or test coverage from Git data alone

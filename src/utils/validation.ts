@@ -3,6 +3,17 @@ import { existsSync, statSync } from 'fs';
 import { resolve } from 'path';
 import * as semver from 'semver';
 
+/**
+ * Validates Git Spark CLI options for correctness and safety.
+ *
+ * @param options - The CLI options to validate
+ * @returns Validation result with errors and warnings
+ * @example
+ * const result = validateOptions({ repoPath: '.', format: 'html' });
+ * if (!result.isValid) {
+ *   console.error(result.errors);
+ * }
+ */
 export function validateOptions(options: GitSparkOptions): ValidationResult {
   const errors: string[] = [];
   const warnings: string[] = [];
@@ -141,12 +152,23 @@ export function validateOptions(options: GitSparkOptions): ValidationResult {
   };
 }
 
+/**
+ * Validates that the current Node.js runtime meets minimum version requirements.
+ *
+ * @returns Validation result indicating if Node.js version is supported
+ * @throws {ValidationResult} With errors if runtime version check fails
+ * @example
+ * const result = validateNodeVersion();
+ * if (!result.isValid) {
+ *   throw new Error(result.errors[0]);
+ * }
+ */
 export function validateNodeVersion(): ValidationResult {
   const errors: string[] = [];
   const warnings: string[] = [];
 
   const nodeVersion = process.version;
-  const requiredVersion = '>=20.6.0';
+  const requiredVersion = '>=20.19.0';
 
   if (!semver.satisfies(nodeVersion, requiredVersion)) {
     errors.push(`Node.js ${requiredVersion} is required. Current version: ${nodeVersion}`);
@@ -159,6 +181,16 @@ export function validateNodeVersion(): ValidationResult {
   };
 }
 
+/**
+ * Validates that Git is installed and accessible in the system PATH.
+ *
+ * @returns Promise resolving to validation result with Git version info
+ * @example
+ * const result = await validateGitInstallation();
+ * if (result.isValid) {
+ *   console.log('Git is installed and accessible');
+ * }
+ */
 export async function validateGitInstallation(): Promise<ValidationResult> {
   const { spawn } = await import('child_process');
   
@@ -214,6 +246,15 @@ export async function validateGitInstallation(): Promise<ValidationResult> {
   });
 }
 
+/**
+ * Removes potentially dangerous characters from user input to prevent injection attacks.
+ *
+ * @param input - The user input string to sanitize
+ * @returns Sanitized string with dangerous characters removed
+ * @example
+ * const safe = sanitizeInput('test; rm -rf /');
+ * // Returns: 'test rm -rf '
+ */
 export function sanitizeInput(input: string): string {
   // Remove potentially dangerous characters
   return input
@@ -222,6 +263,16 @@ export function sanitizeInput(input: string): string {
     .trim();
 }
 
+/**
+ * Normalizes a file path and prevents directory traversal attacks.
+ *
+ * @param path - The path to sanitize
+ * @returns Normalized absolute path
+ * @throws {ValidationError} If path contains directory traversal patterns (..)
+ * @example
+ * const safe = sanitizePath('./config.json');
+ * // Returns: absolute path to config.json
+ */
 export function sanitizePath(path: string): string {
   // Prevent directory traversal
   const normalized = resolve(path);
@@ -231,6 +282,16 @@ export function sanitizePath(path: string): string {
   return normalized;
 }
 
+/**
+ * Sanitizes email addresses with optional redaction for privacy.
+ *
+ * @param email - The email address to sanitize
+ * @param redact - If true, obscures the email (default: false)
+ * @returns Original or redacted email address
+ * @example
+ * sanitizeEmail('john@example.com', false); // 'john@example.com'
+ * sanitizeEmail('john@example.com', true); // 'j***@example.com'
+ */
 export function sanitizeEmail(email: string, redact = false): string {
   if (redact) {
     const [user, domain] = email.split('@');
@@ -242,6 +303,15 @@ export function sanitizeEmail(email: string, redact = false): string {
   return email;
 }
 
+/**
+ * Analyzes commit message metadata (conventional format, issue references, status).
+ *
+ * @param message - The commit message to analyze
+ * @returns Object with analysis results
+ * @example
+ * const analysis = validateCommitMessage('feat(api): add new endpoint');
+ * // Returns: { isConventional: true, hasIssueReference: false, isWip: false, isRevert: false, length: 25 }
+ */
 export function validateCommitMessage(message: string): {
   isConventional: boolean;
   hasIssueReference: boolean;

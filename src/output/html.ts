@@ -1,4 +1,5 @@
 import { AnalysisReport, FileFilteringConfig } from '../types/index.js';
+import { escapeHtml, truncatePath, getRiskBand, getWidthClass } from './html-utils.js';
 import { writeFileSync, mkdirSync } from 'fs';
 import { resolve, dirname, basename } from 'path';
 import { createLogger } from '../utils/logger.js';
@@ -383,11 +384,11 @@ export class HTMLExporter {
         const riskPercent = Math.round(f.riskScore * 100);
         const authors = f.authors.length;
         return `<tr>
-          <td><code title="${this.escapeHtml(f.path)}">${this.escapeHtml(this.truncatePath(f.path))}</code></td>
+          <td><code title="${escapeHtml(f.path)}">${escapeHtml(truncatePath(f.path))}</code></td>
           <td class="num" data-sort="${f.commits}">${numberFmt(f.commits)}</td>
           <td class="num" data-sort="${f.churn}">${numberFmt(f.churn)}</td>
           <td class="num" data-sort="${authors}">${authors}</td>
-          <td class="num" data-sort="${riskPercent}"><span class="activity-badge activity-${this.getRiskBand(riskPercent)}" title="Commits: ${f.commits}\nLines Changed: ${f.churn}\nAuthors: ${authors}">${riskPercent}%</span></td>
+          <td class="num" data-sort="${riskPercent}"><span class="activity-badge activity-${getRiskBand(riskPercent)}" title="Commits: ${f.commits}\nLines Changed: ${f.churn}\nAuthors: ${authors}">${riskPercent}%</span></td>
         </tr>`;
       })
       .join('');
@@ -398,7 +399,7 @@ export class HTMLExporter {
       .slice(0, 15)
       .map(
         a => `<tr>
-        <td><a href="#author-${this.escapeHtml(a.email.replace(/[^a-zA-Z0-9]/g, '-'))}" class="author-link">${this.escapeHtml(a.name)}</a></td>
+        <td><a href="#author-${escapeHtml(a.email.replace(/[^a-zA-Z0-9]/g, '-'))}" class="author-link">${escapeHtml(a.name)}</a></td>
         <td class="num" data-sort="${a.commits}">${numberFmt(a.commits)}</td>
         <td class="num" data-sort="${a.churn}" title="+${a.insertions} / -${a.deletions}">+${numberFmt(a.insertions)} / -${numberFmt(a.deletions)}</td>
         <td class="num" data-sort="${a.avgCommitSize.toFixed(2)}">${a.avgCommitSize.toFixed(1)}</td>
@@ -408,7 +409,7 @@ export class HTMLExporter {
       .join('');
 
     // Simple SVG OG image summarizing key stats
-    const ogSvg = `<svg xmlns='http://www.w3.org/2000/svg' width='800' height='418' viewBox='0 0 800 418' role='img'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop stop-color='%230066cc' offset='0'/><stop stop-color='%2328a745' offset='1'/></linearGradient></defs><rect width='800' height='418' fill='%231e2227'/><text x='40' y='80' font-family='Segoe UI,Roboto,Arial,sans-serif' font-size='42' fill='white'>Git Activity Report</text><text x='40' y='140' font-size='26' fill='white'>${this.escapeHtml(repoName)}</text><text x='40' y='200' font-size='20' fill='white'>Commits: ${report.repository.totalCommits}</text><text x='40' y='235' font-size='20' fill='white'>Authors: ${report.repository.totalAuthors}</text><text x='40' y='270' font-size='20' fill='white'>Files: ${report.repository.totalFiles}</text><text x='40' y='320' font-size='16' fill='#bbb'>Generated ${new Date(report.metadata.generatedAt).toISOString().split('T')[0]}</text><rect x='600' y='60' width='160' height='160' rx='8' fill='url(#g)' opacity='0.8'/><text x='680' y='160' text-anchor='middle' font-size='32' fill='white' font-weight='700'>${compactFmt(report.repository.totalChurn)}</text><text x='680' y='185' text-anchor='middle' font-size='14' fill='white'>Lines Changed</text></svg>`;
+    const ogSvg = `<svg xmlns='http://www.w3.org/2000/svg' width='800' height='418' viewBox='0 0 800 418' role='img'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop stop-color='%230066cc' offset='0'/><stop stop-color='%2328a745' offset='1'/></linearGradient></defs><rect width='800' height='418' fill='%231e2227'/><text x='40' y='80' font-family='Segoe UI,Roboto,Arial,sans-serif' font-size='42' fill='white'>Git Activity Report</text><text x='40' y='140' font-size='26' fill='white'>${escapeHtml(repoName)}</text><text x='40' y='200' font-size='20' fill='white'>Commits: ${report.repository.totalCommits}</text><text x='40' y='235' font-size='20' fill='white'>Authors: ${report.repository.totalAuthors}</text><text x='40' y='270' font-size='20' fill='white'>Files: ${report.repository.totalFiles}</text><text x='40' y='320' font-size='16' fill='#bbb'>Generated ${new Date(report.metadata.generatedAt).toISOString().split('T')[0]}</text><rect x='600' y='60' width='160' height='160' rx='8' fill='url(#g)' opacity='0.8'/><text x='680' y='160' text-anchor='middle' font-size='32' fill='white' font-weight='700'>${compactFmt(report.repository.totalChurn)}</text><text x='680' y='185' text-anchor='middle' font-size='14' fill='white'>Lines Changed</text></svg>`;
     const ogImage = 'data:image/svg+xml;base64,' + Buffer.from(ogSvg).toString('base64');
 
     // Analysis period (based on analysis options, not just commit range)
@@ -488,16 +489,16 @@ export class HTMLExporter {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="generator" content="git-spark v${this.escapeHtml(report.metadata.version)}">
+  <meta name="generator" content="git-spark v${escapeHtml(report.metadata.version)}">
   <meta name="report-date" content="${generatedAt}">
-  <meta name="repository" content="${this.escapeHtml(repoName)}">
-  <meta property="og:title" content="GitSpark Report - ${this.escapeHtml(repoName)}">
+  <meta name="repository" content="${escapeHtml(repoName)}">
+  <meta property="og:title" content="GitSpark Report - ${escapeHtml(repoName)}">
   <meta property="og:type" content="article">
-  <meta property="og:description" content="${this.escapeHtml(`${report.repository.totalCommits} commits • ${report.repository.totalAuthors} contributors • ${report.repository.totalFiles} files changed`)}">
+  <meta property="og:description" content="${escapeHtml(`${report.repository.totalCommits} commits • ${report.repository.totalAuthors} contributors • ${report.repository.totalFiles} files changed`)}">
   <meta property="og:image" content="${ogImage}">
   <meta http-equiv="Content-Security-Policy" content="${csp}">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
-  <title>GitSpark Report - ${this.escapeHtml(repoName)}</title>
+  <title>GitSpark Report - ${escapeHtml(repoName)}</title>
   <style>${styleContent}</style>
 </head>
 <body>
@@ -505,7 +506,7 @@ export class HTMLExporter {
   <a class="skip-link" href="#summary">Skip to content</a>
   <header class="site-header">
     <div class="header-inner">
-      <div class="branding">GitSpark Report <span class="repo-name">${this.escapeHtml(repoName)}</span></div>
+      <div class="branding">GitSpark Report <span class="repo-name">${escapeHtml(repoName)}</span></div>
       <nav class="main-nav" aria-label="Section navigation">
         <ul>
           <li><a href="#summary">Summary</a></li>
@@ -525,7 +526,7 @@ export class HTMLExporter {
   <main class="report" id="top">
     <section id="summary" class="section">
       <h1>Executive Summary</h1>
-      ${analysisPeriod ? `<p class="analysis-period" aria-label="Analysis date range">${this.escapeHtml(analysisPeriod)}</p>` : ''}
+      ${analysisPeriod ? `<p class="analysis-period" aria-label="Analysis date range">${escapeHtml(analysisPeriod)}</p>` : ''}
       <div class="summary-grid">
         ${keyMetrics
           .map(
@@ -867,20 +868,20 @@ export class HTMLExporter {
     <section id="meta" class="section">
       <h2>Report Metadata</h2>
       <dl class="meta-grid">
-        <dt>Generated</dt><dd>${this.escapeHtml(new Date(report.metadata.generatedAt).toLocaleString())}</dd>
-        <dt>Version</dt><dd>${this.escapeHtml(report.metadata.version)}</dd>
-        <dt>Branch</dt><dd>${this.escapeHtml(report.metadata.branch || '')}</dd>
-        <dt>Commit</dt><dd><code>${this.escapeHtml((report.metadata.commit || '').slice(0, 8))}</code></dd>
+        <dt>Generated</dt><dd>${escapeHtml(new Date(report.metadata.generatedAt).toLocaleString())}</dd>
+        <dt>Version</dt><dd>${escapeHtml(report.metadata.version)}</dd>
+        <dt>Branch</dt><dd>${escapeHtml(report.metadata.branch || '')}</dd>
+        <dt>Commit</dt><dd><code>${escapeHtml((report.metadata.commit || '').slice(0, 8))}</code></dd>
         <dt>Processing Time</dt><dd>${(report.metadata.processingTime / 1000).toFixed(2)}s</dd>
-        <dt>Repo Path</dt><dd>${this.escapeHtml(report.metadata.repoPath)}</dd>
-        ${report.metadata.cliArguments?.length ? `<dt>CLI Arguments</dt><dd><code>${this.escapeHtml(report.metadata.cliArguments.join(' '))}</code></dd>` : ''}
-        ${warnings.length ? `<dt>Warnings</dt><dd><ul class="warnings">${warnings.map(w => `<li>${this.escapeHtml(w)}</li>`).join('')}</ul></dd>` : ''}
+        <dt>Repo Path</dt><dd>${escapeHtml(report.metadata.repoPath)}</dd>
+        ${report.metadata.cliArguments?.length ? `<dt>CLI Arguments</dt><dd><code>${escapeHtml(report.metadata.cliArguments.join(' '))}</code></dd>` : ''}
+        ${warnings.length ? `<dt>Warnings</dt><dd><ul class="warnings">${warnings.map(w => `<li>${escapeHtml(w)}</li>`).join('')}</ul></dd>` : ''}
       </dl>
     </section>
   </main>
   <footer class="site-footer" role="contentinfo">
     <div class="footer-content">
-      <p>Generated by GitSpark v${this.escapeHtml(report.metadata.version)} • ${this.escapeHtml(new Date(report.metadata.generatedAt).toLocaleString())}</p>
+      <p>Generated by GitSpark v${escapeHtml(report.metadata.version)} • ${escapeHtml(new Date(report.metadata.generatedAt).toLocaleString())}</p>
       <p>GitSpark is a <a href="https://markhazleton.com" target="_blank" rel="noopener noreferrer">Mark Hazleton</a> project</p>
     </div>
   </footer>
@@ -1245,7 +1246,6 @@ export class HTMLExporter {
       }
       .insight-category ul { margin:0; padding-left:1.2rem; }
       .insight-category li { font-size:.85rem; margin:.5rem 0; }
-
 
       /* Documentation Section Styles */
       .doc-intro { font-style:italic; color:var(--color-text-secondary); margin-bottom:2rem; }
@@ -2122,35 +2122,6 @@ export class HTMLExporter {
     `;
   }
 
-  /**
-   * Escape HTML special characters
-   *
-   * @param text - Text to escape
-   * @returns Escaped HTML text
-   * @private
-   */
-  private escapeHtml(text: string): string {
-    return (text || '')
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#039;');
-  }
-
-  private truncatePath(p: string, max = 40): string {
-    if (p.length <= max) return p;
-    const half = Math.floor((max - 3) / 2);
-    return p.slice(0, half) + '...' + p.slice(-half);
-  }
-
-  private getRiskBand(riskPercent: number): string {
-    if (riskPercent >= 70) return 'high';
-    if (riskPercent >= 50) return 'medium';
-    if (riskPercent >= 30) return 'low';
-    return 'minimal';
-  }
-
   private generateDetailedAuthorProfiles(authors: any[]): string {
     // Normalize and merge authors with same email (case-insensitive)
     const mergedAuthors = this.mergeAuthorsByEmail(authors);
@@ -2225,7 +2196,7 @@ export class HTMLExporter {
 
   private generateAuthorProfileCard(author: any): string {
     const metrics = author.detailed;
-    const authorId = this.escapeHtml(author.email.replace(/[^a-zA-Z0-9]/g, '-'));
+    const authorId = escapeHtml(author.email.replace(/[^a-zA-Z0-9]/g, '-'));
     const numberFmt = (n: number) => new Intl.NumberFormat().format(n);
     const pctFmt = (n: number) => `${n.toFixed(1)}%`;
     const dateRange = `${author.firstCommit.toISOString().split('T')[0]} → ${author.lastCommit.toISOString().split('T')[0]}`;
@@ -2237,8 +2208,8 @@ export class HTMLExporter {
     return `
     <div class="author-profile-card" id="author-${authorId}">
       <div class="author-header">
-        <h3>${this.escapeHtml(author.name)}</h3>
-        <span class="author-email">${this.escapeHtml(author.email)}</span>
+        <h3>${escapeHtml(author.name)}</h3>
+        <span class="author-email">${escapeHtml(author.email)}</span>
         <div class="author-period">Active: ${dateRange} (${author.activeDays} days)</div>
       </div>
 
@@ -2314,7 +2285,7 @@ export class HTMLExporter {
             <strong>Largest Single Change:</strong> ${numberFmt(contribution.largestCommitDetails.size)} lines 
             (${contribution.largestCommitDetails.hash.substring(0, 7)}) on 
             ${contribution.largestCommitDetails.date.toLocaleDateString()}<br>
-            <em>"${this.escapeHtml(contribution.largestCommitDetails.message)}"</em>
+            <em>"${escapeHtml(contribution.largestCommitDetails.message)}"</em>
           </div>`
               : ''
           }
@@ -2386,7 +2357,7 @@ export class HTMLExporter {
         // Use actual percentage for width, with minimum 1% for very small but visible values
         const barWidth = hasData ? Math.max(percentage, 1) : 0;
         // Map percentage to CSS width class for CSP compliance
-        const widthClass = this.getWidthClass(barWidth);
+        const widthClass = getWidthClass(barWidth);
 
         return `
         <div class="size-bar">
@@ -2398,34 +2369,6 @@ export class HTMLExporter {
         </div>`;
       })
       .join('');
-  }
-
-  private getWidthClass(percentage: number): string {
-    if (percentage <= 0) return 'w-0';
-    if (percentage <= 1) return 'w-1';
-    if (percentage <= 2) return 'w-2';
-    if (percentage <= 3) return 'w-3';
-    if (percentage <= 4) return 'w-4';
-    if (percentage <= 5) return 'w-5';
-    if (percentage <= 10) return 'w-10';
-    if (percentage <= 15) return 'w-15';
-    if (percentage <= 20) return 'w-20';
-    if (percentage <= 25) return 'w-25';
-    if (percentage <= 30) return 'w-30';
-    if (percentage <= 35) return 'w-35';
-    if (percentage <= 40) return 'w-40';
-    if (percentage <= 45) return 'w-45';
-    if (percentage <= 50) return 'w-50';
-    if (percentage <= 55) return 'w-55';
-    if (percentage <= 60) return 'w-60';
-    if (percentage <= 65) return 'w-65';
-    if (percentage <= 70) return 'w-70';
-    if (percentage <= 75) return 'w-75';
-    if (percentage <= 80) return 'w-80';
-    if (percentage <= 85) return 'w-85';
-    if (percentage <= 90) return 'w-90';
-    if (percentage <= 95) return 'w-95';
-    return 'w-100';
   }
 
   private generateAuthorInsightsSection(metrics: any): string {
@@ -2448,7 +2391,7 @@ export class HTMLExporter {
           <div class="insight-category">
             <h5>Strengths</h5>
             <ul>
-              ${strengths.map((strength: string) => `<li>${this.escapeHtml(strength)}</li>`).join('')}
+              ${strengths.map((strength: string) => `<li>${escapeHtml(strength)}</li>`).join('')}
             </ul>
           </div>`
               : ''
@@ -2460,7 +2403,7 @@ export class HTMLExporter {
           <div class="insight-category">
             <h5>Growth Areas</h5>
             <ul>
-              ${growthAreas.map((area: string) => `<li>${this.escapeHtml(area)}</li>`).join('')}
+              ${growthAreas.map((area: string) => `<li>${escapeHtml(area)}</li>`).join('')}
             </ul>
           </div>`
               : ''
@@ -2989,7 +2932,7 @@ export class HTMLExporter {
       <div class="contributions-graph">
         <h3>🗓️ Contributions Calendar</h3>
         <div class="contributions-header">
-          <span>Activity from ${this.escapeHtml(dateRangeText)} (${actualDays} active days)</span>
+          <span>Activity from ${escapeHtml(dateRangeText)} (${actualDays} active days)</span>
           <span>${totalCommits} total commits</span>
         </div>
         <div class="contributions-calendar">
@@ -3686,7 +3629,7 @@ export class HTMLExporter {
                   .map(
                     (creator: { creator: string; prCount: number }) => `
                     <div class="creator-item">
-                      <span class="creator-name">${this.escapeHtml(creator.creator)}</span>
+                      <span class="creator-name">${escapeHtml(creator.creator)}</span>
                       <span class="creator-count">${creator.prCount} PRs</span>
                     </div>
                   `
@@ -3766,7 +3709,7 @@ export class HTMLExporter {
           <div class="recommendations">
             <h4>Recommendations</h4>
             <ul class="recommendation-list">
-              ${dataQuality.recommendations.map((rec: string) => `<li>${this.escapeHtml(rec)}</li>`).join('')}
+              ${dataQuality.recommendations.map((rec: string) => `<li>${escapeHtml(rec)}</li>`).join('')}
             </ul>
           </div>
         </div>
