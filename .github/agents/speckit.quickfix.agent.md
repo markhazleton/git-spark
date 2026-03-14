@@ -50,7 +50,7 @@ Parse `$ARGUMENTS` for action type:
 
 ### 1. Initialize Quickfix Context
 
-Run `scripts/powershell/quickfix-context.ps1 $ARGUMENTS -Json` to gather context and parse JSON output for:
+Run `.documentation/scripts/powershell/quickfix-context.ps1 $ARGUMENTS -Json` to gather context and parse JSON output for:
 
 - `REPO_ROOT`: Repository root path
 - `CONSTITUTION_PATH`: Path to constitution file

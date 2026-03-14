@@ -50,7 +50,7 @@ Parse `$ARGUMENTS` for action type:
 
 ### 1. Initialize Evolution Context
 
-Run `scripts/powershell/evolution-context.ps1 $ARGUMENTS -Json` to gather context and parse JSON output for:
+Run `.documentation/scripts/powershell/evolution-context.ps1 $ARGUMENTS -Json` to gather context and parse JSON output for:
 
 - `CONSTITUTION_PATH`: Path to current constitution
 - `CONSTITUTION_EXISTS`: Whether constitution exists

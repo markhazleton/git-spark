@@ -30,7 +30,7 @@ This command reviews GitHub Pull Requests against the project constitution. It w
 
 ### 1. Initialize Review Context
 
-Run `scripts/powershell/get-pr-context.ps1 $ARGUMENTS -Json` to extract PR context and parse JSON output for:
+Run `.documentation/scripts/powershell/get-pr-context.ps1 $ARGUMENTS -Json` to extract PR context and parse JSON output for:
 
 - `PR_CONTEXT`: PR metadata (number, title, branches, commit SHA, files, diff)
 - `CONSTITUTION_PATH`: Path to constitution file
