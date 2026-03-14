@@ -2301,7 +2301,7 @@ export class GitAnalyzer {
     const avgGap = gaps.reduce((sum, gap) => sum + gap, 0) / gaps.length;
 
     // Determine if the average gap indicates good cadence
-    let cadenceScore = 0;
+    let cadenceScore: number;
     if (avgGap <= 1) {
       cadenceScore = 100; // Daily commits
     } else if (avgGap <= 3) {

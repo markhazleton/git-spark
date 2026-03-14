@@ -63,7 +63,7 @@ export function resolveOptionsWithConfig(
       logger.info('Loaded configuration file', { path: configPath });
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
-      throw new Error(`Failed to load configuration file (${configPath}): ${message}`);
+      throw new Error(`Failed to load configuration file (${configPath}): ${message}`, { cause: error });
     }
   }
 
