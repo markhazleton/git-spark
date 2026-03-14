@@ -11,7 +11,9 @@
       "Bash(wc:*)",
       "Bash(npm run test:*)",
       "Bash(cat:*)",
-      "Bash(npm show:*)"
+      "Bash(npm show:*)",
+      "WebSearch",
+      "Bash(gh run:*)"
     ]
   }
 }
