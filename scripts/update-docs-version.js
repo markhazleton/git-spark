@@ -11,7 +11,7 @@
  * - npm run docs:update-version
  */
 
-import { readFileSync, writeFileSync, existsSync } from 'fs';
+import { readFileSync, writeFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 
@@ -33,12 +33,13 @@ function getMonthYear() {
 
 function updateIndexHtml(version) {
   const docsPath = join(rootDir, 'docs', 'index.html');
-  if (!existsSync(docsPath)) {
+  let docsContent;
+  try {
+    docsContent = readFileSync(docsPath, 'utf-8');
+  } catch {
     console.log('⚠️  docs/index.html not found, skipping');
     return false;
   }
-  
-  let docsContent = readFileSync(docsPath, 'utf-8');
   let updated = false;
   
   // Match version badge pattern: <span class="version-badge">v1.0.221 - Available on npm</span>
@@ -70,12 +71,13 @@ function updateIndexHtml(version) {
 
 function updatePerformanceTuning(version) {
   const mdPath = join(rootDir, 'docs', 'performance-tuning.md');
-  if (!existsSync(mdPath)) {
+  let mdContent;
+  try {
+    mdContent = readFileSync(mdPath, 'utf-8');
+  } catch {
     console.log('⚠️  docs/performance-tuning.md not found, skipping');
     return false;
   }
-  
-  let mdContent = readFileSync(mdPath, 'utf-8');
   let updated = false;
   const monthYear = getMonthYear();
   

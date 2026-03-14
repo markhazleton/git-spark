@@ -29,10 +29,10 @@ class AzureDevOpsClient {
     if (config.organization.startsWith('http://') || config.organization.startsWith('https://')) {
       // Full URL format - validate it's an Azure DevOps domain
       const url = new URL(config.organization);
-      const validDomains = ['dev.azure.com', 'visualstudio.com'];
-      const isValidAzureDomain = validDomains.some(domain => 
-        url.hostname === domain || url.hostname.endsWith(`.${domain}`)
-      );
+      // Allow exact dev.azure.com or a single-level *.visualstudio.com subdomain (org.visualstudio.com)
+      const isValidAzureDomain =
+        url.hostname === 'dev.azure.com' ||
+        /^[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.visualstudio\.com$/.test(url.hostname);
       if (!isValidAzureDomain) {
         throw new Error(`Invalid Azure DevOps URL: ${config.organization}`);
       }
