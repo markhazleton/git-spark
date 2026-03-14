@@ -9,9 +9,6 @@ export * from './core/collector.js';
 export * from './utils/git.js';
 export * from './utils/logger.js';
 export * from './utils/validation.js';
-export * from './integrations/azure-devops/collector.js';
-export * from './integrations/azure-devops/config.js';
-export * from './integrations/azure-devops/client.js';
 
 import {
   GitSparkOptions,
@@ -103,7 +100,6 @@ export class GitSpark {
         commits: report.repository.totalCommits,
         authors: report.repository.totalAuthors,
         files: report.repository.totalFiles,
-        azureDevOpsEnabled: !!report.azureDevOps,
       });
 
       return report;

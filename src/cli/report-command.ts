@@ -47,11 +47,6 @@ export async function executeHTMLReport(options: any): Promise<void> {
       ...(options.timezone ? { timezone: options.timezone } : {}),
       ...(excludeExtensions ? { excludeExtensions } : {}),
       teamwork: options.teamwork,
-      azureDevOps: options.azureDevops,
-      devopsOrg: options.devopsOrg,
-      devopsProject: options.devopsProject,
-      devopsPat: options.devopsPat,
-      devopsConfig: options.devopsConfig,
     };
 
     const resolved = resolveOptionsWithConfig(gitSparkOptions);

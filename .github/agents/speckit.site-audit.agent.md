@@ -116,7 +116,7 @@ Read the most recent `## [X.Y.Z]` entry in `CHANGELOG.md` (repo root) to get
 |-----------|-----------|---------|
 | `.documentation/SPECKIT_VERSION` absent | VER1 | HIGH |
 | Installed version < latest version | VER2 | MEDIUM |
-| Agent command files reference `.documentation/` or root `memory/` paths | VER3 | HIGH |
+| Agent command files reference root-level `memory/`, `scripts/`, or `templates/` paths instead of `.documentation/...` | VER3 | HIGH |
 | Root-level `memory/`, `scripts/`, or `templates/` directories exist | VER4 | HIGH |
 | Old `speckit.*-old.md` files in agent folder | VER5 | LOW |
 

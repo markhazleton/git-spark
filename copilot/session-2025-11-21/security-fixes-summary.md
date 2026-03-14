@@ -20,30 +20,6 @@ Fixed all 9 open code scanning security issues identified by GitHub's CodeQL ana
 - **Fix**: Changed test patterns to use `String.raw` template literals to properly escape backslashes
 - **Impact**: Eliminates potential ReDoS vulnerabilities in test code
 
-### 3. **Missing Regular Expression Anchor (Warning)**
-- **File**: `src/integrations/azure-devops/config.ts:282`
-- **Issue**: `js/regex/missing-regexp-anchor`
-- **Severity**: Warning
-- **Fix**: 
-  - Extracted regex to a named variable for clarity
-  - Added `^` and `$` anchors to ensure full string match
-  - Used non-capturing optional group `(?:...)?` for middle section
-- **Before**: `/^[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]$/`
-- **After**: `/^[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?$/`
-- **Impact**: Ensures organization name validation checks the entire string, not just a substring
-
-### 4. **Incomplete URL Substring Sanitization (Warning - 3 instances)**
-
-#### Instance 1: `src/integrations/azure-devops/client.ts:35`
-- **Fix**: Changed from `.startsWith('http')` to `.startsWith('http://') || .startsWith('https://')` for protocol validation
-- **Impact**: Prevents URL confusion attacks by explicitly validating protocol schemes
-
-#### Instance 2 & 3: `src/integrations/azure-devops/config.ts:281, 284`
-- **Fix**: Changed URL pattern matching from `.startsWith()` checks to full regex validation with `^` anchors
-- **Before**: `remoteUrl.startsWith('https://dev.azure.com')`
-- **After**: `/^https:\/\/dev\.azure\.com\//.test(remoteUrl)`
-- **Impact**: Ensures URL validation checks from the beginning of the string, preventing bypass attacks
-
 ## Security Improvements
 
 ### Defense in Depth
@@ -62,9 +38,6 @@ Fixed all 9 open code scanning security issues identified by GitHub's CodeQL ana
 
 1. `src/utils/validation.ts` - Fixed regex injection vulnerability
 2. `test/validation.test.ts` - Fixed ReDoS in test patterns
-3. `src/integrations/azure-devops/config.ts` - Fixed missing anchors and URL sanitization (2 locations)
-4. `src/integrations/azure-devops/client.ts` - Fixed incomplete URL validation
-
 ## Verification
 
 ```powershell

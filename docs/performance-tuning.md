@@ -97,46 +97,6 @@ git-spark --days=30 --heavy
 
 ---
 
-## Azure DevOps Performance
-
-When using Azure DevOps integration, caching is critical for performance.
-
-### Cache Configuration
-
-Configure cache settings in `.git-spark.json`:
-
-```json
-{
-  "azureDevOps": {
-    "cache": {
-      "enabled": true,
-      "ttlMinutes": 60,
-      "maxSizeMB": 100
-    }
-  }
-}
-```
-
-### Cache Optimization Tips
-
-1. **First Run:** Initial analysis with Azure DevOps can take 2-5x longer due to API calls
-2. **Subsequent Runs:** Cache hits reduce Azure DevOps overhead by 90%+
-3. **Cache Invalidation:** Clear cache if data seems stale:
-   ```bash
-   rm -rf .git-spark-cache
-   ```
-
-### Rate Limiting
-
-Azure DevOps API has rate limits (recommended: 200 requests/minute). Git Spark automatically throttles requests.
-
-**For very large projects:**
-- Use longer TTL (120-180 minutes) to reduce API calls
-- Analyze smaller date ranges initially
-- Let cache warm up over multiple runs
-
----
-
 ## Memory Management
 
 Git Spark uses streaming processing to handle large repositories efficiently.
@@ -238,7 +198,7 @@ Cache the `.git-spark-cache` directory between runs:
       git-spark-cache-
 ```
 
-**Impact:** 50-70% faster subsequent CI runs with Azure DevOps integration.
+**Impact:** 50-70% faster subsequent CI runs when Git history and generated artifacts are reused.
 
 ---
 
@@ -248,7 +208,7 @@ Cache the `.git-spark-cache` directory between runs:
 
 Git Spark performs many small file reads. SSD storage provides:
 - 5-10x faster analysis on large repositories
-- Better performance for Azure DevOps file cache
+- Better performance for Git Spark cache and generated reports
 
 ### File Cache Location
 
@@ -270,7 +230,7 @@ Place cache on fastest available disk:
 
 1. **Check disk I/O:** Use `iostat` or Task Manager to monitor disk activity
 2. **Verify Git performance:** Run `git log --oneline | wc -l` to test git speed
-3. **Disable Azure DevOps:** Test without `--azure-devops` flag to isolate issue
+3. **Disable heavy analysis:** Test without `--heavy` to isolate expensive calculations
 4. **Reduce date range:** Test with `--days=7` to verify baseline performance
 
 ### High Memory Usage (>1GB)
@@ -319,12 +279,9 @@ The wizard guides you through setting days to analyze, output format, and file e
     "cacheDir": ".git-spark-cache",
     "chunkSize": 1500
   },
-  "azureDevOps": {
-    "cache": {
-      "enabled": true,
-      "ttlMinutes": 90,
-      "maxSizeMB": 150
-    }
+  "output": {
+    "defaultFormat": "json",
+    "outputDir": "./reports"
   }
 }
 ```
@@ -338,12 +295,9 @@ The wizard guides you through setting days to analyze, output format, and file e
     "enableCaching": true,
     "chunkSize": 500
   },
-  "azureDevOps": {
-    "cache": {
-      "enabled": true,
-      "ttlMinutes": 60,
-      "maxSizeMB": 50
-    }
+  "output": {
+    "defaultFormat": "console",
+    "outputDir": "./reports"
   }
 }
 ```
@@ -359,7 +313,7 @@ The wizard guides you through setting days to analyze, output format, and file e
 5. ✅ **Monitor resources:** Watch memory and disk I/O during analysis
 6. ✅ **Update regularly:** New versions often include performance improvements
 7. ✅ **Use SSD storage:** Dramatically improves I/O-bound operations
-8. ✅ **Cache in CI/CD:** Reuse Azure DevOps cache between runs
+8. ✅ **Cache in CI/CD:** Reuse `.git-spark-cache` between runs
 
 ---
 

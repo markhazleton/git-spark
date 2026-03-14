@@ -68,7 +68,7 @@ Enterprise-focused, accessible, and secure analytics dashboard:
 
 - **Multi‑Series Timeline** – Commits, churn (lines changed), and active authors with dataset toggles
 - **Daily Activity Trends** – Comprehensive daily analysis showing all days in the specified range with activity summaries
-- **GitHub-style Contributions Calendar** – Visual activity heatmap with color-coded intensity levels and interactive tooltips
+- **Contribution Heatmap** – Visual activity heatmap with color-coded intensity levels and interactive tooltips
 - **Risk Factors Bar Chart** – Visual breakdown of churn, recency, ownership, coupling potential, and knowledge concentration inputs
 - **Governance Radar Chart** – Conventional commit adherence, traceability, message quality, WIP/revert penalties
 - **Dark Mode Toggle (Persistent)** – Remembers preference via localStorage; charts dynamically re-theme
@@ -158,11 +158,6 @@ Options:
   --timezone <tz>            IANA timezone for daily trends (e.g., America/Chicago)
   --redact-emails            redact email addresses in reports
   --exclude-extensions <ext> comma-separated list of file extensions to exclude (e.g., .md,.txt)
-  --azure-devops             enable Azure DevOps pull request analytics
-  --devops-org <org>         Azure DevOps organization name
-  --devops-project <project> Azure DevOps project name
-  --devops-repo <repo>       Azure DevOps repository (auto-detected if not specified)
-  --devops-token <token>     Azure DevOps Personal Access Token
   -h, --help                 display help for command
 ```
 
@@ -255,73 +250,6 @@ git-spark html --days=60 --serve --port=8080
 
 # Heavy analysis with detailed insights
 git-spark html --days=90 --heavy --output=./detailed-reports
-
-# With Azure DevOps pull request analytics
-git-spark html --days=30 --azure-devops --devops-org=myorg --devops-project=myproject
-```
-
-### Azure DevOps Integration
-
-Git Spark includes optional Azure DevOps integration for comprehensive pull request analytics alongside Git commit analysis.
-
-#### Setup
-
-1. **Create a Personal Access Token (PAT)** in Azure DevOps with 'Code (Read)' scope
-2. **Set environment variable** or pass token via CLI:
-
-   ```bash
-   export AZURE_DEVOPS_TOKEN=your-pat-token
-   # or
-   git-spark --azure-devops --devops-token=your-pat-token
-   ```
-
-#### Usage Examples
-
-```bash
-# Auto-detect organization, project, and repo from Git remote
-git-spark --azure-devops --days=30
-
-# Specify Azure DevOps details explicitly
-git-spark --azure-devops --devops-org=myorg --devops-project=myproject --devops-repo=myrepo
-
-# Generate HTML report with PR analytics
-git-spark html --azure-devops --days=60 --output=./reports
-
-# Use token from environment variable
-export AZURE_DEVOPS_TOKEN=your-pat-token
-git-spark --azure-devops --days=30
-```
-
-#### Features
-
-- **Pull Request Analytics**: Comprehensive PR workflow analysis including cycle times, review metrics
-- **Work Item Tracking**: Link PRs to work items and requirements
-- **Review Metrics**: Review efficiency and collaboration patterns
-- **Intelligent Caching**: Multi-level caching reduces API calls and respects rate limits
-- **Graceful Degradation**: Continues Git analysis if Azure DevOps is unavailable
-- **Automatic Configuration**: Auto-detects Azure DevOps settings from Git remotes
-
-#### Configuration
-
-Add Azure DevOps settings to `.git-spark.json`:
-
-```json
-{
-  "azureDevOps": {
-    "enabled": true,
-    "organization": "myorg",
-    "project": "myproject",
-    "repository": "myrepo",
-    "auth": {
-      "method": "pat",
-      "tokenEnvVar": "AZURE_DEVOPS_TOKEN"
-    },
-    "cache": {
-      "enabled": true,
-      "ttlMinutes": 60
-    }
-  }
-}
 ```
 
 #### `git-spark validate`
@@ -338,7 +266,7 @@ git-spark validate
 # Analyze last 7 days with comprehensive daily trends
 git-spark --days=7 --format=html
 
-# Extended 60-day analysis with contributions calendar
+# Extended 60-day analysis with the contribution heatmap
 git-spark --days=60 --format=html --output=./reports
 
 # Generate JSON with complete daily trends data for external processing
@@ -507,7 +435,6 @@ Git Spark is built on a foundation of **complete transparency** about what can a
 
 - **Transparent Naming**: Metric names clearly indicate data source limitations
 - **Comprehensive Documentation**: Every metric includes limitation warnings
-- **Platform Detection**: We identify hosting platforms but acknowledge Git data is fundamentally the same
 - **Educational Focus**: We help users understand what metrics do and don't measure
 - **No False Claims**: We never imply Git data provides complete team performance insights
 
@@ -532,7 +459,7 @@ Interactive reports with transparent analytics and comprehensive limitations doc
 - **Team Activity Patterns** - Aggregate repository metrics showing overall activity distribution
 - **File Activity Hotspots** - Source code files with highest activity (filtered for relevant code files)
 - **Author Activity Details** - Detailed profile cards for each contributor with commit patterns, file focus, and insights
-- **Daily Activity Trends** - Comprehensive day-by-day analysis with GitHub-style contributions calendar (optional)
+- **Daily Activity Trends** - Comprehensive day-by-day analysis with a contribution heatmap (optional)
 - **Calculation Documentation** - Transparent methodology for all metrics including formulas and measurement principles
 - **Report Metadata** - Generation details, Git branch information, and processing statistics
 - Interactive visualizations with dark mode support
@@ -595,7 +522,7 @@ Comprehensive daily analysis providing:
 
 - **Complete Date Range Coverage** - Shows all days in the specified period, including days with zero activity
 - **Activity Metrics** - Commits, authors, file changes, and code volume per day
-- **GitHub-style Contributions Calendar** - Visual heatmap with intensity levels (0-4) matching GitHub's color scheme
+- **Contribution Heatmap** - Visual heatmap with intensity levels (0-4) for daily activity patterns
 - **Interactive Tooltips** - Hover to see exact commit counts and dates
 - **Week-based Organization** - Calendar view organized by weeks for easy pattern recognition
 - **JSON Export Support** - All daily trends data available for external processing and analysis
@@ -769,7 +696,7 @@ npm run dev
 - **Analytical Integrity Framework** - Clear separation between what Git data can and cannot provide
 - **Enhanced User Education** - Comprehensive warnings and guidance about metric interpretation
 - **Daily Activity Trends** - Comprehensive daily analysis showing all days in specified range (including zero-activity days)
-- **GitHub-style Contributions Calendar** - Interactive activity heatmap with color-coded intensity levels and tooltips
+- **Contribution Heatmap** - Interactive activity heatmap with color-coded intensity levels and tooltips
 - **Activity Index Calculation** - Transparent breakdown of commit frequency, author participation, and consistency components
 - **Author Profile Cards** - Detailed individual contributor analysis with commit patterns and file focus
 - **Secure HTML Reports** - Strict CSP + SHA-256 hashed inline content (no unsafe-inline)
@@ -782,9 +709,7 @@ npm run dev
 - **CLI Commands** - Main analysis, health check, validation, and dedicated HTML report generation
 - **HTTP Server** - Built-in web server for local report viewing (`--serve` option)
 - **Auto-Open Browser** - Automatic browser launch after report generation (`--open` option)
-- **Azure DevOps Integration** - Optional pull request analytics with comprehensive PR workflow insights
-- **Multi-Source Analytics** - Unified Git + Azure DevOps analytics with intelligent correlation
-- **Intelligent Caching** - Multi-level caching for Azure DevOps API with rate limiting
+- **Intelligent Caching** - Multi-level caching for Git analysis artifacts and generated reports
 
 These capabilities establish a foundation of **analytical honesty and transparency** that guides all development.
 
@@ -795,14 +720,13 @@ These capabilities establish a foundation of **analytical honesty and transparen
 - [ ] Historical trend analysis and forecasting
 - [ ] Advanced temporal coupling analysis
 - [ ] Custom risk scoring models
-- [ ] GitHub pull request integration
+- [ ] Additional Git-native comparison and history analysis improvements
 
 ### v1.2 (Future)
 
 - [ ] API server mode for remote analysis
 - [ ] Machine learning-based anomaly detection
 - [ ] Integration with code quality tools (SonarQube, CodeClimate)
-- [ ] GitLab merge request integration
 - [ ] Real-time monitoring and alerting
 - [ ] Multi-repository analysis and benchmarking
 - [ ] Advanced visualization with D3.js

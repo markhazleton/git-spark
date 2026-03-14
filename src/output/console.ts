@@ -22,9 +22,6 @@ export class ConsoleExporter {
     this.displayRisks(report.risks);
     this.displayGovernance(report.governance);
 
-    if (report.azureDevOps) {
-      this.displayAzureDevOps(report.azureDevOps);
-    }
 
     this.displayFooter(report);
   }
@@ -201,100 +198,6 @@ export class ConsoleExporter {
       });
       process.stdout.write('\n');
     }
-  }
-
-  /**
-   * Display Azure DevOps integration section
-   * @private
-   */
-  private displayAzureDevOps(azureDevOps: any): void {
-    const { summary, pullRequests, reviewProcess, gitIntegration, teamCollaboration } = azureDevOps;
-
-    process.stdout.write(chalk.bold.cyan('🔗 AZURE DEVOPS INTEGRATION') + '\n');
-    process.stdout.write(chalk.blue('─'.repeat(40)) + '\n');
-
-    // Overview
-    const overviewData = [
-      ['Metric', 'Value'],
-      ['Total Pull Requests', summary.totalPullRequests.toLocaleString()],
-      ['Git Commit Coverage', Math.round(summary.coverage.gitCommitCoverage * 100) + '%'],
-      ['Cache Hit Rate', Math.round(summary.dataFreshness.cacheHitRate * 100) + '%'],
-      ['Mapping Success Rate', Math.round(gitIntegration.mappingSuccessRate * 100) + '%'],
-    ];
-
-    process.stdout.write(table(overviewData));
-    process.stdout.write('\n');
-
-    // Pull Request Metrics
-    process.stdout.write(chalk.bold.yellow('📋 Pull Request Metrics:') + '\n');
-    process.stdout.write(`  • Small PRs (<10 files): ${pullRequests.sizeDistribution.small}\n`);
-    process.stdout.write(`  • Medium PRs (10-50 files): ${pullRequests.sizeDistribution.medium}\n`);
-    process.stdout.write(`  • Large PRs (50-200 files): ${pullRequests.sizeDistribution.large}\n`);
-    process.stdout.write(`  • X-Large PRs (>200 files): ${pullRequests.sizeDistribution.xlarge}\n`);
-    process.stdout.write(
-      `  • Avg Time to Merge: ${pullRequests.timing.averageTimeToMerge.toFixed(1)}h\n`
-    );
-    process.stdout.write(
-      `  • Completed: ${pullRequests.statusBreakdown.completed}, Active: ${pullRequests.statusBreakdown.active}, Abandoned: ${pullRequests.statusBreakdown.abandoned}\n`
-    );
-    process.stdout.write('\n');
-
-    // Review Process
-    process.stdout.write(chalk.bold.yellow('👥 Review Process:') + '\n');
-    process.stdout.write(
-      `  • Avg Reviewers per PR: ${reviewProcess.participation.averageReviewersPerPR.toFixed(1)}\n`
-    );
-    process.stdout.write(
-      `  • Self-Approval Rate: ${Math.round(reviewProcess.participation.selfApprovalRate * 100)}%\n`
-    );
-    process.stdout.write(
-      `  • Approval Rate: ${Math.round(reviewProcess.quality.approvalRate * 100)}%\n`
-    );
-    process.stdout.write(
-      `  • Thoroughness Score: ${Math.round(reviewProcess.quality.thoroughnessScore * 100)}%\n`
-    );
-    process.stdout.write('\n');
-
-    // Integration Quality
-    process.stdout.write(chalk.bold.yellow('🔗 Git Integration Quality:') + '\n');
-    process.stdout.write(
-      `  • High Confidence Associations: ${gitIntegration.integrationQuality.highConfidenceAssociations}\n`
-    );
-    process.stdout.write(
-      `  • Medium Confidence: ${gitIntegration.integrationQuality.mediumConfidenceAssociations}\n`
-    );
-    process.stdout.write(
-      `  • Low Confidence: ${gitIntegration.integrationQuality.lowConfidenceAssociations}\n`
-    );
-    process.stdout.write(
-      `  • Unmapped Commits: ${gitIntegration.integrationQuality.unmappedCommits}\n`
-    );
-    process.stdout.write('\n');
-
-    // Team Collaboration
-    if (teamCollaboration.creationPatterns.mostActivePRCreators.length > 0) {
-      process.stdout.write(chalk.bold.yellow('🤝 Top PR Creators:') + '\n');
-      teamCollaboration.creationPatterns.mostActivePRCreators
-        .slice(0, 5)
-        .forEach((creator: { creator: string; prCount: number }) => {
-          process.stdout.write(
-            chalk.yellow(`  • ${creator.creator}: ${creator.prCount} PRs`) + '\n'
-          );
-        });
-      process.stdout.write('\n');
-    }
-
-    process.stdout.write(chalk.bold.yellow('📈 Team Health:') + '\n');
-    process.stdout.write(
-      `  • Collaboration Score: ${Math.round(teamCollaboration.teamDynamics.collaborationScore * 100)}%\n`
-    );
-    process.stdout.write(
-      `  • Cross-Review Rate: ${Math.round(teamCollaboration.crossTeamCollaboration.crossReviewRate * 100)}%\n`
-    );
-    process.stdout.write(
-      `  • Knowledge Sharing: ${Math.round(teamCollaboration.crossTeamCollaboration.knowledgeSharingScore * 100)}%\n`
-    );
-    process.stdout.write('\n');
   }
 
   /**

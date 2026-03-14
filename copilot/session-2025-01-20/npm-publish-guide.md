@@ -168,7 +168,6 @@ Before next publish, increase coverage from 56% to 70%+:
 
 2. **Priority Modules to Test**:
    - `src/core/daily-trends.ts`
-   - `src/integrations/azure-devops/`
    - `src/utils/` (various utilities)
 
 3. **Coverage Targets**:

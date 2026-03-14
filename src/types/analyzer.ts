@@ -20,8 +20,6 @@ export interface AnalysisReport {
   summary: ReportSummary;
   /** Daily trending metrics for comprehensive trend analysis */
   dailyTrends?: any | undefined; // DailyTrendsData, imported from index
-  /** Azure DevOps integration analytics (when enabled) */
-  azureDevOps?: any | undefined; // AzureDevOpsAnalytics, imported from index
 }
 
 export interface ReportMetadata {

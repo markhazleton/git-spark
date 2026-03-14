@@ -105,6 +105,11 @@ export function createLogger(module: string): Logger {
   return loggers.get(module)!;
 }
 
+/**
+ * Applies a log level to all logger instances that have already been created.
+ *
+ * @param level - The minimum level existing loggers should emit.
+ */
 export function setGlobalLogLevel(level: LogLevel): void {
   for (const logger of loggers.values()) {
     logger.setLevel(level);

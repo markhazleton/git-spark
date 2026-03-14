@@ -84,12 +84,6 @@ export async function createCLI(): Promise<Command> {
       'comma-separated list of file extensions to exclude (e.g., .md,.txt)'
     )
     .option('--teamwork', 'focus on team success - removes individual contributor sections')
-    .option('--azure-devops', 'enable Azure DevOps integration')
-    .option('--devops-org <org>', 'Azure DevOps organization name')
-    .option('--devops-project <project>', 'Azure DevOps project name')
-    .option('--devops-repo <repo>', 'Azure DevOps repository name')
-    .option('--devops-pat <token>', 'Azure DevOps Personal Access Token')
-    .option('--devops-config <path>', 'Azure DevOps configuration file')
     .action(async options => {
       await executeAnalysis(options);
     });
@@ -188,12 +182,6 @@ async function executeAnalysis(options: any): Promise<void> {
       ...(options.timezone ? { timezone: options.timezone } : {}),
       ...(excludeExtensions ? { excludeExtensions } : {}),
       teamwork: options.teamwork,
-      azureDevOps: options.azureDevops,
-      devopsOrg: options.devopsOrg,
-      devopsProject: options.devopsProject,
-      devopsRepo: options.devopsRepo,
-      devopsPat: options.devopsPat,
-      devopsConfig: options.devopsConfig,
     };
 
     const resolved = resolveOptionsWithConfig(gitSparkOptions);

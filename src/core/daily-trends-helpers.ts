@@ -122,7 +122,7 @@ export function createLimitations(): DailyTrendsLimitations {
       'Cannot distinguish between code quality, bug fixes, or feature work',
     ],
     recommendedSupplementalData: [
-      'Code review metrics from GitHub/GitLab/Azure DevOps APIs',
+      'Code review metrics from your code-hosting platform APIs',
       'Issue tracking data for work item correlation',
       'CI/CD pipeline data for deployment and build metrics',
       'Code quality metrics from static analysis tools',
@@ -174,7 +174,7 @@ export function generateDateRange(startDate: Date, endDate: Date): string[] {
 }
 
 /**
- * Generate GitHub-style contributions graph data
+ * Generate contribution heatmap data
  */
 export function generateContributionsGraph(
   commitsByDay: Map<string, CommitData[]>,

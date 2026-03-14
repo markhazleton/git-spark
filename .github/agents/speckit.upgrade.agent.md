@@ -130,8 +130,7 @@ Scan for signs that the install is outdated. Flag any of the following:
 | Check | Issue | Severity |
 |-------|-------|----------|
 | `.documentation/SPECKIT_VERSION` absent | No version stamp | HIGH |
-| Agent command files reference old paths (`.documentation/`, `memory/`, `/.documentation/scripts/`) | Pre-migration paths | HIGH |
-| `.documentation/` directory exists | Pre-v1.0 structure | HIGH |
+| Agent command files reference root-level `memory/`, `scripts/`, or `templates/` paths instead of `.documentation/...` | Pre-migration paths | HIGH |
 | Root-level `memory/`, `scripts/`, `templates/` directories exist | Pre-v1.0 structure | HIGH |
 | `SPECKIT_VERSION` present but older than `LATEST_VERSION` | Out of date | MEDIUM |
 | Old `speckit.*-old.md` command files in agent folder | Leftover duplicates | LOW |
@@ -192,7 +191,7 @@ uv tool install specify-cli --force \
 
 #### 7c. Handle old structure migration
 
-If stale paths were found in Step 5 (`.documentation/`, root `memory/` etc.):
+If stale paths were found in Step 5 (root `memory/`, `scripts/`, or `templates/` paths):
 
 ```bash
 # Windows

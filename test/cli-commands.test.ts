@@ -90,19 +90,6 @@ describe('CLI Integration Tests', () => {
       expect(args['redact-emails']).toBe(true);
       expect(args['no-cache']).toBe(true);
     });
-
-    it('should parse azure devops options', () => {
-      const args = parseArgs([
-        '--azure-devops',
-        '--devops-org',
-        'myorg',
-        '--devops-project',
-        'myproject',
-      ]);
-      expect(args['azure-devops']).toBe(true);
-      expect(args['devops-org']).toBe('myorg');
-      expect(args['devops-project']).toBe('myproject');
-    });
   });
 
   describe('Option Validation', () => {

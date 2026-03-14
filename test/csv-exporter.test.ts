@@ -382,13 +382,8 @@ describe('CSVExporter', () => {
     expect(lines[1]).toMatch(/,$/); // ends with comma (empty language field)
   });
 
-  it('skips Azure DevOps export when not present', async () => {
-    const reportWithoutAzureDevOps = {
-      ...mockReport,
-      azureDevOps: undefined,
-    };
-
-    await csvExporter.export(reportWithoutAzureDevOps, testOutputDir);
+  it('exports the standard CSV files', async () => {
+    await csvExporter.export(mockReport, testOutputDir);
 
     // Standard CSV files should be created
     expect(existsSync(resolve(testOutputDir, 'authors.csv'))).toBe(true);
