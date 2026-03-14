@@ -15,8 +15,7 @@
     "contributor-stats",
     "git-stats",
     "repository-analytics",
-    "devops",
-    "azure-devops"
+    "devops"
   ],
   "author": "Mark Hazleton <mark@markhazleton.com>",
   "license": "MIT",
@@ -147,14 +146,7 @@
       "src/**/*.ts",
       "!src/**/*.d.ts",
       "!src/types/**/*",
-      "!src/cli/**/*",
-      "!src/integrations/azure-devops/analytics.ts",
-      "!src/integrations/azure-devops/cache-manager.ts",
-      "!src/integrations/azure-devops/file-cache.ts",
-      "!src/integrations/azure-devops/git-integration.ts",
-      "!src/integrations/azure-devops/memory-cache.ts",
-      "!src/integrations/azure-devops/pagination.ts",
-      "!src/integrations/azure-devops/rate-limiter.ts"
+      "!src/cli/**/*"
     ],
     "coverageThreshold": {
       "global": {

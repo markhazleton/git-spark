@@ -68,7 +68,8 @@ jobs:
         run: |
           npm ci
           npm run build
-          node bin/git-spark.js --format html --output docs --days 365
+          REPORT_UNTIL=$(date -u -d "yesterday" +%F)
+          node bin/git-spark.js --format html --output docs --days 30 --until "${REPORT_UNTIL}"
           
           # Commit updated report if changed
           if git diff --quiet docs/git-spark-report.html; then

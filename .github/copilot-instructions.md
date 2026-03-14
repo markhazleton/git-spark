@@ -39,7 +39,6 @@ Never concatenate user input into shell strings. Buffer limits (200MB default) p
 ### TypeScript Configuration
 - Strict mode enabled (`noImplicitAny`, `noUnusedLocals`, `exactOptionalPropertyTypes`)
 - Module resolution: `bundler` (not Node16)
-- Excluded from compilation: `src/integrations/azure-devops/**` (feature flag)
 - Test files use ESM with Jest transform: `moduleNameMapper` strips `.js` extensions
 
 ### File Filtering Architecture
@@ -76,7 +75,7 @@ limitations: {
 
 ### Coverage Requirements (Jest config in [package.json](../package.json))
 - Branches: 75%, Functions: 87%, Lines: 86%, Statements: 85%
-- **Excluded**: `src/types/**`, `src/cli/**`, `src/integrations/azure-devops/**`
+- **Excluded**: `src/types/**`, `src/cli/**`
 - Test timeout: 30 seconds (handles Git operations on real repos)
 
 ### Test Patterns
