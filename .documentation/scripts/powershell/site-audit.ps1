@@ -158,6 +158,16 @@ function Get-FileCategories {
             continue
         }
         
+        # Check build files before config — workflow .yml files live under
+        # .github/workflows/ and must not be mis-classified as config files.
+        if ($relativePath -match '(^|/)\.github/workflows/' -or
+            $name -match '^dockerfile' -or
+            $name -eq 'makefile' -or
+            $ext -in @('.gradle', '.maven')) {
+            $categories.build += $relativePath
+            continue
+        }
+        
         # Check source by extension
         if ($ext -in $sourceExtensions) {
             $categories.source += $relativePath
@@ -180,14 +190,6 @@ function Get-FileCategories {
         if ($ext -in $scriptExtensions) {
             $categories.scripts += $relativePath
             continue
-        }
-        
-        # Check build files
-        if ($relativePath -match '\.github/workflows/' -or
-            $name -match '^dockerfile' -or
-            $name -eq 'makefile' -or
-            $ext -in @('.gradle', '.maven')) {
-            $categories.build += $relativePath
         }
     }
     
@@ -511,17 +513,56 @@ function Get-SampledItems {
     return @($Items | Select-Object -First $Limit)
 }
 
+function Get-SpeckitVersion {
+    param([string]$RepoRoot)
+
+    $stampPath = Join-Path $RepoRoot '.documentation/SPECKIT_VERSION'
+    $info = @{
+        installed_version = $null
+        installed_date    = $null
+        agent             = $null
+        stamp_exists      = $false
+    }
+
+    if (-not (Test-Path $stampPath)) {
+        return $info
+    }
+
+    $info.stamp_exists = $true
+    $lines = Get-Content $stampPath -ErrorAction SilentlyContinue
+    if (-not $lines) { return $info }
+
+    # First non-blank line is the bare version number
+    $versionLine = $lines | Where-Object { $_.Trim() -ne '' } | Select-Object -First 1
+    if ($versionLine) {
+        $info.installed_version = $versionLine.Trim()
+    }
+
+    foreach ($line in $lines) {
+        if ($line -match '^installed:\s*(.+)$') {
+            $info.installed_date = $matches[1].Trim()
+        }
+        if ($line -match '^agent:\s*(.+)$') {
+            $info.agent = $matches[1].Trim()
+        }
+    }
+
+    return $info
+}
+
 # Main execution
 $repoRoot = Get-RepoRoot
 $constitutionInfo = Get-ConstitutionInfo -RepoRoot $repoRoot
+$speckitVersion = Get-SpeckitVersion -RepoRoot $repoRoot
 
 # Build result object
 $result = @{
-    timestamp = (Get-Date -Format 'yyyy-MM-ddTHH:mm:ssZ')
-    scope = $Scope
-    repo_root = $repoRoot
+    timestamp    = (Get-Date -Format 'yyyy-MM-ddTHH:mm:ssZ')
+    scope        = $Scope
+    repo_root    = $repoRoot
     constitution = $constitutionInfo
-    audit_dir = '.documentation/copilot/audit'
+    speckit      = $speckitVersion
+    audit_dir    = '.documentation/copilot/audit'
 }
 
 # Get file categories (always needed for context)
@@ -607,6 +648,7 @@ if ($OutputFormat -eq 'json') {
     Write-Output "Repository: $repoRoot"
     Write-Output "Scope: $Scope"
     Write-Output "Constitution: $(if ($constitutionInfo.exists) { 'Found' } else { 'MISSING' })"
+    Write-Output "Spec Kit Version: $(if ($speckitVersion.stamp_exists) { $speckitVersion.installed_version } else { 'UNKNOWN (stamp missing)' })"
     Write-Output ""
     Write-Output "File Counts:"
     Write-Output "  Source files: $($fileCategories.source.Count)"
@@ -629,14 +671,14 @@ if ($OutputFormat -eq 'json') {
         Write-Output "Code Metrics:"
         Write-Output "  Total lines: $($result.metrics.total_lines)"
         Write-Output "  Avg lines/file: $($result.metrics.avg_lines_per_file)"
-        Write-Output "  Large files (>500 lines): $($result.metrics.large_files.Count)"
+        Write-Output "  Large files (>500 lines): $($result.metrics.large_files_total)"
     }
     
     if ($result.patterns) {
         Write-Output ""
         Write-Output "Pattern Detection:"
-        Write-Output "  Potential secrets: $($result.patterns.security.hardcoded_secrets.Count)"
-        Write-Output "  Insecure patterns: $($result.patterns.security.insecure_patterns.Count)"
-        Write-Output "  TODO/FIXME comments: $($result.patterns.quality.todo_comments.Count)"
+        Write-Output "  Potential secrets: $($result.patterns.security.hardcoded_secrets_total)"
+        Write-Output "  Insecure patterns: $($result.patterns.security.insecure_patterns_total)"
+        Write-Output "  TODO/FIXME comments: $($result.patterns.quality.todo_comments_total)"
     }
 }
