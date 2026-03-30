@@ -5,14 +5,31 @@
  * profile cards, commit size charts, file type breakdowns, and insight summaries.
  */
 import { escapeHtml, getWidthClass } from './html-utils.js';
+import type { AuthorStats, AuthorDetailedMetrics } from '../types/author.js';
+import type { FileTypeBreakdown } from '../types/file.js';
 
-export function generateDetailedAuthorProfiles(authors: any[]): string {
+/**
+ * Renders all author profile cards for the HTML report.
+ * Merges authors by email before generating individual cards.
+ *
+ * @param authors - Array of author statistics from the analysis report
+ * @returns HTML string containing all author profile cards
+ */
+export function generateDetailedAuthorProfiles(authors: AuthorStats[]): string {
   const mergedAuthors = mergeAuthorsByEmail(authors);
   return mergedAuthors.map(author => generateAuthorProfileCard(author)).join('\n');
 }
 
-export function mergeAuthorsByEmail(authors: any[]): any[] {
-  const emailMap = new Map<string, any>();
+/**
+ * Merges author records that share the same email address (case-insensitive).
+ * Aggregates commit counts, churn, and detailed metrics across all matching records.
+ * Retains the most human-readable display name when duplicates differ.
+ *
+ * @param authors - Array of author statistics, potentially containing duplicate emails
+ * @returns De-duplicated array of author statistics merged by normalised email
+ */
+export function mergeAuthorsByEmail(authors: AuthorStats[]): AuthorStats[] {
+  const emailMap = new Map<string, AuthorStats>();
 
   for (const author of authors) {
     const normalizedEmail = author.email.toLowerCase();
@@ -37,18 +54,26 @@ export function mergeAuthorsByEmail(authors: any[]): any[] {
         if (existing.detailed.contribution && author.detailed.contribution) {
           existing.detailed.contribution.totalCommits +=
             author.detailed.contribution.totalCommits || 0;
-          existing.detailed.contribution.totalLines +=
-            author.detailed.contribution.totalLines || 0;
-          existing.detailed.contribution.avgCommitSize =
-            existing.detailed.contribution.totalLines /
-            existing.detailed.contribution.totalCommits;
+          // totalLines and avgCommitSize are runtime-computed properties not in AuthorContributionMetrics;
+          // they are carried by the merge logic as extra denormalized fields.
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const ec = existing.detailed.contribution as any;
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const ac = author.detailed.contribution as any;
+          ec.totalLines = (ec.totalLines ?? 0) + (ac.totalLines ?? 0);
+          if (existing.detailed.contribution.totalCommits > 0) {
+            ec.avgCommitSize = ec.totalLines / existing.detailed.contribution.totalCommits;
+          }
         }
 
         if (
           author.detailed.workPattern &&
           (!existing.detailed.workPattern ||
-            (author.detailed.workPattern.commits || 0) >
-              (existing.detailed.workPattern.commits || 0))
+            // commits is a runtime denormalized field on workPattern, not in AuthorWorkPatternMetrics
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            ((author.detailed.workPattern as any).commits || 0) >
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              ((existing.detailed.workPattern as any).commits || 0))
         ) {
           existing.detailed.workPattern = author.detailed.workPattern;
         }
@@ -70,7 +95,15 @@ export function mergeAuthorsByEmail(authors: any[]): any[] {
   return Array.from(emailMap.values());
 }
 
-export function generateAuthorProfileCard(author: any): string {
+/**
+ * Renders a single author profile card HTML section.
+ * Includes observable activity metrics, commit timing patterns, file focus,
+ * commit size distribution chart, and insights.
+ *
+ * @param author - Author statistics object with optional detailed metrics
+ * @returns HTML string for one author profile card
+ */
+export function generateAuthorProfileCard(author: AuthorStats): string {
   const metrics = author.detailed;
   const authorId = escapeHtml(author.email.replace(/[^a-zA-Z0-9]/g, '-'));
   const numberFmt = (n: number) => new Intl.NumberFormat().format(n);
@@ -177,7 +210,15 @@ export function generateAuthorProfileCard(author: any): string {
     </div>`;
 }
 
-export function getTopDirectories(directoryFocus: any[]): string {
+/**
+ * Formats the top three directory focus entries as a readable comma-separated string.
+ * Scales percentages to sum to 100% when the top-three total exceeds that value.
+ * Appends an "others" bucket when the top three do not account for all activity.
+ *
+ * @param directoryFocus - Ordered array of directory/percentage pairs from author analysis
+ * @returns Human-readable string such as "src/core/ (60%), src/utils/ (25%), others (15%)"
+ */
+export function getTopDirectories(directoryFocus: Array<{ directory: string; percentage: number }>): string {
   if (!directoryFocus || directoryFocus.length === 0) return 'N/A';
 
   let topDirectories = directoryFocus.slice(0, 3);
@@ -202,7 +243,16 @@ export function getTopDirectories(directoryFocus: any[]): string {
   return result.join(', ');
 }
 
-export function generateCommitSizeChart(distribution: any): string {
+/**
+ * Renders a proportional bar chart for commit size distribution as an HTML string.
+ * Each bar's width reflects the percentage of commits in that size bucket.
+ *
+ * @param distribution - Commit size bucket counts (micro/small/medium/large/veryLarge); all fields are optional
+ * @returns HTML string containing the bar chart, or a "No data available" placeholder
+ */
+export function generateCommitSizeChart(
+  distribution: Partial<{ micro: number; small: number; medium: number; large: number; veryLarge: number }>
+): string {
   const total =
     (distribution.micro || 0) +
     (distribution.small || 0) +
@@ -239,14 +289,21 @@ export function generateCommitSizeChart(distribution: any): string {
     .join('');
 }
 
-export function generateAuthorInsightsSection(metrics: any): string {
+/**
+ * Renders the observable patterns and insights section for an author profile.
+ * Returns an empty string when no insights data is available.
+ *
+ * @param metrics - Detailed author metrics object; accepts null or undefined gracefully
+ * @returns HTML string for the insights section, or empty string if no insights exist
+ */
+export function generateAuthorInsightsSection(metrics: AuthorDetailedMetrics | null | undefined): string {
   const insights = metrics?.insights;
 
-  if (!insights || (!insights.strengths?.length && !insights.growthAreas?.length)) {
+  if (!insights || (!insights.positivePatterns?.length && !insights.growthAreas?.length)) {
     return '';
   }
 
-  const strengths = insights.strengths || [];
+  const strengths = insights.positivePatterns || [];
   const growthAreas = insights.growthAreas || [];
 
   return `
@@ -284,7 +341,14 @@ export function generateAuthorInsightsSection(metrics: any): string {
       </div>`;
 }
 
-export function generateFileTypeBreakdown(fileTypeBreakdown?: any): string {
+/**
+ * Renders a file type activity breakdown table for an author profile.
+ * Shows the top five file extensions and a category summary.
+ *
+ * @param fileTypeBreakdown - File type breakdown data; returns placeholder when absent
+ * @returns HTML string for the file type activity section
+ */
+export function generateFileTypeBreakdown(fileTypeBreakdown?: FileTypeBreakdown): string {
   if (!fileTypeBreakdown || !fileTypeBreakdown.byExtension?.length) {
     return '<div class="file-type-breakdown"><h4>File Type Activity</h4><p>No file type data available</p></div>';
   }
@@ -295,7 +359,7 @@ export function generateFileTypeBreakdown(fileTypeBreakdown?: any): string {
   const topFileTypes = byExtension
     .slice(0, 5)
     .map(
-      (ft: any) =>
+      ft =>
         `<div class="file-type-item">
         <span class="file-extension">.${ft.extension}</span>
         <span class="file-percentage">${pctFmt(ft.percentage)}</span>
@@ -304,10 +368,10 @@ export function generateFileTypeBreakdown(fileTypeBreakdown?: any): string {
     .join('');
 
   const categoryItems = Object.entries(categories)
-    .filter(([_, stats]: [string, any]) => stats.files > 0)
-    .sort((a: any, b: any) => b[1].files - a[1].files)
+    .filter(([, stats]) => stats.files > 0)
+    .sort((a, b) => b[1].files - a[1].files)
     .map(
-      ([name, stats]: [string, any]) =>
+      ([name, stats]) =>
         `<div class="category-item">
           <div class="category-name">${name.charAt(0).toUpperCase() + name.slice(1)}</div>
           <div class="category-percentage">${pctFmt(stats.percentage)}</div>

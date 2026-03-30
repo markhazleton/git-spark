@@ -44,6 +44,7 @@ module.exports = [
     plugins: { '@typescript-eslint': tseslint },
     rules: {
       '@typescript-eslint/no-unused-vars': 'off',
+      '@typescript-eslint/no-explicit-any': 'warn',
       'no-unused-vars': 'off',
       'no-useless-escape': 'off',
       'no-case-declarations': 'off'

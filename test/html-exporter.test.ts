@@ -308,7 +308,7 @@ describe('HTMLExporter (Phase 3)', () => {
       },
       patterns: {},
       insights: {
-        strengths: ['Consistent contributor', 'Good test coverage'],
+        positivePatterns: ['Consistent contributor', 'Good test coverage'],
         growthAreas: ['Could reduce commit size', 'More code reviews'],
       },
     };
