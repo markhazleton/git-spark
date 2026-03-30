@@ -1,4 +1,9 @@
 import { HTMLExporter } from '../src/output/html.js';
+import {
+  generateCommitTrendChart,
+  generateAuthorTrendChart,
+  generateVolumeSparklines,
+} from '../src/output/html-daily-trends.js';
 import { AnalysisReport } from '../src/types/index.js';
 import { existsSync, readFileSync, unlinkSync, rmSync } from 'fs';
 import { resolve } from 'path';
@@ -675,7 +680,7 @@ describe('HTMLExporter (Phase 3)', () => {
     });
 
     it('tests chart generation method accessibility', () => {
-      // Test that chart generation methods can be called directly
+      // Test that chart generation functions can be called directly
       const mockFlowMetrics = [
         {
           day: '2024-01-01',
@@ -686,19 +691,16 @@ describe('HTMLExporter (Phase 3)', () => {
         },
       ];
 
-      // Access private methods for coverage (TypeScript hack)
-      const htmlExporter = exporter as any;
-
       expect(() => {
-        htmlExporter.generateCommitTrendChart(mockFlowMetrics);
+        generateCommitTrendChart(mockFlowMetrics);
       }).not.toThrow();
 
       expect(() => {
-        htmlExporter.generateAuthorTrendChart(mockFlowMetrics);
+        generateAuthorTrendChart(mockFlowMetrics);
       }).not.toThrow();
 
       expect(() => {
-        htmlExporter.generateVolumeSparklines(mockFlowMetrics);
+        generateVolumeSparklines(mockFlowMetrics);
       }).not.toThrow();
     });
     it('handles export errors gracefully', async () => {

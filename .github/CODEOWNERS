@@ -1,0 +1,27 @@
+# CODEOWNERS
+# Each line is a file pattern, followed by one or more owners.
+# Owners are matched in order — last matching pattern wins.
+# See: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Global fallback — Lead Architect reviews everything by default
+*                               @MarkHazleton
+
+# Core analysis engine: highest-risk, requires careful review
+src/core/                       @MarkHazleton
+src/types/                      @MarkHazleton
+
+# Security-sensitive: HTML output with CSP, escaping, and inline content
+src/output/html.ts              @MarkHazleton
+src/output/html-utils.ts        @MarkHazleton
+
+# CLI entry point and validation
+src/cli/                        @MarkHazleton
+src/utils/validation.ts         @MarkHazleton
+src/utils/input-validation.ts   @MarkHazleton
+
+# CI/CD and release workflows
+.github/workflows/              @MarkHazleton
+.github/dependabot.yml          @MarkHazleton
+
+# Governance and constitution
+.documentation/memory/          @MarkHazleton
