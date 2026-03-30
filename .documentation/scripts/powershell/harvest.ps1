@@ -58,6 +58,29 @@ function Update-CountMap {
     $Map[$Key]++
 }
 
+function Test-IsGitHubPagesDocsRoot {
+    $docsIndexPath = Join-Path $repoRoot 'docs\index.html'
+    $workflowPath = Join-Path $repoRoot '.github\workflows\update-docs.yml'
+
+    return (Test-Path $docsIndexPath) -and (Test-Path $workflowPath)
+}
+
+function Test-ContainsDeprecatedDocReferences {
+    param(
+        [string]$RelativePath,
+        [string]$Content,
+        [string]$Pattern
+    )
+
+    $extension = [System.IO.Path]::GetExtension($RelativePath).ToLowerInvariant()
+
+    if ($extension -notin @('.md', '.txt')) {
+        return $false
+    }
+
+    return $Content -match $Pattern
+}
+
 function Get-DocTaxon {
     param(
         [string]$RelativePath,
@@ -68,14 +91,17 @@ function Get-DocTaxon {
     $deprecatedPattern = 'pydantic_agent|AGENT_REGISTRY|REPO_MODE_AGENTS|data_field|function_name|display_card_id'
 
     if (
-        $normalizedPath -match '^docs/' -or
-        ($normalizedPath -match '^\.documentation/' -and $Content -match $deprecatedPattern)
+        (($normalizedPath -match '^docs/') -and -not (Test-IsGitHubPagesDocsRoot)) -or
+        ($normalizedPath -match '^\.documentation/' -and (Test-ContainsDeprecatedDocReferences -RelativePath $RelativePath -Content $Content -Pattern $deprecatedPattern))
     ) {
         return 'STALE_REFERENCE'
     }
 
     switch -Regex ($normalizedPath) {
         '^CHANGELOG\.md$' { return 'HISTORICAL_RECORD' }
+        '^docs/index\.html$' { return 'CONSUMER_GUIDE' }
+        '^docs/.*\.html$' { return 'ANALYTICS_ASSET' }
+        '^docs/' { return 'CONSUMER_GUIDE' }
         '^\.github/copilot-instructions\.md$' { return 'AUTHORITATIVE_REFERENCE' }
         '^\.documentation/memory/' { return 'AUTHORITATIVE_REFERENCE' }
         '^\.documentation/decisions/' { return 'ENGINEERING_PATTERN' }
@@ -137,7 +163,7 @@ function Get-DocScoreBreakdown {
         $freshness -= 5
     }
 
-    if ($Content -match 'pydantic_agent|AGENT_REGISTRY|REPO_MODE_AGENTS|data_field|function_name|display_card_id') {
+    if (Test-ContainsDeprecatedDocReferences -RelativePath $RelativePath -Content $Content -Pattern 'pydantic_agent|AGENT_REGISTRY|REPO_MODE_AGENTS|data_field|function_name|display_card_id') {
         $authority -= 8
         $freshness -= 6
     }
@@ -409,8 +435,12 @@ if ($Scope -in @('full', 'docs', 'scan', 'changelog')) {
     }
 
     if (Test-Path $legacyDocsDir) {
-        $docRoots += @{ path = $legacyDocsDir; mode = 'legacy' }
-        $result.path_roots.legacy_roots += 'docs/'
+        if (Test-IsGitHubPagesDocsRoot) {
+            $docRoots += @{ path = $legacyDocsDir; mode = 'public_site' }
+        } else {
+            $docRoots += @{ path = $legacyDocsDir; mode = 'legacy' }
+            $result.path_roots.legacy_roots += 'docs/'
+        }
     }
 
     foreach ($docRoot in $docRoots) {

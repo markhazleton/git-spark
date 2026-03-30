@@ -130,12 +130,13 @@ Modify weights in `GitSparkConfig.analysis.weights.risk` to adjust sensitivity.
 
 ## Copilot Session Documentation
 
-**CRITICAL RULE**: AI-generated markdown MUST go to `/copilot/session-{YYYY-MM-DD}/`
-- ✅ Allowed: `/copilot/session-2025-12-14/feature-design.md`
-- ❌ Forbidden: `/src/docs/notes.md`, `/implementation-plan.md` (root)
-- Exception: Only `.github/copilot-instructions.md` lives outside `/copilot/`
+**CRITICAL RULE**: AI-generated documents MUST go under `/.documentation/`, and AI-generated markdown MUST go to `/.documentation/copilot/session-{YYYY-MM-DD}/`
+- ✅ Allowed: `/.documentation/copilot/session-2025-12-14/feature-design.md`
+- ✅ Allowed: `/docs/index.html` and other `/docs/*` files only when they are public GitHub Pages site assets, not internal working notes
+- ❌ Forbidden: `/copilot/session-2025-12-14/feature-design.md`, `/src/docs/notes.md`, `/implementation-plan.md` (root)
+- Exception: Only `.github/copilot-instructions.md` lives outside `/.documentation/`
 
-Rationale: Prevents documentation clutter in code directories, maintains audit trail of AI sessions.
+Rationale: Prevents documentation clutter in code directories, keeps generated artifacts under `.documentation/`, preserves `/docs/` for public Pages content when configured, and maintains audit trail of AI sessions.
 
 ## Key Dependencies & Purpose
 

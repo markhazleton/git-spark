@@ -251,7 +251,8 @@ All exported APIs **MUST** have JSDoc documentation. All project documentation *
 - Documentation must accurately reflect current code state (README, guides, API docs)
 - Stale documentation must be removed or archived - never commit to maintaining outdated docs
 - Working documents (drafts, planning, discovery notes) must be archived or deleted when obsolete
-- AI session notes belong in `/copilot/session-YYYY-MM-DD/` (auto-scoped, time-bound)
+- AI-generated working documents and session notes belong in `/.documentation/copilot/session-YYYY-MM-DD/` (auto-scoped, time-bound); legacy root-level `/copilot/` paths must not be used for new generated documents
+- Public GitHub Pages site content may live under `/docs/` when the repository is configured to publish Pages from `main /docs`; treat `/docs/` as public site output, not as a location for internal generated working documents
 - Update or delete affected documentation when code changes (don't leave stale docs)
 
 **Encouraged Practices:**
