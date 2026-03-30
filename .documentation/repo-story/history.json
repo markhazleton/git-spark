@@ -1,0 +1,841 @@
+{
+  "generated_at": "2026-03-30T11:29:32.3888008+00:00",
+  "audit_parameters": {
+    "months": 24,
+    "scope": "full",
+    "compare_baseline": "2024-03",
+    "since_date": "2024-03-30",
+    "start_month": "2024-03",
+    "end_month": "2026-03"
+  },
+  "repo": {
+    "name": "git-spark",
+    "root": "C:/GitHub/MarkHazleton/git-spark",
+    "remote_origin": "https://github.com/markhazleton/git-spark",
+    "default_branch": "main"
+  },
+  "summary": {
+    "total_commits": 151,
+    "total_commits_in_window": 151,
+    "total_contributors": 4,
+    "total_tags": 1,
+    "history_span_days": 181
+  },
+  "timeline": {
+    "first_commit": {
+      "sha": "e4a8fad284ac215ebe5d1c50eb855bff404deeea",
+      "date": "2025-09-29T09:12:08-05:00",
+      "role": "Lead Architect",
+      "subject": "Initial commit"
+    },
+    "latest_commit": {
+      "sha": "145ea48308cdca24098817448532316a158fd9d5",
+      "date": "2026-03-30T06:28:24-05:00",
+      "role": "Lead Architect",
+      "subject": "chore: archive outdated npm publishing guides and fix summaries"
+    },
+    "commits_by_year": {
+      "2026": 32,
+      "2025": 119
+    },
+    "commits_by_month": {
+      "2026-03": 26,
+      "2025-11": 34,
+      "2025-09": 38,
+      "2025-12": 10,
+      "2026-01": 3,
+      "2026-02": 3,
+      "2025-10": 37
+    }
+  },
+  "contributors": {
+    "top": [
+      {
+        "role": "Lead Architect",
+        "commits": 143
+      },
+      {
+        "role": "Developer A",
+        "commits": 4
+      },
+      {
+        "role": "Developer B",
+        "commits": 3
+      },
+      {
+        "role": "Developer C",
+        "commits": 1
+      }
+    ],
+    "all_count": 4,
+    "monthly_by_role": {
+      "2026-03": {
+        "Developer B": 3,
+        "Developer A": 1,
+        "Developer C": 1,
+        "Lead Architect": 21
+      },
+      "2025-11": {
+        "Developer A": 1,
+        "Lead Architect": 33
+      },
+      "2025-09": {
+        "Lead Architect": 38
+      },
+      "2025-12": {
+        "Developer A": 1,
+        "Lead Architect": 9
+      },
+      "2026-01": {
+        "Developer A": 1,
+        "Lead Architect": 2
+      },
+      "2026-02": {
+        "Lead Architect": 3
+      },
+      "2025-10": {
+        "Lead Architect": 37
+      }
+    }
+  },
+  "contributor_census": {
+    "role_assignments": [
+      {
+        "role": "Lead Architect",
+        "commits": 143
+      },
+      {
+        "role": "Developer A",
+        "commits": 4
+      },
+      {
+        "role": "Developer B",
+        "commits": 3
+      },
+      {
+        "role": "Developer C",
+        "commits": 1
+      }
+    ]
+  },
+  "volume_metrics": {
+    "total_commits": 151,
+    "monthly_commit_distribution": {
+      "2026-03": 26,
+      "2025-11": 34,
+      "2025-09": 38,
+      "2025-12": 10,
+      "2026-01": 3,
+      "2026-02": 3,
+      "2025-10": 37
+    },
+    "merged_pr_count": 1,
+    "file_types_top": [
+      {
+        "extension": "md",
+        "touched_files": 357
+      },
+      {
+        "extension": "ts",
+        "touched_files": 327
+      },
+      {
+        "extension": "json",
+        "touched_files": 190
+      },
+      {
+        "extension": "html",
+        "touched_files": 88
+      },
+      {
+        "extension": "ps1",
+        "touched_files": 32
+      },
+      {
+        "extension": "yml",
+        "touched_files": 23
+      },
+      {
+        "extension": "js",
+        "touched_files": 18
+      },
+      {
+        "extension": "gitignore",
+        "touched_files": 8
+      },
+      {
+        "extension": "(no-ext)",
+        "touched_files": 7
+      },
+      {
+        "extension": "eslintignore",
+        "touched_files": 3
+      },
+      {
+        "extension": "cjs",
+        "touched_files": 3
+      },
+      {
+        "extension": "txt",
+        "touched_files": 2
+      },
+      {
+        "extension": "mjs",
+        "touched_files": 2
+      },
+      {
+        "extension": "npmignore",
+        "touched_files": 2
+      },
+      {
+        "extension": "prettierignore",
+        "touched_files": 1
+      },
+      {
+        "extension": "prettierrc",
+        "touched_files": 1
+      },
+      {
+        "extension": "gitattributes",
+        "touched_files": 1
+      },
+      {
+        "extension": "nvmrc",
+        "touched_files": 1
+      },
+      {
+        "extension": "bat",
+        "touched_files": 1
+      }
+    ],
+    "largest_merges": [
+      {
+        "sha": "911bb8b2024bc7218a000758c23fe905b8128279",
+        "subject": "Merge pull request #2 from markhazleton/dependabot/npm_and_yarn/minimatch-3.1.5",
+        "files_changed": 1,
+        "additions": 16,
+        "deletions": 16,
+        "total_lines": 32
+      }
+    ]
+  },
+  "commit_message_metrics": {
+    "conventional_commit_count": 115,
+    "informal_commit_count": 0,
+    "spec_reference_commit_count": 0
+  },
+  "test_metrics": {
+    "test_file_count": 267,
+    "test_related_commit_count": 23
+  },
+  "governance_maturity": {
+    "constitution_path": "C:\\GitHub\\MarkHazleton\\git-spark\\.documentation\\memory\\constitution.md",
+    "constitution_exists": true,
+    "constitution_version": "module size guidelines added to Code Quality)",
+    "constitution_amendment_count": 2,
+    "active_spec_count": 0,
+    "archived_spec_directory_count": 0,
+    "governance_artifact_count": 4
+  },
+  "milestones": {
+    "tags": [],
+    "readme_evolution": {
+      "total_readme_commits": 20,
+      "commits": [
+        {
+          "sha": "9edbbf72c04c483921047dcfd9d6c4674cc11d25",
+          "date": "2026-03-14T12:33:34-05:00",
+          "role": "Lead Architect",
+          "subject": "Remove Azure DevOps integration remnants"
+        },
+        {
+          "sha": "a15d3c73d284608024cfb13c429cac0200837cc9",
+          "date": "2026-03-14T11:30:00-05:00",
+          "role": "Lead Architect",
+          "subject": "feat: add analysis and reporting utilities for git-spark"
+        },
+        {
+          "sha": "8775240d3d1f24ea41a0c609aeb6f100d65d083b",
+          "date": "2026-01-25T10:33:48-06:00",
+          "role": "Lead Architect",
+          "subject": "feat: add git-spark init command for interactive config creation"
+        },
+        {
+          "sha": "823c9cde98795afd99b9f18b3864145f448b3aa3",
+          "date": "2025-12-14T12:39:48-06:00",
+          "role": "Lead Architect",
+          "subject": "chore: update dependencies and improve performance thresholds"
+        },
+        {
+          "sha": "3abed853026469768db0b0e95a5ed6b9096b96e1",
+          "date": "2025-12-14T10:23:52-06:00",
+          "role": "Lead Architect",
+          "subject": "feat: add file extension exclusion feature for analysis"
+        },
+        {
+          "sha": "8ee894b8d884a6e5a26e45997215b9a698d55419",
+          "date": "2025-12-02T20:28:08-06:00",
+          "role": "Lead Architect",
+          "subject": "chore: update historical documents and implementation status for Azure DevOps integration"
+        },
+        {
+          "sha": "b832cc706e305eb5a2fa60398abca3acf4aecfdb",
+          "date": "2025-11-21T08:50:58-06:00",
+          "role": "Lead Architect",
+          "subject": "security: add comprehensive security policy and automation"
+        },
+        {
+          "sha": "fa96ca3f4ca775c97dc14bb730a606c76a283317",
+          "date": "2025-10-10T14:44:21-05:00",
+          "role": "Lead Architect",
+          "subject": "docs: update documentation to be more modest and concise"
+        },
+        {
+          "sha": "bde1b3f9cb5b47313d2da0361d5eaaa2a1799cd4",
+          "date": "2025-10-03T18:22:04-05:00",
+          "role": "Lead Architect",
+          "subject": "feat: Enhance Git Spark landing page and README for improved user engagement"
+        },
+        {
+          "sha": "9c9476cc5f6d9e7f3c02f90ef9ce7252b60cb7d0",
+          "date": "2025-10-03T18:06:54-05:00",
+          "role": "Lead Architect",
+          "subject": "Transform README into world-class homepage promoting package, author, and WebSpark family"
+        },
+        {
+          "sha": "a97b412f1e5d0c74744ecddea728ebf41167ca56",
+          "date": "2025-10-03T17:59:30-05:00",
+          "role": "Lead Architect",
+          "subject": "docs: add GitHub Pages demo site with interactive report"
+        },
+        {
+          "sha": "5075fd89048e7e2ddf87cd81d3ffc3522b3c8158",
+          "date": "2025-10-03T17:41:12-05:00",
+          "role": "Lead Architect",
+          "subject": "update readme and add npmignore"
+        },
+        {
+          "sha": "469cda1ec42bcfadf762620fefd39277a4c5d47d",
+          "date": "2025-10-03T14:07:56-05:00",
+          "role": "Lead Architect",
+          "subject": "docs: update README.md to reflect v1.0.125 features and CLI command enhancements"
+        },
+        {
+          "sha": "599c66ffd68654c37b845be629012906bb7388dd",
+          "date": "2025-09-30T22:32:55-05:00",
+          "role": "Lead Architect",
+          "subject": "Refactor code structure for improved readability and maintainability"
+        },
+        {
+          "sha": "10707226d61c398dd69a362cab7f7b34995aeaf2",
+          "date": "2025-09-30T19:21:47-05:00",
+          "role": "Lead Architect",
+          "subject": "Refactor GitSpark to Eliminate Subjective Metrics and Enhance Objectivity"
+        },
+        {
+          "sha": "0e2a927d6a3ade82f0fd9e8fc865fa5763d53dd0",
+          "date": "2025-09-30T13:56:28-05:00",
+          "role": "Lead Architect",
+          "subject": "Implement comprehensive updates for team metrics transparency and accuracy"
+        },
+        {
+          "sha": "1637997f9558e3ee2fe2926c4934f3617d1a6e2a",
+          "date": "2025-09-30T07:31:08-05:00",
+          "role": "Lead Architect",
+          "subject": "feat: implement configurable file filtering for source code hotspots in HTML reports"
+        },
+        {
+          "sha": "ba4c88d943ca20175dddfcf21a6a770bd07d46e4",
+          "date": "2025-09-29T13:44:46-05:00",
+          "role": "Lead Architect",
+          "subject": "feat: Enhance HTML report with export options, charts, and accessibility improvements"
+        },
+        {
+          "sha": "acb3fe171dd3bba777659891b95214c61c2b1ed6",
+          "date": "2025-09-29T10:17:34-05:00",
+          "role": "Lead Architect",
+          "subject": "feat: implement HTML, JSON, and Markdown exporters for analysis reports"
+        },
+        {
+          "sha": "e4a8fad284ac215ebe5d1c50eb855bff404deeea",
+          "date": "2025-09-29T09:12:08-05:00",
+          "role": "Lead Architect",
+          "subject": "Initial commit"
+        }
+      ]
+    }
+  },
+  "change_patterns": {
+    "subject_type_estimates": {
+      "ci_build": 6,
+      "fixes": 34,
+      "features": 48,
+      "docs": 20,
+      "chore": 13,
+      "tests": 8,
+      "refactor": 7,
+      "other": 15
+    },
+    "hotspots": [
+      {
+        "path": "package.json",
+        "changes": 76
+      },
+      {
+        "path": "package-lock.json",
+        "changes": 63
+      },
+      {
+        "path": "src/output/html.ts",
+        "changes": 31
+      },
+      {
+        "path": "src/core/analyzer.ts",
+        "changes": 27
+      },
+      {
+        "path": "README.md",
+        "changes": 20
+      },
+      {
+        "path": "src/cli/commands.ts",
+        "changes": 19
+      },
+      {
+        "path": "test/html-exporter.test.ts",
+        "changes": 16
+      },
+      {
+        "path": "src/types/index.ts",
+        "changes": 15
+      },
+      {
+        "path": "src/core/collector.ts",
+        "changes": 14
+      },
+      {
+        "path": "docs/index.html",
+        "changes": 13
+      },
+      {
+        "path": "test/validation.test.ts",
+        "changes": 12
+      },
+      {
+        "path": "reports/git-spark-report.html",
+        "changes": 12
+      },
+      {
+        "path": "src/index.ts",
+        "changes": 11
+      },
+      {
+        "path": "docs/git-spark-report.html",
+        "changes": 11
+      },
+      {
+        "path": ".github/workflows/publish.yml",
+        "changes": 9
+      },
+      {
+        "path": "test/index.test.ts",
+        "changes": 9
+      },
+      {
+        "path": "src/utils/validation.ts",
+        "changes": 9
+      },
+      {
+        "path": "tsconfig.json",
+        "changes": 8
+      },
+      {
+        "path": "src/utils/git.ts",
+        "changes": 8
+      },
+      {
+        "path": "CHANGELOG.md",
+        "changes": 8
+      },
+      {
+        "path": ".gitignore",
+        "changes": 8
+      },
+      {
+        "path": "src/output/console.ts",
+        "changes": 7
+      },
+      {
+        "path": "test/console-exporter.test.ts",
+        "changes": 7
+      },
+      {
+        "path": "src/output/markdown.ts",
+        "changes": 7
+      },
+      {
+        "path": ".github/copilot-instructions.md",
+        "changes": 7
+      },
+      {
+        "path": "test-output/git-spark-report.html",
+        "changes": 7
+      },
+      {
+        "path": "src/output/csv.ts",
+        "changes": 6
+      },
+      {
+        "path": "test/markdown-exporter.test.ts",
+        "changes": 6
+      },
+      {
+        "path": "src/integrations/azure-devops/client.ts",
+        "changes": 6
+      },
+      {
+        "path": "docs/performance-tuning.md",
+        "changes": 6
+      },
+      {
+        "path": "src/integrations/azure-devops/config.ts",
+        "changes": 5
+      },
+      {
+        "path": ".github/workflows/ci.yml",
+        "changes": 5
+      },
+      {
+        "path": "src/version-fallback.ts",
+        "changes": 5
+      },
+      {
+        "path": "test/csv-exporter.test.ts",
+        "changes": 5
+      },
+      {
+        "path": "test-output/git-spark-report.json",
+        "changes": 5
+      },
+      {
+        "path": "test/json-exporter.test.ts",
+        "changes": 5
+      },
+      {
+        "path": "test/git-utils.test.ts",
+        "changes": 5
+      },
+      {
+        "path": "custom-output/git-spark-report.json",
+        "changes": 5
+      },
+      {
+        "path": ".documentation/memory/constitution.md",
+        "changes": 5
+      },
+      {
+        "path": "test/cli-commands.test.ts",
+        "changes": 4
+      },
+      {
+        "path": "src/output/json.ts",
+        "changes": 4
+      },
+      {
+        "path": ".github/workflows/update-docs.yml",
+        "changes": 4
+      },
+      {
+        "path": "bin/git-spark.js",
+        "changes": 4
+      },
+      {
+        "path": "test/version-fallback.test.ts",
+        "changes": 4
+      },
+      {
+        "path": "src/integrations/azure-devops/file-cache.ts",
+        "changes": 4
+      },
+      {
+        "path": "copilot/session-2025-10-07/session-summary.md",
+        "changes": 4
+      },
+      {
+        "path": ".github/agents/speckit.site-audit.agent.md",
+        "changes": 4
+      },
+      {
+        "path": "test/input-validation.test.ts",
+        "changes": 4
+      },
+      {
+        "path": "src/utils/logger.ts",
+        "changes": 4
+      },
+      {
+        "path": "demo-proportional-bars/git-spark-report.html",
+        "changes": 4
+      }
+    ]
+  },
+  "technical_signals": {
+    "language_presence": {
+      "python": true,
+      "javascript": true,
+      "typescript": true,
+      "powershell": true,
+      "shell": true,
+      "markdown": true
+    },
+    "has_pyproject_toml": false,
+    "has_package_json": true,
+    "has_dockerfile": true,
+    "has_github_actions": true
+  },
+  "recent": {
+    "commits": [
+      {
+        "sha": "145ea48308cdca24098817448532316a158fd9d5",
+        "date": "2026-03-30T06:28:24-05:00",
+        "role": "Lead Architect",
+        "subject": "chore: archive outdated npm publishing guides and fix summaries"
+      },
+      {
+        "sha": "bbe1380b54503a007103d390d930ba87a3ef0c89",
+        "date": "2026-03-30T06:15:17-05:00",
+        "role": "Lead Architect",
+        "subject": "feat: add repo-story context script for comprehensive repository analysis"
+      },
+      {
+        "sha": "b45bf3e24681d83889a4206e5dde83a70c8920ef",
+        "date": "2026-03-30T06:10:22-05:00",
+        "role": "Lead Architect",
+        "subject": "ci: fix publish workflow yaml"
+      },
+      {
+        "sha": "384675801f8b24e35822f851cd1aecd78fa0a663",
+        "date": "2026-03-30T06:06:08-05:00",
+        "role": "Lead Architect",
+        "subject": "ci: add manual publish workflow dispatch"
+      },
+      {
+        "sha": "e587940c477d146e41786618b9b94531dd5b2325",
+        "date": "2026-03-30T06:02:43-05:00",
+        "role": "Lead Architect",
+        "subject": "ci: fix publish deployment workflow"
+      },
+      {
+        "sha": "e6b119fcb9139e45bc78f3b7447c92169622820e",
+        "date": "2026-03-30T05:54:50-05:00",
+        "role": "Lead Architect",
+        "subject": "ci: upgrade CodeQL workflow to v4"
+      },
+      {
+        "sha": "f3718a7ba1654aae1a75780c4498ba229d867ba5",
+        "date": "2026-03-30T05:12:06-05:00",
+        "role": "Lead Architect",
+        "subject": "chore: update dependencies for eslint, typescript-eslint, and typedoc"
+      },
+      {
+        "sha": "0c82c8fd6597dcbf44c9fa5b649f95ae26f4329c",
+        "date": "2026-03-26T17:29:44-05:00",
+        "role": "Developer B",
+        "subject": "chore(deps): bump picomatch (#4)"
+      },
+      {
+        "sha": "caf2dfa4ca368689f4b759aa68856d295bb9e14d",
+        "date": "2026-03-26T17:24:42-05:00",
+        "role": "Developer B",
+        "subject": "chore(deps-dev): bump flatted from 3.4.1 to 3.4.2 (#3)"
+      },
+      {
+        "sha": "10ad1303349f29451aa86acdae17d256f4230ca8",
+        "date": "2026-03-14T13:52:39-05:00",
+        "role": "Lead Architect",
+        "subject": "test: improve ReDoS pattern validation by building patterns at runtime"
+      },
+      {
+        "sha": "6afe0f693473c7d25db160eafc9b6db0bf51a98e",
+        "date": "2026-03-14T13:36:24-05:00",
+        "role": "Lead Architect",
+        "subject": "fix: fetch full history for docs report generation"
+      },
+      {
+        "sha": "a8a38846c24de66cb0ba3ff1ccfb6ea3b1a6332a",
+        "date": "2026-03-14T18:32:38Z",
+        "role": "Developer A",
+        "subject": "docs: update analytics report for v1.3.0"
+      },
+      {
+        "sha": "aec6dd1bd92c50b70bfd37af602199a3a61cdb1b",
+        "date": "2026-03-14T13:31:19-05:00",
+        "role": "Lead Architect",
+        "subject": "chore: release v1.3.0"
+      },
+      {
+        "sha": "b25d8219378d61a5e68f5528176d4066c29812cd",
+        "date": "2026-03-14T13:25:23-05:00",
+        "role": "Lead Architect",
+        "subject": "Refactor code structure for improved readability and maintainability"
+      },
+      {
+        "sha": "9edbbf72c04c483921047dcfd9d6c4674cc11d25",
+        "date": "2026-03-14T12:33:34-05:00",
+        "role": "Lead Architect",
+        "subject": "Remove Azure DevOps integration remnants"
+      },
+      {
+        "sha": "ba40da80a62c38e241629286089f390f6b9e145c",
+        "date": "2026-03-14T11:40:25-05:00",
+        "role": "Lead Architect",
+        "subject": "feat: update constitution with module size guidelines and create amendment proposal CAP-2026-001"
+      },
+      {
+        "sha": "769f02ea635b931cd5e99fadd766b1179e252203",
+        "date": "2026-03-14T11:33:18-05:00",
+        "role": "Lead Architect",
+        "subject": "feat: add speckit.archive and speckit.upgrade agents with detailed documentation"
+      },
+      {
+        "sha": "a15d3c73d284608024cfb13c429cac0200837cc9",
+        "date": "2026-03-14T11:30:00-05:00",
+        "role": "Lead Architect",
+        "subject": "feat: add analysis and reporting utilities for git-spark"
+      },
+      {
+        "sha": "fc8a2f21f45cb5785239fe2fefa4ee10fef0181a",
+        "date": "2026-03-14T08:49:34-05:00",
+        "role": "Lead Architect",
+        "subject": "chore: add WebSearch and Bash(gh run:*) permissions to settings"
+      },
+      {
+        "sha": "0a0b17695ca57c8f67b4ba075c99b7cefb4495f9",
+        "date": "2026-03-14T08:48:43-05:00",
+        "role": "Lead Architect",
+        "subject": "fix(deps): patch flatted transitive dep to fix high severity vuln"
+      },
+      {
+        "sha": "2972f2a6c0dfebd6665400a2698703bb839ab448",
+        "date": "2026-03-14T08:46:36-05:00",
+        "role": "Lead Architect",
+        "subject": "fix: resolve all open CodeQL security scan alerts"
+      },
+      {
+        "sha": "0c9fe8a417ce3308196601c1b235816d7cad9c5d",
+        "date": "2026-03-14T08:39:57-05:00",
+        "role": "Lead Architect",
+        "subject": "chore(deps): upgrade ESLint to v10 and fix new default rules"
+      },
+      {
+        "sha": "6f6c82adca210e9b0b4f48c9ae4952e990636742",
+        "date": "2026-03-14T08:30:25-05:00",
+        "role": "Lead Architect",
+        "subject": "docs: update publication and last updated dates in documentation"
+      },
+      {
+        "sha": "90a45423a39d4571e62d1397bb3202ee65a0ade7",
+        "date": "2026-03-14T08:29:29-05:00",
+        "role": "Lead Architect",
+        "subject": "chore(deps): bump patch/minor devDependencies"
+      },
+      {
+        "sha": "911bb8b2024bc7218a000758c23fe905b8128279",
+        "date": "2026-03-14T08:27:11-05:00",
+        "role": "Developer C",
+        "subject": "Merge pull request #2 from markhazleton/dependabot/npm_and_yarn/minimatch-3.1.5"
+      },
+      {
+        "sha": "8274e42a37414b08f6f8632144545b4c5d07a410",
+        "date": "2026-03-01T20:36:10Z",
+        "role": "Developer B",
+        "subject": "chore(deps-dev): bump minimatch from 3.1.2 to 3.1.5"
+      },
+      {
+        "sha": "9214a93b034886866868c5f1681e8d438c187a7d",
+        "date": "2026-02-20T15:16:09-06:00",
+        "role": "Lead Architect",
+        "subject": "docs: update Git Spark constitution to version 1.1.0 with new documentation standards"
+      },
+      {
+        "sha": "358577ed4a47699c30053c92c4a2b17fd88b8795",
+        "date": "2026-02-20T13:40:25-06:00",
+        "role": "Lead Architect",
+        "subject": "docs: finalize Git Spark constitution v1.0.0"
+      },
+      {
+        "sha": "e4adac6e927b9d95660aa172ab1c90253e66a5c0",
+        "date": "2026-02-20T12:45:51-06:00",
+        "role": "Lead Architect",
+        "subject": "Add new agents and prompts for comprehensive project management"
+      },
+      {
+        "sha": "88fb35711ba3b04680248bcfe217e2d27cf3ab62",
+        "date": "2026-01-25T16:46:14Z",
+        "role": "Developer A",
+        "subject": "docs: update analytics report for v1.2.0"
+      },
+      {
+        "sha": "a9b3a04db4764096b5ec7a08edc0f17dfb28d1f8",
+        "date": "2026-01-25T10:38:58-06:00",
+        "role": "Lead Architect",
+        "subject": "fix: remove invalid --include-analysis CLI flag from workflow"
+      },
+      {
+        "sha": "8775240d3d1f24ea41a0c609aeb6f100d65d083b",
+        "date": "2026-01-25T10:33:48-06:00",
+        "role": "Lead Architect",
+        "subject": "feat: add git-spark init command for interactive config creation"
+      },
+      {
+        "sha": "1acb24663f3b7d09690157fcbf81fc4268bd8780",
+        "date": "2025-12-28T20:20:44-06:00",
+        "role": "Lead Architect",
+        "subject": "fix: correct day count for same-day analysis and prevent daily trends before repo creation"
+      },
+      {
+        "sha": "46f3d3ae76bcc0fa09f1507b6b3312b9eb8c6548",
+        "date": "2025-12-28T20:13:32-06:00",
+        "role": "Lead Architect",
+        "subject": "chore: add .gitattributes to normalize line endings"
+      },
+      {
+        "sha": "8fe47e8bf88f87014793d554086e3b4d8849dd82",
+        "date": "2025-12-28T20:09:39-06:00",
+        "role": "Lead Architect",
+        "subject": "chore: update dependencies - @types/node, @typescript-eslint packages"
+      },
+      {
+        "sha": "5fac7c227aac506ca7b7a48150d9f1e50481764a",
+        "date": "2025-12-14T22:28:25-06:00",
+        "role": "Lead Architect",
+        "subject": "fix: remove days filter from author and redact-emails tests to prevent date range issues"
+      },
+      {
+        "sha": "be5e98dad8422ee159d8002ca03f1ae7128d07c7",
+        "date": "2025-12-15T04:22:55Z",
+        "role": "Developer A",
+        "subject": "docs: update version badge to v1.0.268"
+      },
+      {
+        "sha": "cdd1cdfb02a3c756a6beb5e7724efb9851e2b0e9",
+        "date": "2025-12-14T22:22:24-06:00",
+        "role": "Lead Architect",
+        "subject": "chore: release v1.0.268"
+      },
+      {
+        "sha": "e05dff1a0b656cf246ea29355040f9f28def3b9b",
+        "date": "2025-12-14T16:17:26-06:00",
+        "role": "Lead Architect",
+        "subject": "feat: add teamwork option to HTML report, focusing on team success by excluding individual contributor sections"
+      },
+      {
+        "sha": "823c9cde98795afd99b9f18b3864145f448b3aa3",
+        "date": "2025-12-14T12:39:48-06:00",
+        "role": "Lead Architect",
+        "subject": "chore: update dependencies and improve performance thresholds"
+      }
+    ]
+  }
+}
+history.json written to: C:\GitHub\MarkHazleton\git-spark\.documentation\repo-story\history.json
