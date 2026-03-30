@@ -2,6 +2,8 @@
 description: Check the installed Spec Kit Spark version, identify stale framework files, and guide a safe upgrade to the latest release
 ---
 
+<!-- markdownlint-disable MD040 -->
+
 ## User Input
 
 ```text
@@ -43,6 +45,7 @@ Check for `.documentation/SPECKIT_VERSION`:
 ```
 
 Expected format (three lines):
+
 ```
 <version>
 installed: <YYYY-MM-DD>
@@ -50,11 +53,13 @@ agent: <agent-key>
 ```
 
 **If the file is missing:**
+
 - Report: `SPECKIT_VERSION not found — version unknown`
-- The project was installed before v1.2.0 or the stamp was not written
+- The project was installed before v1.2.4 or the stamp was not written
 - Proceed to Step 2 to determine what version is actually present
 
 **If the file exists**, extract:
+
 - `INSTALLED_VERSION` — e.g., `1.1.0`
 - `INSTALL_DATE` — e.g., `2026-02-08`
 - `INSTALLED_AGENT` — e.g., `copilot`
@@ -62,6 +67,7 @@ agent: <agent-key>
 ### 2. Detect Latest Available Version
 
 Read `CHANGELOG.md` at the repo root (or `.documentation/CHANGELOG.md`):
+
 - Find the most recent `## [X.Y.Z]` heading
 - That is `LATEST_VERSION`
 
@@ -79,7 +85,7 @@ Display the comparison result clearly:
 
 ```
 Installed : 1.1.0  (2026-02-08, agent: copilot)
-Latest    : 1.2.0
+Latest    : 1.2.4
 Status    : UPGRADE AVAILABLE
 ```
 
@@ -91,6 +97,7 @@ Separate framework-owned files (overwritten on upgrade) from user-owned files (n
 touched). Use this classification:
 
 #### Framework-owned (safe to overwrite)
+
 These come from the Spec Kit Spark release package and should match the latest version:
 
 - `.documentation/scripts/bash/*.sh`
@@ -111,15 +118,15 @@ These come from the Spec Kit Spark release package and should match the latest v
   - *(and equivalents for other supported agents)*
 
 #### User-owned (NEVER overwritten)
+
 These are written by the project team and must be preserved:
 
-- `specs/` — all feature specifications, plans, tasks
+- `.documentation/specs/` — all feature specifications, plans, and tasks
 - `.documentation/memory/constitution.md` — project constitution
 - `.documentation/copilot/` — session artifacts and audit history
 - `.documentation/decisions/` — ADRs
 - `.documentation/releases/` — release archives
 - `.documentation/quickfixes/` — active quickfixes
-- `.documentation/specs/` — in-progress spec documents
 - `CHANGELOG.md` (repo root)
 - Any file not listed in the framework-owned category
 
@@ -130,8 +137,9 @@ Scan for signs that the install is outdated. Flag any of the following:
 | Check | Issue | Severity |
 |-------|-------|----------|
 | `.documentation/SPECKIT_VERSION` absent | No version stamp | HIGH |
-| Agent command files reference root-level `memory/`, `scripts/`, or `templates/` paths instead of `.documentation/...` | Pre-migration paths | HIGH |
-| Root-level `memory/`, `scripts/`, `templates/` directories exist | Pre-v1.0 structure | HIGH |
+| Agent command files reference old paths (`.documentation/`, root `memory/`, `scripts/`, `templates/`, or `specs/`) | Pre-migration paths | HIGH |
+| `.documentation/` directory exists | Pre-v1.0 structure | HIGH |
+| Root-level `memory/`, `scripts/`, `templates/`, or `specs/` directories exist | Pre-v1.0 structure | HIGH |
 | `SPECKIT_VERSION` present but older than `LATEST_VERSION` | Out of date | MEDIUM |
 | Old `speckit.*-old.md` command files in agent folder | Leftover duplicates | LOW |
 
@@ -143,6 +151,7 @@ Even when the version matches, check that all expected framework files are prese
 List any that are **missing** from the expected locations.
 
 Missing framework files should be reported as:
+
 ```
 MISSING: .documentation/scripts/powershell/setup-plan.ps1
 MISSING: .github/agents/speckit.specify.agent.md
@@ -165,6 +174,7 @@ cp .documentation/memory/constitution.md \
 ```
 
 Or instruct the user to run:
+
 ```bash
 specify upgrade --backup
 ```
@@ -174,16 +184,19 @@ specify upgrade --backup
 Prefer `specify upgrade` (v1.1.0+). Fall back to `specify init --here --force --ai <INSTALLED_AGENT>` if needed.
 
 **Check for CLI availability:**
+
 ```bash
 specify version
 ```
 
 If available, run:
+
 ```bash
 specify upgrade --ai <INSTALLED_AGENT>
 ```
 
 If not installed, provide the install command:
+
 ```bash
 uv tool install specify-cli --force \
   --from git+https://github.com/MarkHazleton/spec-kit.git
@@ -191,7 +204,7 @@ uv tool install specify-cli --force \
 
 #### 7c. Handle old structure migration
 
-If stale paths were found in Step 5 (root `memory/`, `scripts/`, or `templates/` paths):
+If stale paths were found in Step 5 (`.documentation/`, root `memory/` etc.):
 
 ```bash
 # Windows
@@ -209,22 +222,23 @@ After the upgrade completes:
 
 1. **Read `.documentation/SPECKIT_VERSION` again** — confirm version changed to `LATEST_VERSION`
 2. **Check agent command files** — confirm they no longer reference old paths
-3. **Confirm `specs/` is untouched** — user data must be preserved
+3. **Confirm `.documentation/specs/` is untouched** — user data must be preserved
 4. **Confirm `constitution.md` is intact** (or restored from backup)
 
 Report a post-upgrade summary:
 
 ```
 Post-Upgrade Verification
-  SPECKIT_VERSION : 1.2.0  (was 1.1.0)
+  SPECKIT_VERSION : 1.2.4  (was 1.1.0)
   Agent commands  : updated
-  specs/          : unchanged
+  .documentation/specs/ : unchanged
   constitution.md : preserved
 ```
 
 ### 9. Output Final Summary
 
-#### Upgrade performed:
+#### Upgrade performed
+
 ```
 Spec Kit Spark Upgrade Summary
   Previous Version : <INSTALLED_VERSION>
@@ -240,7 +254,8 @@ Next steps:
   3. git add -A && git commit -m "chore: upgrade spec-kit-spark to vX.Y.Z"
 ```
 
-#### Already up to date:
+#### Already up to date
+
 ```
 Spec Kit Spark is up to date.
   Version : <INSTALLED_VERSION>
@@ -248,13 +263,14 @@ Spec Kit Spark is up to date.
   Date    : <INSTALL_DATE>
 ```
 
-#### Dry run:
+#### Dry run
+
 ```
 Dry Run — No changes made.
 
 Would upgrade: <INSTALLED_VERSION> -> <LATEST_VERSION>
 Framework files to update: <N>
-User files preserved: specs/, constitution.md, session artifacts
+User files preserved: .documentation/specs/, constitution.md, session artifacts
 
 To apply:
   specify upgrade --ai <INSTALLED_AGENT>
@@ -267,7 +283,8 @@ To apply:
 ### User Data is Sacred
 
 Never modify or delete:
-- `specs/` and all contents
+
+- `.documentation/specs/` and all contents
 - `constitution.md`
 - `.documentation/copilot/`
 - `.documentation/decisions/`
