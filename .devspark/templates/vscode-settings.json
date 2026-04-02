@@ -1,5 +1,4 @@
 {
-    "liveServer.settings.port": 5501,
     "chat.promptFilesRecommendations": {
         "devspark.constitution": true,
         "devspark.specify": true,
@@ -8,8 +7,8 @@
         "devspark.implement": true
     },
     "chat.tools.terminal.autoApprove": {
-        ".devspark/scripts/": true,
         ".documentation/scripts/bash/": true,
         ".documentation/scripts/powershell/": true
     }
 }
+
