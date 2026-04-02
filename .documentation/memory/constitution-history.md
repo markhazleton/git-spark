@@ -2,8 +2,8 @@
 
 ## Current Version
 
-**Version**: 1.2.0
-**Last Updated**: 2026-03-14
+**Version**: 1.4.0
+**Last Updated**: 2026-04-02
 
 ## Pending Proposals
 
@@ -15,6 +15,8 @@
 
 | Version | Date | Type | Principle | CAP ID | Status |
 |---------|------|------|-----------|--------|--------|
+| 1.4.0 | 2026-04-02 | MODIFY | Code Quality — Decomposition Output Sizing Rules | CAP-2026-003 | Applied |
+| 1.3.0 | 2026-04-02 | CLARIFY | Documentation Standards — Decomposition Documentation Obligation | CAP-2026-002 | Applied |
 | 1.2.0 | 2026-03-14 | CLARIFY | Code Quality - Module Size Guidelines | CAP-2026-001 | Applied |
 | 1.1.0 | 2026-02-20 | ADD | Documentation Standards - Lifecycle Rules | (pre-CAP) | Applied |
 | 1.0.0 | 2026-02-20 | ADD | Initial Ratification | (pre-CAP) | Applied |

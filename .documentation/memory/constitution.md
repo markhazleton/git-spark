@@ -1,10 +1,24 @@
 <!--
 SYNC IMPACT REPORT - Constitution Amendments
 ==============================================
-Version: 1.2.0 (MINOR - module size guidelines added to Code Quality)
-Last Amended: 2026-03-14
+Version: 1.4.0 (MINOR - decomposition documentation obligation + decomposition output sizing rules)
+Last Amended: 2026-04-02
 
 Amendment History:
+- 1.4.0 (2026-04-02): Added decomposition output sizing rules to Code Quality principle (CAP-2026-003)
+  * Decomposition outputs are new files subject to full <500 SHOULD NOT threshold
+  * Decomposition producing >500-line file MUST have tracking issue before PR merges
+  * Target <300 lines at initial extraction; plan successive splits for larger extractions
+  * Barrel files MUST NOT contain business logic; must be <100 lines
+  * Grandfathered: html-styles.ts (820L) and html-daily-trends.ts (817L) for remediation tracking
+  * Source: audit 2026-03-30 flagged 3 non-grandfathered files exceeding 500-line threshold
+
+- 1.3.0 (2026-04-02): Added decomposition documentation obligation to Documentation Standards (CAP-2026-002)
+  * Decomposition extractors MUST add/transfer complete JSDoc before PR merges
+  * Decomposition tasks.md entries MUST include explicit JSDoc sub-task
+  * Type files: exported interfaces MUST have interface-level JSDoc; non-obvious properties SHOULD have inline JSDoc
+  * Source: audit 2026-03-30 (v1+v2) flagged DOC1/DOC3/DOC4 — same root cause across 3 instances
+
 - 1.2.0 (2026-03-14): Added module size guidelines to Code Quality principle (CAP-2026-001)
   * New files SHOULD NOT exceed 500 lines; MUST NOT exceed 1,000 without justification
   * Existing oversized files grandfathered (html.ts, analyzer.ts, index.ts, commands.ts, daily-trends.ts)
@@ -21,22 +35,29 @@ Amendment History:
 - 1.0.0 (2026-02-20): Initial ratification via /speckit.discover-constitution
 
 Modified Principles:
-- CLARIFIED: Code Quality - Linting & Formatting → Code Quality - Linting, Formatting & Module Size
-  * Added module size thresholds (500 SHOULD / 1,000 MUST)
-  * Added grandfathering clause for existing files
-  * Added decomposition encouraged practices
+- MODIFIED: Code Quality - Module Size → Added Decomposition Output Sizing rules (CAP-2026-003)
+  * Decomposition output <300-line target; barrel file MUST NOT contain business logic
+  * Extended grandfathered list with v1.4.0 tracked files
+  * Updated Encouraged Practices for proactive tracking and upfront size estimation
+- CLARIFIED: Documentation Standards → Added Decomposition Documentation Obligation + Type Files guidance (CAP-2026-002)
+  * Decomposition PR must include JSDoc for all extracted symbols
+  * Type file JSDoc requirements made explicit
 
 Templates Status:
 ✅ spec-template.md: Reviewed - no conflicts (uses dynamic constitution gates)
 ✅ plan-template.md: Reviewed - constitution check section aligns (dynamic)
-✅ tasks-template.md: Reviewed - task categorization compatible (dynamic)
+✅ tasks-template.md: Decomposition tasks should now include explicit JSDoc sub-task per CAP-2026-002
 
 Follow-up Required:
-- Consider adding ESLint `max-lines` rule for automated enforcement
-- Create tracking issues for grandfathered oversized files
+- Remediate DOC3: Add JSDoc to 12 exported functions in src/output/html-daily-trends.ts
+- Remediate DOC4: Add JSDoc to 8 exported interfaces in src/types/author.ts
+- Extract GitSpark class from src/index.ts to src/core/git-spark.ts (QUAL3)
+- Decompose html-styles.ts and html-daily-trends.ts per issue #6
+- Consider ESLint `jsdoc/require-jsdoc` plugin for automated enforcement
+- Consider ESLint `max-lines` rule for automated module size enforcement
 
 Discovery Source: /speckit.discover-constitution (2026-02-20)
-Amendment Source: /speckit.evolve-constitution CAP-2026-001 (2026-03-14)
+Amendment Source: /devspark.evolve-constitution CAP-2026-002 + CAP-2026-003 (2026-04-02)
 ==============================================
 -->
 
@@ -247,6 +268,16 @@ All exported APIs **MUST** have JSDoc documentation. All project documentation *
 - Include `@example` for public APIs showing real usage
 - Document error conditions with `@throws`
 
+**Decomposition Documentation Obligation (CAP-2026-002):**
+- When extracting functions, classes, or interfaces into a new module (decomposition), the extractor **MUST** add or transfer complete JSDoc to each exported symbol before the PR is merged
+- Decomposition tasks in `tasks.md` **MUST** include an explicit documentation sub-task: "Add JSDoc to all exported symbols in `<new-module>.ts`"
+- A decomposition PR that introduces undocumented exports is a **Documentation Standards violation** regardless of whether the source module previously lacked documentation
+
+**Guidance for Type Files (`src/types/**`):**
+- Exported interfaces **MUST** have interface-level JSDoc describing purpose and usage context
+- Properties that are non-obvious **SHOULD** have inline JSDoc (`/** description */`)
+- Union/intersection types **MUST** have JSDoc explaining when each member applies
+
 **Non-Negotiable Rules (Project Documentation):**
 - Documentation must accurately reflect current code state (README, guides, API docs)
 - Stale documentation must be removed or archived - never commit to maintaining outdated docs
@@ -283,6 +314,13 @@ All code **MUST** pass ESLint and Prettier checks with zero errors. Source files
 - New source files MUST NOT exceed 1,000 lines of code without documented justification
 - When modifying files that exceed 1,000 lines, contributors SHOULD extract changed logic into focused sub-modules where practical
 - **Grandfathered files** (exceeding thresholds at v1.2.0 ratification): `src/output/html.ts`, `src/core/analyzer.ts`, `src/types/index.ts`, `src/cli/commands.ts`, `src/core/daily-trends.ts` — these SHOULD be decomposed over time but are not blocking violations
+- **Grandfathered files** (exceeding thresholds at v1.4.0 ratification, tracked for remediation): `src/output/html-styles.ts` (820 lines), `src/output/html-daily-trends.ts` (817 lines, tracked issue #6) — must not grow further; not blocking violations pending decomposition
+
+**Decomposition Output Sizing (CAP-2026-003):**
+- A module created by extracting code from a grandfathered file is a **new file** subject to the full `<500 SHOULD NOT` threshold
+- A decomposition extraction that produces a new file exceeding 500 lines **MUST** be accompanied by a follow-up decomposition tracking issue filed before the PR merges
+- **Target size for decomposition outputs**: extracted modules SHOULD NOT exceed 300 lines at the time of initial extraction; if the extraction produces a module >300 lines, consider further splitting before merging
+- Barrel files (`index.ts` pattern) **MUST NOT** contain business logic; if a barrel file exceeds 100 lines, the business logic must be extracted to a named module
 
 **Prettier Configuration:**
 - Semi-colons: required
@@ -293,9 +331,10 @@ All code **MUST** pass ESLint and Prettier checks with zero errors. Source files
 
 **Encouraged Practices:**
 - Split modules by single responsibility (e.g., separate chart rendering from HTML templating)
-- Use barrel exports (`index.ts`) to maintain clean public APIs after decomposition
-- Target <300 lines per module for optimal reviewability
-- When a file exceeds 500 lines, create a tracking issue for decomposition
+- Use barrel exports (`index.ts`) to maintain clean public APIs after decomposition; keep barrels <50 lines, re-exports only
+- Target <300 lines per module for optimal reviewability (both new modules and decomposition outputs)
+- When a file exceeds 500 lines, create a tracking issue for decomposition immediately — not reactively after an audit
+- When planning a decomposition, estimate extracted module sizes before coding; if any output will exceed 500 lines, plan successive splits up-front
 
 **Rationale:** Consistent code style reduces review friction, prevents style debates, and makes code easier to read and maintain. Large modules increase review cost, merge conflict frequency, and cognitive load. Explicit thresholds make the expectation testable and give contributors a clear signal for when decomposition is warranted.
 
