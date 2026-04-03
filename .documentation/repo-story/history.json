@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-03-30T11:29:32.3888008+00:00",
+  "generated_at": "2026-04-03T15:00:56.0178784+00:00",
   "audit_parameters": {
-    "months": 24,
+    "months": 12,
     "scope": "full",
-    "compare_baseline": "2024-03",
-    "since_date": "2024-03-30",
-    "start_month": "2024-03",
-    "end_month": "2026-03"
+    "compare_baseline": "2025-04",
+    "since_date": "2025-04-03",
+    "start_month": "2025-04",
+    "end_month": "2026-04"
   },
   "repo": {
     "name": "git-spark",
@@ -15,11 +15,11 @@
     "default_branch": "main"
   },
   "summary": {
-    "total_commits": 151,
-    "total_commits_in_window": 151,
+    "total_commits": 159,
+    "total_commits_in_window": 159,
     "total_contributors": 4,
     "total_tags": 1,
-    "history_span_days": 181
+    "history_span_days": 185
   },
   "timeline": {
     "first_commit": {
@@ -29,30 +29,31 @@
       "subject": "Initial commit"
     },
     "latest_commit": {
-      "sha": "145ea48308cdca24098817448532316a158fd9d5",
-      "date": "2026-03-30T06:28:24-05:00",
+      "sha": "d18db2103fe213cbff4c69638ff340f457e52a89",
+      "date": "2026-04-03T08:35:28-05:00",
       "role": "Lead Architect",
-      "subject": "chore: archive outdated npm publishing guides and fix summaries"
+      "subject": "docs: harvest 2026-04-03 ΓÇö accuracy review of all .md files"
     },
     "commits_by_year": {
-      "2026": 32,
+      "2026": 40,
       "2025": 119
     },
     "commits_by_month": {
-      "2026-03": 26,
-      "2025-11": 34,
-      "2025-09": 38,
+      "2026-03": 31,
       "2025-12": 10,
       "2026-01": 3,
+      "2025-09": 38,
       "2026-02": 3,
-      "2025-10": 37
+      "2025-11": 34,
+      "2025-10": 37,
+      "2026-04": 3
     }
   },
   "contributors": {
     "top": [
       {
         "role": "Lead Architect",
-        "commits": 143
+        "commits": 151
       },
       {
         "role": "Developer A",
@@ -71,16 +72,9 @@
     "monthly_by_role": {
       "2026-03": {
         "Developer B": 3,
-        "Developer A": 1,
         "Developer C": 1,
-        "Lead Architect": 21
-      },
-      "2025-11": {
-        "Developer A": 1,
-        "Lead Architect": 33
-      },
-      "2025-09": {
-        "Lead Architect": 38
+        "Lead Architect": 26,
+        "Developer A": 1
       },
       "2025-12": {
         "Developer A": 1,
@@ -90,11 +84,21 @@
         "Developer A": 1,
         "Lead Architect": 2
       },
+      "2025-09": {
+        "Lead Architect": 38
+      },
       "2026-02": {
         "Lead Architect": 3
       },
+      "2025-11": {
+        "Developer A": 1,
+        "Lead Architect": 33
+      },
       "2025-10": {
         "Lead Architect": 37
+      },
+      "2026-04": {
+        "Lead Architect": 3
       }
     }
   },
@@ -102,7 +106,7 @@
     "role_assignments": [
       {
         "role": "Lead Architect",
-        "commits": 143
+        "commits": 151
       },
       {
         "role": "Developer A",
@@ -119,41 +123,42 @@
     ]
   },
   "volume_metrics": {
-    "total_commits": 151,
+    "total_commits": 159,
     "monthly_commit_distribution": {
-      "2026-03": 26,
-      "2025-11": 34,
-      "2025-09": 38,
+      "2026-03": 31,
       "2025-12": 10,
       "2026-01": 3,
+      "2025-09": 38,
       "2026-02": 3,
-      "2025-10": 37
+      "2025-11": 34,
+      "2025-10": 37,
+      "2026-04": 3
     },
     "merged_pr_count": 1,
     "file_types_top": [
       {
         "extension": "md",
-        "touched_files": 357
+        "touched_files": 468
       },
       {
         "extension": "ts",
-        "touched_files": 327
+        "touched_files": 336
       },
       {
         "extension": "json",
-        "touched_files": 190
+        "touched_files": 195
       },
       {
         "extension": "html",
-        "touched_files": 88
+        "touched_files": 90
       },
       {
         "extension": "ps1",
-        "touched_files": 32
+        "touched_files": 48
       },
       {
         "extension": "yml",
-        "touched_files": 23
+        "touched_files": 24
       },
       {
         "extension": "js",
@@ -161,18 +166,18 @@
       },
       {
         "extension": "gitignore",
-        "touched_files": 8
+        "touched_files": 9
       },
       {
         "extension": "(no-ext)",
-        "touched_files": 7
-      },
-      {
-        "extension": "eslintignore",
-        "touched_files": 3
+        "touched_files": 9
       },
       {
         "extension": "cjs",
+        "touched_files": 4
+      },
+      {
+        "extension": "eslintignore",
         "touched_files": 3
       },
       {
@@ -188,7 +193,11 @@
         "touched_files": 2
       },
       {
-        "extension": "prettierignore",
+        "extension": "nvmrc",
+        "touched_files": 1
+      },
+      {
+        "extension": "bat",
         "touched_files": 1
       },
       {
@@ -200,11 +209,7 @@
         "touched_files": 1
       },
       {
-        "extension": "nvmrc",
-        "touched_files": 1
-      },
-      {
-        "extension": "bat",
+        "extension": "prettierignore",
         "touched_files": 1
       }
     ],
@@ -220,19 +225,19 @@
     ]
   },
   "commit_message_metrics": {
-    "conventional_commit_count": 115,
+    "conventional_commit_count": 122,
     "informal_commit_count": 0,
     "spec_reference_commit_count": 0
   },
   "test_metrics": {
-    "test_file_count": 267,
-    "test_related_commit_count": 23
+    "test_file_count": 272,
+    "test_related_commit_count": 25
   },
   "governance_maturity": {
     "constitution_path": "C:\\GitHub\\MarkHazleton\\git-spark\\.documentation\\memory\\constitution.md",
     "constitution_exists": true,
-    "constitution_version": "module size guidelines added to Code Quality)",
-    "constitution_amendment_count": 2,
+    "constitution_version": "decomposition documentation obligation + decomposition output sizing rules)",
+    "constitution_amendment_count": 10,
     "active_spec_count": 0,
     "archived_spec_directory_count": 0,
     "governance_artifact_count": 4
@@ -240,8 +245,14 @@
   "milestones": {
     "tags": [],
     "readme_evolution": {
-      "total_readme_commits": 20,
+      "total_readme_commits": 21,
       "commits": [
+        {
+          "sha": "d18db2103fe213cbff4c69638ff340f457e52a89",
+          "date": "2026-04-03T08:35:28-05:00",
+          "role": "Lead Architect",
+          "subject": "docs: harvest 2026-04-03 ΓÇö accuracy review of all .md files"
+        },
         {
           "sha": "9edbbf72c04c483921047dcfd9d6c4674cc11d25",
           "date": "2026-03-14T12:33:34-05:00",
@@ -367,27 +378,27 @@
   },
   "change_patterns": {
     "subject_type_estimates": {
-      "ci_build": 6,
       "fixes": 34,
-      "features": 48,
-      "docs": 20,
-      "chore": 13,
-      "tests": 8,
       "refactor": 7,
-      "other": 15
+      "ci_build": 6,
+      "features": 52,
+      "docs": 23,
+      "tests": 9,
+      "other": 15,
+      "chore": 13
     },
     "hotspots": [
       {
         "path": "package.json",
-        "changes": 76
+        "changes": 77
       },
       {
         "path": "package-lock.json",
-        "changes": 63
+        "changes": 64
       },
       {
         "path": "src/output/html.ts",
-        "changes": 31
+        "changes": 32
       },
       {
         "path": "src/core/analyzer.ts",
@@ -395,7 +406,7 @@
       },
       {
         "path": "README.md",
-        "changes": 20
+        "changes": 21
       },
       {
         "path": "src/cli/commands.ts",
@@ -403,10 +414,14 @@
       },
       {
         "path": "test/html-exporter.test.ts",
-        "changes": 16
+        "changes": 18
       },
       {
         "path": "src/types/index.ts",
+        "changes": 15
+      },
+      {
+        "path": "docs/index.html",
         "changes": 15
       },
       {
@@ -414,27 +429,27 @@
         "changes": 14
       },
       {
-        "path": "docs/index.html",
-        "changes": 13
+        "path": "reports/git-spark-report.html",
+        "changes": 12
       },
       {
         "path": "test/validation.test.ts",
         "changes": 12
       },
       {
-        "path": "reports/git-spark-report.html",
-        "changes": 12
+        "path": "docs/git-spark-report.html",
+        "changes": 11
       },
       {
         "path": "src/index.ts",
         "changes": 11
       },
       {
-        "path": "docs/git-spark-report.html",
-        "changes": 11
+        "path": ".gitignore",
+        "changes": 9
       },
       {
-        "path": ".github/workflows/publish.yml",
+        "path": "src/utils/validation.ts",
         "changes": 9
       },
       {
@@ -442,8 +457,12 @@
         "changes": 9
       },
       {
-        "path": "src/utils/validation.ts",
+        "path": ".github/workflows/publish.yml",
         "changes": 9
+      },
+      {
+        "path": "CHANGELOG.md",
+        "changes": 8
       },
       {
         "path": "tsconfig.json",
@@ -454,23 +473,15 @@
         "changes": 8
       },
       {
-        "path": "CHANGELOG.md",
-        "changes": 8
-      },
-      {
-        "path": ".gitignore",
-        "changes": 8
-      },
-      {
         "path": "src/output/console.ts",
         "changes": 7
       },
       {
-        "path": "test/console-exporter.test.ts",
+        "path": "src/output/markdown.ts",
         "changes": 7
       },
       {
-        "path": "src/output/markdown.ts",
+        "path": "test/console-exporter.test.ts",
         "changes": 7
       },
       {
@@ -482,11 +493,19 @@
         "changes": 7
       },
       {
-        "path": "src/output/csv.ts",
-        "changes": 6
+        "path": "docs/performance-tuning.md",
+        "changes": 7
       },
       {
         "path": "test/markdown-exporter.test.ts",
+        "changes": 6
+      },
+      {
+        "path": ".documentation/memory/constitution.md",
+        "changes": 6
+      },
+      {
+        "path": "src/output/csv.ts",
         "changes": 6
       },
       {
@@ -494,7 +513,7 @@
         "changes": 6
       },
       {
-        "path": "docs/performance-tuning.md",
+        "path": ".github/workflows/ci.yml",
         "changes": 6
       },
       {
@@ -502,7 +521,19 @@
         "changes": 5
       },
       {
-        "path": ".github/workflows/ci.yml",
+        "path": "test/json-exporter.test.ts",
+        "changes": 5
+      },
+      {
+        "path": "test-output/git-spark-report.json",
+        "changes": 5
+      },
+      {
+        "path": "custom-output/git-spark-report.json",
+        "changes": 5
+      },
+      {
+        "path": "test/git-utils.test.ts",
         "changes": 5
       },
       {
@@ -514,39 +545,19 @@
         "changes": 5
       },
       {
-        "path": "test-output/git-spark-report.json",
-        "changes": 5
+        "path": ".documentation/scripts/powershell/site-audit.ps1",
+        "changes": 4
       },
       {
-        "path": "test/json-exporter.test.ts",
-        "changes": 5
-      },
-      {
-        "path": "test/git-utils.test.ts",
-        "changes": 5
-      },
-      {
-        "path": "custom-output/git-spark-report.json",
-        "changes": 5
-      },
-      {
-        "path": ".documentation/memory/constitution.md",
-        "changes": 5
+        "path": "copilot/session-2025-10-07/session-summary.md",
+        "changes": 4
       },
       {
         "path": "test/cli-commands.test.ts",
         "changes": 4
       },
       {
-        "path": "src/output/json.ts",
-        "changes": 4
-      },
-      {
-        "path": ".github/workflows/update-docs.yml",
-        "changes": 4
-      },
-      {
-        "path": "bin/git-spark.js",
+        "path": "test/input-validation.test.ts",
         "changes": 4
       },
       {
@@ -558,19 +569,19 @@
         "changes": 4
       },
       {
-        "path": "copilot/session-2025-10-07/session-summary.md",
+        "path": "src/integrations/azure-devops/git-integration.ts",
+        "changes": 4
+      },
+      {
+        "path": ".github/agents/speckit.upgrade.agent.md",
+        "changes": 4
+      },
+      {
+        "path": "eslint.config.cjs",
         "changes": 4
       },
       {
         "path": ".github/agents/speckit.site-audit.agent.md",
-        "changes": 4
-      },
-      {
-        "path": "test/input-validation.test.ts",
-        "changes": 4
-      },
-      {
-        "path": "src/utils/logger.ts",
         "changes": 4
       },
       {
@@ -595,6 +606,54 @@
   },
   "recent": {
     "commits": [
+      {
+        "sha": "d18db2103fe213cbff4c69638ff340f457e52a89",
+        "date": "2026-04-03T08:35:28-05:00",
+        "role": "Lead Architect",
+        "subject": "docs: harvest 2026-04-03 ΓÇö accuracy review of all .md files"
+      },
+      {
+        "sha": "43cd98458e5ae58ea31603e5c9012a59ab1bf65f",
+        "date": "2026-04-02T17:57:47-05:00",
+        "role": "Lead Architect",
+        "subject": "docs: evolve constitution to v1.4.0 and harvest completed artifacts"
+      },
+      {
+        "sha": "4c97e234892b36932dc2a0f14cc5bf7fd7dd424c",
+        "date": "2026-04-02T17:31:25-05:00",
+        "role": "Lead Architect",
+        "subject": "chore: migrate Spec Kit to DevSpark framework"
+      },
+      {
+        "sha": "5c831427a712e6e207727902b9b987c51d818a94",
+        "date": "2026-03-30T08:10:05-05:00",
+        "role": "Lead Architect",
+        "subject": "feat: add comprehensive codebase audit report for 2026-03-30 post-upgrade review"
+      },
+      {
+        "sha": "d4711f331bfb1bb7ca22f57d0177cc98286dbebd",
+        "date": "2026-03-30T07:58:46-05:00",
+        "role": "Lead Architect",
+        "subject": "feat: enhance site audit script with build file classification and Speckit version retrieval"
+      },
+      {
+        "sha": "87ad835d50aade7164dfc29709b22f26b6cbaff5",
+        "date": "2026-03-30T07:47:43-05:00",
+        "role": "Lead Architect",
+        "subject": "feat: upgrade TypeScript to 6.0.2 and enhance type safety in author profile generation"
+      },
+      {
+        "sha": "f43bf4a2e827ac7c4c8134bbb487dc9fbc9665d4",
+        "date": "2026-03-30T07:06:50-05:00",
+        "role": "Lead Architect",
+        "subject": "Add comprehensive CSS styles for Git Spark HTML reports"
+      },
+      {
+        "sha": "5d194136e48514d0c52866be4682e83e50f01bd7",
+        "date": "2026-03-30T06:38:20-05:00",
+        "role": "Lead Architect",
+        "subject": "docs: add repository story for git-spark detailing project history, technical analysis, and governance"
+      },
       {
         "sha": "145ea48308cdca24098817448532316a158fd9d5",
         "date": "2026-03-30T06:28:24-05:00",
@@ -786,56 +845,7 @@
         "date": "2026-01-25T10:33:48-06:00",
         "role": "Lead Architect",
         "subject": "feat: add git-spark init command for interactive config creation"
-      },
-      {
-        "sha": "1acb24663f3b7d09690157fcbf81fc4268bd8780",
-        "date": "2025-12-28T20:20:44-06:00",
-        "role": "Lead Architect",
-        "subject": "fix: correct day count for same-day analysis and prevent daily trends before repo creation"
-      },
-      {
-        "sha": "46f3d3ae76bcc0fa09f1507b6b3312b9eb8c6548",
-        "date": "2025-12-28T20:13:32-06:00",
-        "role": "Lead Architect",
-        "subject": "chore: add .gitattributes to normalize line endings"
-      },
-      {
-        "sha": "8fe47e8bf88f87014793d554086e3b4d8849dd82",
-        "date": "2025-12-28T20:09:39-06:00",
-        "role": "Lead Architect",
-        "subject": "chore: update dependencies - @types/node, @typescript-eslint packages"
-      },
-      {
-        "sha": "5fac7c227aac506ca7b7a48150d9f1e50481764a",
-        "date": "2025-12-14T22:28:25-06:00",
-        "role": "Lead Architect",
-        "subject": "fix: remove days filter from author and redact-emails tests to prevent date range issues"
-      },
-      {
-        "sha": "be5e98dad8422ee159d8002ca03f1ae7128d07c7",
-        "date": "2025-12-15T04:22:55Z",
-        "role": "Developer A",
-        "subject": "docs: update version badge to v1.0.268"
-      },
-      {
-        "sha": "cdd1cdfb02a3c756a6beb5e7724efb9851e2b0e9",
-        "date": "2025-12-14T22:22:24-06:00",
-        "role": "Lead Architect",
-        "subject": "chore: release v1.0.268"
-      },
-      {
-        "sha": "e05dff1a0b656cf246ea29355040f9f28def3b9b",
-        "date": "2025-12-14T16:17:26-06:00",
-        "role": "Lead Architect",
-        "subject": "feat: add teamwork option to HTML report, focusing on team success by excluding individual contributor sections"
-      },
-      {
-        "sha": "823c9cde98795afd99b9f18b3864145f448b3aa3",
-        "date": "2025-12-14T12:39:48-06:00",
-        "role": "Lead Architect",
-        "subject": "chore: update dependencies and improve performance thresholds"
       }
     ]
   }
 }
-history.json written to: C:\GitHub\MarkHazleton\git-spark\.documentation\repo-story\history.json
