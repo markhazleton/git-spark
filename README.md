@@ -62,7 +62,7 @@ See Git Spark in action with a sample report showing:
 - **Multiple Formats** - HTML, JSON, CSV, and Markdown output
 - **Configuration** - Customizable analysis periods and options
 
-### 🖥️ Interactive HTML Report (v1.0)
+### 🖥️ Interactive HTML Report
 
 Enterprise-focused, accessible, and secure analytics dashboard:
 
@@ -564,13 +564,13 @@ jobs:
   analyze:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Full history for analysis
       
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
       
       - name: Install git-spark
         run: npm install -g git-spark
@@ -579,7 +579,7 @@ jobs:
         run: git-spark --format=json --output=./reports
       
       - name: Upload reports
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: git-spark-reports
           path: ./reports/
@@ -590,7 +590,7 @@ jobs:
 ```yaml
 repository_analysis:
   stage: analysis
-  image: node:18
+  image: node:20
   script:
     - npm install -g git-spark
     - git-spark --format=json --output=./reports
@@ -649,9 +649,6 @@ npm run test:coverage
 
 # Run specific test suite
 npm test -- --testNamePattern="GitSpark"
-
-# Run integration tests
-npm run test:integration
 ```
 
 ## 🤝 Contributing
@@ -686,9 +683,7 @@ npm run dev
 - **Semantic Versioning** - Clear version management
 - **Conventional Commits** - Structured commit messages
 
-## 📋 Roadmap
-
-### ✅ Completed (v1.0)
+## ✅ Current Features
 
 - **Core Analytics Engine** - Comprehensive Git repository analysis
 - **Multiple Output Formats** - HTML, JSON, Markdown, CSV, and console formats
@@ -712,32 +707,6 @@ npm run dev
 - **Intelligent Caching** - Multi-level caching for Git analysis artifacts and generated reports
 
 These capabilities establish a foundation of **analytical honesty and transparency** that guides all development.
-
-### v1.1 (Planned)
-
-- [ ] Branch comparison and diff analysis (`--compare` option)
-- [ ] Continuous monitoring mode (`--watch` option)
-- [ ] Historical trend analysis and forecasting
-- [ ] Advanced temporal coupling analysis
-- [ ] Custom risk scoring models
-- [ ] Additional Git-native comparison and history analysis improvements
-
-### v1.2 (Future)
-
-- [ ] API server mode for remote analysis
-- [ ] Machine learning-based anomaly detection
-- [ ] Integration with code quality tools (SonarQube, CodeClimate)
-- [ ] Real-time monitoring and alerting
-- [ ] Multi-repository analysis and benchmarking
-- [ ] Advanced visualization with D3.js
-
-### v2.0 (Vision)
-
-- [ ] Web dashboard and UI
-- [ ] Database persistence (SQLite/PostgreSQL)
-- [ ] User authentication and authorization
-- [ ] Team management and permissions
-- [ ] Webhook integrations and notifications
 
 ## 📄 License
 

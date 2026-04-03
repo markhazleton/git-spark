@@ -6,9 +6,8 @@ We actively support the following versions of Git Spark with security updates:
 
 | Version | Supported          |
 | ------- | ------------------ |
-| 1.2.x   | :white_check_mark: |
-| 1.0.x   | :white_check_mark: |
-| < 1.0   | :x:                |
+| 1.3.x   | :white_check_mark: |
+| < 1.3   | :x:                |
 
 ## Reporting a Vulnerability
 
@@ -182,4 +181,4 @@ We appreciate the security research community's efforts to keep Git Spark secure
 
 ---
 
-Last Updated: January 25, 2026
+Last Updated: April 2026
