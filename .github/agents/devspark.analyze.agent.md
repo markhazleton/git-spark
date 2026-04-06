@@ -1,6 +1,5 @@
 ---
-name: "devspark.analyze"
-description: "Perform a non-destructive cross-artifact consistency and quality analysis across spec.md, plan.md, and tasks.md after task generation."
+description: Perform a non-destructive cross-artifact consistency and quality analysis across spec.md, plan.md, and tasks.md after task generation.
 ---
 
 ## Prompt Resolution
@@ -13,8 +12,12 @@ Read and execute the instructions from the **first file that exists**:
 2. `.documentation/commands/devspark.analyze.md` (team customization)
 3. `.devspark/defaults/commands/devspark.analyze.md` (stock default)
 
+Where `{git-user}` is the normalized slug from step above.
+
 ## User Input
 
-{{input}}
+```text
+$ARGUMENTS
+```
 
 Pass the user input above to the resolved prompt.

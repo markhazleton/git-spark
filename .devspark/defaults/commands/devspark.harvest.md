@@ -7,9 +7,6 @@ handoffs:
   - label: Run Documentation Audit
     agent: devspark.site-audit
     prompt: Audit documentation quality and stale references before harvest
-scripts:
-  sh: .devspark/scripts/bash/harvest.sh $ARGUMENTS --json
-  ps: .devspark/scripts/powershell/harvest.ps1 $ARGUMENTS -Json
 ---
 
 ## User Input
@@ -59,7 +56,7 @@ Multiple scopes may be combined: `--scope=specs,comments`
 
 ### 1. Initialize Harvest Context
 
-Run `{SCRIPT}` and parse its JSON output.
+Run `.devspark/scripts/bash/harvest.sh $ARGUMENTS --json` and parse its JSON output.
 
 Expected fields include:
 

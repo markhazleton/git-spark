@@ -1,6 +1,12 @@
 ---
-name: "devspark.harvest"
-description: "Harvest knowledge from completed specs and stale docs into living documentation, rewrite stale spec-linked comments, then archive obsolete artifacts"
+description: Harvest knowledge from completed specs and stale docs into living documentation, rewrite stale spec-linked comments, then archive obsolete artifacts
+handoffs:
+  - label: Review Release Artifacts
+    agent: devspark.release
+    prompt: Review completed specs and release documentation before archival
+  - label: Run Documentation Audit
+    agent: devspark.site-audit
+    prompt: Audit documentation quality and stale references before harvest
 ---
 
 ## Prompt Resolution
@@ -13,8 +19,12 @@ Read and execute the instructions from the **first file that exists**:
 2. `.documentation/commands/devspark.harvest.md` (team customization)
 3. `.devspark/defaults/commands/devspark.harvest.md` (stock default)
 
+Where `{git-user}` is the normalized slug from step above.
+
 ## User Input
 
-{{input}}
+```text
+$ARGUMENTS
+```
 
 Pass the user input above to the resolved prompt.

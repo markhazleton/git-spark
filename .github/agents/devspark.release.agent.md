@@ -1,6 +1,12 @@
 ---
-name: "devspark.release"
-description: "Archive development artifacts at release, distill key decisions into permanent documentation, and prepare for next development cycle"
+description: Archive development artifacts at release, distill key decisions into permanent documentation, and prepare for next development cycle
+handoffs:
+  - label: View Release History
+    agent: devspark.release
+    prompt: Show me previous releases in .documentation/releases/
+  - label: Run Final Audit
+    agent: devspark.site-audit
+    prompt: Run a final site audit before release
 ---
 
 ## Prompt Resolution
@@ -13,8 +19,12 @@ Read and execute the instructions from the **first file that exists**:
 2. `.documentation/commands/devspark.release.md` (team customization)
 3. `.devspark/defaults/commands/devspark.release.md` (stock default)
 
+Where `{git-user}` is the normalized slug from step above.
+
 ## User Input
 
-{{input}}
+```text
+$ARGUMENTS
+```
 
 Pass the user input above to the resolved prompt.

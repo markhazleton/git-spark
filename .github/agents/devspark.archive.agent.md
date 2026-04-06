@@ -1,6 +1,12 @@
 ---
-name: "devspark.archive"
-description: "Archive outdated documentation to .archive/, update Guide.md and CHANGELOG.md so .documentation stays current and clean"
+description: Archive outdated documentation to .archive/, update Guide.md and CHANGELOG.md so .documentation stays current and clean
+handoffs:
+  - label: Run a site audit after archiving
+    agent: devspark.site-audit
+    prompt: Run a site audit to confirm the project is in good health after archiving
+  - label: Evolve the constitution
+    agent: devspark.evolve-constitution
+    prompt: Review the constitution in light of the cleaned-up documentation
 ---
 
 ## Prompt Resolution
@@ -13,8 +19,12 @@ Read and execute the instructions from the **first file that exists**:
 2. `.documentation/commands/devspark.archive.md` (team customization)
 3. `.devspark/defaults/commands/devspark.archive.md` (stock default)
 
+Where `{git-user}` is the normalized slug from step above.
+
 ## User Input
 
-{{input}}
+```text
+$ARGUMENTS
+```
 
 Pass the user input above to the resolved prompt.

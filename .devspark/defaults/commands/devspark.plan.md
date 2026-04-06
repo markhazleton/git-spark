@@ -8,12 +8,6 @@ handoffs:
   - label: Create Checklist
     agent: devspark.checklist
     prompt: Create a checklist for the following domain...
-scripts:
-  sh: .devspark/scripts/bash/setup-plan.sh --json
-  ps: .devspark/scripts/powershell/setup-plan.ps1 -Json
-agent_scripts:
-  sh: .devspark/scripts/bash/update-agent-context.sh __AGENT__
-  ps: .devspark/scripts/powershell/update-agent-context.ps1 -AgentType __AGENT__
 ---
 
 ## User Input
@@ -26,7 +20,7 @@ You **MUST** consider the user input before proceeding (if not empty).
 
 ## Outline
 
-1. **Setup**: Run `{SCRIPT}` from repo root and parse JSON for FEATURE_SPEC, IMPL_PLAN, SPECS_DIR, BRANCH. For single quotes in args like "I'm Groot", use escape syntax: e.g 'I'\''m Groot' (or double-quote if possible: "I'm Groot").
+1. **Setup**: Run `.devspark/scripts/bash/setup-plan.sh --json` from repo root and parse JSON for FEATURE_SPEC, IMPL_PLAN, SPECS_DIR, BRANCH. For single quotes in args like "I'm Groot", use escape syntax: e.g 'I'\''m Groot' (or double-quote if possible: "I'm Groot").
 
 2. **Load context**: Read FEATURE_SPEC and `/.documentation/memory/constitution.md`. Load IMPL_PLAN template (already copied).
 
@@ -82,7 +76,7 @@ You **MUST** consider the user input before proceeding (if not empty).
    - Skip if project is purely internal (build scripts, one-off tools, etc.)
 
 3. **Agent context update**:
-   - Run `{AGENT_SCRIPT}`
+   - Run `.devspark/scripts/bash/update-agent-context.sh __AGENT__`
    - These scripts detect which AI agent is in use
    - Update the appropriate agent-specific context file
    - Add only new technology from current plan

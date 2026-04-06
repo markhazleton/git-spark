@@ -1,4 +1,3 @@
-version: quickstart
-installed: 2026-04-02
-method: copilot-quickstart
-migrated-from: documentation-defaults
+0.1.1
+installed: 2026-04-05
+agent: copilot

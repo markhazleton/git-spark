@@ -7,9 +7,6 @@ handoffs:
   - label: Run Final Audit
     agent: devspark.site-audit
     prompt: Run a final site audit before release
-scripts:
-  sh: .devspark/scripts/bash/release-context.sh $ARGUMENTS --json
-  ps: .devspark/scripts/powershell/release-context.ps1 $ARGUMENTS -Json
 ---
 
 ## User Input
@@ -51,7 +48,7 @@ Parse `$ARGUMENTS` for options:
 
 ### 1. Initialize Release Context
 
-Run `{SCRIPT}` to gather context and parse JSON output for:
+Run `.devspark/scripts/bash/release-context.sh $ARGUMENTS --json` to gather context and parse JSON output for:
 
 - `REPO_ROOT`: Repository root path
 - `SPECS_DIR`: Path to specs directory

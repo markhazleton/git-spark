@@ -7,9 +7,6 @@ handoffs:
   - label: Evolve the constitution
     agent: devspark.evolve-constitution
     prompt: Review the constitution in light of the cleaned-up documentation
-scripts:
-  sh: .devspark/scripts/bash/archive-context.sh --json
-  ps: .devspark/scripts/powershell/archive-context.ps1 -Json
 ---
 
 ## User Input
@@ -35,7 +32,7 @@ Keep `.documentation/` current and authoritative. Move outdated, completed, or c
 
 ### 1. Gather Context
 
-Run `{SCRIPT}` from the repo root. Parse the JSON output:
+Run `.devspark/scripts/bash/archive-context.sh --json` from the repo root. Parse the JSON output:
 
 - `REPO_ROOT` — absolute path to the repository root
 - `ARCHIVE_DIR` — target folder for today's archive (e.g., `.archive/2026-03-07`)

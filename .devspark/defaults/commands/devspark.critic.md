@@ -9,9 +9,6 @@ handoffs:
     agent: devspark.tasks
     prompt: Regenerate tasks with missing operational items
     send: true
-scripts:
-  sh: .devspark/scripts/bash/check-prerequisites.sh --json --require-tasks --include-tasks
-  ps: .devspark/scripts/powershell/check-prerequisites.ps1 -Json -RequireTasks -IncludeTasks
 ---
 
 ## User Input
@@ -43,7 +40,7 @@ Act as a skeptical technical expert identifying risks, architectural flaws, impl
 
 ### 1. Initialize Analysis Context
 
-Run `{SCRIPT}` once from repo root and parse JSON for FEATURE_DIR and AVAILABLE_DOCS. Derive absolute paths:
+Run `.devspark/scripts/bash/check-prerequisites.sh --json --require-tasks --include-tasks` once from repo root and parse JSON for FEATURE_DIR and AVAILABLE_DOCS. Derive absolute paths:
 
 - SPEC = FEATURE_DIR/spec.md
 - PLAN = FEATURE_DIR/plan.md
@@ -459,4 +456,4 @@ This command produces a **"pre-mortem"** analysis - imagining the project has fa
 
 ## Context
 
-{ARGS}
+$ARGUMENTS

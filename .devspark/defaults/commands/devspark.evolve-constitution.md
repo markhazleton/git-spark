@@ -7,9 +7,6 @@ handoffs:
   - label: Review PRs
     agent: devspark.pr-review
     prompt: Review recent PRs to gather more data
-scripts:
-  sh: .devspark/scripts/bash/evolution-context.sh $ARGUMENTS --json
-  ps: .devspark/scripts/powershell/evolution-context.ps1 $ARGUMENTS -Json
 ---
 
 ## User Input
@@ -53,7 +50,7 @@ Parse `$ARGUMENTS` for action type:
 
 ### 1. Initialize Evolution Context
 
-Run `{SCRIPT}` to gather context and parse JSON output for:
+Run `.devspark/scripts/bash/evolution-context.sh $ARGUMENTS --json` to gather context and parse JSON output for:
 
 - `CONSTITUTION_PATH`: Path to current constitution
 - `CONSTITUTION_EXISTS`: Whether constitution exists
