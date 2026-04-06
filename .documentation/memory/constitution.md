@@ -1,10 +1,17 @@
 <!--
 SYNC IMPACT REPORT - Constitution Amendments
 ==============================================
-Version: 1.4.0 (MINOR - decomposition documentation obligation + decomposition output sizing rules)
-Last Amended: 2026-04-02
+Version: 1.5.0 (MINOR - explicit docs/ GitHub Pages boundary rule)
+Last Amended: 2026-04-05
 
 Amendment History:
+- 1.5.0 (2026-04-05): Explicit boundary rule for `docs/` vs `.documentation/` (CAP-2026-004)
+  * `docs/` is the GitHub Pages source for the public site — managed by CI, not manual edits
+  * `docs/` MUST NOT be treated as part of the `.documentation/` DevSpark asset tree
+  * DevSpark harvest, archive, and cleanup workflows MUST NOT move or delete files in `docs/`
+  * `.documentation/` is for internal living docs, constitution, templates, scripts, and harvest reports
+  * Source: harvest 2026-04-05 incorrectly archived `docs/` files before CI dependency was discovered
+
 - 1.4.0 (2026-04-02): Added decomposition output sizing rules to Code Quality principle (CAP-2026-003)
   * Decomposition outputs are new files subject to full <500 SHOULD NOT threshold
   * Decomposition producing >500-line file MUST have tracking issue before PR merges
@@ -35,6 +42,9 @@ Amendment History:
 - 1.0.0 (2026-02-20): Initial ratification via /speckit.discover-constitution
 
 Modified Principles:
+- ADDED: Documentation Standards → Explicit `docs/` GitHub Pages boundary (CAP-2026-004)
+  * `docs/` = public GitHub Pages site output; CI-owned; never archive or move its contents
+  * `.documentation/` = internal DevSpark asset tree; entirely separate from `docs/`
 - MODIFIED: Code Quality - Module Size → Added Decomposition Output Sizing rules (CAP-2026-003)
   * Decomposition output <300-line target; barrel file MUST NOT contain business logic
   * Extended grandfathered list with v1.4.0 tracked files
@@ -283,7 +293,7 @@ All exported APIs **MUST** have JSDoc documentation. All project documentation *
 - Stale documentation must be removed or archived - never commit to maintaining outdated docs
 - Working documents (drafts, planning, discovery notes) must be archived or deleted when obsolete
 - AI-generated working documents and session notes belong in `/.documentation/copilot/session-YYYY-MM-DD/` (auto-scoped, time-bound); legacy root-level `/copilot/` paths must not be used for new generated documents
-- Public GitHub Pages site content may live under `/docs/` when the repository is configured to publish Pages from `main /docs`; treat `/docs/` as public site output, not as a location for internal generated working documents
+- **`/docs/` is the GitHub Pages public site directory** (CAP-2026-004): This repository publishes its site from `main /docs`. The CI workflow `.github/workflows/update-docs.yml` owns `docs/index.html` and `docs/git-spark-report.html` and regenerates them on every release tag. `/docs/` is for site promotion and public-facing output ONLY — it is NOT part of the `.documentation/` DevSpark asset tree. DevSpark harvest, archive, cleanup, and spec workflows MUST NOT move, delete, or treat files in `/docs/` as internal documentation artifacts.
 - Update or delete affected documentation when code changes (don't leave stale docs)
 
 **Encouraged Practices:**
@@ -465,7 +475,7 @@ This constitution supersedes all informal practices, preferences, and convention
 For day-to-day development practices not covered in this constitution, refer to:
 - `.github/copilot-instructions.md` - AI development guidance and project-specific patterns
 - `README.md` - Quick start and usage examples
-- `docs/performance-tuning.md` - Performance optimization strategies
+- `.documentation/performance-tuning.md` - Performance optimization strategies
 - `SECURITY.md` - Security reporting and best practices
 
 When in doubt, prioritize the constitution's principles over convenience.

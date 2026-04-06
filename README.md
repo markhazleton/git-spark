@@ -708,6 +708,11 @@ npm run dev
 
 These capabilities establish a foundation of **analytical honesty and transparency** that guides all development.
 
+## Repo Story
+
+An evidence-based narrative of this repository's development history, contributor patterns, velocity trends, and architecture:
+[Repo Story (2026-04-06)](.documentation/repo-story/repo-story-2026-04-06.md)
+
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

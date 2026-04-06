@@ -34,17 +34,20 @@ Metric names must reflect what is actually measured: `commitTimePattern` not `wo
 - Progress callbacks (`ProgressCallback`) flow through all layers
 - HTML reports: zero external JS dependencies, native SVG charts, dark mode via `localStorage`
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+## Quality Gates
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+- All PRs must pass `npm test` with coverage thresholds: branches ≥ 75%, functions ≥ 87%, lines ≥ 86%
+- `npm run prebuild` must run before build/test to generate `src/version.ts`
+- ESLint (`no-unsafe-any`) must pass with zero errors
+- No shell string concatenation in Git command execution — `spawn()` with argument arrays only
+- HTML output must be escaped; CSP headers must use SHA-256 hashes (no `unsafe-inline`)
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+- This constitution supersedes all other practices and documentation
+- Amendments require: documented rationale, migration plan, and version bump
+- Complexity must be justified against YAGNI — default to simplicity
+- All development guidance lives in `.devspark/memory/constitution.md`
+- Solo project: no external PR approval required, but self-review against constitution before merge
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+**Version**: 1.0.0 | **Ratified**: 2026-04-05 | **Last Amended**: 2026-04-05
