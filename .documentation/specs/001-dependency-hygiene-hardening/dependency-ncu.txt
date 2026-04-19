@@ -1,0 +1,12 @@
+Checking C:\GitHub\MarkHazleton\git-spark\package.json
+
+ @types/node                        ^25.5.0  ΓåÆ   ^25.6.0
+ @typescript-eslint/eslint-plugin   ^8.57.2  ΓåÆ   ^8.58.2
+ @typescript-eslint/parser          ^8.57.2  ΓåÆ   ^8.58.2
+ eslint                             ^10.1.0  ΓåÆ   ^10.2.1
+ prettier                            ^3.8.1  ΓåÆ    ^3.8.3
+ ts-jest                            ^29.4.6  ΓåÆ   ^29.4.9
+ typedoc                           ^0.28.18  ΓåÆ  ^0.28.19
+ typescript                          ^6.0.2  ΓåÆ    ^6.0.3
+
+Run npx npm-check-updates -u to upgrade package.json

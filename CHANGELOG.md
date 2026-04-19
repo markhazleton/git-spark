@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Dependency Hygiene Hardening (In Progress)**
+  - Refreshed development dependencies (`@types/node`, `@typescript-eslint/*`, `eslint`, `prettier`, `ts-jest`, `typedoc`, `typescript`) and regenerated lockfile
+  - Added explicit dev tooling dependencies used by workflows/scripts (`audit-ci`, `npm-check-updates`, `publint`)
+  - Fixed workflow YAML parsing in `.github/workflows/publish.yml` to keep static analysis tooling compatible
+  - Added dependency hygiene regression tests and recorded phase validation evidence under `.documentation/specs/001-dependency-hygiene-hardening/`
+  - Added explicit no-dead-code governance clause and synchronized constitution amendment metadata
+
 ## [1.3.0] - 2026-03-14
 
 ### Added

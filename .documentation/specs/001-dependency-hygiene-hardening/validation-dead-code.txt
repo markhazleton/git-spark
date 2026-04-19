@@ -1,0 +1,31 @@
+# Dead Code Validation Results
+
+Date: 2026-04-19
+
+## Quality Gates
+
+- Command: npm run lint
+- Exit Code: 0
+- Status: PASS (warnings present, no lint errors)
+
+- Command: npm test
+- Exit Code: 0
+- Status: PASS
+
+- Command: npm run build
+- Exit Code: 0
+- Status: PASS
+
+## Dead-Code Signal Scan
+
+- Command: npx --yes knip
+- Exit Code: 1
+- Status: SIGNALS FOUND (not a runtime regression)
+- Notes:
+  - Unused devDependency signal: husky (retained due dynamic postinstall/hook usage)
+  - Unused exports/type signals deferred for API-boundary review in US2
+
+## Safety Rubric Rollback Outcomes
+
+- Rollbacks required: none
+- Regressions introduced by approved removals: none

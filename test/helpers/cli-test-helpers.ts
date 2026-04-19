@@ -5,13 +5,14 @@
 import { GitSparkOptions } from '../../src/types/index.js';
 import { mkdirSync, rmSync, writeFileSync, existsSync } from 'fs';
 import { execSync } from 'child_process';
-import { join } from 'path';
+import { dirname, join } from 'path';
 
 /**
  * Create a temporary test repository with git initialized
  */
 export function createTestRepo(name: string = 'test-repo'): string {
-  const tmpDir = join(process.cwd(), 'test-tmp', name);
+  const uniqueName = `${name}-${process.pid}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  const tmpDir = join(process.cwd(), 'test-tmp', uniqueName);
 
   // Clean up if exists
   if (existsSync(tmpDir)) {
@@ -69,6 +70,7 @@ export function addTestCommit(
   message: string
 ): void {
   const filePath = join(repoPath, fileName);
+  mkdirSync(dirname(filePath), { recursive: true });
   writeFileSync(filePath, content);
   execSync(`git add "${fileName}"`, { cwd: repoPath });
   // Explicitly set author to ensure consistent test behavior across different environments

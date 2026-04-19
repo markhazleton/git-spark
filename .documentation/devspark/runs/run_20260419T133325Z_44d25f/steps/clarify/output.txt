@@ -1,0 +1,35 @@
+**Spec loaded.** Running ambiguity scan across all taxonomy categories...
+
+**Internal Coverage Map** (used for prioritization):
+
+| Category | Status |
+|---|---|
+| Functional Scope & Behavior | Partial â€” no explicit out-of-scope list |
+| Domain & Data Model | Partial â€” dead code detection tooling unspecified; disposition states not enumerated |
+| Non-Functional Quality Attributes | Partial â€” SC-002 scope (direct vs. transitive) contradicts edge cases section |
+| Integration & External Dependencies | Partial â€” dead code tool not decided |
+| Constraints & Tradeoffs | Partial â€” major upgrade deferral criteria missing |
+| Completion Signals | Partial â€” "consolidated list" format undefined; "90% unused candidates" lacks tool basis |
+| Edge Cases & Failure Handling | Clear |
+| Terminology & Consistency | Clear |
+| Interaction & UX Flow | Clear |
+| Misc / Placeholders | Clear |
+
+5 high-impact questions queued. Starting now.
+
+---
+
+**Question 1 of 5** â€” *Integration & External Dependencies / Dead Code Detection*
+
+FR-004 and FR-005 require identifying unused dependencies and dead code, but no tool is specified. The choice determines what gets flagged, how tasks are structured, and what CI enforcement looks like.
+
+**Recommended:** Option A â€” `knip` handles both unused deps AND unused exports/files in a single TypeScript-aware pass, reducing tooling surface and aligning with the TypeScript-strict stack.
+
+| Option | Description |
+|--------|-------------|
+| A | `knip` â€” unified unused deps + dead code (TS-aware, single config) |
+| B | `depcheck` for unused deps + ESLint `no-unused-vars` for dead code |
+| C | `ts-prune` for dead exports + `depcheck` for unused deps |
+| D | No new tooling â€” rely solely on existing ESLint + TypeScript compiler errors |
+
+You can reply with the option letter (e.g., "A"), accept the recommendation by saying "yes" or "recommended", or provide your own short answer.

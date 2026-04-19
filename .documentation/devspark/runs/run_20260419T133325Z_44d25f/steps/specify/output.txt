@@ -1,0 +1,14 @@
+**ERROR**: No feature description provided.
+
+Please re-invoke the command with a feature description:
+
+```
+/devspark.specify <your feature description here>
+```
+
+**Examples:**
+- `/devspark.specify Add CSV export for commit history reports`
+- `/devspark.specify Show contributor activity heatmap in HTML report`
+- `/devspark.specify Add GitHub Actions workflow to publish reports as artifacts`
+
+What feature would you like to specify?

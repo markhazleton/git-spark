@@ -1,0 +1,27 @@
+[93m[4mUnused devDependencies[24m[39m (1)
+husky  package.json:112:6
+[93m[4mUnused exports[24m[39m (22)
+executeAnalysis                              src/cli/commands.ts:588:10               
+executeHealthCheck                           src/cli/commands.ts:588:27               
+validateEnvironment                          src/cli/commands.ts:588:47               
+executeInit                                  src/cli/commands.ts:588:68               
+createMockProgress                 function  test/helpers/cli-test-helpers.ts:95:17   
+captureOutput                      function  test/helpers/cli-test-helpers.ts:174:23  
+generateFlowTrendsTable            function  src/output/html-daily-trends.ts:180:17   
+generateStabilityTrendsTable       function  src/output/html-daily-trends.ts:224:17   
+generateOwnershipTrendsTable       function  src/output/html-daily-trends.ts:266:17   
+generateCouplingTrendsTable        function  src/output/html-daily-trends.ts:308:17   
+generateHygieneTrendsTable         function  src/output/html-daily-trends.ts:346:17   
+generateContributionsGraphSection  function  src/output/html-daily-trends.ts:384:17   
+startHTMLServer                    function  src/cli/report-command.ts:168:23         
+calculateIntensity                 function  src/core/daily-trends-helpers.ts:139:17  
+getWeekNumber                      function  src/core/daily-trends-helpers.ts:153:17  
+formatNumber                       function  src/output/html-utils.ts:80:17           
+formatPercentage                   function  src/output/html-utils.ts:90:17           
+generateAuthorProfileCard          function  src/output/html-author-profiles.ts:106:17
+getTopDirectories                  function  src/output/html-author-profiles.ts:221:17
+generateCommitSizeChart            function  src/output/html-author-profiles.ts:253:17
+generateAuthorInsightsSection      function  src/output/html-author-profiles.ts:299:17
+generateFileTypeBreakdown          function  src/output/html-author-profiles.ts:351:17
+[93m[4mUnused exported types[24m[39m (1)
+ValidationResult  interface  src/utils/input-validation.ts:6:18

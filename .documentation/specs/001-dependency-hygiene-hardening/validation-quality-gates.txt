@@ -1,0 +1,147 @@
+--- Lint Output ---
+
+> git-spark@1.3.0 lint
+> eslint -c eslint.config.cjs "src/**/*.ts"
+
+
+C:\GitHub\MarkHazleton\git-spark\src\cli\commands.ts
+  150:41  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  262:44  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  374:33  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  412:39  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  450:37  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  483:15  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\GitHub\MarkHazleton\git-spark\src\cli\report-command.ts
+   21:50  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  175:39  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  175:49  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\GitHub\MarkHazleton\git-spark\src\core\analyzer.ts
+   258:52  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   260:20  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   439:40  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   627:14  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   753:14  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   831:14  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   930:14  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   996:44  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   996:81  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  1039:13  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  1040:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  1459:47  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  1459:74  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  1526:69  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  1530:48  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  1688:18  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  1707:82  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  1712:56  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  1745:45  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\GitHub\MarkHazleton\git-spark\src\core\collector.ts
+  191:58  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  324:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\GitHub\MarkHazleton\git-spark\src\output\console.ts
+   89:38  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  116:34  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  142:31  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  173:41  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\GitHub\MarkHazleton\git-spark\src\output\csv.ts
+   38:40  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   44:36  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   50:42  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   56:39  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  104:35  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  136:41  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\GitHub\MarkHazleton\git-spark\src\output\html-daily-trends.ts
+   11:64  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   18:62  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   20:12  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   20:22  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   26:24  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   81:52  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  180:54  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  224:64  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  266:64  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  308:62  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  346:60  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  384:71  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  391:50  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  399:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  401:20  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  439:55  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  515:55  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  587:55  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  663:59  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  694:13  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  707:37  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  708:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  708:25  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  711:34  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  725:21  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  728:15  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\GitHub\MarkHazleton\git-spark\src\output\html.ts
+  356:43  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\GitHub\MarkHazleton\git-spark\src\output\json.ts
+  87:45  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  87:51  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\GitHub\MarkHazleton\git-spark\src\types\analyzer.ts
+  14:12  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  22:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  29:20  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  39:35  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\GitHub\MarkHazleton\git-spark\src\types\index.ts
+  147:10  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  346:9   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\GitHub\MarkHazleton\git-spark\src\utils\logger.ts
+   8:14  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  23:37  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  27:36  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  31:36  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  35:37  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  39:39  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  43:60  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+Γ£û 82 problems (0 errors, 82 warnings)
+
+
+--- Test Output ---
+
+> git-spark@1.3.0 pretest
+> node scripts/generate-version.js
+
+Γ£ô Generated version file: 1.3.0
+
+> git-spark@1.3.0 test
+> jest
+
+
+--- Build Output ---
+
+> git-spark@1.3.0 prebuild
+> node scripts/generate-version.js
+
+Γ£ô Generated version file: 1.3.0
+
+> git-spark@1.3.0 build
+> npm run clean && tsc
+
+
+> git-spark@1.3.0 clean
+> node -e "require('fs').rmSync('dist', {recursive: true, force: true})"
+
+
+> git-spark@1.3.0 postbuild
+> node scripts/update-docs-version.js
+
+≡ƒô¥ Updating docs site to v1.3.0...
+
+ΓÜá∩╕Å  No changes needed - docs already up to date
