@@ -1,0 +1,9 @@
+Package                           Current   Wanted   Latest  Location                                       Depended by
+@types/node                        25.5.0   25.6.0   25.6.0  node_modules/@types/node                       git-spark
+@typescript-eslint/eslint-plugin   8.57.2   8.58.2   8.58.2  node_modules/@typescript-eslint/eslint-plugin  git-spark
+@typescript-eslint/parser          8.57.2   8.58.2   8.58.2  node_modules/@typescript-eslint/parser         git-spark
+eslint                             10.1.0   10.2.1   10.2.1  node_modules/eslint                            git-spark
+prettier                            3.8.1    3.8.3    3.8.3  node_modules/prettier                          git-spark
+ts-jest                            29.4.6   29.4.9   29.4.9  node_modules/ts-jest                           git-spark
+typedoc                           0.28.18  0.28.19  0.28.19  node_modules/typedoc                           git-spark
+typescript                          6.0.2    6.0.3    6.0.3  node_modules/typescript                        git-spark

@@ -1,0 +1,149 @@
+apiVersion: devspark.ai/v1
+kind: HarnessSpec
+name: git-spark-specify-clarify-plan-tasks-analyze-critic-implement
+scope:
+  type: repo
+defaults:
+  adapter: claude_code
+  retry:
+    maxAttempts: 2
+    backoff: fixed
+    retryOn:
+    - validation_fail
+    - tool_error
+    requireHumanAfter: 2
+  mode: agent
+steps:
+- id: specify
+  name: Create or update feature spec
+  type: agent_task
+  prompt_file: C:\GitHub\MarkHazleton\git-spark\.github\prompts\devspark.specify.prompt.md
+  inputs: []
+  outputs:
+  - C:\GitHub\MarkHazleton\git-spark\.documentation\specs\001-dependency-hygiene-hardening\spec.md
+  - C:\GitHub\MarkHazleton\git-spark\.documentation\specs\001-dependency-hygiene-hardening\checklists\requirements.md
+  validation:
+  - id: spec-file-exists
+    type: file.exists
+    severity: error
+    path: C:\GitHub\MarkHazleton\git-spark\.documentation\specs\001-dependency-hygiene-hardening\spec.md
+    expected_exit: 0
+    pass_threshold: 3
+    enabled: true
+  - id: spec-checklist-exists
+    type: file.exists
+    severity: error
+    path: C:\GitHub\MarkHazleton\git-spark\.documentation\specs\001-dependency-hygiene-hardening\checklists\requirements.md
+    expected_exit: 0
+    pass_threshold: 3
+    enabled: true
+- id: clarify
+  name: Resolve spec ambiguities
+  type: agent_task
+  prompt_file: C:\GitHub\MarkHazleton\git-spark\.github\prompts\devspark.clarify.prompt.md
+  inputs:
+  - C:\GitHub\MarkHazleton\git-spark\.documentation\specs\001-dependency-hygiene-hardening\spec.md
+  outputs:
+  - C:\GitHub\MarkHazleton\git-spark\.documentation\specs\001-dependency-hygiene-hardening\spec.md
+  validation:
+  - id: clarified-spec-exists
+    type: file.exists
+    severity: error
+    path: C:\GitHub\MarkHazleton\git-spark\.documentation\specs\001-dependency-hygiene-hardening\spec.md
+    expected_exit: 0
+    pass_threshold: 3
+    enabled: true
+- id: plan
+  name: Build implementation plan
+  type: agent_task
+  adapter: manual
+  prompt_file: C:\GitHub\MarkHazleton\git-spark\.github\prompts\devspark.plan.prompt.md
+  inputs:
+  - C:\GitHub\MarkHazleton\git-spark\.documentation\specs\001-dependency-hygiene-hardening\spec.md
+  outputs:
+  - C:\GitHub\MarkHazleton\git-spark\.documentation\specs\001-dependency-hygiene-hardening\plan.md
+  validation:
+  - id: plan-generated
+    type: file.exists
+    severity: error
+    path: C:\GitHub\MarkHazleton\git-spark\.documentation\specs\001-dependency-hygiene-hardening\plan.md
+    expected_exit: 0
+    pass_threshold: 3
+    enabled: true
+- id: tasks
+  name: Generate executable task list
+  type: agent_task
+  adapter: manual
+  prompt_file: C:\GitHub\MarkHazleton\git-spark\.github\prompts\devspark.tasks.prompt.md
+  inputs:
+  - C:\GitHub\MarkHazleton\git-spark\.documentation\specs\001-dependency-hygiene-hardening\plan.md
+  outputs:
+  - C:\GitHub\MarkHazleton\git-spark\.documentation\specs\001-dependency-hygiene-hardening\tasks.md
+  validation:
+  - id: tasks-generated
+    type: file.exists
+    severity: error
+    path: C:\GitHub\MarkHazleton\git-spark\.documentation\specs\001-dependency-hygiene-hardening\tasks.md
+    expected_exit: 0
+    pass_threshold: 3
+    enabled: true
+- id: analyze
+  name: Consistency and quality analysis
+  type: agent_task
+  prompt_file: C:\GitHub\MarkHazleton\git-spark\.github\prompts\devspark.analyze.prompt.md
+  inputs:
+  - C:\GitHub\MarkHazleton\git-spark\.documentation\specs\001-dependency-hygiene-hardening\spec.md
+  - C:\GitHub\MarkHazleton\git-spark\.documentation\specs\001-dependency-hygiene-hardening\plan.md
+  - C:\GitHub\MarkHazleton\git-spark\.documentation\specs\001-dependency-hygiene-hardening\tasks.md
+  outputs: []
+  validation:
+  - id: analyze-inputs-present
+    type: file.exists
+    severity: error
+    path: C:\GitHub\MarkHazleton\git-spark\.documentation\specs\001-dependency-hygiene-hardening\tasks.md
+    expected_exit: 0
+    pass_threshold: 3
+    enabled: true
+- id: critic
+  name: Adversarial risk analysis
+  type: agent_task
+  prompt_file: C:\GitHub\MarkHazleton\git-spark\.github\prompts\devspark.critic.prompt.md
+  inputs:
+  - C:\GitHub\MarkHazleton\git-spark\.documentation\specs\001-dependency-hygiene-hardening\spec.md
+  - C:\GitHub\MarkHazleton\git-spark\.documentation\specs\001-dependency-hygiene-hardening\plan.md
+  - C:\GitHub\MarkHazleton\git-spark\.documentation\specs\001-dependency-hygiene-hardening\tasks.md
+  outputs: []
+  validation:
+  - id: critic-run-completed
+    type: command.exit_code
+    severity: error
+    command: devspark harness trace latest
+    expected_exit: 0
+    pass_threshold: 3
+    enabled: true
+- id: implement
+  name: Execute tasks and implement changes
+  type: agent_task
+  adapter: manual
+  prompt_file: C:\GitHub\MarkHazleton\git-spark\.github\prompts\devspark.implement.prompt.md
+  inputs:
+  - C:\GitHub\MarkHazleton\git-spark\.documentation\specs\001-dependency-hygiene-hardening\tasks.md
+  outputs: []
+  validation:
+  - id: tests-pass
+    type: command.exit_code
+    severity: error
+    command: npm test
+    expected_exit: 0
+    pass_threshold: 3
+    enabled: true
+  - id: build-pass
+    type: command.exit_code
+    severity: error
+    command: npm run build
+    expected_exit: 0
+    pass_threshold: 3
+    enabled: true
+telemetry:
+  emit_jsonl: true
+  run_dir: C:\GitHub\MarkHazleton\git-spark\.documentation\devspark\runs

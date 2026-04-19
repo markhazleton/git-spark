@@ -1,0 +1,9 @@
+{
+  "run_id": "run_20260419T133325Z_44d25f",
+  "repo_root": "C:\\GitHub\\MarkHazleton\\git-spark",
+  "spec_path": "C:\\GitHub\\MarkHazleton\\git-spark\\git-spark-lifecycle.harness.yaml",
+  "doc_root": "C:\\GitHub\\MarkHazleton\\git-spark\\.documentation",
+  "adapter": "claude_code",
+  "dry_run": false,
+  "execution_mode": "act"
+}

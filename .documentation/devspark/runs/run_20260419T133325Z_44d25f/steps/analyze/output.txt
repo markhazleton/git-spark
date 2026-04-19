@@ -1,0 +1,109 @@
+Good â€” `docs/performance-tuning.md` and `.documentation/performance-tuning.md` both exist, and TypeScript 6.0.2 is confirmed in package.json. Now I have everything needed for the analysis.
+
+---
+
+## Specification Analysis Report
+**Feature**: 001-dependency-hygiene-hardening | **Analysis Date**: 2026-04-19  
+**Artifacts Analyzed**: `spec.md`, `plan.md`, `tasks.md`, `constitution.md`
+
+---
+
+### Findings Table
+
+| ID | Category | Severity | Location(s) | Summary | Recommendation |
+|----|----------|----------|-------------|---------|----------------|
+| I1 | Constitution Alignment | **CRITICAL** | `tasks.md:L91` (T028) | T028 targets `docs/performance-tuning.md` for "validate and update" â€” `docs/` is the CI-owned GitHub Pages directory. CAP-2026-004 explicitly states DevSpark spec/cleanup workflows **MUST NOT** treat `/docs/` files as internal documentation artifacts. | Change T028 to target `.documentation/performance-tuning.md`. If `docs/performance-tuning.md` also needs review, add a read-only note; do not update it via this workflow. |
+| I2 | Underspecification | **CRITICAL** | `tasks.md:L74` (T024); `constitution.md` footer | T024 adds a no-dead-code policy clause but no task covers the **Amendment Process** required by the constitution: version bump (MINOR = new principle), SYNC IMPACT REPORT header update, and footer `**Version**` / `**Last Amended**` update. | Add a task (e.g., T024b) to increment constitution version, update the SYNC IMPACT REPORT block, and sync the footer version line as part of the no-dead-code clause amendment. |
+| I3 | Inconsistency | **CRITICAL** | `constitution.md:L7` vs `L485` | Constitution's own metadata is inconsistent: SYNC IMPACT REPORT header says v1.5.0 / 2026-04-05, but footer says v1.2.0 / 2026-03-14. This pre-existing inaccuracy is squarely in scope of US3 (FR-007 documentation accuracy), yet no task targets the constitution file's version metadata for correction. | Add or extend a US3 task to validate and fix the constitution's own version/date footer as part of the documentation accuracy pass. |
+| H1 | Underspecification | **HIGH** | `tasks.md:L71` (T021) | T021 pre-identifies `src/core/analyzer-helpers.ts` and `test/analyzer.test.ts` as dead code targets before T008 (knip) and T019 (verification) run. This hardcodes an assumption about dead code location ahead of discovery, contradicting the evidence-first design. | Make T021's file targets conditional on T010/T019 findings. Replace the specific path with a placeholder like `[files identified in dead-code-candidates.md]`. |
+| H2 | Coverage Gap | **HIGH** | `tasks.md`, `constitution.md:L229-246` | Dependency Management (MANDATORY) requires GitHub Actions weekly security audits and automated update PRs. No task reviews or updates `.github/workflows/` to ensure these automations remain valid after dependency changes. | Add a task in Phase 6 to validate GitHub Actions dependency workflow configs remain correct after package.json changes. |
+| H3 | Inconsistency | **HIGH** | `constitution.md:L7,L485`; `tasks.md:L74` (T024) | Pre-existing constitution version inconsistency (v1.5.0 header vs v1.2.0 footer) is not targeted by any US3 task. The documentation hygiene pass (FR-007) should catch this but no task lists `/.documentation/memory/constitution.md` as a target for metadata review (only T024 touches it for the new clause). | Include constitution metadata accuracy in the US3 assertion matrix (T026) and add it to the explicit document list for T032's outcome recording. |
+| M1 | Inconsistency | **MEDIUM** | `tasks.md:L16-19` (T001â€“T004) | T001 and T002 are not marked `[P]` but create fully independent files (`dependency-update-candidates.md`, `dead-code-candidates.md`). T003 and T004 create equally independent files and ARE marked `[P]`. All four Phase 1 tasks are parallel-safe. | Mark T001 and T002 as `[P]` for consistency and to enable parallel execution. |
+| M2 | Ambiguity | **MEDIUM** | `spec.md:L117` (SC-003) | SC-003 requires "90% of verified unused dependency candidates are removed" but "verified" is not operationally defined â€” no spec entry or task clarifies who or what constitutes verification (static tool + test pass? manual review?). | Add a one-line definition of "verified" to SC-003 (e.g., "confirmed unused by knip output AND no test failures after removal") to make the criterion measurable. |
+| M3 | Underspecification | **MEDIUM** | `spec.md:L76` (Edge Case); `tasks.md` Phase 4 | The edge case "transitive-only security advisories require lockfile resolution" is not covered by a dedicated task. T018 re-runs audit and records residual risk but does not explicitly handle `npm audit fix --package-lock-only` or document transitive-only residuals. | Add a sub-step to T018 (or a new task) explicitly addressing transitive-only findings with a defined resolution path. |
+| M4 | Underspecification | **MEDIUM** | `tasks.md:L71` (T021); `constitution.md:L272-296` | After dead code removal from source files, no task verifies that remaining exported symbols still carry valid JSDoc (constitution Documentation Standards: all exported APIs MUST have JSDoc). | Add a checklist item to T023 or a dedicated sub-task to confirm JSDoc coverage is not regressed after removal. |
+| L1 | Coverage | **LOW** | `tasks.md:L105` (T033) | T033 validates `spec.md` frontmatter metadata consistency but does not extend to `plan.md` or `tasks.md` headers/metadata. | Broaden T033 to include a quick metadata sweep of all three core artifacts. |
+| L2 | Ambiguity | **LOW** | `spec.md:L92` (FR-009) | FR-009 "clear summary" is a vague adjective, but T034 operationalizes it with a structured change-summary.md file. No action strictly needed; flagged for awareness. | Accept as-is; T034 provides sufficient operationalization. |
+
+---
+
+### Coverage Summary Table
+
+| Requirement Key | Has Task? | Task IDs | Notes |
+|-----------------|-----------|----------|-------|
+| `dependency-discovery-workflow` (FR-001) | âœ… | T005, T006, T007, T009 | Fully covered |
+| `categorize-updates-by-risk` (FR-002) | âœ… | T011 | Covered |
+| `apply-updates-quality-gates` (FR-003) | âœ… | T012, T013, T014, T016, T017, T018 | Covered |
+| `remove-unused-dependencies` (FR-004) | âœ… | T019, T020, T022 | Covered |
+| `remove-dead-code` (FR-005) | âœ… | T008, T010, T019, T021 | Covered â€” T021 path concern flagged H1 |
+| `constitution-no-dead-code-policy` (FR-006) | âœ… | T024, T025 | Covered â€” amendment versioning gap flagged I2 |
+| `documentation-accuracy-review` (FR-007) | âœ… | T026â€“T032 | Covered â€” T028 path violation flagged I1; constitution metadata gap flagged H3 |
+| `archive-outdated-docs` (FR-008) | âœ… | T031 | Covered |
+| `change-summary` (FR-009) | âœ… | T034 | Covered |
+
+---
+
+### Constitution Alignment Issues
+
+| Rule | Conflict | Finding |
+|------|----------|---------|
+| CAP-2026-004: `/docs/` boundary | T028 targets `docs/performance-tuning.md` for update | **I1 â€” CRITICAL** |
+| Amendment Process | T024 adds policy clause but no version bump/SYNC IMPACT REPORT task | **I2 â€” CRITICAL** |
+| Documentation Standards | No task verifies JSDoc coverage post-removal | **M4 â€” MEDIUM** |
+
+---
+
+### Unmapped Tasks
+
+| Task | Status | Note |
+|------|--------|------|
+| T001â€“T004 | Weakly mapped | Setup scaffolds; implicit prerequisites for evidence-driven workflow; no direct FR but clearly supportive |
+| T033 | Weakly mapped | Cross-cutting metadata check; acceptable as polish step |
+| T035 | Weakly mapped | CHANGELOG update â€” standard release hygiene, not FR-driven but appropriate |
+
+No task is completely unanchored; the weaker mappings are acceptable support tasks.
+
+---
+
+### Metrics
+
+| Metric | Value |
+|--------|-------|
+| Total Functional Requirements | 9 (FR-001 â€“ FR-009) |
+| Total Success Criteria | 6 (SC-001 â€“ SC-006) |
+| Total Tasks | 36 (T001 â€“ T036) |
+| FR Coverage (â‰¥1 task) | **100%** (9/9) |
+| Critical Issues | **3** |
+| High Issues | **3** |
+| Medium Issues | **4** |
+| Low Issues | **2** |
+| Total Findings | **12** |
+
+---
+
+### Next Actions
+
+**CRITICAL issues must be resolved before `/devspark.implement`:**
+
+1. **I1** â€” Fix T028 path from `docs/performance-tuning.md` â†’ `.documentation/performance-tuning.md` to avoid a CAP-2026-004 violation during implementation.
+2. **I2** â€” Add an amendment versioning sub-task to T024 (or a new T024b) covering the SYNC IMPACT REPORT update and constitution version bump.
+3. **I3** â€” Add `.documentation/memory/constitution.md` footer metadata to the US3 documentation assertion matrix (T026) so its v1.2.0/v1.5.0 inconsistency is formally resolved.
+
+**HIGH issues should be addressed before implementation or deferred with explicit rationale:**
+
+4. **H1** â€” Despecify T021's hardcoded file paths; make them conditional on T010/T019 discovery output.
+5. **H2** â€” Add a task to validate `.github/workflows/` dependency automation configs remain valid post-update.
+6. **H3** â€” Include constitution metadata in T026 and T032 scope.
+
+**If only resolving MEDIUM/LOW:** You may proceed, but improvements to T001/T002 parallel markers (M1), SC-003 "verified" definition (M2), and T018 transitive advisory handling (M3) will increase implementation confidence.
+
+**Suggested command chain:**
+```
+/devspark.specify  (to address I1, I2, I3, H1 in the spec/tasks)
+# OR manually edit tasks.md to fix T028 path, add T024b, adjust T021
+/devspark.implement  (once CRITICAL issues are resolved)
+```
+
+---
+
+Would you like me to suggest concrete remediation edits for the top 5 issues (I1, I2, I3, H1, H3)?

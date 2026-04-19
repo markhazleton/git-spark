@@ -1,0 +1,146 @@
+I have enough context. Composing the full adversarial risk assessment now.
+
+---
+
+## Technical Risk Assessment
+
+**Analysis Date:** 2026-04-19  
+**Risk Posture:** ðŸ”´ RED (1 confirmed SHOWSTOPPER)  
+**Detected Stack:** TypeScript 6.0.2 + Node.js CLI (Commander.js) + File-system artifacts  
+**Feature:** 001-dependency-hygiene-hardening (maintenance/hygiene pass)
+
+---
+
+### Executive Summary
+
+This is a well-structured maintenance spec with solid discovery tooling and clear acceptance contracts. However, **one task directly violates a constitution mandate** (CAP-2026-004), several tasks pre-assume discovery outcomes before evidence is gathered, and there are meaningful gaps in rollback strategy, coverage validation post-removal, and constitution amendment governance. Fix the showstopper and address the four critical risks before proceeding to implementation. The feature is deliverable once those are resolved.
+
+---
+
+### Showstopper Risks (Must Fix Before Implementation)
+
+| ID | Category | Location | Risk Description | Likely Impact | Mitigation Required |
+|----|----------|----------|------------------|---------------|---------------------|
+| SS-1 | Constitution Violation (CAP-2026-004) | `tasks.md:T028` | T028 targets `docs/performance-tuning.md` â€” a real file in the CI-owned `docs/` directory. Constitution states spec workflows **MUST NOT** treat files in `docs/` as internal documentation artifacts. The intended target is `.documentation/performance-tuning.md` (also exists). | Executing T028 violates a non-negotiable constitutional rule; a CAP-2026-004 breach blocks merge. | Change T028 file path from `docs/performance-tuning.md` â†’ `.documentation/performance-tuning.md`. Add a separate note-only T028b acknowledging `docs/performance-tuning.md` is CI-managed and out of scope for this workflow. |
+
+---
+
+### Critical Risks (High Probability of Costly Issues)
+
+| ID | Category | Location | Risk Description | Likely Impact | Recommended Action |
+|----|----------|----------|------------------|---------------|--------------------|
+| CR-1 | Evidence-First Violation | `tasks.md:T021` | T021 hardcodes `src/core/analyzer-helpers.ts` as the dead-code removal target **before** knip (T008) and the candidate register (T010/T019) have been run. The task pre-judges discovery outcome. If knip does not flag this file, T021 has no evidentiary basis; if knip flags other files, they're missed. | Removes code that may be live; misses genuine dead code identified by evidence. | Rewrite T021 as: "Remove dead-code candidates approved in T019 (file paths TBD from `dead-code-candidates.md`)". Strip the hardcoded path from the task definition. |
+| CR-2 | Test Coverage Regression | `tasks.md:T023` | T023 validates lint/test/build after dead-code removal but **does not explicitly verify coverage thresholds**. Removing functions from `analyzer-helpers.ts` reduces the function count denominator and can push function coverage below the â‰¥87% constitutional threshold even if all remaining tests pass. | Silent coverage drop triggers CI failure at merge; or â€” worse â€” coverage check is skipped and a constitution violation ships. | Add coverage check sub-step to T023: "Verify `npm run test:coverage` output shows branchesâ‰¥75%, functionsâ‰¥87%, linesâ‰¥86%". |
+| CR-3 | No Rollback Plan | `tasks.md:T013-T017` | T013/T014 apply dependency updates and regenerate the lockfile. If T017's quality-gate run fails, there is no explicit recovery task. The executor is left with a modified `package.json` and broken tests and no documented path back. | Repository stuck in broken state; operator must improvise a `git checkout` or selective revert without guidance. | Add a checkpoint task: "If T017 fails, revert `package.json` and `package-lock.json` to pre-T013 state via `git checkout package.json package-lock.json && npm ci`". |
+| CR-4 | Floating Tool Versions | `tasks.md:T006,T007,T008` | `npx npm-check-updates` and `npx knip` fetch the **latest published version at runtime**. Evidence artifacts (`dependency-ncu.txt`, `dead-code-knip.txt`) are non-reproducible â€” re-running after a package release produces different results. | Audit artifacts cannot be reproduced; a compromised published version could alter evidence. | Pin tool versions in tasks: `npx npm-check-updates@17` / `npx knip@5`. Record tool version used in each output artifact. |
+
+---
+
+### High-Priority Concerns
+
+| ID | Category | Location | Issue | Impact | Suggestion |
+|----|----------|----------|-------|--------|------------|
+| H-1 | Constitution Governance | `tasks.md:T024` | T024 adds a no-dead-code clause to `constitution.md` but **no task updates the version footer or `Last Amended` date**. The footer currently says `v1.2.0 / 2026-03-14` despite the amendment history showing v1.5.0 / 2026-04-05 (pre-existing mismatch compounded by new amendment). Constitution governance section requires version bump (MINOR = new clause) and date update. | Constitution is self-inconsistent; amendment process is not followed; downstream tools reading the version field get wrong data. | Add sub-task to T024: "Bump version footer to 1.6.0, update Last Amended date, and add amendment history comment block." |
+| H-2 | Missing Scope Item | `tasks.md` | `.documentation/performance-tuning.md` (the internal DevSpark version) is **not in scope** for any US3 doc-validation task. T028 targets the wrong file; the internal doc goes unvalidated. | Internal operational doc remains stale or inaccurate after US3 completes. | Replace T028 with correct path; add a note confirming `docs/performance-tuning.md` public content will be updated only if manually authored (not via this workflow). |
+| H-3 | CSP Hash Invalidation | `plan.md`, `tasks.md` | No task verifies CSP SHA-256 hashes after dependency updates. If any update touches inline JavaScript paths used by HTML reports, the hash must be regenerated. The constitution mandates SHA-256 hashes with no `unsafe-inline`. | HTML reports silently break in CSP-enforcing browsers/environments after dependency updates. | Add a task (after T017): "Verify CSP hashes in `src/output/html.ts` still match inline script content; regenerate if changed." |
+| H-4 | knip False Positives (CLI) | `tasks.md:T008,T019` | Commander.js registers action handlers dynamically. Knip may flag CLI command handler exports, action functions, or options objects as unused. The plan does not acknowledge CLI-specific false positive patterns. | T019 verification may approve removal of live CLI code that knip cannot statically trace. | Add a note to T019: "Treat all `src/cli/**` exports as potentially false positive; verify against Commander.js `program.command()` registrations before approving removal." |
+| H-5 | US1/US2 Lockfile Conflict | `tasks.md` (dependency table, line 124-126) | Story dependencies are contradictory: "US2 starts after Phase 2" (parallel with US1) but also "US2 should start after US1 dispositions are stable." T013 (US1) and T020 (US2) both modify `package.json` and regenerate the lockfile. | Parallel execution produces conflicting lockfile states; sequential execution may not be enforced in practice. | Explicitly state: "T020 MUST NOT start until T014 (lockfile regeneration) is complete." Remove the Phase-2-only start condition for US2. |
+| H-6 | T036 Undefined Sequence | `tasks.md:T036` | "Run quickstart validation sequence" references a sequence with no defined commands. `quickstart.md` is an input artifact but no task establishes a command checklist to execute. | Validation is skipped or inconsistently applied by different executors. | Make T036 explicit: "Execute commands listed in `quickstart.md` Â§Command Sequence Contract steps 1â€“4 and record pass/fail in `validation-final.txt`." |
+
+---
+
+### Framework-Specific Red Flags (TypeScript + Node.js CLI)
+
+- [x] **`noUnusedLocals` + `noUnusedParameters` already enforce partial dead-code detection** â€” These are in `tsconfig.json` per the constitution. Dead code that compiles without warnings has already passed a level of static analysis. The spec/plan don't distinguish between "code knip flags but tsc ignores" and "code already passing tsc's unused checks" â€” knip will add value primarily for unused files, unused exports, and unused `dependencies` (not locals/params). The task commentary should acknowledge this layering to avoid double-effort.
+- [ ] Unhandled promise rejections â€” not evaluated (existing code; not in scope)
+- [x] **No pinned versions on npx-invoked tools** (CR-4 above)
+- [ ] Missing TypeScript strict mode â€” already enforced; not a concern here
+
+---
+
+### Architecture Red Flags
+
+- [ ] Over-engineered for stated requirements â€” **No.** Six phases for a hygiene pass is appropriate; artifact creation is evidence-driven.
+- [x] **Pre-determined dead-code target without discovery** â€” T021 names `src/core/analyzer-helpers.ts` before evidence. See CR-1.
+- [ ] Single point of failure â€” Not applicable (maintenance workflow, not runtime architecture).
+- [x] **Circular dependency between US1 and US2 scope** â€” Both stories modify `package.json`/lockfile. See H-5.
+- [x] **Absent: documentation scope split between `docs/` and `.documentation/`** â€” Plan.md correctly documents the boundary, but T028 violates it. See SS-1.
+
+---
+
+### Missing Critical Tasks
+
+| Category | Missing Task |
+|----------|-------------|
+| **Coverage Validation** | Verify coverage thresholds (â‰¥75%/87%/86%) explicitly after T023 dead-code removal |
+| **Constitution Governance** | Bump version footer to 1.6.0 + update amendment history comment when T024 executes |
+| **Security (CSP)** | Re-verify CSP SHA-256 hashes in `html.ts` after any dependency update |
+| **Rollback/Checkpoint** | Explicit rollback instructions if T017 quality gates fail |
+| **Tool Pinning** | Pin `npm-check-updates` and `knip` versions for reproducible evidence artifacts |
+| **Scope Correction** | Validate `.documentation/performance-tuning.md` (internal), not `docs/performance-tuning.md` (CI-owned) |
+
+---
+
+### Questionable Assumptions
+
+1. **"Existing test coverage is sufficient to detect most behavior regressions"** (spec, Dependencies section) â†’ Jest coverage is at-threshold, not comprehensive. Dependency updates that alter library behavior at edge cases (semver parsing, output formatting) will not be caught by coverage gaps. Verify coverage gaps in `src/output/` before applying patch/minor CLI-rendering updates.
+
+2. **"US2 can proceed in parallel with US3 after Phase 2"** (tasks.md, line 123-124) â†’ If US1 produces a list of approved dependency removals that overlaps with dead-code candidates in US2, attempting US2 before US1 finalizes creates a stale evidence problem. The dependency table contradicts itself on this.
+
+3. **"Constitution version 1.2.0 is current"** (constitution.md footer) â†’ The constitution has been amended to v1.5.0 per the amendment history comment. Any tooling or process that reads the version footer will see v1.2.0, creating governance confusion when T024 adds the next amendment.
+
+---
+
+### Dependencies Risk Assessment
+
+| Dependency | Concern | Alternative to Consider |
+|------------|---------|-------------------------|
+| `npx knip` (floating) | Version changes produce non-reproducible evidence | Pin: `npx knip@5` |
+| `npx npm-check-updates` (floating) | Same reproducibility concern | Pin: `npx npm-check-updates@17` |
+| `npm audit` (built-in) | Advisory database is live; results vary by run date | Record run date/time in output artifact |
+| TypeScript 6.0.2 | Already in use; no upgrade risk for this feature | No change needed |
+
+---
+
+### Estimated Technical Debt at Launch
+
+- **Code Debt:** Minimal â€” this feature removes debt rather than adding it.
+- **Operational Debt:** Unresolved if CSP hash validation is skipped; silent report breakage post-upgrade.
+- **Documentation Debt:** Constitution version footer mismatch (pre-existing, compounded by T024 if not fixed).
+- **Testing Debt:** Missing explicit coverage-threshold check post-dead-code-removal.
+
+---
+
+### Metrics
+
+| Metric | Count |
+|--------|-------|
+| Showstopper Count | **1** |
+| Critical Risk Count | **4** |
+| Missing Operational Tasks | **6** |
+| Underspecified Security Requirements | **1** (CSP hashes) |
+| Scale Bottlenecks Identified | **0** (not applicable) |
+| Constitution Violations | **1** confirmed (T028 â†’ CAP-2026-004) |
+
+---
+
+## GO/NO-GO RECOMMENDATION
+
+```
+[x] CONDITIONAL â€” Fix the T028 showstopper and CR-1 through CR-4 before implementation starts.
+```
+
+**Required Actions Before Implementation:**
+
+1. **[SS-1]** Change T028 target from `docs/performance-tuning.md` â†’ `.documentation/performance-tuning.md`. The `docs/` version is CI-owned; add a comment noting it is out of scope per CAP-2026-004.
+2. **[CR-1]** Remove the hardcoded `src/core/analyzer-helpers.ts` from T021. Replace with a reference to approved candidates from `dead-code-candidates.md` to be determined at T019.
+3. **[CR-2]** Add explicit coverage-threshold sub-check to T023 (`npm run test:coverage` â†’ verify branch/function/line thresholds).
+4. **[CR-3]** Add a rollback checkpoint task between T014 and T017: document exact git commands to restore `package.json` / `package-lock.json` if gates fail.
+5. **[CR-4]** Pin `npx knip@<version>` and `npx npm-check-updates@<version>` in T007/T008; record tool version in each output file.
+
+**Recommended Risk Mitigations:**
+
+- Add a H-1 sub-task to T024: bump constitution version footer to 1.6.0 and update `Last Amended`.
+- Add a H-3 post-T017 task: verify CSP SHA-256 hashes remain valid in `src/output/html.ts`.
+- Add a knip false-positive note to T019 warning about Commander.js dynamic registrations in `src/cli/**`.
+- Clarify the US1/US2 sequencing constraint: T020 starts only after T014 completes.
