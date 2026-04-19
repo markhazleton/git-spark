@@ -1,6 +1,6 @@
 ---
 description: Create or update the feature specification from a natural language feature description.
-handoffs: 
+handoffs:
   - label: Build Technical Plan
     agent: devspark.plan
     prompt: Create a plan for the spec. I am building with...
@@ -18,11 +18,44 @@ $ARGUMENTS
 
 You **MUST** consider the user input before proceeding (if not empty).
 
+## Routing Contract
+
+`/devspark.specify` is the universal discovery entry point. Before creating any branch or artifact, the agent must:
+
+1. Classify the request as `one-off-fix`, `quick-spec`, or `full-spec`
+2. Explain the recommendation using scope, risk, effort, and impact area
+3. Ask the user to confirm or override the route
+
+If the agent recommends `one-off-fix`, explicitly redirect the user to `/devspark.quickfix` instead of silently switching workflows. The user may still choose to continue in `/devspark.specify`, but the prompt must make that an explicit human decision.
+
+When this workflow creates a spec artifact, it must emit YAML frontmatter using the route metadata contract:
+
+```yaml
+classification: quick-spec | full-spec
+risk_level: low | medium | high
+target_workflow: specify-light | specify-full
+required_artifacts: intent, action-plan | spec, plan, tasks
+recommended_next_step: plan | clarify | implement
+required_gates: checklist | checklist, analyze, critic
+```
+
+This workflow MUST also validate the document against the shared specification validation contract in `/.devspark/templates/spec-validation-contract.md` for installed repos, or `templates/spec-validation-contract.md` in source repos.
+
 ## Outline
 
 The text the user typed after `/devspark.specify` in the triggering message **is** the feature description. Assume you always have it available in this conversation even if `$ARGUMENTS` appears literally below. Do not ask the user to repeat it unless they provided an empty command.
 
+**Multi-app support**: If this repository uses multi-app mode (`.documentation/devspark.json` exists with `mode: "multi-app"`), check for `--app <id>` in the user input to scope this workflow to a specific application. When app context is provided, resolve artifacts from `{app.path}/.documentation/` instead of the repository root `.documentation/`. Print the resolved scope (app name, doc root) at the start of output.
+
 Given that feature description, do this:
+
+0. **Classify first**:
+   - Evaluate scope, risk, expected effort, and impact area
+   - Recommend one route: `one-off-fix`, `quick-spec`, or `full-spec`
+   - Present the recommendation and reasoning to the user
+   - Ask the user to confirm or override the route before creating artifacts
+   - If the confirmed route is `one-off-fix`, stop and instruct the user to run `/devspark.quickfix` unless they explicitly want to continue here
+   - If `/.documentation/memory/constitution.md` exists, load it so the generated spec can reference mandatory principles and constraints
 
 1. **Generate a concise short name** (2-4 words) for the branch:
    - Analyze the feature description and extract the most meaningful keywords
@@ -54,10 +87,12 @@ Given that feature description, do this:
       - Find the highest number N
       - Use N+1 for the new branch number
 
-   d. Run the script `.devspark/scripts/bash/create-new-feature.sh --json "$ARGUMENTS"` with the calculated number and short-name:
+   > **Script Resolution**: Before running `.devspark/scripts/powershell/create-new-feature.ps1 -Json "$ARGUMENTS"`, apply the 2-tier override check — if `.documentation/scripts/powershell/<filename>` (PowerShell) or `.documentation/scripts/bash/<filename>` (Bash) exists on disk, run that file instead, preserving all arguments. Team overrides in `.documentation/scripts/` always take priority over `.devspark/scripts/`.
+
+   d. Run the script `.devspark/scripts/powershell/create-new-feature.ps1 -Json "$ARGUMENTS"` with the calculated number and short-name:
       - Pass `--number N+1` and `--short-name "your-short-name"` along with the feature description
-      - Bash example: `.devspark/scripts/bash/create-new-feature.sh --json "$ARGUMENTS" --json --number 5 --short-name "user-auth" "Add user authentication"`
-      - PowerShell example: `.devspark/scripts/bash/create-new-feature.sh --json "$ARGUMENTS" -Json -Number 5 -ShortName "user-auth" "Add user authentication"`
+      - Bash example: `.devspark/scripts/powershell/create-new-feature.ps1 -Json "$ARGUMENTS" --json --number 5 --short-name "user-auth" "Add user authentication"`
+      - PowerShell example: `.devspark/scripts/powershell/create-new-feature.ps1 -Json "$ARGUMENTS" -Json -Number 5 -ShortName "user-auth" "Add user authentication"`
 
    **IMPORTANT**:
    - Check all three sources (remote branches, local branches, specs directories) to find the highest number
@@ -68,7 +103,10 @@ Given that feature description, do this:
    - The JSON output will contain BRANCH_NAME and SPEC_FILE paths
    - For single quotes in args like "I'm Groot", use escape syntax: e.g 'I'\''m Groot' (or double-quote if possible: "I'm Groot")
 
-3. Load `.documentation/templates/spec-template.md` to understand required sections.
+3. Load the correct template based on the confirmed route, then load the shared validation contract:
+   - `full-spec` -> `/.devspark/templates/spec-template.md` in installed repos, or `templates/spec-template.md` in source repos
+   - `quick-spec` -> `/.devspark/templates/quick-spec-template.md` in installed repos, or `templates/quick-spec-template.md` in source repos
+   - Shared validation contract -> `/.devspark/templates/spec-validation-contract.md` in installed repos, or `templates/spec-validation-contract.md` in source repos
 
 4. Follow this execution flow:
 
@@ -96,28 +134,31 @@ Given that feature description, do this:
     7. Identify Key Entities (if data involved)
     8. Return: SUCCESS (spec ready for planning)
 
-5. Write the specification to SPEC_FILE using the template structure, replacing placeholders with concrete details derived from the feature description (arguments) while preserving section order and headings.
+5. Write the specification to SPEC_FILE using the selected template structure, replacing placeholders with concrete details derived from the feature description (arguments) while preserving section order and headings. **Ensure the `**Status**:` field is explicitly set to `Draft`** — this is the starting state of the spec lifecycle (`Draft → In Progress → Complete`). The status will transition to `In Progress` when `/devspark.implement` starts and `Complete` when all tasks are done.
 
-6. **Specification Quality Validation**: After writing the initial spec, validate it against quality criteria:
+6. **Specification Quality Validation**: After writing the initial spec, validate it against the shared specification validation contract plus the quality criteria below:
 
-   a. **Create Spec Quality Checklist**: Generate a checklist file at `FEATURE_DIR/checklists/requirements.md` using the checklist template structure with these validation items:
+   a. **Create Spec Quality Checklist**: Generate a checklist file at `FEATURE_DIR/checklists/requirements.md` using the checklist template structure. The checklist MUST include the shared validation contract checks first, then these quality checks:
 
       ```markdown
       # Specification Quality Checklist: [FEATURE NAME]
-      
+
       **Purpose**: Validate specification completeness and quality before proceeding to planning
       **Created**: [DATE]
       **Feature**: [Link to spec.md]
-      
+
       ## Content Quality
-      
+
+      - [ ] Frontmatter matches the shared validation contract
+      - [ ] Required headings for the selected route are present in canonical order
+      - [ ] Status line uses a valid lifecycle state
       - [ ] No implementation details (languages, frameworks, APIs)
       - [ ] Focused on user value and business needs
       - [ ] Written for non-technical stakeholders
       - [ ] All mandatory sections completed
-      
+
       ## Requirement Completeness
-      
+
       - [ ] No [NEEDS CLARIFICATION] markers remain
       - [ ] Requirements are testable and unambiguous
       - [ ] Success criteria are measurable
@@ -126,20 +167,20 @@ Given that feature description, do this:
       - [ ] Edge cases are identified
       - [ ] Scope is clearly bounded
       - [ ] Dependencies and assumptions identified
-      
+
       ## Feature Readiness
-      
+
       - [ ] All functional requirements have clear acceptance criteria
       - [ ] User scenarios cover primary flows
       - [ ] Feature meets measurable outcomes defined in Success Criteria
       - [ ] No implementation details leak into specification
-      
+
       ## Notes
-      
+
       - Items marked incomplete require spec updates before `/devspark.clarify` or `/devspark.plan`
       ```
 
-   b. **Run Validation Check**: Review the spec against each checklist item:
+   b. **Run Validation Check**: Review the spec against each checklist item and the shared contract:
       - For each item, determine if it passes or fails
       - Document specific issues found (quote relevant spec sections)
 
@@ -147,11 +188,11 @@ Given that feature description, do this:
 
       - **If all items pass**: Mark checklist complete and proceed to step 6
 
-      - **If items fail (excluding [NEEDS CLARIFICATION])**:
-        1. List the failing items and specific issues
-        2. Update the spec to address each issue
-        3. Re-run validation until all items pass (max 3 iterations)
-        4. If still failing after 3 iterations, document remaining issues in checklist notes and warn user
+         - **If items fail (excluding [NEEDS CLARIFICATION])**:
+            1. List the failing items and specific issues
+            2. Update the spec to address each issue, using the shared validation contract as the repair target
+            3. Re-run validation until all items pass (max 3 iterations)
+            4. If still failing after 3 iterations, document remaining issues in checklist notes and warn user
 
       - **If [NEEDS CLARIFICATION] markers remain**:
         1. Extract all [NEEDS CLARIFICATION: ...] markers from the spec
@@ -160,20 +201,20 @@ Given that feature description, do this:
 
            ```markdown
            ## Question [N]: [Topic]
-           
+
            **Context**: [Quote relevant spec section]
-           
+
            **What we need to know**: [Specific question from NEEDS CLARIFICATION marker]
-           
+
            **Suggested Answers**:
-           
+
            | Option | Answer | Implications |
            |--------|--------|--------------|
            | A      | [First suggested answer] | [What this means for the feature] |
            | B      | [Second suggested answer] | [What this means for the feature] |
            | C      | [Third suggested answer] | [What this means for the feature] |
            | Custom | Provide your own answer | [Explain how to provide custom input] |
-           
+
            **Your choice**: _[Wait for user response]_
            ```
 
@@ -194,7 +235,7 @@ Given that feature description, do this:
 
 **NOTE:** The script creates and checks out the new branch and initializes the spec file before writing.
 
-## General Guidelines
+## Guidelines
 
 ## Quick Guidelines
 

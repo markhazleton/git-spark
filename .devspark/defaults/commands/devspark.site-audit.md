@@ -39,14 +39,19 @@ Parse `$ARGUMENTS` for scope flags:
 | `--scope=quality` | Code quality metrics only |
 | `--scope=unused` | Unused code/dependencies detection |
 | `--scope=duplicate` | Duplicate code detection |
+| `--scope=comments` | Stale comments and spec references only |
 
 If no scope specified, default to `--scope=full`.
 
 ## Outline
 
+**Multi-app support**: If this repository uses multi-app mode (`.documentation/devspark.json` exists with `mode: "multi-app"`), check for `--app <id>` in the user input to scope this workflow to a specific application. When app context is provided, resolve artifacts from `{app.path}/.documentation/` instead of the repository root `.documentation/`. Print the resolved scope (app name, doc root) at the start of output.
+
 ### 1. Initialize Audit Context
 
-Run `.devspark/scripts/bash/site-audit.sh $ARGUMENTS --json` to gather codebase data and parse JSON output for:
+> **Script Resolution**: Before running `.devspark/scripts/powershell/site-audit.ps1 $ARGUMENTS -Json`, apply the 2-tier override check — if `.documentation/scripts/powershell/<filename>` (PowerShell) or `.documentation/scripts/bash/<filename>` (Bash) exists on disk, run that file instead, preserving all arguments. Team overrides in `.documentation/scripts/` always take priority over `.devspark/scripts/`.
+
+Run `.devspark/scripts/powershell/site-audit.ps1 $ARGUMENTS -Json` to gather codebase data and parse JSON output for:
 - `REPO_ROOT`: Repository root path
 - `CONSTITUTION_PATH`: Path to constitution file
 - `FILES`: Categorized file listings
@@ -112,10 +117,10 @@ current. Stale installations may have outdated command files or missing framewor
 
 #### A. Read Version Stamp
 
-Check for `.documentation/DEVSPARK_VERSION`:
+Check for `.devspark/VERSION` first (fallback: legacy `.documentation/DEVSPARK_VERSION`):
 
-- **If missing**: Flag `VER1` — stamp absent, version unknown (HIGH)
-- **If present**: Parse `version`, `installed`, and `agent` fields
+- **If both are missing**: Flag `VER1` — stamp absent, version unknown (HIGH)
+- **If present**: Parse `version`, `installed`, and `method` fields (legacy stamp may use `agent`)
 
 #### B. Detect Latest Version
 
@@ -126,7 +131,7 @@ Read the most recent `## [X.Y.Z]` entry in `CHANGELOG.md` (repo root) to get
 
 | Condition | Finding ID | Severity |
 |-----------|-----------|---------|
-| `.documentation/DEVSPARK_VERSION` absent | VER1 | HIGH |
+| `.devspark/VERSION` absent and legacy stamp absent | VER1 | HIGH |
 | Installed version < latest version | VER2 | MEDIUM |
 | Agent command files reference `.documentation/` or root `memory/`, `scripts/`, `templates/`, or `specs/` paths | VER3 | HIGH |
 | Root-level `memory/`, `scripts/`, `templates/`, or `specs/` directories exist | VER4 | HIGH |
@@ -142,14 +147,60 @@ Include in the audit report under a **DevSpark Version** section:
 | Installed Version | {version or "absent"} |
 | Latest Version    | {LATEST_VERSION} |
 | Install Date      | {installed field} |
-| Agent             | {agent field} |
+| Method            | {method or agent field} |
 | Status            | UP TO DATE / UPGRADE AVAILABLE / UNKNOWN |
 ```
 
 If VER1 or VER2 is present, add to the Recommendations section:
-> Run `/devspark.upgrade` or `devspark upgrade` to update DevSpark.
+> Run the remote upgrade prompt or `/devspark.upgrade` to update DevSpark.
 
-### 5. Constitution Compliance Audit
+### 5. Spec Lifecycle Audit (Anti-Pattern Detection)
+
+Scan `/.documentation/specs/` for spec directories and flag lifecycle violations. This is critical to prevent incomplete specs from being merged to main.
+
+#### A. Scan All Spec Directories
+
+For each directory in `/.documentation/specs/` (excluding `pr-review/`):
+1. Check if `spec.md` exists
+2. Read the `**Status**:` field (valid values: `Draft`, `In Progress`, `Complete`)
+3. Check if `tasks.md` exists and count completed vs incomplete tasks
+
+#### B. Flag Anti-Patterns
+
+| Condition | Finding ID | Severity | Description |
+|-----------|-----------|----------|-------------|
+| Spec with `Status: Draft` on main branch | SPEC1 | **CRITICAL** | Draft spec merged to main — must be Complete before merge |
+| Spec with `Status: In Progress` on main branch | SPEC2 | **CRITICAL** | In-progress spec merged to main — implementation not finished |
+| Spec with incomplete tasks (`- [ ]`) on main branch | SPEC3 | **HIGH** | Tasks not all checked off but spec is on main |
+| Spec exists but `tasks.md` missing | SPEC4 | **MEDIUM** | Spec has no task breakdown — may be abandoned or pre-planning |
+| Spec marked `Complete` but has incomplete tasks | SPEC5 | **HIGH** | Status/task mismatch — spec says Complete but tasks disagree |
+
+#### C. Include in Report
+
+Add a **Spec Lifecycle** section to the audit report:
+
+```markdown
+## Spec Lifecycle
+
+### Spec Status Summary
+
+| Spec Directory | Status | Tasks | Complete | Incomplete | Finding |
+|----------------|--------|-------|----------|------------|---------|
+| 001-feature-x  | Complete | 12  | 12       | 0          | ✅ OK   |
+| 002-feature-y  | In Progress | 8 | 5     | 3          | ❌ SPEC2, SPEC3 |
+| 003-feature-z  | Draft   | 0   | 0        | 0          | ❌ SPEC1, SPEC4 |
+
+### Spec Lifecycle Findings
+
+| ID | Spec | Issue | Severity | Recommendation |
+|----|------|-------|----------|----------------|
+| SPEC1 | 003-feature-z | Draft spec on main branch | CRITICAL | Complete implementation or remove spec |
+| SPEC2 | 002-feature-y | In-progress spec on main branch | CRITICAL | Complete all tasks and mark spec Complete |
+```
+
+If no spec lifecycle issues found, note: "All specs on main branch have Complete status with all tasks checked off."
+
+### 6. Constitution Compliance Audit
 
 For **each principle** in the constitution:
 
@@ -193,7 +244,7 @@ For each violation found:
 - **Issue**: Specific description
 - **Recommendation**: Concrete fix
 
-### 6. Package/Dependency Audit
+### 7. Package/Dependency Audit
 
 #### A. Detect Package Manager
 Identify from files present:
@@ -216,7 +267,7 @@ For each detected package manager:
 - Flag heavy transitive chains
 - Note conflicting version requirements
 
-### 7. Code Quality Metrics
+### 8. Code Quality Metrics
 
 Calculate and report:
 
@@ -237,7 +288,81 @@ Calculate and report:
 - Commented-out code blocks
 - Inconsistent formatting patterns
 
-### 8. Unused Code Detection
+### 9. Stale Comments and Spec References Audit
+
+Scan source files for code comments that have lost their value or reference completed work.
+
+#### A. Completed Spec References
+
+Search for comments that reference specs, phases, or tasks that are now complete:
+
+```text
+# spec 026
+# FR-013
+# T006
+# Phase 5
+# TODO(spec-018)
+# See spec-032
+```
+
+For each match:
+- Verify whether the referenced spec/task is actually complete (check `/.documentation/specs/`)
+- Flag as stale if the spec is archived or marked `Complete`
+- Include file:line and the matched comment in the finding
+
+#### B. Old-Behavior Comments
+
+Detect comments that describe behavior that no longer matches the code:
+
+- Comments with past tense ("previously", "used to", "was changed in")
+- Comments referencing removed functions, classes, or variables that no longer exist in the file
+- Inline explanations that contradict the current logic in the same block
+
+#### C. Commented-Out Code Blocks
+
+Flag commented-out code blocks exceeding 3 consecutive lines. These accumulate technical debt and should either be deleted in a dedicated commit or restored as active code — use `git blame` to understand the original intent before removing.
+
+#### D. Version Migration Comments
+
+Flag comments of the form "Added in v2.8.0", "Deprecated since v3.0", "TODO: remove after upgrade" when the referenced version is already past. These provide no value over `git blame` and clutter the codebase.
+
+#### False-Positive Suppression Policy
+
+Before flagging any finding in sections 9–11, apply these suppression rules to avoid false positives:
+
+**DO NOT flag**:
+
+1. **Unused imports that are re-exports**: If an import appears in an `__init__.py` or barrel file (e.g., `index.ts`) and is explicitly re-exported with `__all__`, `export`, or a wildcard, suppress the "unused import" finding.
+
+2. **Dead code reachable via dynamic dispatch**: If a function or class appears uncalled but the file registers plugins, uses `getattr`, metaclasses, `importlib`, or decorator-based registries, do not flag it as dead code. Note the dynamic dispatch pattern instead.
+
+3. **Test-only utilities appearing unused from production**: Functions in `test*/`, `conftest.py`, `fixtures/`, or `*_helpers.py` that have no callers in the production source tree are not dead code — they serve test infrastructure. Only flag if the file has no test callers either.
+
+Include findings from this phase in the audit report under **Stale Code Comments**:
+
+```markdown
+## Stale Code Comments
+
+### Completed Spec References
+
+| ID | File:Line | Comment | Referenced Spec Status | Action |
+|----|-----------|---------|----------------------|--------|
+| CMT1 | src/handler.py:45 | `# spec 026` | Archived | Remove comment |
+
+### Commented-Out Code Blocks
+
+| ID | File:Lines | Size | Action |
+|----|-----------|------|--------|
+| CMT2 | src/utils.py:89-95 | 7 lines | Delete or restore |
+
+### Version Migration Comments
+
+| ID | File:Line | Comment | Action |
+|----|-----------|---------|--------|
+| CMT3 | src/api.py:12 | `# Added in v2.0` | Remove — no value over git blame |
+```
+
+### 10. Unused Code Detection
 
 Scan for potentially unused:
 
@@ -246,6 +371,8 @@ Scan for potentially unused:
 - Classes never instantiated
 - Variables assigned but never read
 - Imports never used
+
+Apply the false-positive suppression policy from section 9 before flagging any unused code.
 
 #### Dead Files
 - Source files not imported anywhere
@@ -256,7 +383,7 @@ Scan for potentially unused:
 - Packages in requirements but never imported
 - DevDependencies in package.json unused
 
-### 9. Duplicate Code Detection
+### 11. Duplicate Code Detection
 
 Identify copy-paste patterns:
 
@@ -271,7 +398,7 @@ For each duplicate:
 - Similarity percentage
 - Suggested consolidation approach
 
-### 10. Severity Classification
+### 12. Severity Classification
 
 Apply consistent severity across all findings:
 
@@ -282,7 +409,7 @@ Apply consistent severity across all findings:
 | **MEDIUM** | Code quality concern, maintainability issue, missing tests |
 | **LOW** | Style suggestion, minor improvement, optimization opportunity |
 
-### 11. Generate Audit Report
+### 13. Generate Audit Report
 
 Create comprehensive report at `/.documentation/copilot/audit/YYYY-MM-DD_results.md`:
 
@@ -312,6 +439,7 @@ Use this format:
 | Category | Score | Status |
 |----------|-------|--------|
 | DevSpark Version | [UP TO DATE / UPGRADE AVAILABLE / UNKNOWN] | [Status] |
+| Spec Lifecycle | [X] specs on main | [✅ All Complete / ❌ Incomplete specs found] |
 | Constitution Compliance | [X]% | [✅ PASS / ⚠️ PARTIAL / ❌ FAIL] |
 | Security | [X]% | [Status] |
 | Code Quality | [X]% | [Status] |
@@ -350,7 +478,7 @@ Use this format:
 
 | Field | Value |
 |-------|-------|
-| Installed Version | [version from DEVSPARK_VERSION, or "absent"] |
+| Installed Version | [version from `.devspark/VERSION`, or "absent"] |
 | Latest Version | [LATEST_VERSION] |
 | Install Date | [installed field] |
 | Agent | [agent field] |
@@ -360,7 +488,7 @@ Use this format:
 
 | ID | Issue | Severity | Recommendation |
 |----|-------|----------|----------------|
-| VER1 | DEVSPARK_VERSION absent | HIGH | Run `devspark upgrade` to install version stamp |
+| VER1 | VERSION stamp absent | HIGH | Run the remote upgrade prompt to install or refresh the version stamp |
 | VER2 | Version X.Y.Z installed, X.Y.Z available | MEDIUM | Run `/devspark.upgrade` to update |
 
 ## Security Findings
@@ -537,7 +665,7 @@ Use this format:
 *To re-run: `/devspark.site-audit` or `/devspark.site-audit --scope=constitution`*
 ```
 
-### 12. Output Summary to User
+### 13. Output Summary to User
 
 Display concise summary:
 
@@ -551,7 +679,7 @@ Display concise summary:
 Health Summary:
 - 🔴 {COUNT} Critical issues
 - 🟠 {COUNT} High priority
-- 🟡 {COUNT} Medium priority  
+- 🟡 {COUNT} Medium priority
 - 🔵 {COUNT} Low priority
 
 Constitution Compliance: {X}%

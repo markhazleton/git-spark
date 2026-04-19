@@ -1,5 +1,12 @@
 ---
 description: Perform a non-destructive cross-artifact consistency and quality analysis across spec.md, plan.md, and tasks.md after task generation.
+handoffs:
+  - label: Implement Project
+    agent: devspark.implement
+    prompt: Start the implementation in phases
+  - label: Revise Plan
+    agent: devspark.plan
+    prompt: Revise plan to address analysis findings
 ---
 
 ## User Input
@@ -10,21 +17,27 @@ $ARGUMENTS
 
 You **MUST** consider the user input before proceeding (if not empty).
 
-## Goal
+## Overview
 
 Identify inconsistencies, duplications, ambiguities, and underspecified items across the three core artifacts (`spec.md`, `plan.md`, `tasks.md`) before implementation. This command MUST run only after `/devspark.tasks` has successfully produced a complete `tasks.md`.
 
 ## Operating Constraints
 
-**STRICTLY READ-ONLY**: Do **not** modify any files. Output a structured analysis report. Offer an optional remediation plan (user must explicitly approve before any follow-up editing commands would be invoked manually).
+The analysis itself is non-destructive. Do **not** edit `spec.md`, `plan.md`, `tasks.md`, or source files. The only file write allowed is refreshing the persisted gate artifact at `FEATURE_DIR/gates/analyze.md` with the final report from this command.
+
+Read the YAML frontmatter in `spec.md` before analyzing. Treat `classification`, `risk_level`, and `required_gates` as authoritative metadata.
 
 **Constitution Authority**: The project constitution (`/.documentation/memory/constitution.md`) is **non-negotiable** within this analysis scope. Constitution conflicts are automatically CRITICAL and require adjustment of the spec, plan, or tasks—not dilution, reinterpretation, or silent ignoring of the principle. If a principle itself needs to change, that must occur in a separate, explicit constitution update outside `/devspark.analyze`.
 
-## Execution Steps
+## Outline
+
+**Multi-app support**: If this repository uses multi-app mode (`.documentation/devspark.json` exists with `mode: "multi-app"`), check for `--app <id>` in the user input to scope this workflow to a specific application. When app context is provided, resolve artifacts from `{app.path}/.documentation/` instead of the repository root `.documentation/`. Print the resolved scope (app name, doc root) at the start of output.
 
 ### 1. Initialize Analysis Context
 
-Run `.devspark/scripts/bash/check-prerequisites.sh --json --require-tasks --include-tasks` once from repo root and parse JSON for FEATURE_DIR and AVAILABLE_DOCS. Derive absolute paths:
+> **Script Resolution**: Before running `.devspark/scripts/powershell/check-prerequisites.ps1 -Json -RequireTasks -IncludeTasks`, apply the 2-tier override check — if `.documentation/scripts/powershell/<filename>` (PowerShell) or `.documentation/scripts/bash/<filename>` (Bash) exists on disk, run that file instead, preserving all arguments. Team overrides in `.documentation/scripts/` always take priority over `.devspark/scripts/`.
+
+Run `.devspark/scripts/powershell/check-prerequisites.ps1 -Json -RequireTasks -IncludeTasks` once from repo root and parse JSON for FEATURE_DIR and AVAILABLE_DOCS. Derive absolute paths:
 
 - SPEC = FEATURE_DIR/spec.md
 - PLAN = FEATURE_DIR/plan.md
@@ -122,7 +135,15 @@ Use this heuristic to prioritize findings:
 
 ### 6. Produce Compact Analysis Report
 
-Output a Markdown report (no file writes) with the following structure:
+Output a Markdown report with the following structure and write the same content to `FEATURE_DIR/gates/analyze.md` (create `FEATURE_DIR/gates/` if needed, replace the prior analyze gate artifact if it exists):
+
+```yaml
+gate: analyze
+status: pass | warn | fail
+blocking: true | false
+severity: info | warning | error | showstopper
+summary: "<concise outcome>"
+```
 
 ## Specification Analysis Report
 
@@ -162,7 +183,16 @@ At end of report, output a concise Next Actions block:
 
 Ask the user: "Would you like me to suggest concrete remediation edits for the top N issues?" (Do NOT apply them automatically.)
 
-## Operating Principles
+### 9. Persist Gate Artifact
+
+After producing the report:
+
+- Ensure `FEATURE_DIR/gates/` exists
+- Save the report as `FEATURE_DIR/gates/analyze.md`
+- Treat the YAML gate block as authoritative for downstream commands such as `/devspark.tasks`, `/devspark.implement`, `/devspark.create-pr`, and `/devspark.pr-review`
+- When rerun, replace the previous `analyze.md` artifact instead of appending duplicate reports
+
+## Guidelines
 
 ### Context Efficiency
 
@@ -173,7 +203,7 @@ Ask the user: "Would you like me to suggest concrete remediation edits for the t
 
 ### Analysis Guidelines
 
-- **NEVER modify files** (this is read-only analysis)
+- **NEVER modify product artifacts outside the gate report**
 - **NEVER hallucinate missing sections** (if absent, report them accurately)
 - **Prioritize constitution violations** (these are always CRITICAL)
 - **Use examples over exhaustive rules** (cite specific instances, not generic patterns)
@@ -182,3 +212,20 @@ Ask the user: "Would you like me to suggest concrete remediation edits for the t
 ## Context
 
 $ARGUMENTS
+
+## Shared Review Resolution Contract Output
+
+When emitting findings (review observations, issues, recommendations), structure each entry to include the shared resolution contract fields so downstream tools (/devspark.address-pr-review, telemetry, harvest) can act on them deterministically:
+
+```yaml
+findings:
+  - finding_id: <stable-id-unique-within-this-command-output>   # e.g., analyze-001, clarify-002
+    severity: critical | high | medium | low
+    description: <1-3 sentence problem statement>
+    recommended_action: <machine-actionable next step>
+    execution_mode: auto | selective | manual
+    status: open                                                  # set to `resolved` after remediation
+    outcome: ""                                                  # populated post-resolution by address-pr-review
+```
+
+inding_id MUST be stable across re-runs when the underlying issue is unchanged. xecution_mode MUST be one of: `auto` (safe to apply automatically), `selective` (apply with reviewer approval), `manual` (requires human implementation). The `status` and `outcome` fields are written by `/devspark.address-pr-review` (FR-028).

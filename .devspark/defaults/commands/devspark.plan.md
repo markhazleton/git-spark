@@ -1,6 +1,6 @@
 ---
 description: Execute the implementation planning workflow using the plan template to generate design artifacts.
-handoffs: 
+handoffs:
   - label: Create Tasks
     agent: devspark.tasks
     prompt: Break the plan into tasks
@@ -20,9 +20,17 @@ You **MUST** consider the user input before proceeding (if not empty).
 
 ## Outline
 
-1. **Setup**: Run `.devspark/scripts/bash/setup-plan.sh --json` from repo root and parse JSON for FEATURE_SPEC, IMPL_PLAN, SPECS_DIR, BRANCH. For single quotes in args like "I'm Groot", use escape syntax: e.g 'I'\''m Groot' (or double-quote if possible: "I'm Groot").
+**Multi-app support**: If this repository uses multi-app mode (`.documentation/devspark.json` exists with `mode: "multi-app"`), check for `--app <id>` in the user input to scope this workflow to a specific application. When app context is provided, resolve artifacts from `{app.path}/.documentation/` instead of the repository root `.documentation/`. Print the resolved scope (app name, doc root) at the start of output.
+
+> **Script Resolution**: Before running `.devspark/scripts/powershell/setup-plan.ps1 -Json` or `.devspark/scripts/powershell/update-agent-context.ps1 -AgentType __AGENT__`, apply the 2-tier override check — if `.documentation/scripts/powershell/<filename>` (PowerShell) or `.documentation/scripts/bash/<filename>` (Bash) exists on disk, run that file instead, preserving all arguments. Team overrides in `.documentation/scripts/` always take priority over `.devspark/scripts/`.
+
+1. **Setup**: Run `.devspark/scripts/powershell/setup-plan.ps1 -Json` from repo root and parse JSON for FEATURE_SPEC, IMPL_PLAN, SPECS_DIR, BRANCH. For single quotes in args like "I'm Groot", use escape syntax: e.g 'I'\''m Groot' (or double-quote if possible: "I'm Groot").
 
 2. **Load context**: Read FEATURE_SPEC and `/.documentation/memory/constitution.md`. Load IMPL_PLAN template (already copied).
+
+   - Read the YAML frontmatter in FEATURE_SPEC before planning.
+   - Treat frontmatter as authoritative for `classification`, `risk_level`, `recommended_next_step`, and `required_gates`.
+   - If the body text appears to conflict with the frontmatter, flag the inconsistency to the user instead of overriding the metadata.
 
 3. **Execute plan workflow**: Follow the structure in IMPL_PLAN template to:
    - Fill Technical Context (mark unknowns as "NEEDS CLARIFICATION")
@@ -76,7 +84,7 @@ You **MUST** consider the user input before proceeding (if not empty).
    - Skip if project is purely internal (build scripts, one-off tools, etc.)
 
 3. **Agent context update**:
-   - Run `.devspark/scripts/bash/update-agent-context.sh __AGENT__`
+   - Run `.devspark/scripts/powershell/update-agent-context.ps1 -AgentType __AGENT__`
    - These scripts detect which AI agent is in use
    - Update the appropriate agent-specific context file
    - Add only new technology from current plan
@@ -84,7 +92,7 @@ You **MUST** consider the user input before proceeding (if not empty).
 
 **Output**: data-model.md, /contracts/*, quickstart.md, agent-specific file
 
-## Key rules
+## Constraints
 
 - Use absolute paths
 - ERROR on gate failures or unresolved clarifications

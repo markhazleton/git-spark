@@ -1,12 +1,12 @@
 ---
-description: Archive outdated documentation to .archive/, update Guide.md and CHANGELOG.md so .documentation stays current and clean
+description: Deprecated compatibility alias for /devspark.harvest
 handoffs:
-  - label: Run a site audit after archiving
+  - label: Review Release Artifacts
+    agent: devspark.release
+    prompt: Review completed specs and release documentation before archival
+  - label: Run Documentation Audit
     agent: devspark.site-audit
-    prompt: Run a site audit to confirm the project is in good health after archiving
-  - label: Evolve the constitution
-    agent: devspark.evolve-constitution
-    prompt: Review the constitution in light of the cleaned-up documentation
+    prompt: Audit documentation quality and stale references before harvest
 ---
 
 ## Prompt Resolution

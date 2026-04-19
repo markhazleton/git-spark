@@ -1,5 +1,12 @@
 ---
 description: Generate a custom checklist for the current feature based on user requirements.
+handoffs:
+  - label: Implement Project
+    agent: devspark.implement
+    prompt: Start the implementation in phases
+  - label: Run Analysis
+    agent: devspark.analyze
+    prompt: Analyze spec consistency after checklist review
 ---
 
 ## Prompt Resolution

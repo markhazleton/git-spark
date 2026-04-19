@@ -1,5 +1,5 @@
 ---
-description: Harvest knowledge from completed specs and stale docs into living documentation, rewrite stale spec-linked comments, then archive obsolete artifacts
+description: Canonical knowledge-preserving cleanup workflow for completed specs, stale docs, comment cleanup, and archival
 handoffs:
   - label: Review Release Artifacts
     agent: devspark.release

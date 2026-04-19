@@ -1,5 +1,13 @@
 ---
 description: Execute the implementation plan by processing and executing all tasks defined in tasks.md
+handoffs:
+  - label: Create Pull Request
+    agent: devspark.create-pr
+    prompt: Draft a pull request for the implemented changes
+    send: true
+  - label: Run Analysis
+    agent: devspark.analyze
+    prompt: Analyze spec consistency after implementation
 ---
 
 ## Prompt Resolution
