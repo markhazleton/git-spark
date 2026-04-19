@@ -62,6 +62,31 @@ Required per run:
 - Documentation changes are source-of-truth verified.
 - Constitution contains explicit no-dead-code policy text before feature completion.
 
+## Safety Decision Rubric
+
+Use this rubric for every candidate in the dependency and dead-code registers before setting `apply-now`, `defer`, or `reject`.
+
+1. Evidence requirements (all required)
+- Candidate has at least one objective signal: `npm outdated`, `npm audit`, `npx npm-check-updates`, `npx knip`, or static reference search.
+- Candidate entry records impacted files/modules and expected behavior surface.
+- Candidate entry records semver impact (`patch|minor|major`) or code-removal blast radius (`low|medium|high`).
+
+2. Acceptance checks by decision
+- `apply-now`: full quality gates pass (`prebuild`, `lint`, `test`, `build`) and no new moderate+ audit findings are introduced.
+- `defer`: includes explicit rationale, owner, target review date, and mitigation plan.
+- `reject`: includes explicit reason tied to evidence quality or invalid signal.
+
+3. Rollback criteria (mandatory)
+- Any new test failure, lint failure, build failure, or behavior regression triggers immediate rollback of the candidate change.
+- Rollback is recorded in the candidate row with a short incident note and next action.
+
+4. SC-003 measurement contract
+- Compute `unused_dependency_removal_ratio = removed_verified_unused / total_verified_unused`.
+- `total_verified_unused` includes only candidates classified as verified unused after rubric review.
+- Candidates deferred for compatibility or rollout constraints remain in the denominator and require rationale.
+- Pass threshold: `unused_dependency_removal_ratio >= 0.90`.
+- Record numerator, denominator, ratio, and pass/fail outcome in feature evidence artifacts.
+
 ## Failure Contract
 
 The run is failed when any of the following occurs:

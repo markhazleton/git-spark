@@ -482,4 +482,4 @@ When in doubt, prioritize the constitution's principles over convenience.
 
 ---
 
-**Version**: 1.2.0 | **Ratified**: 2026-02-20 | **Last Amended**: 2026-03-14
+**Version**: 1.5.0 | **Ratified**: 2026-02-20 | **Last Amended**: 2026-04-05

@@ -83,11 +83,11 @@ As a contributor, I want all operational and feature documentation to match the 
 - **FR-001**: The workflow MUST run package health discovery using audit, outdated, and NCU-compatible checks and produce a consolidated list of actionable updates.
 - **FR-002**: The workflow MUST categorize package updates by risk (patch/minor/major or equivalent impact classification) before applying changes.
 - **FR-003**: The workflow MUST apply approved dependency updates and verify repository quality gates continue to pass.
-- **FR-004**: The workflow MUST identify and remove unused dependencies where safe, or document explicit retention rationale when removal is deferred.
-- **FR-005**: The workflow MUST identify and remove dead code where safe, preserving all required behavior validated by existing tests and checks.
+- **FR-004**: The workflow MUST identify and remove unused dependencies where safe according to the documented safety-decision rubric (required evidence, acceptance checks, rollback criteria), or document explicit retention rationale when removal is deferred.
+- **FR-005**: The workflow MUST identify and remove dead code where safe according to the documented safety-decision rubric, preserving all required behavior validated by existing and newly added targeted regression tests plus existing quality checks.
 - **FR-006**: The constitution MUST include an explicit no-dead-code policy statement with enforcement expectations.
-- **FR-007**: Repository documentation MUST be reviewed for current accuracy and updated to match implemented behavior, commands, and project boundaries.
-- **FR-008**: Any documentation that is no longer accurate or needed MUST be archived or removed in accordance with existing documentation lifecycle rules.
+- **FR-007**: Repository documentation MUST be reviewed for current accuracy and updated to match implemented behavior, commands, and project boundaries; this requirement governs validation and correction of retained documentation.
+- **FR-008**: Any documentation that is no longer accurate or needed after FR-007 validation MUST be archived or removed in accordance with existing documentation lifecycle rules; this requirement governs lifecycle disposition, not correctness validation.
 - **FR-009**: The change set MUST include a clear summary of what was updated, removed, and intentionally deferred.
 
 ### Key Entities
@@ -114,7 +114,7 @@ As a contributor, I want all operational and feature documentation to match the 
 
 - **SC-001**: 100% of dependencies are evaluated through the agreed discovery workflow, with disposition recorded for each update candidate.
 - **SC-002**: 100% of moderate-or-higher security findings in direct dependencies are resolved or explicitly documented with mitigation rationale.
-- **SC-003**: At least 90% of verified unused dependency candidates are removed in this iteration, with remaining items tracked.
+- **SC-003**: At least 90% of verified unused dependency candidates are removed in this iteration, with remaining items tracked, using `removal_ratio = removed_verified_unused / total_verified_unused` and explicit numerator/denominator evidence in feature artifacts.
 - **SC-004**: All repository quality gates used in normal delivery (build, lint, tests) pass after the update and cleanup pass.
 - **SC-005**: 100% of identified documentation mismatches are corrected, removed, or documented for follow-up with owner and reason.
 - **SC-006**: Constitution includes an explicit no-dead-code policy and that policy is referenced in the implementation checklist for future changes.

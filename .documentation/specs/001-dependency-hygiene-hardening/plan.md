@@ -87,6 +87,8 @@ docs/                    # Public GitHub Pages output (CI-owned)
 
 - Model update candidates, dead-code candidates, documentation assertions, and constitution clause changes.
 - Define repeatable command contract and evidence artifacts for dependency hygiene execution.
+- Define objective safety-decision rubric (evidence requirements, acceptance checks, rollback criteria) in `contracts/dependency-hygiene-contract.md` and require it for dead-code/dependency dispositions.
+- Define SC-003 measurement method (`removed_verified_unused / total_verified_unused`) with explicit numerator/denominator evidence recording.
 - Produce quickstart runbook suitable for maintainers and CI rehearsal.
 - Update agent context script output after design artifacts are present.
 

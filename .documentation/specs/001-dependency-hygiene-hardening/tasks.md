@@ -50,6 +50,7 @@
 - [ ] T013 [US1] Apply approved patch/minor updates in `package.json`
 - [ ] T014 [US1] Regenerate lockfile after approved updates in `package-lock.json`
 - [ ] T015 [US1] Document deferred/rejected major updates with owner and mitigation rationale in `.documentation/specs/001-dependency-hygiene-hardening/dependency-update-candidates.md`
+- [ ] T037 [US1] Add/update targeted dependency-regression Jest tests for affected behavior in `test/dependency-hygiene-regression.test.ts`
 - [ ] T016 [US1] Run `npm run prebuild` and capture result in `.documentation/specs/001-dependency-hygiene-hardening/validation-prebuild.txt`
 - [ ] T017 [US1] Run `npm run lint`, `npm test`, and `npm run build`, capturing results in `.documentation/specs/001-dependency-hygiene-hardening/validation-quality-gates.txt`
 - [ ] T018 [US1] Re-run `npm audit --audit-level=moderate` and update residual risk/disposition entries in `.documentation/specs/001-dependency-hygiene-hardening/dependency-update-candidates.md`
@@ -66,12 +67,14 @@
 
 ### Implementation for User Story 2
 
-- [ ] T019 [US2] Verify each dead-code candidate for dynamic usage risk and action decision in `.documentation/specs/001-dependency-hygiene-hardening/dead-code-candidates.md`
+- [ ] T019 [US2] Verify each dead-code candidate for dynamic usage risk and action decision using the safety rubric in `.documentation/specs/001-dependency-hygiene-hardening/contracts/dependency-hygiene-contract.md` and record outcomes in `.documentation/specs/001-dependency-hygiene-hardening/dead-code-candidates.md`
 - [ ] T020 [US2] Remove approved unused dependencies from `package.json`
-- [ ] T021 [US2] Apply validated dead-code removals in `src/core/analyzer-helpers.ts` and update dependent expectations in `test/analyzer.test.ts`
+- [ ] T021 [US2] Apply validated dead-code removals in `src/core/analyzer-helpers.ts` and update dependent expectations in `test/analyzer.test.ts` using safety-rubric acceptance checks
+- [ ] T038 [US2] Add/update targeted dead-code regression Jest tests for removed paths in `test/analyzer.test.ts`
 - [ ] T022 [US2] Refresh lockfile after dependency removals in `package-lock.json`
-- [ ] T023 [US2] Re-run `npm run lint`, `npm test`, and `npm run build` and capture dead-code validation results in `.documentation/specs/001-dependency-hygiene-hardening/validation-dead-code.txt`
-- [ ] T024 [US2] Add explicit no-dead-code policy clause and enforcement language in `.documentation/memory/constitution.md`
+- [ ] T023 [US2] Re-run `npm run lint`, `npm test`, and `npm run build`, capture dead-code validation results in `.documentation/specs/001-dependency-hygiene-hardening/validation-dead-code.txt`, and record safety-rubric rollback outcomes if any
+- [ ] T039 [US2] Compute and record SC-003 removal ratio (`removed_verified_unused / total_verified_unused`) with pass/fail threshold evidence in `.documentation/specs/001-dependency-hygiene-hardening/change-summary.md`
+- [ ] T024 [US2] Add explicit no-dead-code policy clause and enforcement language in `.documentation/memory/constitution.md`, synchronizing constitution metadata (`Version`, `Last Amended`, amendment log, and footer line)
 - [ ] T025 [US2] Reference constitutional policy compliance in `.documentation/specs/001-dependency-hygiene-hardening/checklists/requirements.md`
 
 **Checkpoint**: Dead-code hygiene is enforced in both code and governance.
@@ -176,5 +179,4 @@
 ## Notes
 
 - Tasks follow required checklist format: `- [ ] T### [P?] [US?] Description with file path`.
-- Tests were not added as separate new test-authoring tasks because the specification does not explicitly request TDD/new test creation; validation uses existing quality gates.
 - If unresolved required gate findings appear later (`analyze`, `critic`, `gates/*`), record explicit user decision under `## Gate Acknowledgements` before proceeding.
