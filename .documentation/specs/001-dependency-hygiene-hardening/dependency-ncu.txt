@@ -1,6 +1,5 @@
 Checking C:\GitHub\MarkHazleton\git-spark\package.json
 
-
  @types/node                        ^25.5.0  ΓåÆ   ^25.6.0
  @typescript-eslint/eslint-plugin   ^8.57.2  ΓåÆ   ^8.58.2
  @typescript-eslint/parser          ^8.57.2  ΓåÆ   ^8.58.2

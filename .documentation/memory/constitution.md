@@ -1,10 +1,16 @@
 <!--
 SYNC IMPACT REPORT - Constitution Amendments
 ==============================================
-Version: 1.5.0 (MINOR - explicit docs/ GitHub Pages boundary rule)
-Last Amended: 2026-04-05
+Version: 1.6.0 (MINOR - explicit no-dead-code governance rule)
+Last Amended: 2026-04-19
 
 Amendment History:
+- 1.6.0 (2026-04-19): Added explicit no-dead-code governance rule (CAP-2026-005)
+  * Unused dependency/code candidates MUST be triaged with evidence and explicit `remove|retain|defer` decisions
+  * Deferred candidates MUST include owner, rationale, and next review date
+  * Dead-code cleanup PRs MUST include validation evidence (`lint`, `test`, `build`) and rollback notes when applicable
+  * Source: dependency-hygiene-hardening execution showed policy need for consistent triage and traceability
+
 - 1.5.0 (2026-04-05): Explicit boundary rule for `docs/` vs `.documentation/` (CAP-2026-004)
   * `docs/` is the GitHub Pages source for the public site — managed by CI, not manual edits
   * `docs/` MUST NOT be treated as part of the `.documentation/` DevSpark asset tree
@@ -42,6 +48,9 @@ Amendment History:
 - 1.0.0 (2026-02-20): Initial ratification via /speckit.discover-constitution
 
 Modified Principles:
+- ADDED: Dead Code Hygiene standard (CAP-2026-005)
+  * Requires evidence-based triage and explicit disposition for each candidate
+  * Requires owner/date tracking for deferred cleanup and validation evidence for removals
 - ADDED: Documentation Standards → Explicit `docs/` GitHub Pages boundary (CAP-2026-004)
   * `docs/` = public GitHub Pages site output; CI-owned; never archive or move its contents
   * `.documentation/` = internal DevSpark asset tree; entirely separate from `docs/`
@@ -243,6 +252,26 @@ Dependencies **MUST** be regularly audited and kept up-to-date with no known vul
 - Monitor security advisories for critical dependencies
 
 **Rationale:** Supply chain security is critical. Regular audits prevent vulnerabilities from reaching production and maintain user trust.
+
+---
+
+### Dead Code Hygiene (MANDATORY)
+
+Unused dependencies and code paths **MUST** be managed through evidence-based triage and traceable decisions.
+
+**Non-Negotiable Rules:**
+- Every dead-code or unused-dependency candidate MUST record objective evidence and a final action: `remove`, `retain`, or `defer`
+- `defer` decisions MUST include owner, rationale, and next review date
+- Any approved removal MUST be validated with `npm run lint`, `npm test`, and `npm run build` evidence
+- If a removal introduces regressions, rollback action and next steps MUST be recorded in feature artifacts
+- Do not remove code based solely on static-tool output when dynamic/runtime usage cannot be ruled out
+
+**Encouraged Practices:**
+- Prefer small, reversible removals over broad refactors
+- Keep candidate registries current during implementation, not only at the end
+- Use tooling (`knip`, static search) as signals, then confirm with runtime-aware validation
+
+**Rationale:** Dead code and stale dependencies increase maintenance cost and risk. Evidence-based hygiene keeps the codebase lean without sacrificing correctness.
 
 ---
 
@@ -482,4 +511,4 @@ When in doubt, prioritize the constitution's principles over convenience.
 
 ---
 
-**Version**: 1.5.0 | **Ratified**: 2026-02-20 | **Last Amended**: 2026-04-05
+**Version**: 1.6.0 | **Ratified**: 2026-02-20 | **Last Amended**: 2026-04-19

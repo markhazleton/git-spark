@@ -55,7 +55,7 @@ See Git Spark in action with a sample report showing:
 - **File Analysis** - Directory structure, file types, and change patterns
 - **Interactive HTML** - Charts, tables, and dark mode support
 
-### �️ Usage Options
+### Usage Options
 
 - **Command Line** - Simple CLI commands with progress indicators
 - **Node.js API** - Programmatic access for custom integrations

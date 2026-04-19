@@ -8,7 +8,7 @@
 
 - [x] Frontmatter includes required contract keys and route-consistent values
 - [x] Classification, workflow, and artifact mapping are internally consistent (`full-spec` / `specify-full` / `spec, plan, tasks`)
-- [x] Status line exists and uses valid lifecycle state (`Draft`)
+- [x] Status line exists and uses valid lifecycle state (`In Progress`)
 - [x] Required full-spec headings are present exactly once in canonical order:
   - `## Rationale Summary`
   - `## User Scenarios & Testing`
@@ -48,6 +48,7 @@
 - [x] User scenarios cover primary flows
 - [x] Feature meets measurable outcomes defined in Success Criteria
 - [x] No implementation details leak into specification
+- [x] Constitutional no-dead-code policy compliance is referenced and tracked for this feature (`T024`, `T025`)
 
 ## Notes
 

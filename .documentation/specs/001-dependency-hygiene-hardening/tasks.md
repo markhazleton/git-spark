@@ -13,10 +13,10 @@
 
 **Purpose**: Create evidence artifacts and baseline workflow inputs.
 
-- [ ] T001 Create dependency candidate register scaffold in `.documentation/specs/001-dependency-hygiene-hardening/dependency-update-candidates.md`
-- [ ] T002 Create dead-code candidate register scaffold in `.documentation/specs/001-dependency-hygiene-hardening/dead-code-candidates.md`
-- [ ] T003 [P] Create documentation assertion matrix scaffold in `.documentation/specs/001-dependency-hygiene-hardening/documentation-assertions.md`
-- [ ] T004 [P] Create implementation change summary scaffold in `.documentation/specs/001-dependency-hygiene-hardening/change-summary.md`
+- [x] T001 Create dependency candidate register scaffold in `.documentation/specs/001-dependency-hygiene-hardening/dependency-update-candidates.md`
+- [x] T002 Create dead-code candidate register scaffold in `.documentation/specs/001-dependency-hygiene-hardening/dead-code-candidates.md`
+- [x] T003 [P] Create documentation assertion matrix scaffold in `.documentation/specs/001-dependency-hygiene-hardening/documentation-assertions.md`
+- [x] T004 [P] Create implementation change summary scaffold in `.documentation/specs/001-dependency-hygiene-hardening/change-summary.md`
 
 ---
 
@@ -26,12 +26,12 @@
 
 **CRITICAL**: No story implementation starts until these discovery artifacts are complete.
 
-- [ ] T005 Run `npm outdated` and record raw output in `.documentation/specs/001-dependency-hygiene-hardening/dependency-outdated.txt`
-- [ ] T006 [P] Run `npm audit --audit-level=moderate` and record raw output in `.documentation/specs/001-dependency-hygiene-hardening/dependency-audit.txt`
-- [ ] T007 [P] Run `npx npm-check-updates` and record raw output in `.documentation/specs/001-dependency-hygiene-hardening/dependency-ncu.txt`
-- [ ] T008 [P] Run `npx knip` and record raw output in `.documentation/specs/001-dependency-hygiene-hardening/dead-code-knip.txt`
-- [ ] T009 Consolidate discovery results into candidate rows (version delta, semver impact, severity, disposition placeholder) in `.documentation/specs/001-dependency-hygiene-hardening/dependency-update-candidates.md`
-- [ ] T010 Consolidate dead-code signals into candidate rows (type, location, evidence, risk, action placeholder) in `.documentation/specs/001-dependency-hygiene-hardening/dead-code-candidates.md`
+- [x] T005 Run `npm outdated` and record raw output in `.documentation/specs/001-dependency-hygiene-hardening/dependency-outdated.txt`
+- [x] T006 [P] Run `npm audit --audit-level=moderate` and record raw output in `.documentation/specs/001-dependency-hygiene-hardening/dependency-audit.txt`
+- [x] T007 [P] Run `npx npm-check-updates` and record raw output in `.documentation/specs/001-dependency-hygiene-hardening/dependency-ncu.txt`
+- [x] T008 [P] Run `npx knip` and record raw output in `.documentation/specs/001-dependency-hygiene-hardening/dead-code-knip.txt`
+- [x] T009 Consolidate discovery results into candidate rows (version delta, semver impact, severity, disposition placeholder) in `.documentation/specs/001-dependency-hygiene-hardening/dependency-update-candidates.md`
+- [x] T010 Consolidate dead-code signals into candidate rows (type, location, evidence, risk, action placeholder) in `.documentation/specs/001-dependency-hygiene-hardening/dead-code-candidates.md`
 
 **Checkpoint**: Foundation evidence is complete; user stories can proceed.
 
@@ -45,15 +45,15 @@
 
 ### Implementation for User Story 1
 
-- [ ] T011 [US1] Classify each dependency candidate by `patch|minor|major` and security override in `.documentation/specs/001-dependency-hygiene-hardening/dependency-update-candidates.md`
-- [ ] T012 [US1] Mark `apply-now|defer|reject` dispositions with rationale for every candidate in `.documentation/specs/001-dependency-hygiene-hardening/dependency-update-candidates.md`
-- [ ] T013 [US1] Apply approved patch/minor updates in `package.json`
-- [ ] T014 [US1] Regenerate lockfile after approved updates in `package-lock.json`
-- [ ] T015 [US1] Document deferred/rejected major updates with owner and mitigation rationale in `.documentation/specs/001-dependency-hygiene-hardening/dependency-update-candidates.md`
-- [ ] T037 [US1] Add/update targeted dependency-regression Jest tests for affected behavior in `test/dependency-hygiene-regression.test.ts`
-- [ ] T016 [US1] Run `npm run prebuild` and capture result in `.documentation/specs/001-dependency-hygiene-hardening/validation-prebuild.txt`
-- [ ] T017 [US1] Run `npm run lint`, `npm test`, and `npm run build`, capturing results in `.documentation/specs/001-dependency-hygiene-hardening/validation-quality-gates.txt`
-- [ ] T018 [US1] Re-run `npm audit --audit-level=moderate` and update residual risk/disposition entries in `.documentation/specs/001-dependency-hygiene-hardening/dependency-update-candidates.md`
+- [x] T011 [US1] Classify each dependency candidate by `patch|minor|major` and security override in `.documentation/specs/001-dependency-hygiene-hardening/dependency-update-candidates.md`
+- [x] T012 [US1] Mark `apply-now|defer|reject` dispositions with rationale for every candidate in `.documentation/specs/001-dependency-hygiene-hardening/dependency-update-candidates.md`
+- [x] T013 [US1] Apply approved patch/minor updates in `package.json`
+- [x] T014 [US1] Regenerate lockfile after approved updates in `package-lock.json`
+- [x] T015 [US1] Document deferred/rejected major updates with owner and mitigation rationale in `.documentation/specs/001-dependency-hygiene-hardening/dependency-update-candidates.md`
+- [x] T037 [US1] Add/update targeted dependency-regression Jest tests for affected behavior in `test/dependency-hygiene-regression.test.ts`
+- [x] T016 [US1] Run `npm run prebuild` and capture result in `.documentation/specs/001-dependency-hygiene-hardening/validation-prebuild.txt`
+- [x] T017 [US1] Run `npm run lint`, `npm test`, and `npm run build`, capturing results in `.documentation/specs/001-dependency-hygiene-hardening/validation-quality-gates.txt`
+- [x] T018 [US1] Re-run `npm audit --audit-level=moderate` and update residual risk/disposition entries in `.documentation/specs/001-dependency-hygiene-hardening/dependency-update-candidates.md`
 
 **Checkpoint**: Dependency refresh is complete and quality gates remain green.
 
@@ -67,15 +67,15 @@
 
 ### Implementation for User Story 2
 
-- [ ] T019 [US2] Verify each dead-code candidate for dynamic usage risk and action decision using the safety rubric in `.documentation/specs/001-dependency-hygiene-hardening/contracts/dependency-hygiene-contract.md` and record outcomes in `.documentation/specs/001-dependency-hygiene-hardening/dead-code-candidates.md`
-- [ ] T020 [US2] Remove approved unused dependencies from `package.json`
-- [ ] T021 [US2] Apply validated dead-code removals in `src/core/analyzer-helpers.ts` and update dependent expectations in `test/analyzer.test.ts` using safety-rubric acceptance checks
-- [ ] T038 [US2] Add/update targeted dead-code regression Jest tests for removed paths in `test/analyzer.test.ts`
-- [ ] T022 [US2] Refresh lockfile after dependency removals in `package-lock.json`
-- [ ] T023 [US2] Re-run `npm run lint`, `npm test`, and `npm run build`, capture dead-code validation results in `.documentation/specs/001-dependency-hygiene-hardening/validation-dead-code.txt`, and record safety-rubric rollback outcomes if any
-- [ ] T039 [US2] Compute and record SC-003 removal ratio (`removed_verified_unused / total_verified_unused`) with pass/fail threshold evidence in `.documentation/specs/001-dependency-hygiene-hardening/change-summary.md`
-- [ ] T024 [US2] Add explicit no-dead-code policy clause and enforcement language in `.documentation/memory/constitution.md`, synchronizing constitution metadata (`Version`, `Last Amended`, amendment log, and footer line)
-- [ ] T025 [US2] Reference constitutional policy compliance in `.documentation/specs/001-dependency-hygiene-hardening/checklists/requirements.md`
+- [x] T019 [US2] Verify each dead-code candidate for dynamic usage risk and action decision using the safety rubric in `.documentation/specs/001-dependency-hygiene-hardening/contracts/dependency-hygiene-contract.md` and record outcomes in `.documentation/specs/001-dependency-hygiene-hardening/dead-code-candidates.md`
+- [x] T020 [US2] Remove approved unused dependencies from `package.json`
+- [x] T021 [US2] Apply validated dead-code removals in `src/core/analyzer-helpers.ts` and update dependent expectations in `test/analyzer.test.ts` using safety-rubric acceptance checks (if any approved candidates are identified)
+- [x] T038 [US2] Add/update targeted dead-code regression Jest tests for removed paths in `test/analyzer.test.ts` (only when removals are approved)
+- [x] T022 [US2] Refresh lockfile after dependency removals in `package-lock.json` (when dependency removals occur)
+- [x] T023 [US2] Re-run `npm run lint`, `npm test`, and `npm run build`, capture dead-code validation results in `.documentation/specs/001-dependency-hygiene-hardening/validation-dead-code.txt`, and record safety-rubric rollback outcomes if any
+- [x] T039 [US2] Compute and record SC-003 removal ratio (`removed_verified_unused / total_verified_unused`) with pass/fail threshold evidence in `.documentation/specs/001-dependency-hygiene-hardening/change-summary.md`
+- [x] T024 [US2] Add explicit no-dead-code policy clause and enforcement language in `.documentation/memory/constitution.md`, synchronizing constitution metadata (`Version`, `Last Amended`, amendment log, and footer line)
+- [x] T025 [US2] Reference constitutional policy compliance in `.documentation/specs/001-dependency-hygiene-hardening/checklists/requirements.md`
 
 **Checkpoint**: Dead-code hygiene is enforced in both code and governance.
 
@@ -89,13 +89,13 @@
 
 ### Implementation for User Story 3
 
-- [ ] T026 [US3] Build assertion-to-source-of-truth matrix entries in `.documentation/specs/001-dependency-hygiene-hardening/documentation-assertions.md`
-- [ ] T027 [US3] Validate and update maintainer workflow/command guidance in `README.md`
-- [ ] T028 [US3] Validate and update performance and operational docs in `docs/performance-tuning.md`
-- [ ] T029 [US3] Validate and update contribution workflow guidance in `CONTRIBUTING.md`
-- [ ] T030 [US3] Validate and update security process statements in `SECURITY.md`
-- [ ] T031 [US3] Archive or remove stale internal guidance and record decision trace in `.documentation/specs/001-dependency-hygiene-hardening/documentation-assertions.md`
-- [ ] T032 [US3] Record final assertion outcomes (`valid|corrected|removed|deferred`) with owner/rationale where deferred in `.documentation/specs/001-dependency-hygiene-hardening/documentation-assertions.md`
+- [x] T026 [US3] Build assertion-to-source-of-truth matrix entries in `.documentation/specs/001-dependency-hygiene-hardening/documentation-assertions.md`
+- [x] T027 [US3] Validate and update maintainer workflow/command guidance in `README.md`
+- [x] T028 [US3] Validate and update performance and operational docs in `docs/performance-tuning.md`
+- [x] T029 [US3] Validate and update contribution workflow guidance in `CONTRIBUTING.md`
+- [x] T030 [US3] Validate and update security process statements in `SECURITY.md`
+- [x] T031 [US3] Archive or remove stale internal guidance and record decision trace in `.documentation/specs/001-dependency-hygiene-hardening/documentation-assertions.md`
+- [x] T032 [US3] Record final assertion outcomes (`valid|corrected|removed|deferred`) with owner/rationale where deferred in `.documentation/specs/001-dependency-hygiene-hardening/documentation-assertions.md`
 
 **Checkpoint**: Documentation accurately reflects current implementation and governance.
 
@@ -105,10 +105,10 @@
 
 **Purpose**: Finalize traceability and release-ready summary.
 
-- [ ] T033 [P] Verify feature metadata consistency (`classification`, `risk_level`, `required_gates`) between frontmatter and execution evidence in `.documentation/specs/001-dependency-hygiene-hardening/spec.md`
-- [ ] T034 Consolidate final implementation outcomes (updated, removed, deferred) in `.documentation/specs/001-dependency-hygiene-hardening/change-summary.md`
-- [ ] T035 [P] Update release-facing highlights for this feature in `CHANGELOG.md`
-- [ ] T036 Run quickstart validation sequence and record final pass/fail evidence in `.documentation/specs/001-dependency-hygiene-hardening/validation-final.txt`
+- [x] T033 [P] Verify feature metadata consistency (`classification`, `risk_level`, `required_gates`) between frontmatter and execution evidence in `.documentation/specs/001-dependency-hygiene-hardening/spec.md`
+- [x] T034 Consolidate final implementation outcomes (updated, removed, deferred) in `.documentation/specs/001-dependency-hygiene-hardening/change-summary.md`
+- [x] T035 [P] Update release-facing highlights for this feature in `CHANGELOG.md`
+- [x] T036 Run quickstart validation sequence and record final pass/fail evidence in `.documentation/specs/001-dependency-hygiene-hardening/validation-final.txt`
 
 ---
 

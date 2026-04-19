@@ -3,7 +3,6 @@
  * Tests for command-line interface functionality
  */
 
-import { describe, it, expect, beforeEach, afterEach } from '@jest/globals';
 import {
   createTestRepo,
   cleanupTestRepo,

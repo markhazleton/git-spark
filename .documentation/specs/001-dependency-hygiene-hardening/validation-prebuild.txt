@@ -1,0 +1,5 @@
+
+> git-spark@1.3.0 prebuild
+> node scripts/generate-version.js
+
+Γ£ô Generated version file: 1.3.0

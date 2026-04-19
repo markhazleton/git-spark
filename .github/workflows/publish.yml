@@ -54,7 +54,8 @@ jobs:
 
             - name: Manual validation mode
               if: ${{ github.event_name == 'workflow_dispatch' && !inputs.publish }}
-              run: echo "Manual validation run: skipping npm publish and deployment creation."
+              run: |
+                  echo "Manual validation run: skipping npm publish and deployment creation."
 
             - name: Publish to NPM
               if: ${{ github.event_name != 'workflow_dispatch' || inputs.publish }}
