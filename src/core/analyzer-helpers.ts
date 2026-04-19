@@ -14,8 +14,8 @@ import { CommitData } from '../types/index.js';
 export function calculateLongestStreak(commits: CommitData[]): number {
   if (commits.length === 0) return 0;
 
-  const dates = commits.map(c => c.date.toDateString()).sort();
-  const uniqueDates = [...new Set(dates)];
+  const sorted = [...commits].sort((a, b) => a.date.getTime() - b.date.getTime());
+  const uniqueDates = [...new Set(sorted.map(c => c.date.toDateString()))];
 
   let maxStreak = 1;
   let currentStreak = 1;

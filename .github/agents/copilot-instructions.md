@@ -10,12 +10,12 @@ Auto-generated from all feature plans. Last updated: 2026-04-19
 
 ```text
 src/
-tests/
+test/
 ```
 
 ## Commands
 
-npm test; npm run lint
+npm run prebuild; npm test; npm run lint; npm run build
 
 ## Code Style
 

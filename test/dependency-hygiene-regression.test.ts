@@ -32,8 +32,8 @@ describe('Dependency Hygiene Regression', () => {
       makeCommit('2026-04-10T12:00:00Z'),
     ];
 
-    // Up to 2-day gaps are treated as continuous activity.
-    expect(calculateLongestStreak(commits)).toBe(4);
+    // Apr 1→2 (1 day), 2→4 (2 days): continuous streak of 3. Apr 4→10 (6 days): breaks streak.
+    expect(calculateLongestStreak(commits)).toBe(3);
   });
 
   it('keeps consistency score in expected range', () => {
