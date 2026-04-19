@@ -6,8 +6,8 @@
 - **Source Branch**: `001-dependency-hygiene-hardening`
 - **Target Branch**: `main`
 - **Review Date**: 2026-04-19 19:00:00 UTC
-- **Last Updated**: 2026-04-19 19:07:22 UTC
-- **Reviewed Commit**: `af3124aacf213532e7fc337e80f3ff351d284151`
+- **Last Updated**: 2026-04-19 19:42:00 UTC
+- **Reviewed Commit**: `38586ada7d9a58a3b6fc8969b1b71eb770fd4913`
 - **Reviewer**: devspark.pr-review
 - **Constitution Version**: 1.6.0 (Last Amended 2026-04-19)
 
@@ -17,13 +17,14 @@
 |-----|--------|------|----------|------|--------|-----|-----|--------------|--------|
 | 1 | `af3124a` | 2026-04-19 | 0 | 0 | 1 | 1 | 0 | `npm test -- --testPathPatterns="cli-commands|dependency-hygiene-regression"` | pass (35/35) |
 | 2 | `af3124a` | 2026-04-19 | 0 | 1 | 0 | 0 | 0 | `npm test -- --testPathPatterns="cli-commands|dependency-hygiene-regression"` | pass (35/35) |
+| 3 | `38586ad` | 2026-04-19 | 0 | 1 | 0 | 0 | 0 | `npm test -- --testPathPatterns="cli-commands|dependency-hygiene-regression"` | pass (35/35) |
 
 ## PR Summary
 
 - **Author**: [@markhazleton](https://github.com/markhazleton)
 - **Created**: 2026-04-19
 - **Status**: OPEN
-- **Files Changed**: 32 (GitHub snapshot)
+- **Files Changed**: 55 (GitHub context snapshot)
 - **Commits**: 4
 - **Lines**: +3011 -344 (context script snapshot)
 
@@ -31,13 +32,13 @@
 
 | Metric | Value |
 |--------|-------|
-| Files changed | 32 (PR) / 5 modified locally |
-| Lines added | +3,011 (PR context) |
-| Lines removed | −344 (PR context) |
-| Net lines | +2,667 |
-| Commit snapshot | `af3124a` |
+| Files changed | 6 (since prior reviewed commit) |
+| Lines added | +196 |
+| Lines removed | -8 |
+| Net lines | +188 |
+| Commit snapshot | `38586ad` |
 
-*This re-review was iteration-focused on local updates since the prior review file: `src/core/analyzer-helpers.ts`, `test/dependency-hygiene-regression.test.ts`, `test/helpers/cli-test-helpers.ts`, and `.github/agents/copilot-instructions.md`.*
+*Collected for this revision from `git diff --numstat af3124a..38586ad`.*
 
 ## Executive Summary
 
@@ -46,22 +47,22 @@
 - 📝 **Task Completion**: 39/39 tasks complete
 - 🔒 **Security**: 0 code-level security issues in reviewed delta
 - 📊 **Code Quality**: 0 open code-quality findings
-- 🧪 **Testing**: PASS locally (scoped run 35/35)
+- 🧪 **Testing**: PARTIAL (local scoped tests pass; PR checks failing)
 - 📝 **Documentation**: PASS for carried documentation findings (both resolved locally)
 - 🏛️ **Constitution Improvements**: 0 CON findings
 
-**Overall Assessment**: The previously carried documentation findings are now fixed in the working tree, and the local scoped test gate passes. The only remaining blocker is external to code content: the current GitHub PR snapshot still has failing CI jobs and does not yet include these local fixes.
+**Overall Assessment**: Local iteration changes address prior documentation issues and keep scoped regression tests green. Merge remains blocked only by failing CI checks on the open PR.
 
 **Approval Recommendation**: ⚠️ REQUEST CHANGES
-*Note: This is blocked by failing GitHub status checks and unpushed local fixes, not by new code defects in the reviewed local delta.*
+*Note: Approval is blocked by failing required status checks (`mergeStateStatus: UNSTABLE`), not by new code defects in the reviewed delta.*
 
 ## Action Items
 
 ### Immediate Actions (Blocking — must resolve before merge)
 
 - [ ] **H-01** `N/A (GitHub checks)` — PR #7 currently has failing required CI jobs across multiple matrix entries.
-	- **Broken state**: `Test on Node.js 20.x/22.x` on `ubuntu-latest`, `windows-latest`, and `macOS-latest` are all failing.
-	- **Fix**: Commit and push the local fixes on `001-dependency-hygiene-hardening`, then rerun the CI matrix and confirm all required checks are green.
+  - **Broken state**: `CI / Test on Node.js 20.x` and `CI / Test on Node.js 22.x` are failing across Linux, Windows, and macOS targets.
+  - **Fix**: Push the latest fixes (if not already pushed), inspect failed job logs, apply corrections, and rerun checks until required jobs are green.
 
 ### Recommended Improvements
 
@@ -77,6 +78,7 @@ None found.
 - `test/dependency-hygiene-regression.test.ts` now asserts the correct 3-day streak for the provided timeline.
 - `test/helpers/cli-test-helpers.ts` now uses unique temporary repository names and creates parent directories for nested file paths.
 - `.github/agents/copilot-instructions.md` now reflects the actual `test/` directory and complete validation command chain.
+- Co-mingling check passed: review-file commit SHA (`1103c1a`) does not overlap with production-file update SHAs.
 
 ## Findings Detail
 
@@ -157,10 +159,12 @@ None.
 
 | File | Tier | Changes | Type | Findings |
 |------|------|---------|------|---------|
+| `.documentation/specs/pr-review/pr-7.md` | P3 | +185 -0 | Added | None |
 | `src/core/analyzer-helpers.ts` | P1 | +2 -2 | Modified | None |
 | `test/dependency-hygiene-regression.test.ts` | P2 | +2 -2 | Modified | None |
 | `test/helpers/cli-test-helpers.ts` | P2 | +4 -2 | Modified | None |
 | `.github/agents/copilot-instructions.md` | P3 | +2 -2 | Modified | M-01 resolved, L-01 resolved |
+| `test-tmp/helper-repro` | P3 | +1 -0 | Added | None |
 
 ## Behavioral Changes
 
@@ -174,7 +178,7 @@ None.
 
 **Recommendation**: ⚠️ REQUEST CHANGES
 
-**Reasoning**: Re-reviewed local code changes are in good shape and resolve prior medium/low findings. However, required GitHub CI checks are failing on the current PR snapshot, so this cannot be approved for merge until fixes are pushed and CI passes.
+**Reasoning**: The reviewed iteration delta is technically sound and prior non-blocking documentation findings are resolved. However, required PR CI checks remain failing (UNSTABLE), so this review cannot recommend approval until status checks pass.
 
 **Estimated Rework Time**: ~20 minutes (commit, push, rerun checks)
 
