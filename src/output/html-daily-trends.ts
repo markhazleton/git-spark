@@ -2,11 +2,35 @@
  * Daily trends, contribution calendar, SVG charts, and current-state section
  * generation for Git Spark HTML reports.
  *
- * All functions are pure — they receive data and return HTML strings.
- * Tightly coupled chart helpers (commit trend, author trend, volume sparklines)
- * are co-located here because generateActivityVisualsForTeamPatterns calls them.
+ * Orchestration functions live here; chart and table renderers are in
+ * html-daily-trends-charts.ts and html-daily-trends-tables.ts respectively.
  */
 import { escapeHtml } from './html-utils.js';
+import {
+  generateContributionsGraphSection,
+  generateCommitTrendChart,
+  generateAuthorTrendChart,
+  generateVolumeSparklines,
+} from './html-daily-trends-charts.js';
+import {
+  generateFlowTrendsTable,
+  generateStabilityTrendsTable,
+  generateOwnershipTrendsTable,
+  generateCouplingTrendsTable,
+  generateHygieneTrendsTable,
+} from './html-daily-trends-tables.js';
+
+export {
+  generateContributionsGraphSection,
+  generateCommitTrendChart,
+  generateAuthorTrendChart,
+  generateVolumeSparklines,
+  generateFlowTrendsTable,
+  generateStabilityTrendsTable,
+  generateOwnershipTrendsTable,
+  generateCouplingTrendsTable,
+  generateHygieneTrendsTable,
+};
 
 export function generateActivityVisualsForTeamPatterns(trends: any): string {
   const dateFormat = (date: Date) => date.toISOString().split('T')[0];
@@ -89,24 +113,21 @@ export function generateDailyTrendsSection(trends: any): string {
     <section id="daily-trends" class="section">
       <h2>📅 Detailed Daily Tables</h2>
       <p class="section-description">
-        Detailed day-by-day breakdowns of repository metrics computed from Git commit history. These tables provide 
+        Detailed day-by-day breakdowns of repository metrics computed from Git commit history. These tables provide
         granular data for analysis but should not be used for performance evaluation.
       </p>
 
-      <!-- Key Trends -->
       <div class="key-trends">
         <h3>Daily Metrics Breakdown</h3>
-        
-        <!-- Flow Trends -->
+
         <div class="trend-category">
-          <h4>📊 Daily Flow & Throughput</h4>
+          <h4>📊 Daily Flow &amp; Throughput</h4>
           <div class="trend-explanation">
             <p>Observable patterns in commit frequency, author participation, and code volume changes.</p>
           </div>
           ${generateFlowTrendsTable(flowMetrics)}
         </div>
 
-        <!-- Stability Trends -->
         <div class="trend-category">
           <h4>⚖️ Daily Stability Indicators</h4>
           <div class="trend-explanation">
@@ -115,7 +136,6 @@ export function generateDailyTrendsSection(trends: any): string {
           ${generateStabilityTrendsTable(stabilityMetrics)}
         </div>
 
-        <!-- Ownership Trends -->
         <div class="trend-category">
           <h4>👥 Daily Ownership Patterns</h4>
           <div class="trend-explanation">
@@ -124,7 +144,6 @@ export function generateDailyTrendsSection(trends: any): string {
           ${generateOwnershipTrendsTable(ownershipMetrics)}
         </div>
 
-        <!-- Coupling Trends -->
         <div class="trend-category">
           <h4>🔗 Daily Coupling Indicators</h4>
           <div class="trend-explanation">
@@ -133,7 +152,6 @@ export function generateDailyTrendsSection(trends: any): string {
           ${generateCouplingTrendsTable(couplingMetrics)}
         </div>
 
-        <!-- Hygiene Trends -->
         <div class="trend-category">
           <h4>🧹 Daily Hygiene Patterns</h4>
           <div class="trend-explanation">
@@ -143,7 +161,6 @@ export function generateDailyTrendsSection(trends: any): string {
         </div>
       </div>
 
-      <!-- Limitations and Context -->
       <div class="trends-limitations">
         <h3>⚠️ Daily Trends Limitations</h3>
         <div class="limitation-notice">
@@ -156,7 +173,7 @@ export function generateDailyTrendsSection(trends: any): string {
             <li><strong>No Quality Context:</strong> Cannot distinguish between bug fixes, features, refactoring, or maintenance</li>
             <li><strong>No External Events:</strong> Cannot correlate with releases, incidents, holidays, or business events</li>
           </ul>
-          
+
           <h4>Appropriate Usage</h4>
           <ul>
             <li><strong>Activity Monitoring:</strong> Track repository activity levels and participation</li>
@@ -164,7 +181,7 @@ export function generateDailyTrendsSection(trends: any): string {
             <li><strong>Planning Context:</strong> Understand historical activity patterns for capacity planning</li>
             <li><strong>Process Insights:</strong> Observe effects of workflow or tooling changes</li>
           </ul>
-          
+
           <h4>Inappropriate Usage</h4>
           <ul>
             <li><strong>Performance Assessment:</strong> Do not use for individual or team performance evaluation</li>
@@ -177,489 +194,6 @@ export function generateDailyTrendsSection(trends: any): string {
     </section>`;
 }
 
-export function generateFlowTrendsTable(flowMetrics: any[]): string {
-  if (flowMetrics.length === 0) {
-    return '<div class="no-data">No flow data available</div>';
-  }
-
-  const recentMetrics = flowMetrics.slice(-30);
-
-  const rows = recentMetrics
-    .map(
-      day => `
-      <tr>
-        <td>${day.day}</td>
-        <td class="num">${day.commitsPerDay}</td>
-        <td class="num">${day.uniqueAuthorsPerDay}</td>
-        <td class="num">${new Intl.NumberFormat().format(day.grossLinesChangedPerDay)}</td>
-        <td class="num">${day.filesTouchedPerDay}</td>
-        <td class="num">${day.commitSizeDistribution.p50}</td>
-        <td class="num">${day.commitSizeDistribution.p90}</td>
-      </tr>
-    `
-    )
-    .join('');
-
-  return `
-      <div class="table-wrapper">
-        <table class="data-table trends-table" data-sortable>
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th class="num">Commits</th>
-              <th class="num">Authors</th>
-              <th class="num">Lines Changed</th>
-              <th class="num">Files Touched</th>
-              <th class="num">P50 Commit Size</th>
-              <th class="num">P90 Commit Size</th>
-            </tr>
-          </thead>
-          <tbody>${rows}</tbody>
-        </table>
-      </div>
-      ${flowMetrics.length > 30 ? '<p class="table-note">Showing last 30 days. Complete data available in exported reports.</p>' : ''}
-    `;
-}
-
-export function generateStabilityTrendsTable(stabilityMetrics: any[]): string {
-  if (stabilityMetrics.length === 0) {
-    return '<div class="no-data">No stability data available</div>';
-  }
-
-  const recentMetrics = stabilityMetrics.slice(-30);
-
-  const rows = recentMetrics
-    .map(
-      day => `
-      <tr>
-        <td>${day.day}</td>
-        <td class="num">${day.revertsPerDay}</td>
-        <td class="num">${(day.mergeRatioPerDay * 100).toFixed(1)}%</td>
-        <td class="num">${(day.retouchRate * 100).toFixed(1)}%</td>
-        <td class="num">${day.renamesPerDay}</td>
-        <td class="num">${(day.outOfHoursShare * 100).toFixed(1)}%</td>
-      </tr>
-    `
-    )
-    .join('');
-
-  return `
-      <div class="table-wrapper">
-        <table class="data-table trends-table" data-sortable>
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th class="num">Reverts</th>
-              <th class="num">Merge Ratio</th>
-              <th class="num">Retouch Rate</th>
-              <th class="num">Renames</th>
-              <th class="num">Out of Hours</th>
-            </tr>
-          </thead>
-          <tbody>${rows}</tbody>
-        </table>
-      </div>
-      ${stabilityMetrics.length > 30 ? '<p class="table-note">Showing last 30 days. Complete data available in exported reports.</p>' : ''}
-    `;
-}
-
-export function generateOwnershipTrendsTable(ownershipMetrics: any[]): string {
-  if (ownershipMetrics.length === 0) {
-    return '<div class="no-data">No ownership data available</div>';
-  }
-
-  const recentMetrics = ownershipMetrics.slice(-30);
-
-  const rows = recentMetrics
-    .map(
-      day => `
-      <tr>
-        <td>${day.day}</td>
-        <td class="num">${day.newFilesCreatedPerDay}</td>
-        <td class="num">${day.singleOwnerFilesTouched}</td>
-        <td class="num">${day.filesTouchedToday}</td>
-        <td class="num">${(day.singleOwnerShare * 100).toFixed(1)}%</td>
-        <td class="num">${day.avgAuthorsPerFile.toFixed(1)}</td>
-      </tr>
-    `
-    )
-    .join('');
-
-  return `
-      <div class="table-wrapper">
-        <table class="data-table trends-table" data-sortable>
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th class="num">New Files</th>
-              <th class="num">Single Owner Files</th>
-              <th class="num">Total Files Touched</th>
-              <th class="num">Single Owner %</th>
-              <th class="num">Avg Authors/File</th>
-            </tr>
-          </thead>
-          <tbody>${rows}</tbody>
-        </table>
-      </div>
-      ${ownershipMetrics.length > 30 ? '<p class="table-note">Showing last 30 days. Complete data available in exported reports.</p>' : ''}
-    `;
-}
-
-export function generateCouplingTrendsTable(couplingMetrics: any[]): string {
-  if (couplingMetrics.length === 0) {
-    return '<div class="no-data">No coupling data available</div>';
-  }
-
-  const recentMetrics = couplingMetrics.slice(-30);
-
-  const rows = recentMetrics
-    .map(
-      day => `
-      <tr>
-        <td>${day.day}</td>
-        <td class="num">${day.coChangeDensityPerDay.toFixed(2)}</td>
-        <td class="num">${day.totalCoChangePairs}</td>
-        <td class="num">${day.multiFileCommits}</td>
-      </tr>
-    `
-    )
-    .join('');
-
-  return `
-      <div class="table-wrapper">
-        <table class="data-table trends-table" data-sortable>
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th class="num">Co-change Density</th>
-              <th class="num">Total Co-change Pairs</th>
-              <th class="num">Multi-file Commits</th>
-            </tr>
-          </thead>
-          <tbody>${rows}</tbody>
-        </table>
-      </div>
-      ${couplingMetrics.length > 30 ? '<p class="table-note">Showing last 30 days. Complete data available in exported reports.</p>' : ''}
-    `;
-}
-
-export function generateHygieneTrendsTable(hygieneMetrics: any[]): string {
-  if (hygieneMetrics.length === 0) {
-    return '<div class="no-data">No hygiene data available</div>';
-  }
-
-  const recentMetrics = hygieneMetrics.slice(-30);
-
-  const rows = recentMetrics
-    .map(
-      day => `
-      <tr>
-        <td>${day.day}</td>
-        <td class="num">${day.medianCommitMessageLength}</td>
-        <td class="num">${day.shortMessages}</td>
-        <td class="num">${day.conventionalCommits}</td>
-      </tr>
-    `
-    )
-    .join('');
-
-  return `
-      <div class="table-wrapper">
-        <table class="data-table trends-table" data-sortable>
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th class="num">Median Message Length</th>
-              <th class="num">Short Messages</th>
-              <th class="num">Conventional Commits</th>
-            </tr>
-          </thead>
-          <tbody>${rows}</tbody>
-        </table>
-      </div>
-      ${hygieneMetrics.length > 30 ? '<p class="table-note">Showing last 30 days. Complete data available in exported reports.</p>' : ''}
-    `;
-}
-
-export function generateContributionsGraphSection(contributionsGraph: any): string {
-  if (!contributionsGraph || !contributionsGraph.calendar) {
-    return '';
-  }
-
-  const { totalCommits, weeks, calendar } = contributionsGraph;
-
-  const datesWithCommits = calendar.filter((day: any) => day.count > 0);
-  const actualDays = datesWithCommits.length > 0 ? datesWithCommits.length : calendar.length;
-  const dateRangeText =
-    datesWithCommits.length > 0
-      ? `${datesWithCommits[0].date} to ${datesWithCommits[datesWithCommits.length - 1].date}`
-      : `${calendar[0]?.date || ''} to ${calendar[calendar.length - 1]?.date || ''}`;
-
-  const weekColumns = weeks
-    .map((week: any) => {
-      const days = week.days
-        .map((day: any) => {
-          const classes = `contribution-day intensity-${day.intensity}`;
-          const title = `${day.date}: ${day.count} commit${day.count !== 1 ? 's' : ''}`;
-          return `<div class="${classes}" title="${title}" data-count="${day.count}" data-date="${day.date}"></div>`;
-        })
-        .join('');
-
-      return `<div class="contributions-week">${days}</div>`;
-    })
-    .join('');
-
-  return `
-      <div class="contributions-graph">
-        <h3>🗓️ Contributions Calendar</h3>
-        <div class="contributions-header">
-          <span>Activity from ${escapeHtml(dateRangeText)} (${actualDays} active days)</span>
-          <span>${totalCommits} total commits</span>
-        </div>
-        <div class="contributions-calendar">
-          <div class="contributions-weeks">
-            ${weekColumns}
-          </div>
-        </div>
-        <div class="contributions-legend">
-          <span>Less</span>
-          <div class="legend-scale">
-            <div class="legend-day intensity-0"></div>
-            <div class="legend-day intensity-1"></div>
-            <div class="legend-day intensity-2"></div>
-            <div class="legend-day intensity-3"></div>
-            <div class="legend-day intensity-4"></div>
-          </div>
-          <span>More</span>
-        </div>
-      </div>
-    `;
-}
-
-export function generateCommitTrendChart(flowMetrics: any[]): string {
-  if (!flowMetrics || flowMetrics.length === 0) {
-    return '<div class="chart-placeholder">No commit trend data available</div>';
-  }
-
-  const recentData = flowMetrics.slice(-30);
-  const maxCommits = Math.max(...recentData.map(d => d.commitsPerDay), 1);
-
-  const width = 800;
-  const height = 200;
-  const padding = { top: 20, right: 50, bottom: 30, left: 50 };
-  const chartWidth = width - padding.left - padding.right;
-  const chartHeight = height - padding.top - padding.bottom;
-
-  const points = recentData.map((day, index) => {
-    const x = padding.left + (index * chartWidth) / (recentData.length - 1 || 1);
-    const y = padding.top + chartHeight - (day.commitsPerDay * chartHeight) / maxCommits;
-    return { x, y, value: day.commitsPerDay, date: day.day };
-  });
-
-  const pathData = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
-  const areaData = `M ${padding.left} ${height - padding.bottom} L ${pathData.substring(2)} L ${points[points.length - 1]?.x || padding.left} ${height - padding.bottom} Z`;
-
-  return `
-      <div class="chart-container">
-        <h4>Daily Commits Trend</h4>
-        <svg class="trend-chart" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
-          <defs>
-            <linearGradient id="commitTrendGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" style="stop-color:var(--color-primary);stop-opacity:0.6" />
-              <stop offset="100%" style="stop-color:var(--color-primary);stop-opacity:0.1" />
-            </linearGradient>
-          </defs>
-          
-          <!-- Grid lines -->
-          <g class="grid" stroke="var(--color-border)" stroke-width="1" opacity="0.3">
-            ${Array.from({ length: 5 }, (_, i) => {
-              const y = padding.top + (i * chartHeight) / 4;
-              return `<line x1="${padding.left}" y1="${y}" x2="${width - padding.right}" y2="${y}"/>`;
-            }).join('')}
-          </g>
-          
-          <!-- Area fill -->
-          <path d="${areaData}" fill="url(#commitTrendGradient)"/>
-          
-          <!-- Trend line -->
-          <path d="${pathData}" fill="none" stroke="var(--color-primary)" stroke-width="2"/>
-          
-          <!-- Data points -->
-          <g class="data-points">
-            ${points
-              .map(
-                p =>
-                  `<circle cx="${p.x}" cy="${p.y}" r="3" fill="var(--color-primary)" 
-                      title="${p.date}: ${p.value} commits">
-                 <title>${p.date}: ${p.value} commits</title>
-               </circle>`
-              )
-              .join('')}
-          </g>
-          
-          <!-- Y-axis labels -->
-          <g class="y-labels" font-size="12" fill="var(--color-text-secondary)" text-anchor="end">
-            <text x="${padding.left - 10}" y="${padding.top + 5}">${maxCommits}</text>
-            <text x="${padding.left - 10}" y="${height - padding.bottom + 5}">0</text>
-          </g>
-          
-          <!-- Chart title -->
-          <text x="${width / 2}" y="15" text-anchor="middle" font-size="14" font-weight="600" fill="var(--color-text)">
-            Last ${recentData.length} Days
-          </text>
-        </svg>
-      </div>
-    `;
-}
-
-export function generateAuthorTrendChart(flowMetrics: any[]): string {
-  if (!flowMetrics || flowMetrics.length === 0) {
-    return '<div class="chart-placeholder">No author trend data available</div>';
-  }
-
-  const recentData = flowMetrics.slice(-30);
-  const maxAuthors = Math.max(...recentData.map(d => d.uniqueAuthorsPerDay), 1);
-
-  const width = 800;
-  const height = 200;
-  const padding = { top: 20, right: 50, bottom: 30, left: 50 };
-  const chartWidth = width - padding.left - padding.right;
-  const chartHeight = height - padding.top - padding.bottom;
-
-  const points = recentData.map((day, index) => {
-    const x = padding.left + (index * chartWidth) / (recentData.length - 1 || 1);
-    const y = padding.top + chartHeight - (day.uniqueAuthorsPerDay * chartHeight) / maxAuthors;
-    return { x, y, value: day.uniqueAuthorsPerDay, date: day.day };
-  });
-
-  const pathData = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
-
-  return `
-      <div class="chart-container">
-        <h4>Active Authors Trend</h4>
-        <svg class="trend-chart" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
-          <defs>
-            <linearGradient id="authorTrendGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" style="stop-color:var(--color-success);stop-opacity:0.6" />
-              <stop offset="100%" style="stop-color:var(--color-success);stop-opacity:0.1" />
-            </linearGradient>
-          </defs>
-          
-          <!-- Grid lines -->
-          <g class="grid" stroke="var(--color-border)" stroke-width="1" opacity="0.3">
-            ${Array.from({ length: 5 }, (_, i) => {
-              const y = padding.top + (i * chartHeight) / 4;
-              return `<line x1="${padding.left}" y1="${y}" x2="${width - padding.right}" y2="${y}"/>`;
-            }).join('')}
-          </g>
-          
-          <!-- Trend line -->
-          <path d="${pathData}" fill="none" stroke="var(--color-success)" stroke-width="2"/>
-          
-          <!-- Data points -->
-          <g class="data-points">
-            ${points
-              .map(
-                p =>
-                  `<circle cx="${p.x}" cy="${p.y}" r="3" fill="var(--color-success)" 
-                      title="${p.date}: ${p.value} authors">
-                 <title>${p.date}: ${p.value} authors</title>
-               </circle>`
-              )
-              .join('')}
-          </g>
-          
-          <!-- Y-axis labels -->
-          <g class="y-labels" font-size="12" fill="var(--color-text-secondary)" text-anchor="end">
-            <text x="${padding.left - 10}" y="${padding.top + 5}">${maxAuthors}</text>
-            <text x="${padding.left - 10}" y="${height - padding.bottom + 5}">0</text>
-          </g>
-          
-          <!-- Chart title -->
-          <text x="${width / 2}" y="15" text-anchor="middle" font-size="14" font-weight="600" fill="var(--color-text)">
-            Last ${recentData.length} Days
-          </text>
-        </svg>
-      </div>
-    `;
-}
-
-export function generateVolumeSparklines(flowMetrics: any[]): string {
-  if (!flowMetrics || flowMetrics.length === 0) {
-    return '<div class="chart-placeholder">No volume data available</div>';
-  }
-
-  const recentData = flowMetrics.slice(-14);
-  const maxLines = Math.max(...recentData.map(d => d.grossLinesChangedPerDay), 1);
-  const maxFiles = Math.max(...recentData.map(d => d.filesTouchedPerDay), 1);
-
-  const barWidth = 100 / recentData.length;
-  const chartHeight = 50;
-
-  const linesSparkline = recentData
-    .map((day, index) => {
-      const heightPercent = (day.grossLinesChangedPerDay / maxLines) * 100;
-      const height = (heightPercent / 100) * chartHeight;
-      const x = index * barWidth;
-      const y = chartHeight - height;
-      return `<rect x="${x}%" y="${y}" width="${barWidth * 0.8}%" height="${height}" fill="url(#lines-gradient)" rx="1">
-          <title>${day.day}: ${day.grossLinesChangedPerDay.toLocaleString()} lines</title>
-        </rect>`;
-    })
-    .join('');
-
-  const filesSparkline = recentData
-    .map((day, index) => {
-      const heightPercent = (day.filesTouchedPerDay / maxFiles) * 100;
-      const height = (heightPercent / 100) * chartHeight;
-      const x = index * barWidth;
-      const y = chartHeight - height;
-      return `<rect x="${x}%" y="${y}" width="${barWidth * 0.8}%" height="${height}" fill="url(#files-gradient)" rx="1">
-          <title>${day.day}: ${day.filesTouchedPerDay} files</title>
-        </rect>`;
-    })
-    .join('');
-
-  return `
-      <div class="sparklines-container">
-        <h4>Volume Trends (Last 14 Days)</h4>
-        <div class="sparklines-grid">
-          <div class="sparkline-item">
-            <div class="sparkline-label">Lines Changed</div>
-            <div class="sparkline-chart">
-              <svg width="100%" height="50" viewBox="0 0 100 50" preserveAspectRatio="none">
-                <defs>
-                  <linearGradient id="lines-gradient" x1="0%" y1="100%" x2="0%" y2="0%">
-                    <stop offset="0%" style="stop-color:var(--color-primary);stop-opacity:1" />
-                    <stop offset="100%" style="stop-color:#2196f3;stop-opacity:1" />
-                  </linearGradient>
-                </defs>
-                ${linesSparkline}
-              </svg>
-            </div>
-            <div class="sparkline-summary">Peak: ${maxLines.toLocaleString()}</div>
-          </div>
-          
-          <div class="sparkline-item">
-            <div class="sparkline-label">Files Touched</div>
-            <div class="sparkline-chart">
-              <svg width="100%" height="50" viewBox="0 0 100 50" preserveAspectRatio="none">
-                <defs>
-                  <linearGradient id="files-gradient" x1="0%" y1="100%" x2="0%" y2="0%">
-                    <stop offset="0%" style="stop-color:var(--color-success);stop-opacity:1" />
-                    <stop offset="100%" style="stop-color:#4caf50;stop-opacity:1" />
-                  </linearGradient>
-                </defs>
-                ${filesSparkline}
-              </svg>
-            </div>
-            <div class="sparkline-summary">Peak: ${maxFiles}</div>
-          </div>
-        </div>
-      </div>
-    `;
-}
-
 export function generateCurrentStateSection(currentState: any): string {
   if (!currentState) {
     return '<div class="alert alert-warning">Current repository state data is not available.</div>';
@@ -668,13 +202,9 @@ export function generateCurrentStateSection(currentState: any): string {
   const { totalFiles, totalSizeBytes, byExtension, categories, topDirectories } = currentState;
   const pctFmt = (value: number) => `${value.toFixed(1)}%`;
   const sizeFmt = (bytes: number) => {
-    if (bytes >= 1024 * 1024 * 1024) {
-      return `${(bytes / (1024 * 1024 * 1024)).toFixed(1)} GB`;
-    } else if (bytes >= 1024 * 1024) {
-      return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-    } else if (bytes >= 1024) {
-      return `${(bytes / 1024).toFixed(1)} KB`;
-    }
+    if (bytes >= 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024 * 1024)).toFixed(1)} GB`;
+    if (bytes >= 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+    if (bytes >= 1024) return `${(bytes / 1024).toFixed(1)} KB`;
     return `${bytes} B`;
   };
 
@@ -682,10 +212,7 @@ export function generateCurrentStateSection(currentState: any): string {
     { value: totalFiles.toLocaleString(), label: 'Total Files' },
     { value: sizeFmt(totalSizeBytes), label: 'Total Size' },
     { value: byExtension.length.toString(), label: 'File Types' },
-    {
-      value: topDirectories ? topDirectories.length.toString() : 'N/A',
-      label: 'Directories',
-    },
+    { value: topDirectories ? topDirectories.length.toString() : 'N/A', label: 'Directories' },
   ];
 
   const topExtensions = byExtension
@@ -693,7 +220,7 @@ export function generateCurrentStateSection(currentState: any): string {
     .map(
       (ext: any) =>
         `<tr>
-            <td><span class="file-extension">.${ext.extension}</span></td>
+            <td><span class="file-extension">.${escapeHtml(ext.extension)}</span></td>
             <td class="num">${ext.fileCount.toLocaleString()}</td>
             <td class="num">${pctFmt(ext.percentage)}</td>
             <td class="num">${sizeFmt(ext.totalSizeBytes)}</td>
@@ -710,7 +237,7 @@ export function generateCurrentStateSection(currentState: any): string {
       .map(
         ([name, stats]: [string, any]) =>
           `<tr>
-              <td>${name.charAt(0).toUpperCase() + name.slice(1)}</td>
+              <td>${escapeHtml(name.charAt(0).toUpperCase() + name.slice(1))}</td>
               <td class="num">${stats.fileCount.toLocaleString()}</td>
               <td class="num">${pctFmt(stats.percentage)}</td>
               <td class="num">${sizeFmt(stats.totalSizeBytes)}</td>
@@ -727,7 +254,7 @@ export function generateCurrentStateSection(currentState: any): string {
       .map(
         (dir: any) =>
           `<tr>
-              <td><code class="directory-path">${dir.path}</code></td>
+              <td><code class="directory-path">${escapeHtml(dir.path)}</code></td>
               <td class="num">${dir.fileCount.toLocaleString()}</td>
               <td class="num">${pctFmt(dir.percentage)}</td>
             </tr>`
@@ -736,7 +263,6 @@ export function generateCurrentStateSection(currentState: any): string {
   }
 
   return `
-      <!-- Executive Summary style metrics grid -->
       <div class="summary-grid">
         ${keyMetrics
           .map(
@@ -749,7 +275,6 @@ export function generateCurrentStateSection(currentState: any): string {
           .join('')}
       </div>
 
-      <!-- Repository details in clean table layout -->
       <div class="repository-details">
         <div class="table-wrapper" role="region" aria-label="File extensions breakdown">
           <h3>File Extensions</h3>
