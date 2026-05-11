@@ -13,13 +13,22 @@
 [![GitHub issues](https://img.shields.io/github/issues/MarkHazleton/git-spark.svg?style=flat-square)](https://github.com/MarkHazleton/git-spark/issues)
 [![GitHub stars](https://img.shields.io/github/stars/MarkHazleton/git-spark.svg?style=flat-square)](https://github.com/MarkHazleton/git-spark/stargazers)
 
-**[🎨 Live Demo](https://markhazleton.github.io/git-spark/)** •
+**Live Site**: [https://markhazleton.github.io/git-spark/](https://markhazleton.github.io/git-spark/) •
 **[📖 Documentation](#-documentation)** •
 **[🚀 Quick Start](#-quick-start)**
 
 ---
 
 </div>
+
+## About
+
+**Live Site**: [https://markhazleton.github.io/git-spark/](https://markhazleton.github.io/git-spark/)
+
+Git Spark analyzes Git repository commit history to generate interactive HTML reports with charts, contributor statistics, and file analysis — with complete transparency about what Git data can and cannot reveal.
+
+> Built by [Mark Hazleton](https://markhazleton.com) — Mark Hazleton, Solutions Architect
+> git-spark is part of the [Make Bold Spark](https://makeboldspark.com) portfolio of technical demonstrations.
 
 ## 📊 What is Git Spark?
 
@@ -755,19 +764,19 @@ Mark specializes in:
 
 ---
 
-## ⚡ The WebSpark Family
+## ⚡ The Make Bold Spark Portfolio
 
-**Git Spark** is part of the **WebSpark** ecosystem - a growing family of tools, frameworks, and demonstrations designed to solve real-world development challenges with elegance and precision.
+**Git Spark** is part of the **[Make Bold Spark](https://makeboldspark.com)** portfolio — a growing family of tools, frameworks, and demonstrations designed to solve real-world development challenges with elegance and precision.
 
-### 🎯 Other WebSpark Projects
+### 🎯 Other Make Bold Spark Projects
 
-- **WebSpark Demos** - Interactive demonstrations of modern web technologies and architectural patterns
-- **WebSpark Tools** - Productivity utilities for developers and teams
-- **WebSpark Frameworks** - Reusable components and libraries for enterprise applications
+- **Make Bold Spark Demos** - Interactive demonstrations of modern web technologies and architectural patterns
+- **Make Bold Spark Tools** - Productivity utilities for developers and teams
+- **Make Bold Spark Frameworks** - Reusable components and libraries for enterprise applications
 
-### 🚀 The WebSpark Philosophy
+### 🚀 The Make Bold Spark Philosophy
 
-The WebSpark family is built on core principles:
+The Make Bold Spark portfolio is built on core principles:
 
 - ✨ **Practical Excellence** - Tools that solve real problems elegantly
 - 🔍 **Transparency First** - Honest about capabilities and limitations
@@ -777,7 +786,7 @@ The WebSpark family is built on core principles:
 
 ### 🌟 Explore More
 
-Visit [markhazleton.com](https://markhazleton.com) to explore the full WebSpark ecosystem and discover tools that can transform your development workflow.
+Visit [makeboldspark.com](https://makeboldspark.com) to explore the full Make Bold Spark portfolio and discover tools that can transform your development workflow.
 
 ---
 
