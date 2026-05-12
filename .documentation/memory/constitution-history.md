@@ -30,4 +30,4 @@
 
 ---
 
-*Maintained by /speckit.evolve-constitution*
+*Maintained by /devspark.evolve-constitution*

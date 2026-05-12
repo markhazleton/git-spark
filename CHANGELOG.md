@@ -22,7 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Release and Maintenance Tooling**
   - Added dedicated HTML report command implementation to keep report generation, preview, and serving logic isolated from the main CLI flow
-  - Added Speckit agent and prompt definitions plus supporting documentation templates for structured project workflows
+  - Added DevSpark agent and prompt definitions plus supporting documentation templates for structured project workflows
   - Added repository constitution history and amendment proposal tracking for governance changes
 
 ### Changed

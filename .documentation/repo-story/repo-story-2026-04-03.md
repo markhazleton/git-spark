@@ -30,7 +30,7 @@ The project launched explosively. The three months from September through Novemb
 
 The December–February trough (10 → 3 → 3 commits) suggests either deliberate stabilization, external obligations, or both. Notably, these months saw fewer but more intentional commits — dependency updates, performance thresholds, and the `git-spark init` command feature.
 
-March 2026 brought the strongest single-month resurgence since launch: **31 commits** delivering a TypeScript 6.0.2 upgrade, comprehensive CSS styling, the CI/CD pipeline overhaul (4 CI-related commits on March 30 alone), removal of the Azure DevOps integration remnants, and the framework migration from Spec Kit to DevSpark. This was a quality-consolidation sprint as much as a feature sprint.
+March 2026 brought the strongest single-month resurgence since launch: **31 commits** delivering a TypeScript 6.0.2 upgrade, comprehensive CSS styling, the CI/CD pipeline overhaul (4 CI-related commits on March 30 alone), removal of the Azure DevOps integration remnants, and the framework migration to DevSpark. This was a quality-consolidation sprint as much as a feature sprint.
 
 **File-type velocity** reinforces this story. Across all 159 commits, `src/output/html.ts` was touched **32 times** and `src/core/analyzer.ts` **27 times** — the two core engines of the tool received near-continuous refinement. The HTML report is clearly the flagship output and the most actively developed surface.
 
@@ -76,7 +76,7 @@ Governance maturity is a genuine strength of git-spark. The project has:
 - **GitHub Actions CI/CD** with a publish workflow using OIDC trusted publishing (`provenance: true`)
 - A **Dockerfile** for containerization
 - A CI pipeline that enforces TypeScript compilation, test coverage thresholds, and linting gates before merge
-- The **DevSpark framework** migrated April 2, 2026 — a governance evolution from Spec Kit, adding structured feature specification, plan, and task workflows
+- The **DevSpark framework** migrated April 2, 2026, adding structured feature specification, plan, and task workflows
 
 The 1 formal git tag (note: `milestones.tags` shows 0 annotated tags, but `summary.total_tags: 1` suggests a lightweight tag) reflects careful version discipline starting in 2026. Version history is traceable through commit messages mentioning v1.0.125 (October 2025) and the explicit `chore: release v1.3.0` commit on March 14, 2026.
 
@@ -144,7 +144,7 @@ No annotated git tags were found. Version discipline is primarily tracked throug
 | Jan 25, 2026 | `git-spark init` command | Interactive config creation capability added |
 | Mar 14, 2026 | v1.3.0 release | `chore: release v1.3.0` — TypeScript 6 upgrade, code structure refactor |
 | Mar 30, 2026 | DevSpark framework prep | CI/CD overhaul, repo-story tooling, CSS consolidation |
-| Apr 2, 2026 | DevSpark migration | `chore: migrate Spec Kit to DevSpark framework`; constitution v1.4.0 ratified |
+| Apr 2, 2026 | DevSpark migration | `chore: migrate DevSpark framework`; constitution v1.4.0 ratified |
 | Apr 3, 2026 | Documentation harvest | Accuracy review of all .md files |
 
 **Velocity context**: The v1.3.0 release on March 14 was preceded by a 31-commit March sprint — peak post-launch activity. This confirms releases correlate with concentrated effort bursts.

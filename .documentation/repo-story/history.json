@@ -462,7 +462,7 @@
         "sha": "4c97e234892b36932dc2a0f14cc5bf7fd7dd424c",
         "date": "2026-04-02T17:31:25-05:00",
         "author": "Mark Hazleton",
-        "subject": "chore: migrate Spec Kit to DevSpark framework"
+        "subject": "chore: migrate DevSpark to DevSpark framework"
       },
       {
         "sha": "5c831427a712e6e207727902b9b987c51d818a94",
@@ -474,7 +474,7 @@
         "sha": "d4711f331bfb1bb7ca22f57d0177cc98286dbebd",
         "date": "2026-03-30T07:58:46-05:00",
         "author": "Mark Hazleton",
-        "subject": "feat: enhance site audit script with build file classification and Speckit version retrieval"
+        "subject": "feat: enhance site audit script with build file classification and DevSpark version retrieval"
       },
       {
         "sha": "87ad835d50aade7164dfc29709b22f26b6cbaff5",
@@ -594,7 +594,7 @@
         "sha": "769f02ea635b931cd5e99fadd766b1179e252203",
         "date": "2026-03-14T11:33:18-05:00",
         "author": "Mark Hazleton",
-        "subject": "feat: add speckit.archive and speckit.upgrade agents with detailed documentation"
+        "subject": "feat: add devspark.archive and devspark.upgrade agents with detailed documentation"
       },
       {
         "sha": "a15d3c73d284608024cfb13c429cac0200837cc9",

@@ -45,7 +45,7 @@ Amendment History:
   * Working docs must be cleaned up when obsolete
   * Rationale: Stale documentation worse than no documentation
 
-- 1.0.0 (2026-02-20): Initial ratification via /speckit.discover-constitution
+- 1.0.0 (2026-02-20): Initial ratification via /devspark.discover-constitution
 
 Modified Principles:
 - ADDED: Dead Code Hygiene standard (CAP-2026-005)
@@ -75,7 +75,7 @@ Follow-up Required:
 - Consider ESLint `jsdoc/require-jsdoc` plugin for automated enforcement
 - Consider ESLint `max-lines` rule for automated module size enforcement
 
-Discovery Source: /speckit.discover-constitution (2026-02-20)
+Discovery Source: /devspark.discover-constitution (2026-02-20)
 Amendment Source: /devspark.evolve-constitution CAP-2026-002 + CAP-2026-003 (2026-04-02)
 ==============================================
 -->
