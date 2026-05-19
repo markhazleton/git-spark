@@ -112,7 +112,7 @@ jobs:
                   if [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
                     echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
                   else
-                    echo "VERSION=$(node -p \"require('./package.json').version\")" >> $GITHUB_OUTPUT
+                    echo "VERSION=$(node -p 'require("./package.json").version')" >> $GITHUB_OUTPUT
                   fi
 
             - name: Notify Discord (if webhook configured)
@@ -138,7 +138,7 @@ jobs:
                   if [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
                     echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
                   else
-                    echo "VERSION=$(node -p \"require('./package.json').version\")" >> $GITHUB_OUTPUT
+                    echo "VERSION=$(node -p 'require("./package.json").version')" >> $GITHUB_OUTPUT
                   fi
 
             - name: Alert for manual intervention
