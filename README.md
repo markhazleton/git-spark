@@ -13,7 +13,7 @@
 [![GitHub issues](https://img.shields.io/github/issues/MarkHazleton/git-spark.svg?style=flat-square)](https://github.com/MarkHazleton/git-spark/issues)
 [![GitHub stars](https://img.shields.io/github/stars/MarkHazleton/git-spark.svg?style=flat-square)](https://github.com/MarkHazleton/git-spark/stargazers)
 
-**Live Site**: [https://markhazleton.github.io/git-spark/](https://markhazleton.github.io/git-spark/) •
+**Live Site**: [https://git-spark.makeboldspark.com](https://git-spark.makeboldspark.com) •
 **[📖 Documentation](#-documentation)** •
 **[🚀 Quick Start](#-quick-start)**
 
@@ -23,7 +23,7 @@
 
 ## About
 
-**Live Site**: [https://markhazleton.github.io/git-spark/](https://markhazleton.github.io/git-spark/)
+**Live Site**: [https://git-spark.makeboldspark.com](https://git-spark.makeboldspark.com)
 
 Git Spark analyzes Git repository commit history to generate interactive HTML reports with charts, contributor statistics, and file analysis — with complete transparency about what Git data can and cannot reveal.
 
@@ -44,7 +44,7 @@ Git Spark analyzes Git repository commit history to provide insights into contri
 
 ## 🎨 Live Demo
 
-**[📊 View Interactive Demo →](https://markhazleton.github.io/git-spark/)**
+**[📊 View Interactive Demo →](https://git-spark.makeboldspark.com)**
 
 See Git Spark in action with a sample report showing:
 
