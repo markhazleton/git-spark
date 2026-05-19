@@ -5,16 +5,28 @@ All notable changes to Git Spark will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.3.1] - 2026-05-19
+
+### Added
+
+- **New live site**: hosted at [git-spark.makeboldspark.com](https://git-spark.makeboldspark.com) as part of the Make Bold Spark portfolio migration from GitHub Pages
+- **Google Analytics** (G-RY77Z11S9E) added to `docs/index.html` and `docs/git-spark-report.html`
+- **HTML output modularisation**: large `html.ts` split into focused modules — `html-author-profiles.ts`, `html-daily-trends.ts`, `html-daily-trends-charts.ts`, `html-daily-trends-tables.ts`, `html-file-filter.ts`, `html-scripts.ts`, `html-static-sections.ts`, `html-styles-base.ts`, `html-styles-charts.ts`, `html-styles-components.ts`, `html-styles.ts` — preserving the full public API surface
+- **`version-fallback-coverage` test suite** exercising the package.json fallback branch in `version-fallback.ts`
+- **Dependency hygiene regression tests** guarding against future hygiene regressions
+- **DevSpark framework**: full migration from Speckit — agent shims, prompt templates, scripts, and constitution governance in `.devspark/` and `.documentation/`
 
 ### Changed
 
-- **Dependency Hygiene Hardening (In Progress)**
-  - Refreshed development dependencies (`@types/node`, `@typescript-eslint/*`, `eslint`, `prettier`, `ts-jest`, `typedoc`, `typescript`) and regenerated lockfile
-  - Added explicit dev tooling dependencies used by workflows/scripts (`audit-ci`, `npm-check-updates`, `publint`)
-  - Fixed workflow YAML parsing in `.github/workflows/publish.yml` to keep static analysis tooling compatible
-  - Added dependency hygiene regression tests and recorded phase validation evidence under `.documentation/specs/001-dependency-hygiene-hardening/`
-  - Added explicit no-dead-code governance clause and synchronized constitution amendment metadata
+- Bumped all dev-dependency patch releases: `@types/node` 25.7→25.9, `@typescript-eslint/*` 8.59.3→8.59.4, `eslint` 10.3→10.4, `publint` 0.3.20→0.3.21, `ts-jest` 29.4.9→29.4.10
+- README and site links updated to `https://git-spark.makeboldspark.com`
+- Updated Open Graph metadata (`og:url`, `og:image`) in `docs/index.html`
+
+### Fixed
+
+- **CI**: `npm run prebuild` now runs before `npm run test:coverage` on all matrix jobs, fixing `version-fallback-coverage.test.ts` failure caused by missing generated `src/version.ts`
+- **Publish workflow**: removed broken `npm install -g npm@latest` step that caused `MODULE_NOT_FOUND: promise-retry` on every publish run; `actions/setup-node@v6` already provides npm 11+
+- **Pages deployment**: removed stale gitlink `test-tmp/cli-test-repo-*` from the git index that was breaking `git submodule update` in the GitHub Pages deployer; added `test-tmp/` to `.gitignore`
 
 ## [1.3.0] - 2026-03-14
 
@@ -283,7 +295,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safe shell command execution
 - Security-focused HTML output (CSP headers)
 
-[Unreleased]: https://github.com/MarkHazleton/git-spark/compare/v1.3.0...HEAD
+[1.3.1]: https://github.com/MarkHazleton/git-spark/compare/v1.3.0...v1.3.1
 [1.3.0]: https://github.com/MarkHazleton/git-spark/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/MarkHazleton/git-spark/compare/v1.0.263...v1.2.0
 [1.0.263]: https://github.com/MarkHazleton/git-spark/compare/v1.0.221...v1.0.263
