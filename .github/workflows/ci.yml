@@ -66,7 +66,7 @@ jobs:
         with:
           name: coverage-report
           path: coverage/lcov-report/
-          retention-days: 30
+          retention-days: 1
 
       - name: Coverage summary comment
         if: github.event_name == 'pull_request' && matrix.node-version == '22.x' && matrix.os == 'ubuntu-latest'
