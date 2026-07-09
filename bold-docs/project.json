@@ -1,0 +1,17 @@
+{
+  "core": {
+    "name": "git-spark",
+    "type": "cli-tool",
+    "language": "typescript",
+    "runtime": "node>=20",
+    "module_resolution": "bundler",
+    "cli_framework": "commander"
+  },
+  "layer": {
+    "node": {
+      "package_manager": "npm",
+      "test_framework": "jest"
+    }
+  },
+  "source": "discovered"
+}

@@ -314,5 +314,5 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vs/VSWorkspaceState.json
 
-# DevSpark — personal overrides (never commit)
-.documentation/*/commands/
+# Bold
+.bold/.backup/
