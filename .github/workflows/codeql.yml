@@ -59,4 +59,4 @@ jobs:
       with:
         name: codeql-results
         path: sarif-results
-        retention-days: 5
+        retention-days: 1
