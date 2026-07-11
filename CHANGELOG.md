@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-07-11
+
 ### Added
 
 - **New `git-spark periods` command**: compares commit churn and activity across consecutive fixed-length periods (e.g. sprints), with console, markdown, and HTML output formats (`src/cli/periods-command.ts`, `src/core/period-summary.ts`, `src/output/periods-*.ts`, `src/types/periods.ts`)
