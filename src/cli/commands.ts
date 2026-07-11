@@ -9,6 +9,7 @@ import { setGlobalLogLevel, createLogger } from '../utils/logger.js';
 import { getVersion } from '../version-fallback.js';
 import { resolveOptionsWithConfig } from '../utils/config.js';
 import { executeHTMLReport, openHTMLReport } from './report-command.js';
+import { executePeriodsReport } from './periods-command.js';
 import chalk from 'chalk';
 import boxen from 'boxen';
 import ora from 'ora';
@@ -75,8 +76,6 @@ export async function createCLI(): Promise<Command> {
     .option('--open', 'open HTML report in browser after generation')
     .option('--log-level <level>', 'logging verbosity (error|warn|info|debug|verbose)', 'info')
     .option('--no-cache', 'disable caching')
-    .option('--compare <branch>', 'compare with another branch')
-    .option('--watch', 'continuous monitoring mode')
     .option('--timezone <tz>', 'IANA timezone for daily trends (e.g., America/Chicago)')
     .option('--redact-emails', 'redact email addresses in reports')
     .option(
@@ -144,6 +143,31 @@ export async function createCLI(): Promise<Command> {
       await executeHTMLReport(mergedOptions);
     });
 
+  program
+    .command('periods')
+    .description('Compare churn and activity across consecutive periods (e.g. sprints)')
+    .option('-r, --repo <path>', 'repository path', process.cwd())
+    .option('-b, --branch <name>', 'analyze specific branch')
+    .option('-u, --until <date>', 'end date for the most recent period (default: now)')
+    .option('--period-days <number>', 'length of each period in days', parseNumber, 7)
+    .option('--periods <number>', 'number of consecutive periods to compare', parseNumber, 3)
+    // Named --output-format (not --format) to avoid colliding with the root command's
+    // -f/--format option, which Commander would otherwise route to instead of this
+    // subcommand's own option (same long flag name shadows across parent/child).
+    .option('--output-format <format>', 'output format (console|markdown|html)', 'console')
+    .option('-o, --output <path>', 'output directory (for markdown/html)')
+    .action(async options => {
+      await executePeriodsReport({
+        repo: options.repo,
+        branch: options.branch,
+        until: options.until,
+        periodDays: options.periodDays,
+        periods: options.periods,
+        format: options.outputFormat,
+        output: options.output,
+      });
+    });
+
   return program;
 }
 
@@ -177,8 +201,6 @@ async function executeAnalysis(options: any): Promise<void> {
       heavy: options.heavy,
       logLevel: options.logLevel as LogLevel,
       ...(noCache !== undefined ? { noCache } : {}),
-      compare: options.compare,
-      watch: options.watch,
       ...(options.timezone ? { timezone: options.timezone } : {}),
       ...(excludeExtensions ? { excludeExtensions } : {}),
       teamwork: options.teamwork,

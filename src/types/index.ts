@@ -7,6 +7,7 @@
 export * from './author.js';
 export * from './file.js';
 export * from './analyzer.js';
+export * from './periods.js';
 
 /**
  * Complete configuration for Git Spark analyzer and exporters.
@@ -109,8 +110,6 @@ export interface GitSparkOptions {
   heavy?: boolean;
   logLevel?: LogLevel;
   noCache?: boolean;
-  compare?: string;
-  watch?: boolean;
   /** Redact author emails in all outputs */
   redactEmails?: boolean;
   /** File extensions to exclude from analysis (e.g., ['.md', '.txt']) */

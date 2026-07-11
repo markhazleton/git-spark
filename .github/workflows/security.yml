@@ -64,12 +64,16 @@ jobs:
         name: Update Dependencies
         runs-on: ubuntu-latest
         if: github.event_name == 'schedule'
+        permissions:
+            contents: write
+            pull-requests: write
 
         steps:
             - name: Checkout code
               uses: actions/checkout@v6
               with:
                   token: ${{ secrets.GITHUB_TOKEN }}
+                  persist-credentials: false
 
             - name: Setup Node.js
               uses: actions/setup-node@v6

@@ -269,6 +269,41 @@ Environment and requirements validation:
 git-spark validate
 ```
 
+#### `git-spark periods`
+
+Compare commit churn and activity across consecutive fixed-length periods (e.g. sprints):
+
+```bash
+git-spark periods [options]
+
+Options:
+  -r, --repo <path>          repository path (default: current directory)
+  -b, --branch <name>        analyze specific branch
+  -u, --until <date>         end date for the most recent period (default: now)
+  --period-days <number>     length of each period in days (default: 7)
+  --periods <number>         number of consecutive periods to compare (default: 3)
+  --output-format <format>   output format (console|markdown|html) (default: "console")
+  -o, --output <path>        output directory (for markdown/html)
+```
+
+Each period is a non-overlapping window ending at `--until` (or now), oldest first, reporting
+commits, insertions/deletions, churn, net lines, files changed, and active authors per period.
+If the repository is a shallow clone, a warning is printed since older periods may be missing
+commits that were never fetched.
+
+Examples:
+
+```bash
+# Compare the last 3 weekly periods (default) in the console
+git-spark periods
+
+# Compare 4 two-week sprints ending on a specific date
+git-spark periods --period-days=14 --periods=4 --until=2026-07-01
+
+# Export a markdown report for a specific branch
+git-spark periods --branch=develop --output-format=markdown --output=./reports
+```
+
 #### Daily Trends Analysis Examples
 
 ```bash

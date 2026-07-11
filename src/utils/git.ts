@@ -231,6 +231,18 @@ export class GitExecutor {
     }
   }
 
+  async isShallowRepository(): Promise<boolean> {
+    try {
+      const output = await this.execute({
+        command: 'rev-parse',
+        args: ['--is-shallow-repository'],
+      });
+      return output.trim() === 'true';
+    } catch {
+      return false;
+    }
+  }
+
   async getLanguageStats(): Promise<{ [language: string]: number }> {
     try {
       const output = await this.execute({

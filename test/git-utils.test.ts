@@ -451,4 +451,47 @@ describe('Git Utilities', () => {
       expect(result).toBeNull();
     });
   });
+
+  describe('isShallowRepository', () => {
+    it('returns true when git reports a shallow repository', async () => {
+      const mockChild = createMockChild();
+      mockSpawn.mockReturnValue(mockChild);
+
+      const resultPromise = gitExecutor.isShallowRepository();
+
+      mockChild.stdout.emit('data', Buffer.from('true\n'));
+      mockChild.emit('close', 0);
+
+      expect(await resultPromise).toBe(true);
+      expect(mockSpawn).toHaveBeenCalledWith(
+        'git',
+        ['rev-parse', '--is-shallow-repository'],
+        expect.any(Object)
+      );
+    });
+
+    it('returns false when git reports a full repository', async () => {
+      const mockChild = createMockChild();
+      mockSpawn.mockReturnValue(mockChild);
+
+      const resultPromise = gitExecutor.isShallowRepository();
+
+      mockChild.stdout.emit('data', Buffer.from('false\n'));
+      mockChild.emit('close', 0);
+
+      expect(await resultPromise).toBe(false);
+    });
+
+    it('returns false when the git command fails', async () => {
+      const mockChild = createMockChild();
+      mockSpawn.mockReturnValue(mockChild);
+
+      const resultPromise = gitExecutor.isShallowRepository();
+
+      mockChild.stderr.emit('data', Buffer.from('fatal: not a git repository\n'));
+      mockChild.emit('close', 128);
+
+      expect(await resultPromise).toBe(false);
+    });
+  });
 });

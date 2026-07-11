@@ -5,6 +5,22 @@ All notable changes to Git Spark will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- **New `git-spark periods` command**: compares commit churn and activity across consecutive fixed-length periods (e.g. sprints), with console, markdown, and HTML output formats (`src/cli/periods-command.ts`, `src/core/period-summary.ts`, `src/output/periods-*.ts`, `src/types/periods.ts`)
+- **Shallow clone detection**: `GitExecutor.isShallowRepository()` warns when a shallow clone may be missing commits needed for accurate period comparisons
+- **Fast type-check in CI**: `typecheck:fast` script using `tsgo` (TypeScript native preview) added as a non-blocking CI step
+
+### Changed
+
+- Hardened the scheduled dependency-update workflow (`security.yml`) with explicit `contents: write` / `pull-requests: write` permissions and `persist-credentials: false` on checkout
+
+### Removed
+
+- Removed the unimplemented `--compare <branch>` and `--watch` CLI flags and their unused `ComparisonReport` / `ComparisonDifferences` types
+
 ## [1.3.2] - 2026-05-19
 
 ### Changed

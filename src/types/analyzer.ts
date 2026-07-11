@@ -253,34 +253,3 @@ export interface ReportSummary {
   actionItems: string[];
 }
 
-export interface ComparisonReport {
-  base: AnalysisReport;
-  compare: AnalysisReport;
-  differences: ComparisonDifferences;
-}
-
-export interface ComparisonDifferences {
-  commits: {
-    added: number;
-    removed: number;
-    net: number;
-  };
-  authors: {
-    added: string[];
-    removed: string[];
-    common: string[];
-  };
-  files: {
-    added: string[];
-    removed: string[];
-    modified: string[];
-  };
-  metrics: {
-    [key: string]: {
-      base: number;
-      compare: number;
-      change: number;
-      changePercent: number;
-    };
-  };
-}
