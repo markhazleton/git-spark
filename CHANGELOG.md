@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **New `git-spark periods` command**: compares commit churn and activity across consecutive fixed-length periods (e.g. sprints), with console, markdown, and HTML output formats (`src/cli/periods-command.ts`, `src/core/period-summary.ts`, `src/output/periods-*.ts`, `src/types/periods.ts`)
 - **Shallow clone detection**: `GitExecutor.isShallowRepository()` warns when a shallow clone may be missing commits needed for accurate period comparisons
 - **Fast type-check in CI**: `typecheck:fast` script using `tsgo` (TypeScript native preview) added as a non-blocking CI step
+- **`scripts/update-changelog.js`**: automatically promotes CHANGELOG.md's `[Unreleased]` section to a dated version section during `npm version` (wired in as the `version` lifecycle script), so `npm run release:*` keeps the changelog in sync with the version bump instead of requiring a separate manual edit
 
 ### Changed
 

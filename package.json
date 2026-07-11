@@ -84,6 +84,7 @@
     "release:major": "npm version major && npm publish",
     "prepack": "npm run build",
     "pack:test": "npm pack --dry-run",
+    "version": "node scripts/update-changelog.js",
     "postversion": "git push && git push --tags",
     "docs": "typedoc src/index.ts",
     "docs:update-version": "node scripts/update-docs-version.js",
