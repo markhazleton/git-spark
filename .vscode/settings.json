@@ -7,7 +7,6 @@
         "bold-build": true
     },
     "chat.tools.terminal.autoApprove": {
-        ".bold/scripts/": true,
-        "bold-docs/overrides/powershell/": true
+        ".bold/scripts/": true
     }
 }
