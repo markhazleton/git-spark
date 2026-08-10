@@ -5,8 +5,22 @@
  * profile cards, commit size charts, file type breakdowns, and insight summaries.
  */
 import { escapeHtml, getWidthClass } from './html-utils.js';
-import type { AuthorStats, AuthorDetailedMetrics } from '../types/author.js';
+import type {
+  AuthorContributionMetrics,
+  AuthorDetailedMetrics,
+  AuthorStats,
+  AuthorWorkPatternMetrics,
+} from '../types/author.js';
 import type { FileTypeBreakdown } from '../types/file.js';
+
+type MergedContributionMetrics = AuthorContributionMetrics & {
+  totalLines?: number;
+  avgCommitSize?: number;
+};
+
+type MergedWorkPatternMetrics = AuthorWorkPatternMetrics & {
+  commits?: number;
+};
 
 /**
  * Renders all author profile cards for the HTML report.
@@ -54,12 +68,8 @@ export function mergeAuthorsByEmail(authors: AuthorStats[]): AuthorStats[] {
         if (existing.detailed.contribution && author.detailed.contribution) {
           existing.detailed.contribution.totalCommits +=
             author.detailed.contribution.totalCommits || 0;
-          // totalLines and avgCommitSize are runtime-computed properties not in AuthorContributionMetrics;
-          // they are carried by the merge logic as extra denormalized fields.
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const ec = existing.detailed.contribution as any;
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const ac = author.detailed.contribution as any;
+          const ec = existing.detailed.contribution as MergedContributionMetrics;
+          const ac = author.detailed.contribution as MergedContributionMetrics;
           ec.totalLines = (ec.totalLines ?? 0) + (ac.totalLines ?? 0);
           if (existing.detailed.contribution.totalCommits > 0) {
             ec.avgCommitSize = ec.totalLines / existing.detailed.contribution.totalCommits;
@@ -69,11 +79,8 @@ export function mergeAuthorsByEmail(authors: AuthorStats[]): AuthorStats[] {
         if (
           author.detailed.workPattern &&
           (!existing.detailed.workPattern ||
-            // commits is a runtime denormalized field on workPattern, not in AuthorWorkPatternMetrics
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            ((author.detailed.workPattern as any).commits || 0) >
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              ((existing.detailed.workPattern as any).commits || 0))
+            ((author.detailed.workPattern as MergedWorkPatternMetrics).commits || 0) >
+              ((existing.detailed.workPattern as MergedWorkPatternMetrics).commits || 0))
         ) {
           existing.detailed.workPattern = author.detailed.workPattern;
         }
@@ -218,7 +225,9 @@ export function generateAuthorProfileCard(author: AuthorStats): string {
  * @param directoryFocus - Ordered array of directory/percentage pairs from author analysis
  * @returns Human-readable string such as "src/core/ (60%), src/utils/ (25%), others (15%)"
  */
-export function getTopDirectories(directoryFocus: Array<{ directory: string; percentage: number }>): string {
+export function getTopDirectories(
+  directoryFocus: Array<{ directory: string; percentage: number }>
+): string {
   if (!directoryFocus || directoryFocus.length === 0) return 'N/A';
 
   let topDirectories = directoryFocus.slice(0, 3);
@@ -251,7 +260,13 @@ export function getTopDirectories(directoryFocus: Array<{ directory: string; per
  * @returns HTML string containing the bar chart, or a "No data available" placeholder
  */
 export function generateCommitSizeChart(
-  distribution: Partial<{ micro: number; small: number; medium: number; large: number; veryLarge: number }>
+  distribution: Partial<{
+    micro: number;
+    small: number;
+    medium: number;
+    large: number;
+    veryLarge: number;
+  }>
 ): string {
   const total =
     (distribution.micro || 0) +
@@ -296,7 +311,9 @@ export function generateCommitSizeChart(
  * @param metrics - Detailed author metrics object; accepts null or undefined gracefully
  * @returns HTML string for the insights section, or empty string if no insights exist
  */
-export function generateAuthorInsightsSection(metrics: AuthorDetailedMetrics | null | undefined): string {
+export function generateAuthorInsightsSection(
+  metrics: AuthorDetailedMetrics | null | undefined
+): string {
   const insights = metrics?.insights;
 
   if (!insights || (!insights.positivePatterns?.length && !insights.growthAreas?.length)) {

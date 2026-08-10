@@ -7,6 +7,12 @@
  */
 import { escapeHtml } from './html-utils.js';
 import {
+  CurrentRepositoryState,
+  DailyFlowMetrics,
+  DailyStabilityMetrics,
+  DailyTrendsData,
+} from '../types/index.js';
+import {
   generateContributionsGraphSection,
   generateCommitTrendChart,
   generateAuthorTrendChart,
@@ -32,22 +38,25 @@ export {
   generateHygieneTrendsTable,
 };
 
-export function generateActivityVisualsForTeamPatterns(trends: any): string {
+export function generateActivityVisualsForTeamPatterns(trends: DailyTrendsData): string {
   const dateFormat = (date: Date) => date.toISOString().split('T')[0];
 
   const metadata = trends.analysisMetadata;
   const flowMetrics = trends.flowMetrics || [];
   const stabilityMetrics = trends.stabilityMetrics || [];
 
-  const totalCommits = flowMetrics.reduce((sum: number, day: any) => sum + day.commitsPerDay, 0);
-  const peakDay = flowMetrics.reduce(
-    (peak: any, day: any) => (day.commitsPerDay > (peak?.commitsPerDay || 0) ? day : peak),
+  const totalCommits = flowMetrics.reduce(
+    (sum: number, day: DailyFlowMetrics) => sum + day.commitsPerDay,
+    0
+  );
+  const peakDay = flowMetrics.reduce<DailyFlowMetrics | null>(
+    (peak, day) => (day.commitsPerDay > (peak?.commitsPerDay || 0) ? day : peak),
     null
   );
   const avgCommitsPerDay = flowMetrics.length > 0 ? totalCommits / flowMetrics.length : 0;
 
   const totalReverts = stabilityMetrics.reduce(
-    (sum: number, day: any) => sum + day.revertsPerDay,
+    (sum: number, day: DailyStabilityMetrics) => sum + day.revertsPerDay,
     0
   );
 
@@ -102,7 +111,7 @@ export function generateActivityVisualsForTeamPatterns(trends: any): string {
     `;
 }
 
-export function generateDailyTrendsSection(trends: any): string {
+export function generateDailyTrendsSection(trends: DailyTrendsData): string {
   const flowMetrics = trends.flowMetrics || [];
   const stabilityMetrics = trends.stabilityMetrics || [];
   const ownershipMetrics = trends.ownershipMetrics || [];
@@ -194,7 +203,7 @@ export function generateDailyTrendsSection(trends: any): string {
     </section>`;
 }
 
-export function generateCurrentStateSection(currentState: any): string {
+export function generateCurrentStateSection(currentState: CurrentRepositoryState): string {
   if (!currentState) {
     return '<div class="alert alert-warning">Current repository state data is not available.</div>';
   }
@@ -218,7 +227,7 @@ export function generateCurrentStateSection(currentState: any): string {
   const topExtensions = byExtension
     .slice(0, 10)
     .map(
-      (ext: any) =>
+      ext =>
         `<tr>
             <td><span class="file-extension">.${escapeHtml(ext.extension)}</span></td>
             <td class="num">${ext.fileCount.toLocaleString()}</td>
@@ -231,11 +240,11 @@ export function generateCurrentStateSection(currentState: any): string {
   let categoryRows = '';
   if (categories && Object.keys(categories).length > 0) {
     categoryRows = Object.entries(categories)
-      .filter(([_, stats]: [string, any]) => stats.fileCount > 0)
-      .sort((a: any, b: any) => b[1].fileCount - a[1].fileCount)
+      .filter(([, stats]) => stats.fileCount > 0)
+      .sort((a, b) => b[1].fileCount - a[1].fileCount)
       .slice(0, 8)
       .map(
-        ([name, stats]: [string, any]) =>
+        ([name, stats]) =>
           `<tr>
               <td>${escapeHtml(name.charAt(0).toUpperCase() + name.slice(1))}</td>
               <td class="num">${stats.fileCount.toLocaleString()}</td>
@@ -249,10 +258,10 @@ export function generateCurrentStateSection(currentState: any): string {
   let topDirectoriesHTML = '';
   if (topDirectories && topDirectories.length > 0) {
     topDirectoriesHTML = topDirectories
-      .filter((dir: any) => dir.fileCount > 1)
+      .filter(dir => dir.fileCount > 1)
       .slice(0, 8)
       .map(
-        (dir: any) =>
+        dir =>
           `<tr>
               <td><code class="directory-path">${escapeHtml(dir.path)}</code></td>
               <td class="num">${dir.fileCount.toLocaleString()}</td>

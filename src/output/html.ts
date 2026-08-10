@@ -2,17 +2,17 @@ import { AnalysisReport, FileFilteringConfig } from '../types/index.js';
 import { escapeHtml, truncatePath, getRiskBand } from './html-utils.js';
 import { getCustomStyles } from './html-styles.js';
 import { getBasicScript } from './html-scripts.js';
-import {
-  generateDetailedAuthorProfiles,
-  mergeAuthorsByEmail,
-} from './html-author-profiles.js';
+import { generateDetailedAuthorProfiles, mergeAuthorsByEmail } from './html-author-profiles.js';
 import {
   generateActivityVisualsForTeamPatterns,
   generateDailyTrendsSection,
   generateCurrentStateSection,
 } from './html-daily-trends.js';
 import { isSourceCodeFile, getDefaultFileFilteringConfig } from './html-file-filter.js';
-import { generateLimitationsSection, generateDocumentationSection } from './html-static-sections.js';
+import {
+  generateLimitationsSection,
+  generateDocumentationSection,
+} from './html-static-sections.js';
 import { writeFileSync, mkdirSync } from 'fs';
 import { resolve, dirname, basename } from 'path';
 import { createLogger } from '../utils/logger.js';
@@ -65,7 +65,7 @@ export class HTMLExporter {
     const numberFmt = (n: number) => new Intl.NumberFormat().format(n);
     const compactFmt = (n: number) =>
       new Intl.NumberFormat(undefined, { notation: 'compact', maximumFractionDigits: 1 }).format(n);
-    const warnings: string[] = (report as any).warnings || [];
+    const warnings: string[] = report.metadata.warnings || [];
 
     const keyMetrics = [
       { label: 'Commits', value: numberFmt(report.repository.totalCommits) },
@@ -146,7 +146,9 @@ export class HTMLExporter {
 
         const firstStr = startDate.toISOString().split('T')[0];
         const lastStr = endDate.toISOString().split('T')[0];
-        const diffDays = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+        const diffDays = Math.ceil(
+          (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
+        );
         const days = Math.max(1, diffDays === 0 ? 1 : diffDays + 1);
         const commitsInPeriod = report.repository.totalCommits;
         analysisPeriod = `Analyzed Period: ${firstStr} → ${lastStr} (${days} day${days !== 1 ? 's' : ''}, ${commitsInPeriod} commit${commitsInPeriod !== 1 ? 's' : ''})`;
@@ -158,7 +160,10 @@ export class HTMLExporter {
     const styleContent = getCustomStyles();
     const styleHash = createHash('sha256').update(styleContent, 'utf8').digest('base64');
     const basicScript = getBasicScript();
-    const scriptNonce = createHash('sha256').update(basicScript, 'utf8').digest('hex').substring(0, 16);
+    const scriptNonce = createHash('sha256')
+      .update(basicScript, 'utf8')
+      .digest('hex')
+      .substring(0, 16);
 
     const csp = [
       "default-src 'none'",
@@ -228,7 +233,9 @@ export class HTMLExporter {
       ${generateCurrentStateSection(report.currentState)}
     </section>
 
-    ${!teamwork ? `<section id="authors" class="section">
+    ${
+      !teamwork
+        ? `<section id="authors" class="section">
       <h2>Top Contributors (Author Metrics)</h2>
       <p class="section-description">Individual developer metrics calculated from Git commit data. These represent observable activity patterns, not productivity or performance.</p>
       <div class="table-wrapper" role="region" aria-label="Top authors table">
@@ -238,7 +245,9 @@ export class HTMLExporter {
         </table>
       </div>
       <button class="show-more" data-target-table="authors" hidden>Show more</button>
-    </section>` : ''}
+    </section>`
+        : ''
+    }
 
     <section id="team-patterns" class="section">
       <h2>Team Activity Patterns (Aggregate Metrics)</h2>
@@ -304,13 +313,17 @@ export class HTMLExporter {
       <button class="show-more" data-target-table="files" hidden>Show more</button>
     </section>
 
-    ${!teamwork ? `<section id="author-details" class="section">
+    ${
+      !teamwork
+        ? `<section id="author-details" class="section">
       <h2>Author Activity Details</h2>
       <p class="section-description">Detailed activity patterns for individual contributors. All metrics are derived from Git commit data and represent observable patterns only.</p>
       <div class="author-profiles">
         ${generateDetailedAuthorProfiles(report.authors)}
       </div>
-    </section>` : ''}
+    </section>`
+        : ''
+    }
 
     ${report.dailyTrends ? generateDailyTrendsSection(report.dailyTrends) : ''}
 

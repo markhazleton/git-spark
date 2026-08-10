@@ -5,7 +5,7 @@ interface LogEntry {
   level: LogLevel;
   module: string;
   message: string;
-  metadata?: any;
+  metadata?: unknown;
 }
 
 class Logger {
@@ -20,27 +20,27 @@ class Logger {
     this.level = level;
   }
 
-  error(message: string, metadata?: any): void {
+  error(message: string, metadata?: unknown): void {
     this.log('error', message, metadata);
   }
 
-  warn(message: string, metadata?: any): void {
+  warn(message: string, metadata?: unknown): void {
     this.log('warn', message, metadata);
   }
 
-  info(message: string, metadata?: any): void {
+  info(message: string, metadata?: unknown): void {
     this.log('info', message, metadata);
   }
 
-  debug(message: string, metadata?: any): void {
+  debug(message: string, metadata?: unknown): void {
     this.log('debug', message, metadata);
   }
 
-  verbose(message: string, metadata?: any): void {
+  verbose(message: string, metadata?: unknown): void {
     this.log('verbose', message, metadata);
   }
 
-  private log(level: LogLevel, message: string, metadata?: any): void {
+  private log(level: LogLevel, message: string, metadata?: unknown): void {
     if (!this.shouldLog(level)) return;
 
     const entry: LogEntry = {

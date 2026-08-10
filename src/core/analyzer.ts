@@ -3,7 +3,14 @@ import {
   AnalysisReport,
   CommitData,
   AuthorStats,
+  AuthorCollaborationMetrics,
+  AuthorContributionMetrics,
+  AuthorDetailedMetrics,
+  AuthorInsights,
+  AuthorQualityMetrics,
+  AuthorWorkPatternMetrics,
   FileStats,
+  FileTypeBreakdown,
   RepositoryStats,
   TimelineData,
   ReportMetadata,
@@ -222,7 +229,9 @@ export class GitAnalyzer {
     // Calculate daily trends if there are commits
     this.reportProgress('Analyzing daily trends', 88, 100);
     const dailyTrends =
-      commits.length > 0 ? await this.analyzeDailyTrends(commits, options, repositoryStats) : undefined;
+      commits.length > 0
+        ? await this.analyzeDailyTrends(commits, options, repositoryStats)
+        : undefined;
 
     this.reportProgress('Analyzing current repository state', 92, 100);
     const currentState = await this.analyzeCurrentRepositoryState(options.repoPath || '.', options);
@@ -255,9 +264,9 @@ export class GitAnalyzer {
 
     // Attach any warnings emitted during collection for downstream exporters (HTML etc.)
     try {
-      const collectorWarnings = (this.collector as any).getWarnings?.() || [];
+      const collectorWarnings = this.collector.getWarnings();
       if (collectorWarnings.length) {
-        (report as any).warnings = collectorWarnings;
+        report.metadata.warnings = collectorWarnings;
       }
     } catch {
       // non-fatal
@@ -336,7 +345,11 @@ export class GitAnalyzer {
     };
   }
 
-  private analyzeAuthors(commits: CommitData[], repoPath?: string, options?: GitSparkOptions): AuthorStats[] {
+  private analyzeAuthors(
+    commits: CommitData[],
+    repoPath?: string,
+    options?: GitSparkOptions
+  ): AuthorStats[] {
     const authorMap = new Map<string, AuthorStats>();
     const filesByAuthor = new Map<string, Set<string>>();
     const commitsByAuthor = new Map<string, CommitData[]>();
@@ -436,7 +449,7 @@ export class GitAnalyzer {
     return allAuthors.sort((a, b) => b.commits - a.commits);
   }
 
-  private initializeDetailedMetrics(): any {
+  private initializeDetailedMetrics(): AuthorDetailedMetrics {
     return {
       contribution: {
         totalCommits: 0,
@@ -475,6 +488,7 @@ export class GitAnalyzer {
             publishedCommits: 0,
             publishedLines: { insertions: 0, deletions: 0 },
           },
+          fileTypeBreakdown: this.createEmptyFileTypeBreakdown(),
         },
       },
       collaboration: {
@@ -591,6 +605,24 @@ export class GitAnalyzer {
     };
   }
 
+  private createEmptyFileTypeBreakdown(): FileTypeBreakdown {
+    return {
+      byExtension: [],
+      categories: {
+        sourceCode: { files: 0, commits: 0, churn: 0, percentage: 0 },
+        documentation: { files: 0, commits: 0, churn: 0, percentage: 0 },
+        configuration: { files: 0, commits: 0, churn: 0, percentage: 0 },
+        tests: { files: 0, commits: 0, churn: 0, percentage: 0 },
+        other: { files: 0, commits: 0, churn: 0, percentage: 0 },
+      },
+      totals: {
+        files: 0,
+        commits: 0,
+        churn: 0,
+      },
+    };
+  }
+
   private calculateDetailedAuthorMetrics(
     author: AuthorStats,
     authorCommits: CommitData[],
@@ -624,7 +656,7 @@ export class GitAnalyzer {
   }
 
   private calculateContributionMetrics(
-    metrics: any,
+    metrics: AuthorContributionMetrics,
     author: AuthorStats,
     authorCommits: CommitData[],
     authorFiles: Set<string>,
@@ -750,7 +782,7 @@ export class GitAnalyzer {
   }
 
   private calculateCollaborationMetrics(
-    metrics: any,
+    metrics: AuthorCollaborationMetrics,
     author: AuthorStats,
     authorCommits: CommitData[],
     allCommits: CommitData[]
@@ -828,7 +860,7 @@ export class GitAnalyzer {
   }
 
   private calculateWorkPatternMetrics(
-    metrics: any,
+    metrics: AuthorWorkPatternMetrics,
     author: AuthorStats,
     authorCommits: CommitData[]
   ): void {
@@ -927,7 +959,7 @@ export class GitAnalyzer {
   }
 
   private calculateQualityMetrics(
-    metrics: any,
+    metrics: AuthorQualityMetrics,
     author: AuthorStats,
     authorCommits: CommitData[]
   ): void {
@@ -993,7 +1025,11 @@ export class GitAnalyzer {
     };
   }
 
-  private generateAuthorInsights(insights: any, _author: AuthorStats, _metrics: any): void {
+  private generateAuthorInsights(
+    insights: AuthorInsights,
+    _author: AuthorStats,
+    _metrics: AuthorDetailedMetrics
+  ): void {
     insights.positivePatterns = [];
     insights.growthAreas = [];
     insights.neutralObservations = [];
@@ -1034,10 +1070,9 @@ export class GitAnalyzer {
     insights.recommendations = [];
   }
 
-
   private calculateComparativeMetrics(
-    author: any,
-    allAuthors: any[],
+    author: AuthorStats,
+    allAuthors: AuthorStats[],
     allCommits: CommitData[]
   ): void {
     const metrics = author.detailed.comparative;
@@ -1102,7 +1137,11 @@ export class GitAnalyzer {
     };
   }
 
-  private analyzeFiles(commits: CommitData[], repoPath?: string, options?: GitSparkOptions): FileStats[] {
+  private analyzeFiles(
+    commits: CommitData[],
+    repoPath?: string,
+    options?: GitSparkOptions
+  ): FileStats[] {
     const fileMap = new Map<string, FileStats>();
 
     // Load .gitignore patterns if repoPath is provided
@@ -1303,7 +1342,8 @@ export class GitAnalyzer {
       wipCommits,
       revertCommits,
       shortMessages,
-      totalCommits: commits.length,
+      score,
+      recommendations: [],
     });
 
     return {
@@ -1456,7 +1496,7 @@ export class GitAnalyzer {
     return normalizedCommits * 0.4 + normalizedAuthors * 0.35 + normalizedChurn * 0.25;
   }
 
-  private calculateFileTypeBreakdown(commits: any[], repoPath?: string): any {
+  private calculateFileTypeBreakdown(commits: CommitData[], repoPath?: string): FileTypeBreakdown {
     const fileTypeStats = new Map<string, { commits: number; files: Set<string>; churn: number }>();
     const categoryStats = {
       sourceCode: { files: new Set<string>(), commits: 0, churn: 0 },
@@ -1523,11 +1563,10 @@ export class GitAnalyzer {
     }
 
     // Calculate totals for percentages
-    const totalFiles = new Set(commits.flatMap(c => c.files.map((f: any) => f.path))).size;
+    const totalFiles = new Set(commits.flatMap(c => c.files.map(f => f.path))).size;
     const totalCommits = commits.length;
     const totalChurn = commits.reduce(
-      (sum, c) =>
-        sum + c.files.reduce((fSum: number, f: any) => fSum + f.insertions + f.deletions, 0),
+      (sum, c) => sum + c.files.reduce((fSum, f) => fSum + f.insertions + f.deletions, 0),
       0
     );
 
@@ -1685,7 +1724,7 @@ export class GitAnalyzer {
 
   private calculateOverallRisk(
     highRiskFiles: FileStats[],
-    riskFactors: any
+    riskFactors: RiskAnalysis['riskFactors']
   ): 'low' | 'medium' | 'high' {
     const riskScore =
       highRiskFiles.length +
@@ -1704,12 +1743,15 @@ export class GitAnalyzer {
     return 'fair';
   }
 
-  private generateRiskRecommendations(_highRiskFiles: FileStats[], _riskFactors: any): string[] {
+  private generateRiskRecommendations(
+    _highRiskFiles: FileStats[],
+    _riskFactors: RiskAnalysis['riskFactors']
+  ): string[] {
     // Removed all recommendations - only report measurable data
     return [];
   }
 
-  private generateGovernanceRecommendations(_analysis: any): string[] {
+  private generateGovernanceRecommendations(_analysis: GovernanceAnalysis): string[] {
     // Removed all recommendations - only report measurable data
     return [];
   }
@@ -1742,7 +1784,7 @@ export class GitAnalyzer {
 
     let gitVersion = '';
     try {
-      gitVersion = await (this.collector as any).git.getVersion();
+      gitVersion = await this.collector.getGitVersion();
     } catch {
       // Ignore git version retrieval errors (non-fatal metadata)
     }
@@ -2322,7 +2364,11 @@ export class GitAnalyzer {
    * @param commits - All commits to analyze for trends
    * @returns Daily trends data or undefined if no commits
    */
-  private async analyzeDailyTrends(commits: CommitData[], options: GitSparkOptions, repository: RepositoryStats) {
+  private async analyzeDailyTrends(
+    commits: CommitData[],
+    options: GitSparkOptions,
+    repository: RepositoryStats
+  ) {
     if (commits.length === 0) {
       return undefined;
     }
@@ -2342,12 +2388,12 @@ export class GitAnalyzer {
       const endDate = new Date();
       const startDate = new Date();
       startDate.setDate(startDate.getDate() - options.days + 1); // +1 to include today
-      
+
       // Don't go back before the repository's first commit
       if (repository.firstCommit && startDate < repository.firstCommit) {
         startDate.setTime(repository.firstCommit.getTime());
       }
-      
+
       analysisRange = { startDate, endDate };
     }
 

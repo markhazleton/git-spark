@@ -9,6 +9,8 @@ export * from './file.js';
 export * from './analyzer.js';
 export * from './periods.js';
 
+import type { FileChange } from './file.js';
+
 /**
  * Complete configuration for Git Spark analyzer and exporters.
  * Contains nested configuration for analysis, output, and performance tuning.
@@ -143,7 +145,7 @@ export interface CommitData {
   isMerge: boolean;
   isCoAuthored: boolean;
   coAuthors: string[];
-  files: any[]; // FileChange[], imported from file.js
+  files: FileChange[];
 }
 
 /**
@@ -342,7 +344,7 @@ export interface ProgressCallback {
 
 export interface CacheEntry {
   key: string;
-  data: any;
+  data: unknown;
   timestamp: number;
   ttl: number;
 }

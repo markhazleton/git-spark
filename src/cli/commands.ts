@@ -1,5 +1,5 @@
 import { Command } from 'commander';
-import { GitSparkOptions, LogLevel, OutputFormat } from '../types/index.js';
+import { AnalysisReport, GitSparkOptions, LogLevel, OutputFormat } from '../types/index.js';
 import {
   validateOptions,
   validateNodeVersion,
@@ -15,6 +15,67 @@ import boxen from 'boxen';
 import ora from 'ora';
 
 const logger = createLogger('cli');
+
+interface BaseCliOptions {
+  repo?: string;
+  since?: string;
+  until?: string;
+  days?: number;
+  branch?: string;
+  author?: string;
+  path?: string;
+  output?: string;
+  config?: string;
+  heavy?: boolean;
+  cache?: boolean;
+  timezone?: string;
+  redactEmails?: boolean;
+  excludeExtensions?: string;
+  teamwork?: boolean;
+}
+
+interface AnalysisCliOptions extends BaseCliOptions {
+  format?: OutputFormat;
+  logLevel?: LogLevel;
+  open?: boolean;
+}
+
+interface HealthCliOptions {
+  repo?: string;
+}
+
+interface InitCliOptions {
+  repo?: string;
+  yes?: boolean;
+}
+
+interface GitSparkInitConfig {
+  version: string;
+  analysis: {
+    excludePaths: string[];
+    excludeExtensions: string[];
+    excludeAuthors: string[];
+    timezone: string;
+    thresholds: {
+      largeCommitLines: number;
+      smallCommitLines: number;
+      staleBranchDays: number;
+      largeFileKB: number;
+      hotspotAuthorThreshold: number;
+    };
+  };
+  output: {
+    defaultFormat: string;
+    outputDir: string;
+    redactEmails: boolean;
+  };
+  performance: {
+    maxBuffer: number;
+    enableCaching: boolean;
+    cacheDir: string;
+    chunkSize: number;
+  };
+}
 
 /**
  * Create and configure the main CLI application
@@ -171,7 +232,7 @@ export async function createCLI(): Promise<Command> {
   return program;
 }
 
-async function executeAnalysis(options: any): Promise<void> {
+async function executeAnalysis(options: AnalysisCliOptions): Promise<void> {
   const spinner = ora('Initializing git-spark').start();
 
   try {
@@ -189,21 +250,21 @@ async function executeAnalysis(options: any): Promise<void> {
     const noCache = options.cache === false ? true : undefined;
     const gitSparkOptions: GitSparkOptions = {
       repoPath: options.repo || process.cwd(),
-      since: options.since,
-      until: options.until,
-      days: options.days,
-      branch: options.branch,
-      author: options.author,
-      path: options.path,
-      format: options.format as OutputFormat,
-      output: options.output,
-      config: options.config,
-      heavy: options.heavy,
-      logLevel: options.logLevel as LogLevel,
+      ...(options.since ? { since: options.since } : {}),
+      ...(options.until ? { until: options.until } : {}),
+      ...(options.days !== undefined ? { days: options.days } : {}),
+      ...(options.branch ? { branch: options.branch } : {}),
+      ...(options.author ? { author: options.author } : {}),
+      ...(options.path ? { path: options.path } : {}),
+      ...(options.format ? { format: options.format as OutputFormat } : {}),
+      ...(options.output ? { output: options.output } : {}),
+      ...(options.config ? { config: options.config } : {}),
+      ...(options.heavy !== undefined ? { heavy: options.heavy } : {}),
+      ...(options.logLevel ? { logLevel: options.logLevel as LogLevel } : {}),
       ...(noCache !== undefined ? { noCache } : {}),
       ...(options.timezone ? { timezone: options.timezone } : {}),
       ...(excludeExtensions ? { excludeExtensions } : {}),
-      teamwork: options.teamwork,
+      ...(options.teamwork !== undefined ? { teamwork: options.teamwork } : {}),
     };
 
     const resolved = resolveOptionsWithConfig(gitSparkOptions);
@@ -281,7 +342,7 @@ async function executeAnalysis(options: any): Promise<void> {
   }
 }
 
-async function executeHealthCheck(options: any): Promise<void> {
+async function executeHealthCheck(options: HealthCliOptions): Promise<void> {
   const spinner = ora('Running health check').start();
 
   try {
@@ -393,7 +454,7 @@ async function validateEnvironment(): Promise<void> {
   }
 }
 
-function displaySummary(report: any, version: string): void {
+function displaySummary(report: AnalysisReport, version: string): void {
   const summary = report.summary;
   const repository = report.repository;
 
@@ -431,7 +492,7 @@ function displaySummary(report: any, version: string): void {
   }
 }
 
-function displayHealthSummary(report: any): void {
+function displayHealthSummary(report: AnalysisReport): void {
   const repository = report.repository;
   const governance = report.governance;
 
@@ -469,7 +530,7 @@ function parseNumber(value: string): number {
   return parsed;
 }
 
-async function executeInit(options: any): Promise<void> {
+async function executeInit(options: InitCliOptions): Promise<void> {
   const { existsSync, writeFileSync } = await import('fs');
   const { resolve } = await import('path');
   const { createInterface } = await import('readline');
@@ -494,15 +555,19 @@ async function executeInit(options: any): Promise<void> {
   }
 
   console.log(
-    boxen(chalk.bold('🔧 Git Spark Configuration Wizard\n\n') + chalk.blue('Create a .git-spark.json file to customize your analysis'), {
-      padding: 1,
-      margin: 1,
-      borderStyle: 'round',
-      borderColor: 'cyan',
-    })
+    boxen(
+      chalk.bold('🔧 Git Spark Configuration Wizard\n\n') +
+        chalk.blue('Create a .git-spark.json file to customize your analysis'),
+      {
+        padding: 1,
+        margin: 1,
+        borderStyle: 'round',
+        borderColor: 'cyan',
+      }
+    )
   );
 
-  let config: any = {
+  const config: GitSparkInitConfig = {
     version: '1.0',
     analysis: {
       excludePaths: ['node_modules/**', 'dist/**', 'build/**', '.git/**'],
@@ -555,14 +620,23 @@ async function executeInit(options: any): Promise<void> {
     };
 
     console.log(chalk.bold('\n📁 Output Settings\n'));
-    config.output.defaultFormat = await ask('Default output format (html/json/csv/markdown)', 'html');
+    config.output.defaultFormat = await ask(
+      'Default output format (html/json/csv/markdown)',
+      'html'
+    );
     config.output.outputDir = await ask('Output directory', './reports');
     config.output.redactEmails = await askBool('Redact email addresses in reports?', false);
 
     console.log(chalk.bold('\n🔍 Analysis Settings\n'));
-    config.analysis.timezone = await ask('Timezone for daily trends (IANA format)', 'America/Chicago');
+    config.analysis.timezone = await ask(
+      'Timezone for daily trends (IANA format)',
+      'America/Chicago'
+    );
 
-    const excludeExtsInput = await ask('File extensions to exclude (comma-separated, e.g., .md,.txt)', '');
+    const excludeExtsInput = await ask(
+      'File extensions to exclude (comma-separated, e.g., .md,.txt)',
+      ''
+    );
     if (excludeExtsInput) {
       config.analysis.excludeExtensions = excludeExtsInput.split(',').map((e: string) => {
         const trimmed = e.trim();
@@ -570,7 +644,10 @@ async function executeInit(options: any): Promise<void> {
       });
     }
 
-    const excludeAuthorsInput = await ask('Authors to exclude (comma-separated, e.g., dependabot[bot])', '');
+    const excludeAuthorsInput = await ask(
+      'Authors to exclude (comma-separated, e.g., dependabot[bot])',
+      ''
+    );
     if (excludeAuthorsInput) {
       config.analysis.excludeAuthors = excludeAuthorsInput.split(',').map((a: string) => a.trim());
     }
@@ -602,7 +679,11 @@ async function executeInit(options: any): Promise<void> {
         )
     );
   } catch (error) {
-    console.error(chalk.red(`Failed to write config file: ${error instanceof Error ? error.message : 'Unknown error'}`));
+    console.error(
+      chalk.red(
+        `Failed to write config file: ${error instanceof Error ? error.message : 'Unknown error'}`
+      )
+    );
     process.exit(1);
   }
 }

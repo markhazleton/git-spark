@@ -115,23 +115,26 @@ export function validateOptions(options: GitSparkOptions): ValidationResult {
       if (options.path.length > 500) {
         errors.push('Path pattern is too long (max 500 characters)');
       }
-      
+
       // Check for balanced parentheses to prevent malformed regex
       const openParens = (options.path.match(/\(/g) || []).length;
       const closeParens = (options.path.match(/\)/g) || []).length;
       if (openParens !== closeParens) {
         errors.push('Path pattern has unbalanced parentheses');
       }
-      
+
       // Check for potentially dangerous regex patterns that could cause ReDoS
       // Detect these specific patterns in the user's input string
       const hasNestedStarPlus = options.path.includes('(.*)+') || options.path.includes('(.*)*.js');
-      const hasRepeatedEscapedDot = options.path.includes('\\.\\+\\.\\+') || options.path.includes('\\.\\*\\.\\*');
+      const hasRepeatedEscapedDot =
+        options.path.includes('\\.\\+\\.\\+') || options.path.includes('\\.\\*\\.\\*');
       const hasNestedWordQuant = options.path.includes('(\\w+*)+');
       const hasNestedCharClass = options.path.includes('([a-z]+)+');
-      
+
       if (hasNestedStarPlus || hasRepeatedEscapedDot || hasNestedWordQuant || hasNestedCharClass) {
-        errors.push('Path pattern contains potentially dangerous regex that could cause performance issues');
+        errors.push(
+          'Path pattern contains potentially dangerous regex that could cause performance issues'
+        );
       } else {
         // Validate regex syntax only — never execute user-supplied patterns to prevent ReDoS
         try {
@@ -168,7 +171,7 @@ export function validateNodeVersion(): ValidationResult {
   const warnings: string[] = [];
 
   const nodeVersion = process.version;
-  const requiredVersion = '>=20.19.0';
+  const requiredVersion = '>=22.12.0';
 
   if (!semver.satisfies(nodeVersion, requiredVersion)) {
     errors.push(`Node.js ${requiredVersion} is required. Current version: ${nodeVersion}`);
@@ -193,8 +196,8 @@ export function validateNodeVersion(): ValidationResult {
  */
 export async function validateGitInstallation(): Promise<ValidationResult> {
   const { spawn } = await import('child_process');
-  
-  return new Promise((resolve) => {
+
+  return new Promise(resolve => {
     const git = spawn('git', ['--version']);
 
     let output = '';

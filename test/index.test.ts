@@ -153,10 +153,12 @@ describe('GitSpark', () => {
     }, 15000);
 
     it('should perform quick analysis with custom options', async () => {
+      const recentSince = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+
       const report = await analyze(process.cwd(), {
         days: 7,
         format: 'json',
-        since: '2024-01-01',
+        since: recentSince,
       });
 
       expect(report).toBeDefined();

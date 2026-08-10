@@ -188,7 +188,7 @@ export class DataCollector {
     if (safeOptions.branch) args.push(safeOptions.branch);
 
     const { spawn } = await import('child_process');
-    const child = spawn('git', args, { cwd: (this.git as any).repoPath });
+    const child = spawn('git', args, { cwd: this.repoPath });
 
     const commits: CommitData[] = [];
     let buffer = '';
@@ -321,8 +321,9 @@ export class DataCollector {
     for (let i = 0; i < commits.length; i++) {
       try {
         commits[i] = await this.enhanceCommit(commits[i]);
-      } catch (e: any) {
-        warnings.push(`Enhancement failed for ${commits[i].hash}: ${e.message || 'unknown'}`);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'unknown';
+        warnings.push(`Enhancement failed for ${commits[i].hash}: ${message}`);
       }
       if (i % 250 === 0) {
         const pct = 80 + Math.min(15, Math.round((i / commits.length) * 15));
@@ -453,6 +454,10 @@ export class DataCollector {
 
   async getCurrentBranch(): Promise<string> {
     return this.git.getCurrentBranch();
+  }
+
+  async getGitVersion(): Promise<string> {
+    return this.git.getVersion();
   }
 
   async getRemoteUrl(): Promise<string> {

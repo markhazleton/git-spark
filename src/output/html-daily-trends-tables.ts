@@ -2,8 +2,15 @@
  * Table generators for the daily trends section.
  * All functions are pure — they receive data and return HTML strings.
  */
+import {
+  DailyCouplingMetrics,
+  DailyFlowMetrics,
+  DailyHygieneMetrics,
+  DailyOwnershipMetrics,
+  DailyStabilityMetrics,
+} from '../types/index.js';
 
-export function generateFlowTrendsTable(flowMetrics: any[]): string {
+export function generateFlowTrendsTable(flowMetrics: DailyFlowMetrics[]): string {
   if (flowMetrics.length === 0) {
     return '<div class="no-data">No flow data available</div>';
   }
@@ -47,7 +54,7 @@ export function generateFlowTrendsTable(flowMetrics: any[]): string {
     `;
 }
 
-export function generateStabilityTrendsTable(stabilityMetrics: any[]): string {
+export function generateStabilityTrendsTable(stabilityMetrics: DailyStabilityMetrics[]): string {
   if (stabilityMetrics.length === 0) {
     return '<div class="no-data">No stability data available</div>';
   }
@@ -89,7 +96,7 @@ export function generateStabilityTrendsTable(stabilityMetrics: any[]): string {
     `;
 }
 
-export function generateOwnershipTrendsTable(ownershipMetrics: any[]): string {
+export function generateOwnershipTrendsTable(ownershipMetrics: DailyOwnershipMetrics[]): string {
   if (ownershipMetrics.length === 0) {
     return '<div class="no-data">No ownership data available</div>';
   }
@@ -131,7 +138,7 @@ export function generateOwnershipTrendsTable(ownershipMetrics: any[]): string {
     `;
 }
 
-export function generateCouplingTrendsTable(couplingMetrics: any[]): string {
+export function generateCouplingTrendsTable(couplingMetrics: DailyCouplingMetrics[]): string {
   if (couplingMetrics.length === 0) {
     return '<div class="no-data">No coupling data available</div>';
   }
@@ -169,7 +176,7 @@ export function generateCouplingTrendsTable(couplingMetrics: any[]): string {
     `;
 }
 
-export function generateHygieneTrendsTable(hygieneMetrics: any[]): string {
+export function generateHygieneTrendsTable(hygieneMetrics: DailyHygieneMetrics[]): string {
   if (hygieneMetrics.length === 0) {
     return '<div class="no-data">No hygiene data available</div>';
   }

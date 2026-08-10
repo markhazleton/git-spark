@@ -3,15 +3,27 @@
  * All functions are pure — they receive data and return HTML strings.
  */
 import { escapeHtml } from './html-utils.js';
+import { ContributionDay, ContributionGraphData, ContributionWeek } from '../types/index.js';
 
-export function generateContributionsGraphSection(contributionsGraph: any): string {
+interface ChartFlowMetric {
+  day: string;
+  commitsPerDay: number;
+  uniqueAuthorsPerDay: number;
+  grossLinesChangedPerDay: number;
+  filesTouchedPerDay?: number;
+  filesChangedPerDay?: number;
+}
+
+export function generateContributionsGraphSection(
+  contributionsGraph: ContributionGraphData
+): string {
   if (!contributionsGraph || !contributionsGraph.calendar) {
     return '';
   }
 
   const { totalCommits, weeks, calendar } = contributionsGraph;
 
-  const datesWithCommits = calendar.filter((day: any) => day.count > 0);
+  const datesWithCommits = calendar.filter((day: ContributionDay) => day.count > 0);
   const actualDays = datesWithCommits.length > 0 ? datesWithCommits.length : calendar.length;
   const dateRangeText =
     datesWithCommits.length > 0
@@ -19,9 +31,9 @@ export function generateContributionsGraphSection(contributionsGraph: any): stri
       : `${calendar[0]?.date || ''} to ${calendar[calendar.length - 1]?.date || ''}`;
 
   const weekColumns = weeks
-    .map((week: any) => {
+    .map((week: ContributionWeek) => {
       const days = week.days
-        .map((day: any) => {
+        .map((day: ContributionDay) => {
           const classes = `contribution-day intensity-${day.intensity}`;
           const title = `${day.date}: ${day.count} commit${day.count !== 1 ? 's' : ''}`;
           return `<div class="${classes}" title="${title}" data-count="${day.count}" data-date="${day.date}"></div>`;
@@ -58,7 +70,7 @@ export function generateContributionsGraphSection(contributionsGraph: any): stri
     `;
 }
 
-export function generateCommitTrendChart(flowMetrics: any[]): string {
+export function generateCommitTrendChart(flowMetrics: ChartFlowMetric[]): string {
   if (!flowMetrics || flowMetrics.length === 0) {
     return '<div class="chart-placeholder">No commit trend data available</div>';
   }
@@ -122,7 +134,7 @@ export function generateCommitTrendChart(flowMetrics: any[]): string {
     `;
 }
 
-export function generateAuthorTrendChart(flowMetrics: any[]): string {
+export function generateAuthorTrendChart(flowMetrics: ChartFlowMetric[]): string {
   if (!flowMetrics || flowMetrics.length === 0) {
     return '<div class="chart-placeholder">No author trend data available</div>';
   }
@@ -184,14 +196,17 @@ export function generateAuthorTrendChart(flowMetrics: any[]): string {
     `;
 }
 
-export function generateVolumeSparklines(flowMetrics: any[]): string {
+export function generateVolumeSparklines(flowMetrics: ChartFlowMetric[]): string {
   if (!flowMetrics || flowMetrics.length === 0) {
     return '<div class="chart-placeholder">No volume data available</div>';
   }
 
   const recentData = flowMetrics.slice(-14);
   const maxLines = Math.max(...recentData.map(d => d.grossLinesChangedPerDay), 1);
-  const maxFiles = Math.max(...recentData.map(d => d.filesTouchedPerDay), 1);
+  const maxFiles = Math.max(
+    ...recentData.map(d => d.filesTouchedPerDay ?? d.filesChangedPerDay ?? 0),
+    1
+  );
 
   const barWidth = 100 / recentData.length;
   const chartHeight = 50;
@@ -210,12 +225,13 @@ export function generateVolumeSparklines(flowMetrics: any[]): string {
 
   const filesSparkline = recentData
     .map((day, index) => {
-      const heightPercent = (day.filesTouchedPerDay / maxFiles) * 100;
+      const filesTouched = day.filesTouchedPerDay ?? day.filesChangedPerDay ?? 0;
+      const heightPercent = (filesTouched / maxFiles) * 100;
       const height = (heightPercent / 100) * chartHeight;
       const x = index * barWidth;
       const y = chartHeight - height;
       return `<rect x="${x}%" y="${y}" width="${barWidth * 0.8}%" height="${height}" fill="url(#files-gradient)" rx="1">
-          <title>${day.day}: ${day.filesTouchedPerDay} files</title>
+          <title>${day.day}: ${filesTouched} files</title>
         </rect>`;
     })
     .join('');

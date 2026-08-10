@@ -3,7 +3,9 @@
  * Contains analysis results, report types, and risk/governance metrics
  */
 
-import { FileStats, FileTypeBreakdown } from './file.js';
+import type { AuthorStats } from './author.js';
+import type { FileStats, FileTypeBreakdown } from './file.js';
+import type { DailyTrendsData, GitSparkConfig, GitSparkOptions } from './index.js';
 
 export interface AnalysisReport {
   metadata: ReportMetadata;
@@ -11,7 +13,7 @@ export interface AnalysisReport {
   /** Current state of files in the repository (filesystem-based, not Git history) */
   currentState: CurrentRepositoryState;
   timeline: TimelineData[];
-  authors: any[]; // AuthorStats[], imported from author.ts
+  authors: AuthorStats[];
   files: FileStats[];
   hotspots: FileStats[];
   risks: RiskAnalysis;
@@ -19,14 +21,14 @@ export interface AnalysisReport {
   teamScore: TeamScore;
   summary: ReportSummary;
   /** Daily trending metrics for comprehensive trend analysis */
-  dailyTrends?: any | undefined; // DailyTrendsData, imported from index
+  dailyTrends?: DailyTrendsData | undefined;
 }
 
 export interface ReportMetadata {
   generatedAt: Date;
   version: string;
   repoPath: string;
-  analysisOptions: any; // GitSparkOptions, imported from index
+  analysisOptions: GitSparkOptions;
   processingTime: number;
   gitVersion: string;
   commit: string;
@@ -36,7 +38,7 @@ export interface ReportMetadata {
   /** Non-fatal issues encountered during analysis */
   warnings?: string[];
   /** Derived configuration snapshot (after resolution/merge) */
-  resolvedConfig?: Record<string, any>;
+  resolvedConfig?: Partial<GitSparkConfig>;
 }
 
 export interface RepositoryStats {
@@ -252,4 +254,3 @@ export interface ReportSummary {
   insights: string[];
   actionItems: string[];
 }
-

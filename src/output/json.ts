@@ -84,7 +84,7 @@ export class JSONExporter {
     }
   }
 
-  private jsonReplacer(_key: string, value: any): any {
+  private jsonReplacer(_key: string, value: unknown): unknown {
     // Handle Date objects
     if (value instanceof Date) {
       return value.toISOString();

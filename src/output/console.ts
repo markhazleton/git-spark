@@ -1,4 +1,10 @@
-import { AnalysisReport } from '../types/index.js';
+import {
+  AnalysisReport,
+  AuthorStats,
+  FileStats,
+  GovernanceAnalysis,
+  RiskAnalysis,
+} from '../types/index.js';
 import chalk from 'chalk';
 import { table } from 'table';
 import { createLogger } from '../utils/logger.js';
@@ -21,7 +27,6 @@ export class ConsoleExporter {
     this.displayHotspots(report.files);
     this.displayRisks(report.risks);
     this.displayGovernance(report.governance);
-
 
     this.displayFooter(report);
   }
@@ -86,7 +91,7 @@ export class ConsoleExporter {
    * Display top contributors table
    * @private
    */
-  private displayTopAuthors(authors: any[]): void {
+  private displayTopAuthors(authors: AuthorStats[]): void {
     process.stdout.write(chalk.bold.cyan('👥 TOP CONTRIBUTORS') + '\n');
     process.stdout.write(chalk.blue('─'.repeat(40)) + '\n');
 
@@ -113,7 +118,7 @@ export class ConsoleExporter {
    * Display file hotspots table
    * @private
    */
-  private displayHotspots(files: any[]): void {
+  private displayHotspots(files: FileStats[]): void {
     process.stdout.write(chalk.bold.cyan('🔥 FILE HOTSPOTS') + '\n');
     process.stdout.write(chalk.blue('─'.repeat(40)) + '\n');
 
@@ -139,7 +144,7 @@ export class ConsoleExporter {
    * Display risk analysis section
    * @private
    */
-  private displayRisks(risks: any): void {
+  private displayRisks(risks: RiskAnalysis): void {
     process.stdout.write(chalk.bold.cyan('⚠️  RISK ANALYSIS') + '\n');
     process.stdout.write(chalk.blue('─'.repeat(40)) + '\n');
 
@@ -170,7 +175,7 @@ export class ConsoleExporter {
    * Display governance analysis section
    * @private
    */
-  private displayGovernance(governance: any): void {
+  private displayGovernance(governance: GovernanceAnalysis): void {
     process.stdout.write(chalk.bold.cyan('📋 GOVERNANCE ANALYSIS') + '\n');
     process.stdout.write(chalk.blue('─'.repeat(40)) + '\n');
 

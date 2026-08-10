@@ -13,17 +13,42 @@ import { createLogger } from '../utils/logger.js';
 
 const logger = createLogger('cli:report');
 
+interface HTMLReportCliOptions {
+  repo?: string;
+  since?: string;
+  until?: string;
+  days?: string | number;
+  branch?: string;
+  author?: string;
+  path?: string;
+  output?: string;
+  config?: string;
+  heavy?: boolean;
+  cache?: boolean;
+  timezone?: string;
+  excludeExtensions?: string;
+  teamwork?: boolean;
+  serve?: boolean;
+  open?: boolean;
+  port?: number;
+}
+
 /**
  * Execute HTML report generation
  *
  * @param options - CLI options
  */
-export async function executeHTMLReport(options: any): Promise<void> {
+export async function executeHTMLReport(options: HTMLReportCliOptions): Promise<void> {
   const spinner = ora('Initializing HTML report generation').start();
 
   try {
     // Parse and validate options
-    const parsedDays = options.days ? parseInt(options.days, 10) : undefined;
+    const parsedDays =
+      typeof options.days === 'number'
+        ? options.days
+        : options.days
+          ? parseInt(options.days, 10)
+          : undefined;
     const excludeExtensions = options.excludeExtensions
       ? options.excludeExtensions
           .split(',')
@@ -32,21 +57,21 @@ export async function executeHTMLReport(options: any): Promise<void> {
     const noCache = options.cache === false ? true : undefined;
     const gitSparkOptions: GitSparkOptions = {
       repoPath: options.repo || process.cwd(),
-      since: options.since,
-      until: options.until,
+      ...(options.since ? { since: options.since } : {}),
+      ...(options.until ? { until: options.until } : {}),
       ...(parsedDays && { days: parsedDays }),
-      branch: options.branch,
-      author: options.author,
-      path: options.path,
+      ...(options.branch ? { branch: options.branch } : {}),
+      ...(options.author ? { author: options.author } : {}),
+      ...(options.path ? { path: options.path } : {}),
       format: 'html' as OutputFormat,
-      output: options.output,
-      config: options.config,
-      heavy: options.heavy,
+      ...(options.output ? { output: options.output } : {}),
+      ...(options.config ? { config: options.config } : {}),
+      ...(options.heavy !== undefined ? { heavy: options.heavy } : {}),
       logLevel: 'info' as LogLevel,
       ...(noCache !== undefined ? { noCache } : {}),
       ...(options.timezone ? { timezone: options.timezone } : {}),
       ...(excludeExtensions ? { excludeExtensions } : {}),
-      teamwork: options.teamwork,
+      ...(options.teamwork !== undefined ? { teamwork: options.teamwork } : {}),
     };
 
     const resolved = resolveOptionsWithConfig(gitSparkOptions);
@@ -172,7 +197,7 @@ export async function startHTMLServer(reportPath: string, port: number): Promise
     const { createServer } = await import('http');
     const { readFileSync } = await import('fs');
 
-    const server = createServer((req: any, res: any) => {
+    const server = createServer((req, res) => {
       // Add CORS headers
       res.setHeader('Access-Control-Allow-Origin', '*');
       res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');

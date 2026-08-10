@@ -1,4 +1,4 @@
-import { AnalysisReport } from '../types/index.js';
+import { AnalysisReport, AuthorStats, FileStats, TimelineData } from '../types/index.js';
 import { writeFileSync, mkdirSync } from 'fs';
 import { resolve } from 'path';
 import { createLogger } from '../utils/logger.js';
@@ -35,25 +35,25 @@ export class CSVExporter {
     }
   }
 
-  private async exportAuthors(authors: any[], outputPath: string): Promise<void> {
+  private async exportAuthors(authors: AuthorStats[], outputPath: string): Promise<void> {
     const csvContent = this.generateAuthorsCSV(authors);
     const filePath = resolve(outputPath, 'authors.csv');
     writeFileSync(filePath, csvContent, 'utf-8');
   }
 
-  private async exportFiles(files: any[], outputPath: string): Promise<void> {
+  private async exportFiles(files: FileStats[], outputPath: string): Promise<void> {
     const csvContent = this.generateFilesCSV(files);
     const filePath = resolve(outputPath, 'files.csv');
     writeFileSync(filePath, csvContent, 'utf-8');
   }
 
-  private async exportTimeline(timeline: any[], outputPath: string): Promise<void> {
+  private async exportTimeline(timeline: TimelineData[], outputPath: string): Promise<void> {
     const csvContent = this.generateTimelineCSV(timeline);
     const filePath = resolve(outputPath, 'timeline.csv');
     writeFileSync(filePath, csvContent, 'utf-8');
   }
 
-  private generateAuthorsCSV(authors: any[]): string {
+  private generateAuthorsCSV(authors: AuthorStats[]): string {
     const headers = [
       'Name',
       'Email',
@@ -78,7 +78,9 @@ export class CSVExporter {
           ? Math.round((this.toNumber(author.workPatterns?.afterHours) / commits) * 100)
           : 0;
       const weekends =
-        commits > 0 ? Math.round((this.toNumber(author.workPatterns?.weekends) / commits) * 100) : 0;
+        commits > 0
+          ? Math.round((this.toNumber(author.workPatterns?.weekends) / commits) * 100)
+          : 0;
 
       return [
         this.escapeCsvField(author.name),
@@ -101,7 +103,7 @@ export class CSVExporter {
     return [headers.join(','), ...rows.map(row => row.join(','))].join('\n');
   }
 
-  private generateFilesCSV(files: any[]): string {
+  private generateFilesCSV(files: FileStats[]): string {
     const headers = [
       'Path',
       'Commits',
@@ -133,7 +135,7 @@ export class CSVExporter {
     return [headers.join(','), ...rows.map(row => row.join(','))].join('\n');
   }
 
-  private generateTimelineCSV(timeline: any[]): string {
+  private generateTimelineCSV(timeline: TimelineData[]): string {
     const headers = ['Date', 'Commits', 'Authors', 'Churn', 'Files'];
 
     const rows = timeline.map(day => [
