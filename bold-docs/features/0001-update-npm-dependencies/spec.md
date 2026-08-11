@@ -21,7 +21,7 @@
 - [X] `npm run lint` passes with zero errors
 - [X] `npm test` passes with coverage thresholds met (branches ≥75%, functions ≥87%, lines ≥86%)
 - [X] `typescript` stays on `^6.0.3` and `npm-check-updates` stays on `^22.2.9` with the incompatibilities documented
-- [X] Node runtime metadata is aligned to `>=22.12.0`
+- [X] Node runtime metadata is aligned to `>=22.22.2`
 
 ## Affected Files
 
