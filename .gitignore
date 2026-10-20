@@ -316,3 +316,6 @@ vite.config.ts.timestamp-*
 
 # Bold
 .bold/.backup/
+
+# typedoc API output (docs/ is the GitHub Pages site)
+api-docs/
