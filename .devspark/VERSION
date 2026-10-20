@@ -2,5 +2,5 @@ product: DevSpark
 edition: Make-Bold
 version: 9.2.0
 installed: 2026-10-20
-method: codex-quickstart
+method: claude-code-quickstart
 migrated-from: bold
