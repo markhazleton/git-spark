@@ -1,0 +1,94 @@
+{
+  "generated": {
+    "by": "build-knowledge-index",
+    "at": "2026-10-20T16:25:02Z"
+  },
+  "roots": [
+    {
+      "path": ".devspark/",
+      "owner": "framework",
+      "purpose": "framework payload"
+    },
+    {
+      "path": ".devspark.work/",
+      "owner": "repo",
+      "purpose": "work products"
+    },
+    {
+      "path": ".knowledge/",
+      "owner": "repo",
+      "purpose": "current authoritative knowledge and published user-facing guidance"
+    },
+    {
+      "path": ".archive/",
+      "owner": "repo",
+      "purpose": "landing place for old work products, grouped by release"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "architecture-decisions",
+      "type": "architecture",
+      "form": "flat-document",
+      "role": "architecture",
+      "path": ".knowledge/architecture/decisions.md",
+      "title": "ADR-001: Analytical Integrity — Never Guess Metrics",
+      "headings": [
+        "TL;DR",
+        "ADR-001: Analytical Integrity — Never Guess Metrics",
+        "Context",
+        "Decision",
+        "Consequences",
+        "Enforcement",
+        "ADR-002: ESM-Only Module System",
+        "ADR-003: HTML Security Model — CSP + SHA-256 Hashing"
+      ]
+    },
+    {
+      "id": "governance-constitution-history",
+      "type": "governance",
+      "form": "flat-document",
+      "role": "governance",
+      "path": ".knowledge/governance/constitution-history.md",
+      "title": "governance-constitution-history",
+      "headings": [
+        "TL;DR",
+        "Current Version (at migration)",
+        "Amendment Log",
+        "Rejected Proposals",
+        "Governance going forward"
+      ]
+    },
+    {
+      "id": "governance-constitution",
+      "type": "governance",
+      "form": "flat-document",
+      "role": "governance",
+      "path": ".knowledge/governance/constitution.md",
+      "title": "Git Spark Constitution",
+      "headings": [
+        "Git Spark Constitution",
+        "Principles",
+        "Provenance"
+      ]
+    },
+    {
+      "id": "reference-tech-stack",
+      "type": "authoritative-reference",
+      "form": "flat-document",
+      "role": "authoritative-reference",
+      "path": ".knowledge/reference/tech-stack.md",
+      "title": "reference-tech-stack",
+      "headings": [
+        "TL;DR",
+        "Technology Stack",
+        "Development Workflow",
+        "Quality Gates"
+      ]
+    }
+  ],
+  "edges": [],
+  "dangling_references": [],
+  "entities": [],
+  "stale_entities": []
+}

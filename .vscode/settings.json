@@ -1,12 +1,9 @@
 {
     "liveServer.settings.port": 5501,
     "chat.promptFilesRecommendations": {
-        "bold-plan-init": true,
-        "bold-plan": true,
-        "bold-plan-tasks": true,
-        "bold-build": true
-    },
-    "chat.tools.terminal.autoApprove": {
-        ".bold/scripts/": true
+        "devspark-specify": true,
+        "devspark-plan": true,
+        "devspark-tasks": true,
+        "devspark-implement": true
     }
 }

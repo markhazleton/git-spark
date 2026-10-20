@@ -1,5 +1,9 @@
 # Git Spark - AI Agent Instructions
 
+## DevSpark Workflow
+
+Read root `AGENTS.md`, `.knowledge/governance/constitution.md`, and `.knowledge/reference/tech-stack.md` before working. DevSpark framework files live in `.devspark/`, project work and overrides in `.devspark.work/`, and durable knowledge in `.knowledge/`. Codex command shims live in `.codex/prompts/`. Never read, list, search, or glob `.archive/`.
+
 Git Spark is an enterprise-grade Git repository analytics tool (TypeScript, Node.js 26+) that analyzes Git commit history to generate comprehensive reports (HTML, JSON, CSV, Markdown, Console). It emphasizes **analytical transparency** - never guessing metrics that can't be derived from Git data alone.
 
 ## Core Architecture & Data Flow
