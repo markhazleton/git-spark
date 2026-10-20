@@ -225,6 +225,39 @@ describe('Validation Utils', () => {
   });
 
   describe('validateNodeVersion', () => {
+    it.each(['v22.22.2', 'v24.15.0', 'v25.9.0', 'v26.0.0-rc.1'])(
+      'rejects unsupported runtime %s',
+      runtimeVersion => {
+        const originalVersion = Object.getOwnPropertyDescriptor(globalThis.process, 'version')!;
+        try {
+          Object.defineProperty(globalThis.process, 'version', {
+            value: runtimeVersion,
+            configurable: true,
+          });
+          const result = validateNodeVersion();
+          expect(result.isValid).toBe(false);
+          expect(result.errors).toEqual([
+            `Node.js >=26.0.0 is required. Current version: ${runtimeVersion}`,
+          ]);
+        } finally {
+          Object.defineProperty(globalThis.process, 'version', originalVersion);
+        }
+      }
+    );
+
+    it.each(['v26.0.0', 'v26.7.0', 'v27.0.0'])('accepts supported runtime %s', runtimeVersion => {
+      const originalVersion = Object.getOwnPropertyDescriptor(globalThis.process, 'version')!;
+      try {
+        Object.defineProperty(globalThis.process, 'version', {
+          value: runtimeVersion,
+          configurable: true,
+        });
+        expect(validateNodeVersion().isValid).toBe(true);
+      } finally {
+        Object.defineProperty(globalThis.process, 'version', originalVersion);
+      }
+    });
+
     it('should validate current Node.js version', () => {
       const result = validateNodeVersion();
       expect(result.isValid).toBe(true);

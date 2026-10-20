@@ -1,6 +1,6 @@
 # Git Spark - AI Agent Instructions
 
-Git Spark is an enterprise-grade Git repository analytics tool (TypeScript, Node.js 20+) that analyzes Git commit history to generate comprehensive reports (HTML, JSON, CSV, Markdown, Console). It emphasizes **analytical transparency** - never guessing metrics that can't be derived from Git data alone.
+Git Spark is an enterprise-grade Git repository analytics tool (TypeScript, Node.js 26+) that analyzes Git commit history to generate comprehensive reports (HTML, JSON, CSV, Markdown, Console). It emphasizes **analytical transparency** - never guessing metrics that can't be derived from Git data alone.
 
 ## Core Architecture & Data Flow
 

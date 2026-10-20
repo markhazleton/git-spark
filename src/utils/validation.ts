@@ -171,7 +171,7 @@ export function validateNodeVersion(): ValidationResult {
   const warnings: string[] = [];
 
   const nodeVersion = process.version;
-  const requiredVersion = '>=22.22.2';
+  const requiredVersion = '>=26.0.0';
 
   if (!semver.satisfies(nodeVersion, requiredVersion)) {
     errors.push(`Node.js ${requiredVersion} is required. Current version: ${nodeVersion}`);

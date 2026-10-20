@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: [22.22.2, 24.15.0]
+        node-version: ["26.0.0", "26.x"]
         os: [ubuntu-latest, windows-latest, macOS-latest]
 
     steps:
@@ -55,7 +55,7 @@ jobs:
           git-spark --help
 
       - name: Upload coverage to Codecov
-        if: matrix.node-version == '22.22.2' && matrix.os == 'ubuntu-latest'
+        if: matrix.node-version == '26.0.0' && matrix.os == 'ubuntu-latest'
         uses: codecov/codecov-action@v5
         with:
           files: ./coverage/lcov.info
@@ -64,7 +64,7 @@ jobs:
           fail_ci_if_error: false
 
       - name: Upload coverage artifact
-        if: matrix.node-version == '22.22.2' && matrix.os == 'ubuntu-latest'
+        if: matrix.node-version == '26.0.0' && matrix.os == 'ubuntu-latest'
         uses: actions/upload-artifact@v7
         with:
           name: coverage-report
@@ -72,7 +72,7 @@ jobs:
           retention-days: 1
 
       - name: Coverage summary comment
-        if: github.event_name == 'pull_request' && matrix.node-version == '22.22.2' && matrix.os == 'ubuntu-latest'
+        if: github.event_name == 'pull_request' && matrix.node-version == '26.0.0' && matrix.os == 'ubuntu-latest'
         uses: davelosert/vitest-coverage-report-action@v2
         with:
           json-summary-path: coverage/coverage-final.json
@@ -89,7 +89,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: "22.22.2"
+          node-version: "26.x"
           cache: "npm"
 
       - name: Install dependencies
@@ -112,7 +112,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: "22.22.2"
+          node-version: "26.x"
           cache: "npm"
 
       - name: Install dependencies

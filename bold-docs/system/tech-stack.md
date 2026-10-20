@@ -4,7 +4,7 @@ Git Spark's technology stack, development workflow, and quality gates — carrie
 
 ## Technology Stack
 
-- **Runtime**: Node.js 20+
+- **Runtime**: Node.js 26+
 - **Language**: TypeScript (strict mode, `noImplicitAny`, `exactOptionalPropertyTypes`)
 - **Module resolution**: bundler (not Node16) — `.js` extension required on all imports
 - **CLI**: Commander.js

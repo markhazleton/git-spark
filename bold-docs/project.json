@@ -3,7 +3,7 @@
     "name": "git-spark",
     "type": "cli-tool",
     "language": "typescript",
-    "runtime": "node>=22.22.2",
+    "runtime": "node>=26.0.0",
     "module_resolution": "bundler",
     "cli_framework": "commander"
   },

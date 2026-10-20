@@ -9,7 +9,7 @@
 [![npm version](https://img.shields.io/npm/v/git-spark.svg?style=flat-square)](https://www.npmjs.com/package/git-spark)
 [![npm downloads](https://img.shields.io/npm/dm/git-spark.svg?style=flat-square)](https://www.npmjs.com/package/git-spark)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
-[![Node.js Version](https://img.shields.io/badge/node-%3E%3D22.22.2-brightgreen?style=flat-square)](https://nodejs.org)
+[![Node.js Version](https://img.shields.io/badge/node-%3E%3D26.0.0-brightgreen?style=flat-square)](https://nodejs.org)
 [![GitHub issues](https://img.shields.io/github/issues/MarkHazleton/git-spark.svg?style=flat-square)](https://github.com/MarkHazleton/git-spark/issues)
 [![GitHub stars](https://img.shields.io/github/stars/MarkHazleton/git-spark.svg?style=flat-square)](https://github.com/MarkHazleton/git-spark/stargazers)
 
@@ -614,7 +614,7 @@ jobs:
       
       - uses: actions/setup-node@v4
         with:
-          node-version: '22.22.2'
+          node-version: '26.0.0'
       
       - name: Install git-spark
         run: npm install -g git-spark
@@ -634,7 +634,7 @@ jobs:
 ```yaml
 repository_analysis:
   stage: analysis
-  image: node:22.22.2
+  image: node:26.0.0
   script:
     - npm install -g git-spark
     - git-spark --format=json --output=./reports
