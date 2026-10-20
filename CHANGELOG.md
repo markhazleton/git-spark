@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Breaking
+
+- **Node.js 26.0.0 or newer is now required** (previously 22.22.2). `engines`, `.nvmrc`, the CI matrix (26.0.0 and 26.x), and the README badge are aligned to the new minimum
+
+### Changed
+
+- Compile with TypeScript 7 while keeping the TypeScript 6 API for tooling (ESLint, Jest, TypeDoc)
+- Refactored `GitAnalyzer` and related modules for stronger typing of author and file metrics, safer regex validation, and improved error handling in the collector
+- Updated devDependencies to current releases
+
+### Security
+
+- Resolved GHSA-hp3w-g68c-fv3c (`sprintf-js` DoS, no upstream fix) in the dev toolchain by overriding `argparse` to 2.x under `js-yaml@3`; `js-yaml` only uses `argparse` in its CLI, so test and coverage behavior is unchanged
+
+### Internal
+
+- Replaced the Bold framework with DevSpark 9.2.0 and added Claude Code `/devspark-*` command entry points
+
 ## [1.4.0] - 2026-07-11
 
 ### Added

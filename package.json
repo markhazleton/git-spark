@@ -165,5 +165,10 @@
   },
   "allowScripts": {
     "unrs-resolver@1.11.1": true
+  },
+  "overrides": {
+    "js-yaml@3": {
+      "argparse": "^2.0.1"
+    }
   }
 }
