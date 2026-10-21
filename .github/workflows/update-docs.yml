@@ -17,14 +17,24 @@ jobs:
     
     permissions:
       contents: write
-    
+
+    env:
+      # Bot commits only touch docs/; CI already ran the test suite for this commit
+      HUSKY: 0
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
         with:
           ref: main
           fetch-depth: 0
-      
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "26.x"
+          cache: "npm"
+
       - name: Extract version from tag
         id: version
         run: |
