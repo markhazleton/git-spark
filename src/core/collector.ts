@@ -134,11 +134,12 @@ export class DataCollector {
         `Comparing dates: requested=${requestedStartDate.toISOString()}, firstCommit=${firstCommitDate.toISOString()}`
       );
       if (requestedStartDate < firstCommitDate) {
-        // Convert to local date at start of day to ensure we include the first commit
-        // Subtract one day to ensure we capture commits on the first commit date
+        // Start one day before the first commit, as a full UTC timestamp: git reads a
+        // bare YYYY-MM-DD as that date at the current time of day, which drops recent
+        // commits whenever the local and UTC dates differ
         const adjustedDate = new Date(firstCommitDate);
         adjustedDate.setDate(adjustedDate.getDate() - 1);
-        options.since = adjustedDate.toISOString().split('T')[0];
+        options.since = adjustedDate.toISOString();
         logger.info(
           `Analysis start date is before repository first commit. Adjusting range to start from ${options.since}.`
         );

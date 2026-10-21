@@ -73,4 +73,16 @@ describe('DataCollector streaming parser regression', () => {
       fail('Expected to find second commit');
     }
   });
+
+  it('caps --days to the first commit with a full timestamp, not a bare date', async () => {
+    // A bare YYYY-MM-DD makes git use the current time of day, which drops recent
+    // commits whenever the local and UTC dates differ (e.g. US evenings)
+    const all = await new DataCollector(tmp).collectCommits({ repoPath: tmp });
+    const options = { repoPath: tmp, days: 7 };
+    const commits = await new DataCollector(tmp).collectCommits(options);
+    expect(commits.length).toBe(all.length);
+    expect((options as { since?: string }).since).toMatch(
+      /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/
+    );
+  });
 });
