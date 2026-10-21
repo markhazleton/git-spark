@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Installing git-spark no longer triggers npm's "install scripts blocked" warning. The husky git-hook setup moved from `postinstall` to `prepare`, which runs only for contributors installing inside the repository, never for users installing the package from npm
+- The docs site sample report now covers the last 365 days instead of a 30-day window ending at the UTC date, which could produce an empty report when the workflow ran just after midnight UTC
+
 ## [2.0.0] - 2026-10-20
 
 ### Breaking
