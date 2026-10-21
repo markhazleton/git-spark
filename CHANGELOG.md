@@ -7,8 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.1] - 2026-10-20
+
 ### Fixed
 
+- `--days` no longer drops recent commits when the window reaches back past the repository's first commit. The adjusted start date was passed to git as a bare `YYYY-MM-DD` in UTC, which git reads as that date at the current local time of day; when the local and UTC dates differed (for example, US evenings) commits made earlier that day were silently excluded. The start is now a full UTC timestamp
 - Installing git-spark no longer triggers npm's "install scripts blocked" warning. The husky git-hook setup moved from `postinstall` to `prepare`, which runs only for contributors installing inside the repository, never for users installing the package from npm
 - The docs site sample report now covers the last 365 days instead of a 30-day window ending at the UTC date, which could produce an empty report when the workflow ran just after midnight UTC
 
