@@ -1,0 +1,52 @@
+{
+  "archive_root": ".archive/2026-10-20",
+  "items": [
+    {
+      "archived": ".archive/2026-10-20/specs/0001-update-npm-dependencies",
+      "files": [
+        {
+          "path": "spec.md",
+          "sha256": "5535e1607b4c8510520cc0fbbaa9c843405cd8631d32f1ac5104592c8179beb0"
+        }
+      ],
+      "in_release_window": true,
+      "is_file": false,
+      "kind": "spec",
+      "last_commit": "c2c9af9c527080bf5ad24ba9d09402d16726cb7b",
+      "original": ".devspark.work/specs/0001-update-npm-dependencies"
+    },
+    {
+      "archived": ".archive/2026-10-20/specs/0002-node-26-minimum",
+      "files": [
+        {
+          "path": "checklist.md",
+          "sha256": "1685b5126cea2d65706aef50d5cdc2879e205937b65fd69496ad0efe4c9c5704"
+        },
+        {
+          "path": "gates/analyze.md",
+          "sha256": "16d9858788343af0cecad7e5b711b2a98083e3bd01fe94a2cf720caeaf821117"
+        },
+        {
+          "path": "gates/critic.md",
+          "sha256": "8878188c188f3230ad004c5a699a881afff2bba275bbb0fa5a03205958861464"
+        },
+        {
+          "path": "spec.md",
+          "sha256": "19bd314cbc12345b0c82fd55d976ab3db8e1b85144f9e955f942ba119387e608"
+        },
+        {
+          "path": "validation.md",
+          "sha256": "4bea4f7bd0703f6ccf227cbf2d26f9ec5baaa5dac6978418cf3cd4ac8689271e"
+        }
+      ],
+      "in_release_window": true,
+      "is_file": false,
+      "kind": "spec",
+      "last_commit": "c2c9af9c527080bf5ad24ba9d09402d16726cb7b",
+      "original": ".devspark.work/specs/0002-node-26-minimum"
+    }
+  ],
+  "release": "2.0.0",
+  "release_from": "v1.4.0",
+  "schema": 1
+}

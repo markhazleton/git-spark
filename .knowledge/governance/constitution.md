@@ -28,4 +28,4 @@ type: governance
 
 ## Provenance
 
-Restored from the repository governance rules during the DevSpark migration on 2026-10-20. The five principles and their enforcement status are preserved. Amendment history is maintained in [constitution-history.md](constitution-history.md); runtime and quality gates are documented in [tech-stack.md](../reference/tech-stack.md).
+Restored from the repository governance rules during the DevSpark migration on 2026-10-20. The five principles and their enforcement status are preserved. Amendment history lives in Git; runtime and quality gates are documented in [tech-stack.md](../reference/tech-stack.md).

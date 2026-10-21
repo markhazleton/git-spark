@@ -1,7 +1,7 @@
 {
   "generated": {
     "by": "build-knowledge-index",
-    "at": "2026-10-20T16:25:02Z"
+    "at": "2026-10-21T01:14:26Z"
   },
   "roots": [
     {
@@ -45,18 +45,19 @@
       ]
     },
     {
-      "id": "governance-constitution-history",
-      "type": "governance",
+      "id": "architecture-overview",
+      "type": "architecture",
       "form": "flat-document",
-      "role": "governance",
-      "path": ".knowledge/governance/constitution-history.md",
-      "title": "governance-constitution-history",
+      "role": "architecture",
+      "path": ".knowledge/architecture/overview.md",
+      "title": "Architecture Overview",
       "headings": [
         "TL;DR",
-        "Current Version (at migration)",
-        "Amendment Log",
-        "Rejected Proposals",
-        "Governance going forward"
+        "Architecture Overview",
+        "Entry Points",
+        "Pipeline",
+        "Layers",
+        "Invariants"
       ]
     },
     {
