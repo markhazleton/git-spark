@@ -1,0 +1,15 @@
+{
+  "$schema": "https://github.com/IBM/audit-ci/raw/main/docs/schema.json",
+  "moderate": true,
+  "show-not-found": true,
+  // Dev-only advisories with no upstream fix yet (2026-11-21).
+  // Production deps are audited separately via `npm audit --omit=dev`, so these
+  // stay blocked if they ever reach the published package.
+  // Remove each entry once jest/ts-jest and typedoc allow the patched versions.
+  "allowlist": [
+    // glob 9.0.0-14.0.1 (fixed 14.0.2): via jest 30 (^13) and test-exclude
+    "GHSA-3g3m-2fjr-6pw4",
+    // minimatch 7.0.0-11.0.0 (fixed 11.0.1): via typedoc 0.28 (^10) and test-exclude
+    "GHSA-g3hv-75wg-m249"
+  ]
+}
