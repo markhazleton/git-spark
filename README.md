@@ -755,7 +755,7 @@ These capabilities establish a foundation of **analytical honesty and transparen
 ## Repo Story
 
 An evidence-based narrative of this repository's development history, contributor patterns, velocity trends, and architecture:
-[Repo Story (2026-04-06)](.documentation/repo-story/repo-story-2026-04-06.md)
+[Repo Story (2026-11-21)](.knowledge/guides/repo-story/repo-story-2026-11-21.md)
 
 ## 📄 License
 
