@@ -25,11 +25,12 @@ DevSpark ownership follows four roots:
 - `.knowledge/` contains current authoritative truth plus published user-facing guidance (`.knowledge/guides/`)
 - `.archive/` is the landing place for all old work products, grouped by release
 
-The collection includes 38 active commands.
+The collection includes 39 active commands.
 
 | File                       | Command                           | Purpose                                                                                          |
 | -------------------------- | --------------------------------- | ------------------------------------------------------------------------------------------------ |
 | `specify.md`               | `/devspark-specify`               | Define requirements and user stories                                                             |
+| `roadmap.md`               | `/devspark-roadmap`               | Optional: plan product direction as right-sized Prospective Specs; never required                |
 | `plan.md`                  | `/devspark-plan`                  | Create technical implementation plan                                                             |
 | `tasks.md`                 | `/devspark-tasks`                 | Generate actionable task list                                                                    |
 | `implement.md`             | `/devspark-implement`             | Execute tasks to build the feature                                                               |
@@ -75,6 +76,7 @@ The collection includes 38 active commands.
 | `checklist-template.md`       | Template structure for quality checklists                          |
 | `spec-validation-contract.md` | Shared validation contract for spec structure and required content |
 | `agent-file-template.md`      | Template for agent configuration files                             |
+| `roadmap-template.md`         | Optional roadmap and Prospective Spec shapes for `/devspark-roadmap` |
 | `vscode-settings.json`        | Recommended VS Code settings                                       |
 
 The stock spec, quick-spec, plan, and tasks templates include optional
