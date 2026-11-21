@@ -17,9 +17,10 @@ Checks implemented (see `.knowledge/governance/devspark-philosophy.md` for the f
   F. Schema/tooling       -- taxonomy-registry.json names a nodeType the schema does not allow.
 
 Exit codes: 0 = no hard structural failure, 1 = hard structural failure present, 2 = usage error.
-Hard failures (engine-divergence, generated-artifact-drift, dangling-reference,
+Hard failures (engine-divergence, dangling-reference,
 unreachable-knowledge-root at severity=high) are mechanical and CI-safe to gate on; every other
-category is advisory and must never become a mandatory build gate.
+category is advisory and must never become a mandatory build gate. Derived `index.json` and
+`coverage.json` files are never compared against a rebuild.
 """
 
 from __future__ import annotations
@@ -126,53 +127,6 @@ def check_engine_divergence(repo: Path) -> list[dict[str, Any]]:
     return findings
 
 
-def check_artifact_consistency(repo: Path, index: dict[str, Any]) -> list[dict[str, Any]]:
-    findings: list[dict[str, Any]] = []
-    index_path = repo / ".knowledge/index.json"
-    coverage_path = repo / ".knowledge/ontology/coverage.json"
-    fresh_coverage = primary_engine.build_coverage_report(index)
-
-    for path, fresh_payload, label in (
-        (index_path, index, "index.json"),
-        (coverage_path, fresh_coverage, "coverage.json"),
-    ):
-        problem = primary_engine._drift(path, fresh_payload)  # noqa: SLF001 - reuse canonical drift comparator
-        if problem is None:
-            continue
-        missing = not path.exists()
-        findings.append(
-            make_finding(
-                category="generated-artifact-drift",
-                severity="high",
-                confidence="high",
-                subject=label,
-                summary=problem,
-                evidence=[{"type": "generated-artifact", "path": str(path.relative_to(repo)), "missing": missing}],
-                recommendation="Regenerate with: python3 scripts/build_knowledge_index.py --repo-root .",
-                changes_authoritative_truth=False,
-                source="knowledge-integrity",
-            )
-        )
-
-    knowledge_root = repo / ".knowledge"
-    if coverage_path.exists() and not (knowledge_root.exists() and any(knowledge_root.iterdir())):
-        findings.append(
-            make_finding(
-                category="generated-artifact-drift",
-                severity="medium",
-                confidence="high",
-                subject="coverage.json",
-                summary="'.knowledge/ontology/coverage.json' exists with no '.knowledge' source content to have produced it.",
-                evidence=[{"type": "generated-artifact", "path": "coverage.json", "orphaned": True}],
-                recommendation="Delete the orphaned generated artifact or restore its source '.knowledge' content.",
-                changes_authoritative_truth=False,
-                source="knowledge-integrity",
-                id_parts=("generated-artifact-drift", "coverage.json", "orphaned"),
-            )
-        )
-    return findings
-
-
 def check_taxonomy_consistency(repo: Path, index: dict[str, Any]) -> list[dict[str, Any]]:
     findings: list[dict[str, Any]] = []
     mappings = primary_engine.load_registry(repo)
@@ -266,7 +220,7 @@ def check_build_failure(repo: Path, error: ValueError) -> list[dict[str, Any]]:
 
 def check_root_reachability(repo: Path, index: dict[str, Any]) -> list[dict[str, Any]]:
     findings: list[dict[str, Any]] = []
-    excluded = {".git", ".devspark.work", ".archive", ".devspark", "node_modules", "__pycache__", ".venv", "venv"}
+    excluded = {".git", ".devspark.work", ".archive", ".devspark", "_site", "node_modules", "__pycache__", ".venv", "venv"}
     indexed_prefixes = {str(node.get("path", "")).rsplit("/.knowledge/", 1)[0] for node in index.get("nodes", [])}
     for candidate in sorted(repo.rglob(".knowledge"), key=primary_engine.stable_path_sort_key):
         if not candidate.is_dir() or any(part in excluded for part in candidate.relative_to(repo).parts):
@@ -322,7 +276,6 @@ def run_all_checks(repo: Path) -> dict[str, Any]:
         findings.extend(check_build_failure(repo, exc))
         return {"index_build_ok": False, "findings": findings}
 
-    findings.extend(check_artifact_consistency(repo, index))
     findings.extend(check_taxonomy_consistency(repo, index))
     findings.extend(check_mapping_integrity(repo, index))
     findings.extend(check_root_reachability(repo, index))

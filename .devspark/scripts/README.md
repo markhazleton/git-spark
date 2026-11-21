@@ -10,7 +10,9 @@ script resolution).
 ## Layout and Parity
 
 - `bash/` — POSIX Bash implementations
-- `powershell/` — PowerShell 7+ implementations
+- `powershell/` — PowerShell 7+ implementations. Every script declares
+  `#requires -Version 7.0`, so Windows PowerShell 5.1 stops with a version
+  error instead of a parse error.
 
 Constitution §VI (Platform Parity) requires every `bash/<name>.sh` to have a
 matching `powershell/<name>.ps1` with equivalent behavior, and vice versa.
@@ -31,28 +33,24 @@ regressions even if Homebrew bash is installed and earlier on `PATH`.
 ## Unified Branch Creation
 
 `new-branch.(sh|ps1)` is the **single** entry point that issues
-`git checkout -b` for any DevSpark route (spec, quick-spec, or quickfix). It:
+`git checkout -b` for new DevSpark work. It:
 
 - derives the next global index live (never stores a counter) by scanning
   branches, `.devspark.work/specs/*`, and `.devspark.work/quickfixes/*`
   (both legacy `QF-YYYY-NNN` and unified `NNN-fix-*` records);
-- composes `NNN-<type>-<slug>` branch names (`type` ∈ `spec`, `quick`, `fix`);
+- composes `NNN-<type>-<slug>` branch names (`type` ∈ `work`, `fix`);
 - validates the composed name with `git check-ref-format --branch` before
   ever creating it;
 - enforces the Branch Safety confirmation gate (fails closed — non-zero
   exit — in a non-interactive context without `--yes`/`-Yes`);
-- scaffolds the type-appropriate artifact and prints JSON-only to stdout
-  (diagnostics go to stderr).
+- scaffolds nothing for a `work` branch and a minimal quickfix record for a
+  `fix` branch, and prints JSON-only to stdout (diagnostics go to stderr).
 
-`create-new-feature.(sh|ps1)` (used by `/devspark-specify`) and the
-branch-creation step inside `quickfix-context.(sh|ps1)` (used by
-`/devspark-quickfix`) are thin shims that delegate to `new-branch` with
-`--type spec|quick` / `--type fix` respectively, while preserving their own
-existing JSON contracts (`BRANCH_NAME`, `SPEC_FILE`/`ARTIFACT_PATH`,
-`FEATURE_NUM`/`NUMBER`, `HAS_GIT`) for backward compatibility. Legacy
-`NNN-<slug>` and `QF-YYYY-NNN` branches/records remain fully supported and
-continue to be counted by the allocator — only new branches adopt the
-`NNN-<type>-<slug>` syntax.
+`/devspark-specify` creates `--type work` branches and `/devspark-quickfix`
+creates `--type fix` branches. New work never scaffolds a full-spec or
+quick-spec bundle; existing `NNN-spec-*`, `NNN-quick-*`, legacy `NNN-<slug>`
+and `QF-YYYY-NNN` branches and records continue to resolve and are counted by
+the allocator.
 
 ## Standalone Tools
 

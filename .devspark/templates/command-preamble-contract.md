@@ -29,24 +29,20 @@ Planning is an implementation aid, not a permanent compliance record.
 - Implementation updates behavior, affected tests, and the current `.knowledge/` nodes that
   describe that behavior in the same change. Durable code, tests, and knowledge MUST NOT contain
   spec, task, quickfix, feature, or requirement identifiers.
-- Traceability is strictly one-directional: the ephemeral spec/plan/tasks/quickfix record links to
-  the durable code, test, and knowledge files it produced via its linkage fields (`code_ref` may
-  name both production and test files; `knowledge_ref` names current `.knowledge/` files). It is
+- Traceability is strictly one-directional: the ephemeral spec/plan/tasks/quickfix record may cite
+  the durable code, test, and knowledge files it produced. It is
   never the reverse — durable code, tests, and `.knowledge/` MUST NOT carry a comment, docstring,
   identifier, or link back to any spec, plan, task, quickfix, or feature document, live or archived.
-- Every implementation task or checklist item that changes behavior MUST record all affected
-  durable production-code, test, and current-knowledge paths in the temporary spec/plan/tasks or
-  quickfix record before that item is marked complete. Use `n/a` only when a category was genuinely
-  not changed, with a brief reason. This is required traceability in the temporary record, not
-  permission for any durable file to reference the temporary record.
+- The temporary record names the paths it changes in task or checklist descriptions; there is no
+  separate per-item linkage field to fill in. Legacy `code_ref`/`knowledge_ref` markers are
+  ignored. This is not permission for any durable file to reference the temporary record.
 - A durable `.knowledge/` node's `source_of_truth` or evidence may cite only durable code or test
   files. It MUST NOT cite a spec, plan, task, gate, quickfix record, `.devspark.work/`, or
   `.archive/` path. Planning artifacts may cite that node, but the node must remain self-contained
   current truth after the planning bundle is deleted or archived.
-- After all required verification passes, implementation populates `code_ref`/`knowledge_ref`
-  linkage on every item in the planning bundle and leaves it live under `.devspark.work/` — it
-  never archives the bundle itself. `/devspark-release` is the sole command that later confirms
-  every item's linkage and moves the completed bundle to `.archive/{YYYY-MM-DD}/` (preserving its
+- After all required verification passes, implementation leaves the planning bundle live under
+  `.devspark.work/` — it never archives the bundle itself. `/devspark-release` is the sole command
+  that later moves the completed bundle to `.archive/{YYYY-MM-DD}/` (preserving its
   relative path minus the `.devspark.work/` prefix), which can happen across more than one release
   window. It is not released, mined later, or reconstructed by downstream commands from
   `.devspark.work/`.
@@ -183,24 +179,34 @@ preamble_modules:
 
 ## 13. Minimum Sufficient Change
 
-> **Minimum Sufficient Change.** Build the smallest complete solution that satisfies the current objective, explicit requirements, invariants, and demonstrated operating constraints. Prefer simpler and more local solutions over speculative flexibility. Future usefulness alone does not justify present complexity.
+> **Minimum Sufficient Change.** Build the smallest complete solution that satisfies the current requirements, invariants and demonstrated constraints. Complexity is a cost that requires justification; future usefulness alone does not justify it. Correctness, security, safety, data integrity and explicit contracts are never optional simplifications.
 
-- **MVP** — build the smallest valuable outcome. Specify names it; everything else is explicitly out of scope.
-- **KISS** — prefer the simplest safe design that satisfies the current requirements, and the least powerful mechanism that satisfies them safely.
-- **YAGNI** — do not add behavior, abstraction, state, configuration, infrastructure, or extensibility for hypothetical future needs. Every new mechanism (state, configuration, feature flag, persistence, cache, background process, endpoint, telemetry subsystem, extension point, generic abstraction) is justified by a current requirement, invariant, demonstrated constraint, or accepted operational need.
+**Discover before you design.** Find the closest existing implementation by behavior (how does this codebase already do something like this?), read its code and tests, and extend it. A new mechanism (state, setting, endpoint, store, cache, worker, extension point, abstraction, test harness) needs a current requirement or demonstrated constraint that the existing implementation cannot meet. When lighter options exist, prefer them in this order: existing behavior already satisfies it; simplify or reuse an existing capability; deterministic validation or a test; procedure or human review; accept a bounded limitation; local code; new machinery last.
 
-> **Complexity is a cost that requires justification.** Completeness means completely satisfying today's justified needs, not anticipating every future need.
->
-> **Correctness, security, safety, data integrity, and explicit contracts are not optional simplifications.**
+Minimum Sufficient Change applies to governance as well as implementation. This is reasoning, not a gate. Plan records the decision once (closest pattern, fit, new mechanism), Tasks derives from the change surface, and Critic and Judge challenge a new mechanism rather than count it. When an authorized bounded correction crosses the original scope boundary, follow convergence §10; human authorization never waives a required check or its actual result.
 
-Least-powerful-mechanism order (guidance, not an algorithm): existing behavior already satisfies it; clarify the requirement or documentation; remove unnecessary behavior; simplify the existing design; reuse an existing capability; deterministic validation or a test; operational procedure or human review; accept a bounded limitation; local code; new runtime machinery last.
+**Operating assumptions.** Honor the developer's explicit target environment, supported users,
+configuration and decision owner. Carry these boundaries through implementation, verification and
+review. A declared single-environment, single-user change does not require multi-environment
+portability, tenant isolation, speculative scale or future consumers. Do not assume these limits
+when they were not stated; use relevant repository evidence and ask only when an unknown affects
+the requested outcome. Single user does not imply single execution: establish whether retries,
+scheduled jobs or overlapping requests actually occur before raising a concurrency concern.
+Require a concrete scenario reachable within the declared operating assumptions and evidence of
+its consequence before treating a behavioral concern as a defect. If evidence contradicts an
+assumption, show that conflict to the developer rather than silently expanding or ignoring scope.
 
-This is a rule of reasoning for every command, not a gate: Specify captures the MVP boundary, Plan captures operating context and the expected mechanism shape, Critic proposes the least-complex mitigation first, and Judge asks what can be removed. Nothing here fails a plan on a count alone.
-
-Minimum Sufficient Change applies to governance as well as implementation. When an authorized
-bounded correction crosses the original scope boundary, follow convergence §10: reconcile the
-existing feature records and perform only the applicable review and verification steps. Human
-authorization never waives a required gate or its actual result.
+**Approval authority.** The developer decides ordinary scope and implementation choices within
+their authority. Do not invent external approvers, stakeholder sign-offs or review boards from
+job titles, domain terminology or hypothetical organizational practice. Any additional required
+approval must cite an existing applicable policy, contract or explicit instruction, explain its
+applicability to this change, and identify the authority it actually names. Repository access alone
+neither establishes nor removes that authority. If a genuinely required authority is unavailable
+or unspecified, report the exact requirement and missing decision to the developer; do not invent
+an approval path, contact outsiders or claim approval. A recommendation is not a required sign-off.
+Existing applicable mandatory controls remain binding, and authorization already given is not
+requested again. These boundaries belong in existing handoffs or conditional resume context,
+not a new checklist, scope document or approval gate.
 
 ## 14. Reusing Already-Loaded Artifacts
 
