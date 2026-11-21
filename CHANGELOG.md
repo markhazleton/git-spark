@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.3] - 2026-11-21
+
 ### Fixed
 
 - `--path` accepts Git glob patterns such as `src/**` and `src/core/*.ts`. It was validated as a regular expression, so `**` failed with "Path pattern is not a valid regex pattern" even though the value is passed to Git as a pathspec

@@ -313,7 +313,7 @@
         <div class="logo">📜</div>
         <h1>Changelog</h1>
         <p class="subtitle">
-          Every published release of git-spark, newest first. Latest: <strong>v2.0.2</strong>.
+          Every published release of git-spark, newest first. Latest: <strong>v2.0.3</strong>.
           <br />
           Install with <a href="https://www.npmjs.com/package/git-spark" target="_blank" rel="noopener">npm</a>
           · Source: <a href="https://github.com/MarkHazleton/git-spark/blob/main/CHANGELOG.md" target="_blank" rel="noopener">CHANGELOG.md</a>
@@ -321,6 +321,7 @@
       </header>
 
       <nav class="version-index" aria-label="Releases">
+          <a href="#v2-0-3">v2.0.3</a>
           <a href="#v2-0-2">v2.0.2</a>
           <a href="#v2-0-1">v2.0.1</a>
           <a href="#v2-0-0">v2.0.0</a>
@@ -336,10 +337,33 @@
           <a href="#v1-0-0">v1.0.0</a>
       </nav>
 
+      <section class="release" id="v2-0-3">
+        <div class="release-header">
+          <h2><a href="#v2-0-3">v2.0.3</a></h2>
+          <span class="latest-badge">Latest</span>
+          <time datetime="2026-11-21">November 21, 2026</time>
+        </div>
+        <div class="release-body">
+          <h3 class="category category-fixed">Fixed</h3>
+          <ul>
+          <li><code>--path</code> accepts Git glob patterns such as <code>src/**</code> and <code>src/core/*.ts</code>. It was validated as a regular expression, so <code>**</code> failed with &quot;Path pattern is not a valid regex pattern&quot; even though the value is passed to Git as a pathspec</li>
+          <li><code>--branch</code> combined with <code>--path</code> now analyzes the requested branch. The branch was placed after Git's <code>--</code> separator, so Git read it as a second path and analyzed the current branch instead</li>
+          <li>The oldest commit in the analyzed range is no longer dropped when its message has a multi-line body. The last record of the Git log stream was parsed as if its header ended at the first newline, so a body spanning several lines made it look malformed and it was silently skipped, undercounting commits, churn, and files in any window or path filter whose oldest commit had a detailed message</li>
+          <li><code>git-spark validate</code> recognizes a Git repository again. It always reported &quot;Failed to validate Git repository&quot; because a module import lacked the <code>.js</code> extension that Node ESM requires</li>
+          <li><code>git-spark analyze</code> now applies the global options (<code>--days</code>, <code>--format</code>, <code>--output</code>, <code>--path</code>, and the rest). It only read <code>--repo</code>, so the other options were silently ignored</li>
+          <li>Bus Factor shows <code>0%</code> instead of <code>NaN%</code> when the analyzed window has no commits, in the CLI summary, health check, and console, HTML, and Markdown reports</li>
+          </ul>
+          <h3 class="category category-security">Security</h3>
+          <ul>
+          <li><code>git-spark html --serve</code> listens on <code>127.0.0.1</code> only and no longer sends <code>Access-Control-Allow-Origin: *</code>. It listened on every network interface, so anyone on the local network could read the report, including author names and emails. Requests other than GET and HEAD now return 405</li>
+          </ul>
+        </div>
+      </section>
+
       <section class="release" id="v2-0-2">
         <div class="release-header">
           <h2><a href="#v2-0-2">v2.0.2</a></h2>
-          <span class="latest-badge">Latest</span>
+          
           <time datetime="2026-11-21">November 21, 2026</time>
         </div>
         <div class="release-body">
