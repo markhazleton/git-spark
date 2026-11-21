@@ -18,7 +18,7 @@ jobs:
         runs-on: ubuntu-latest
 
         permissions:
-            contents: read
+            contents: write # create the GitHub Release after npm publish
             id-token: write
             deployments: write
 
@@ -63,6 +63,23 @@ jobs:
               run: npm publish --provenance
               env:
                   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+            - name: Create GitHub Release
+              if: ${{ github.event_name != 'workflow_dispatch' || inputs.publish }}
+              env:
+                  GH_TOKEN: ${{ github.token }}
+              run: |
+                  VERSION=$(node -p 'require("./package.json").version')
+                  TAG="v${VERSION}"
+                  if gh release view "$TAG" >/dev/null 2>&1; then
+                    echo "GitHub Release $TAG already exists, skipping"
+                    exit 0
+                  fi
+                  node scripts/extract-release-notes.js "$VERSION" > "$RUNNER_TEMP/release-notes.md"
+                  gh release create "$TAG" \
+                    --verify-tag \
+                    --title "Git Spark $TAG" \
+                    --notes-file "$RUNNER_TEMP/release-notes.md"
 
             - name: Create GitHub deployment
               if: ${{ github.event_name != 'workflow_dispatch' || inputs.publish }}
@@ -128,6 +145,10 @@ jobs:
         needs: publish
         if: ${{ failure() && (github.event_name != 'workflow_dispatch' || inputs.publish) }}
 
+        permissions:
+            contents: read
+            issues: write
+
         steps:
             - name: Checkout code
               uses: actions/checkout@v6
@@ -141,9 +162,18 @@ jobs:
                     echo "VERSION=$(node -p 'require("./package.json").version')" >> $GITHUB_OUTPUT
                   fi
 
-            - name: Alert for manual intervention
+            - name: Open issue for manual intervention
+              env:
+                  GH_TOKEN: ${{ github.token }}
+                  VERSION: ${{ steps.version.outputs.VERSION }}
+                  RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
               run: |
-                  echo "⚠️ Publication failed for version ${{ steps.version.outputs.VERSION }}"
-                  echo "Manual intervention is required."
-                  echo "Check the logs to see if the package was partially published."
-                  echo "If needed, run locally: npm unpublish git-spark@${{ steps.version.outputs.VERSION }}"
+                  echo "⚠️ Publication failed for version ${VERSION}"
+                  gh issue create \
+                    --title "Publish failed for v${VERSION}" \
+                    --body "The publish workflow failed for \`v${VERSION}\`: ${RUN_URL}
+
+                  Check the failed step before re-running:
+                  - Before \`npm publish\` (tests, lint, build): fix and re-tag, or re-run the workflow.
+                  - At \`npm publish\`: an \`E404\`/\`E401\` on PUT usually means \`NPM_TOKEN\` is expired or invalid. Rotate the secret and re-run. Confirm with \`npm view git-spark versions\`.
+                  - After \`npm publish\` (GitHub Release or deployment): the package is already live, so do not re-run (npm rejects republishing a version). Create the release by hand: \`node scripts/extract-release-notes.js ${VERSION} > notes.md && gh release create v${VERSION} --verify-tag --title 'Git Spark v${VERSION}' --notes-file notes.md\`"

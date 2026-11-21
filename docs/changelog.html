@@ -1,0 +1,895 @@
+<!doctype html>
+<!-- Generated from CHANGELOG.md by scripts/generate-changelog-page.js. Do not edit by hand. -->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Git Spark release history: new features, fixes, and breaking changes in every published version."
+    />
+    <meta name="author" content="Mark Hazleton" />
+    <meta property="og:title" content="Git Spark Changelog" />
+    <meta property="og:description" content="Release history for the git-spark npm package." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://git-spark.makeboldspark.com/changelog.html" />
+    <link rel="canonical" href="https://git-spark.makeboldspark.com/changelog.html" />
+    <title>Git Spark Changelog</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 40px 20px;
+        color: #2d3748;
+      }
+
+      .container {
+        max-width: 1100px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 16px;
+        padding: 50px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      }
+
+      .back-link {
+        display: inline-block;
+        color: #667eea;
+        font-weight: 600;
+        text-decoration: none;
+        margin-bottom: 20px;
+      }
+
+      .back-link:hover {
+        text-decoration: underline;
+      }
+
+      header {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      .logo {
+        font-size: 3rem;
+        margin-bottom: 10px;
+      }
+
+      h1 {
+        font-size: 2.6rem;
+        margin-bottom: 10px;
+        font-weight: 700;
+      }
+
+      .subtitle {
+        color: #4a5568;
+        font-size: 1.1rem;
+        line-height: 1.6;
+      }
+
+      .subtitle a {
+        color: #667eea;
+        font-weight: 600;
+        text-decoration: none;
+      }
+
+      .subtitle a:hover {
+        text-decoration: underline;
+      }
+
+      .version-index {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
+        padding: 20px;
+        margin-bottom: 30px;
+        background: #f7fafc;
+        border-radius: 12px;
+      }
+
+      .version-index a {
+        padding: 6px 14px;
+        border-radius: 16px;
+        background: white;
+        border: 1px solid #e2e8f0;
+        color: #667eea;
+        font-size: 0.9rem;
+        font-weight: 600;
+        text-decoration: none;
+      }
+
+      .version-index a:hover {
+        border-color: #667eea;
+      }
+
+      .release {
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 28px;
+        margin-bottom: 24px;
+        scroll-margin-top: 20px;
+      }
+
+      .release:target {
+        border-color: #667eea;
+        box-shadow: 0 8px 30px rgba(102, 126, 234, 0.2);
+      }
+
+      .release-header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+
+      .release-header h2 {
+        font-size: 1.6rem;
+      }
+
+      .release-header h2 a {
+        color: #2d3748;
+        text-decoration: none;
+      }
+
+      .release-header h2 a:hover {
+        color: #667eea;
+      }
+
+      .release-header time {
+        color: #718096;
+        font-size: 0.95rem;
+        margin-left: auto;
+      }
+
+      .latest-badge {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        font-weight: 700;
+      }
+
+      .release-body {
+        color: #4a5568;
+        line-height: 1.7;
+      }
+
+      .release-body h3.category {
+        display: inline-block;
+        font-size: 0.85rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 4px 12px;
+        border-radius: 8px;
+        margin: 18px 0 8px;
+        background: #edf2f7;
+        color: #4a5568;
+      }
+
+      .release-body h3.category:first-child {
+        margin-top: 0;
+      }
+
+      .release-body h3.category-added {
+        background: #c6f6d5;
+        color: #22543d;
+      }
+
+      .release-body h3.category-fixed {
+        background: #bee3f8;
+        color: #2a4365;
+      }
+
+      .release-body h3.category-changed {
+        background: #e9d8fd;
+        color: #44337a;
+      }
+
+      .release-body h3.category-breaking,
+      .release-body h3.category-removed {
+        background: #fed7d7;
+        color: #742a2a;
+      }
+
+      .release-body h3.category-security {
+        background: #feebc8;
+        color: #7b341e;
+      }
+
+      .release-body h4 {
+        margin: 14px 0 6px;
+        color: #2d3748;
+      }
+
+      .release-body p {
+        margin: 8px 0;
+      }
+
+      .release-body ul {
+        padding-left: 24px;
+        margin: 6px 0;
+      }
+
+      .release-body li {
+        margin: 4px 0;
+      }
+
+      .release-body code {
+        background: #edf2f7;
+        padding: 1px 6px;
+        border-radius: 4px;
+        font-size: 0.9em;
+        overflow-wrap: anywhere;
+      }
+
+      .release-body a {
+        color: #667eea;
+      }
+
+      .release-body blockquote {
+        background: #fffaf0;
+        border-left: 4px solid #dd6b20;
+        border-radius: 6px;
+        padding: 10px 16px;
+        margin: 0 0 12px;
+        color: #7b341e;
+      }
+
+      footer {
+        text-align: center;
+        margin-top: 40px;
+        padding-top: 20px;
+        border-top: 1px solid #e2e8f0;
+        color: #718096;
+        font-size: 0.9rem;
+      }
+
+      footer p {
+        margin: 6px 0;
+      }
+
+      footer a {
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 600;
+      }
+
+      footer a:hover {
+        text-decoration: underline;
+      }
+
+      @media (max-width: 768px) {
+        body {
+          padding: 16px;
+        }
+
+        .container {
+          padding: 30px 20px;
+        }
+
+        h1 {
+          font-size: 2rem;
+        }
+
+        .release {
+          padding: 20px 16px;
+        }
+
+        .release-header time {
+          margin-left: 0;
+          width: 100%;
+        }
+      }
+    </style>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RY77Z11S9E"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-RY77Z11S9E');
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <a href="./" class="back-link">← Back to Git Spark</a>
+      <header>
+        <div class="logo">📜</div>
+        <h1>Changelog</h1>
+        <p class="subtitle">
+          Every published release of git-spark, newest first. Latest: <strong>v2.0.1</strong>.
+          <br />
+          Install with <a href="https://www.npmjs.com/package/git-spark" target="_blank" rel="noopener">npm</a>
+          · Source: <a href="https://github.com/MarkHazleton/git-spark/blob/main/CHANGELOG.md" target="_blank" rel="noopener">CHANGELOG.md</a>
+        </p>
+      </header>
+
+      <nav class="version-index" aria-label="Releases">
+          <a href="#v2-0-1">v2.0.1</a>
+          <a href="#v2-0-0">v2.0.0</a>
+          <a href="#v1-4-0">v1.4.0</a>
+          <a href="#v1-3-2">v1.3.2</a>
+          <a href="#v1-3-1">v1.3.1</a>
+          <a href="#v1-3-0">v1.3.0</a>
+          <a href="#v1-2-0">v1.2.0</a>
+          <a href="#v1-0-263">v1.0.263</a>
+          <a href="#v1-0-221">v1.0.221</a>
+          <a href="#v1-0-183">v1.0.183</a>
+          <a href="#v1-0-170">v1.0.170</a>
+          <a href="#v1-0-0">v1.0.0</a>
+      </nav>
+
+      <section class="release" id="v2-0-1">
+        <div class="release-header">
+          <h2><a href="#v2-0-1">v2.0.1</a></h2>
+          <span class="latest-badge">Latest</span>
+          <time datetime="2026-10-20">October 20, 2026</time>
+        </div>
+        <div class="release-body">
+          <h3 class="category category-fixed">Fixed</h3>
+          <ul>
+          <li><code>--days</code> no longer drops recent commits when the window reaches back past the repository's first commit. The adjusted start date was passed to git as a bare <code>YYYY-MM-DD</code> in UTC, which git reads as that date at the current local time of day; when the local and UTC dates differed (for example, US evenings) commits made earlier that day were silently excluded. The start is now a full UTC timestamp</li>
+          <li>Installing git-spark no longer triggers npm's &quot;install scripts blocked&quot; warning. The husky git-hook setup moved from <code>postinstall</code> to <code>prepare</code>, which runs only for contributors installing inside the repository, never for users installing the package from npm</li>
+          <li>The docs site sample report now covers the last 365 days instead of a 30-day window ending at the UTC date, which could produce an empty report when the workflow ran just after midnight UTC</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="release" id="v2-0-0">
+        <div class="release-header">
+          <h2><a href="#v2-0-0">v2.0.0</a></h2>
+          
+          <time datetime="2026-10-20">October 20, 2026</time>
+        </div>
+        <div class="release-body">
+          <h3 class="category category-breaking">Breaking</h3>
+          <ul>
+          <li><strong>Node.js 26.0.0 or newer is now required</strong> (previously 22.22.2). <code>engines</code>, <code>.nvmrc</code>, the CI matrix (26.0.0 and 26.x), and the README badge are aligned to the new minimum</li>
+          </ul>
+          <h3 class="category category-changed">Changed</h3>
+          <ul>
+          <li>Compile with TypeScript 7 while keeping the TypeScript 6 API for tooling (ESLint, Jest, TypeDoc)</li>
+          <li>Refactored <code>GitAnalyzer</code> and related modules for stronger typing of author and file metrics, safer regex validation, and improved error handling in the collector</li>
+          <li>Updated devDependencies to current releases</li>
+          </ul>
+          <h3 class="category category-security">Security</h3>
+          <ul>
+          <li>Resolved GHSA-hp3w-g68c-fv3c (<code>sprintf-js</code> DoS, no upstream fix) in the dev toolchain by overriding <code>argparse</code> to 2.x under <code>js-yaml@3</code>; <code>js-yaml</code> only uses <code>argparse</code> in its CLI, so test and coverage behavior is unchanged</li>
+          </ul>
+          <h3 class="category category-internal">Internal</h3>
+          <ul>
+          <li>Replaced the Bold framework with DevSpark 9.2.0 and added Claude Code <code>/devspark-*</code> command entry points</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="release" id="v1-4-0">
+        <div class="release-header">
+          <h2><a href="#v1-4-0">v1.4.0</a></h2>
+          
+          <time datetime="2026-07-11">July 11, 2026</time>
+        </div>
+        <div class="release-body">
+          <blockquote>
+          <p><strong>Not published to npm.</strong> The npm publish for this tag failed with an authentication error, so <code>git-spark@1.4.0</code> was never released. Every change below shipped in 2.0.0.</p>
+          </blockquote>
+          <h3 class="category category-added">Added</h3>
+          <ul>
+          <li><strong>New <code>git-spark periods</code> command</strong>: compares commit churn and activity across consecutive fixed-length periods (e.g. sprints), with console, markdown, and HTML output formats (<code>src/cli/periods-command.ts</code>, <code>src/core/period-summary.ts</code>, <code>src/output/periods-*.ts</code>, <code>src/types/periods.ts</code>)</li>
+          <li><strong>Shallow clone detection</strong>: <code>GitExecutor.isShallowRepository()</code> warns when a shallow clone may be missing commits needed for accurate period comparisons</li>
+          <li><strong>Fast type-check in CI</strong>: <code>typecheck:fast</code> script using <code>tsgo</code> (TypeScript native preview) added as a non-blocking CI step</li>
+          <li><strong><code>scripts/update-changelog.js</code></strong>: automatically promotes CHANGELOG.md's <code>[Unreleased]</code> section to a dated version section during <code>npm version</code> (wired in as the <code>version</code> lifecycle script), so <code>npm run release:*</code> keeps the changelog in sync with the version bump instead of requiring a separate manual edit</li>
+          </ul>
+          <h3 class="category category-changed">Changed</h3>
+          <ul>
+          <li>Hardened the scheduled dependency-update workflow (<code>security.yml</code>) with explicit <code>contents: write</code> / <code>pull-requests: write</code> permissions and <code>persist-credentials: false</code> on checkout</li>
+          </ul>
+          <h3 class="category category-removed">Removed</h3>
+          <ul>
+          <li>Removed the unimplemented <code>--compare &lt;branch&gt;</code> and <code>--watch</code> CLI flags and their unused <code>ComparisonReport</code> / <code>ComparisonDifferences</code> types</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="release" id="v1-3-2">
+        <div class="release-header">
+          <h2><a href="#v1-3-2">v1.3.2</a></h2>
+          
+          <time datetime="2026-05-19">May 19, 2026</time>
+        </div>
+        <div class="release-body">
+          <h3 class="category category-changed">Changed</h3>
+          <ul>
+          <li>Updated <code>homepage</code> in <code>package.json</code> to <code>https://git-spark.makeboldspark.com</code> (was GitHub Pages URL)</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="release" id="v1-3-1">
+        <div class="release-header">
+          <h2><a href="#v1-3-1">v1.3.1</a></h2>
+          
+          <time datetime="2026-05-19">May 19, 2026</time>
+        </div>
+        <div class="release-body">
+          <h3 class="category category-added">Added</h3>
+          <ul>
+          <li><strong>New live site</strong>: hosted at <a href="https://git-spark.makeboldspark.com" target="_blank" rel="noopener">git-spark.makeboldspark.com</a> as part of the Make Bold Spark portfolio migration from GitHub Pages</li>
+          <li><strong>Google Analytics</strong> (G-RY77Z11S9E) added to <code>docs/index.html</code> and <code>docs/git-spark-report.html</code></li>
+          <li><strong>HTML output modularisation</strong>: large <code>html.ts</code> split into focused modules — <code>html-author-profiles.ts</code>, <code>html-daily-trends.ts</code>, <code>html-daily-trends-charts.ts</code>, <code>html-daily-trends-tables.ts</code>, <code>html-file-filter.ts</code>, <code>html-scripts.ts</code>, <code>html-static-sections.ts</code>, <code>html-styles-base.ts</code>, <code>html-styles-charts.ts</code>, <code>html-styles-components.ts</code>, <code>html-styles.ts</code> — preserving the full public API surface</li>
+          <li><strong><code>version-fallback-coverage</code> test suite</strong> exercising the package.json fallback branch in <code>version-fallback.ts</code></li>
+          <li><strong>Dependency hygiene regression tests</strong> guarding against future hygiene regressions</li>
+          <li><strong>DevSpark framework</strong>: full migration from Speckit — agent shims, prompt templates, scripts, and constitution governance in <code>.devspark/</code> and <code>.documentation/</code></li>
+          </ul>
+          <h3 class="category category-changed">Changed</h3>
+          <ul>
+          <li>Bumped all dev-dependency patch releases: <code>@types/node</code> 25.7→25.9, <code>@typescript-eslint/*</code> 8.59.3→8.59.4, <code>eslint</code> 10.3→10.4, <code>publint</code> 0.3.20→0.3.21, <code>ts-jest</code> 29.4.9→29.4.10</li>
+          <li>README and site links updated to <code>https://git-spark.makeboldspark.com</code></li>
+          <li>Updated Open Graph metadata (<code>og:url</code>, <code>og:image</code>) in <code>docs/index.html</code></li>
+          </ul>
+          <h3 class="category category-fixed">Fixed</h3>
+          <ul>
+          <li><strong>CI</strong>: <code>npm run prebuild</code> now runs before <code>npm run test:coverage</code> on all matrix jobs, fixing <code>version-fallback-coverage.test.ts</code> failure caused by missing generated <code>src/version.ts</code></li>
+          <li><strong>Publish workflow</strong>: removed broken <code>npm install -g npm@latest</code> step that caused <code>MODULE_NOT_FOUND: promise-retry</code> on every publish run; <code>actions/setup-node@v6</code> already provides npm 11+</li>
+          <li><strong>Pages deployment</strong>: removed stale gitlink <code>test-tmp/cli-test-repo-*</code> from the git index that was breaking <code>git submodule update</code> in the GitHub Pages deployer; added <code>test-tmp/</code> to <code>.gitignore</code></li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="release" id="v1-3-0">
+        <div class="release-header">
+          <h2><a href="#v1-3-0">v1.3.0</a></h2>
+          
+          <time datetime="2026-03-14">March 14, 2026</time>
+        </div>
+        <div class="release-body">
+          <h3 class="category category-added">Added</h3>
+          <ul>
+          <li><strong>Release and Maintenance Tooling</strong>
+          <ul>
+          <li>Added dedicated HTML report command implementation to keep report generation, preview, and serving logic isolated from the main CLI flow</li>
+          <li>Added DevSpark agent and prompt definitions plus supporting documentation templates for structured project workflows</li>
+          <li>Added repository constitution history and amendment proposal tracking for governance changes</li>
+          </ul>
+          </li>
+          </ul>
+          <h3 class="category category-changed">Changed</h3>
+          <ul>
+          <li>
+          <p><strong>Internal Architecture Refactoring</strong></p>
+          <ul>
+          <li>Split large analyzer, daily trends, and HTML output modules into focused helper files for better maintainability</li>
+          <li>Split shared type definitions into smaller domain-focused modules while preserving the public API surface</li>
+          <li>Refined report and analysis utilities to improve readability and long-term maintainability</li>
+          </ul>
+          </li>
+          <li>
+          <p><strong>Project Scope Cleanup</strong></p>
+          <ul>
+          <li>Removed Azure DevOps integration remnants and related cached artifacts to keep Git Spark focused on Git-derived analytics</li>
+          <li>Updated documentation and site metadata to reflect the current release and repository state</li>
+          </ul>
+          </li>
+          </ul>
+          <h3 class="category category-fixed">Fixed</h3>
+          <ul>
+          <li><strong>Security and Validation Hardening</strong>
+          <ul>
+          <li>Resolved open CodeQL findings and patched a high-severity transitive dependency vulnerability</li>
+          <li>Hardened path-pattern validation to better guard against malformed or dangerous regex input</li>
+          <li>Removed an invalid CLI flag from workflow automation and refreshed publishing documentation</li>
+          </ul>
+          </li>
+          </ul>
+          <h3 class="category category-technical">Technical</h3>
+          <ul>
+          <li>Upgraded ESLint to v10 and aligned the codebase with its updated defaults</li>
+          <li>Expanded coverage around CSV export and validation behavior while keeping the release build green</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="release" id="v1-2-0">
+        <div class="release-header">
+          <h2><a href="#v1-2-0">v1.2.0</a></h2>
+          
+          <time datetime="2026-01-25">January 25, 2026</time>
+        </div>
+        <div class="release-body">
+          <h3 class="category category-added">Added</h3>
+          <ul>
+          <li>
+          <p><strong>Interactive Configuration Wizard</strong></p>
+          <ul>
+          <li>New <code>git-spark init</code> command for interactive project setup</li>
+          <li>Creates <code>.git-spark.json</code> configuration file with sensible defaults</li>
+          <li>Options for repository path (<code>-r, --repo</code>), non-interactive mode (<code>-y, --yes</code>)</li>
+          <li>Guided prompts for days to analyze, output format, and extension exclusions</li>
+          </ul>
+          </li>
+          <li>
+          <p><strong>CLI Entry Point</strong></p>
+          <ul>
+          <li>Created <code>bin/git-spark.js</code> for proper global npm installation support</li>
+          <li>Ensures <code>npx git-spark</code> and global installs work correctly</li>
+          </ul>
+          </li>
+          <li>
+          <p><strong>Enhanced Package Configuration</strong></p>
+          <ul>
+          <li>Added modern <code>exports</code> field for better ESM/bundler compatibility</li>
+          <li>Added <code>module</code> field pointing to ESM entry point</li>
+          <li>Added <code>sideEffects: false</code> for improved tree-shaking</li>
+          <li>Added <code>funding</code> field for sponsor information</li>
+          <li>Improved npm discoverability with additional keywords</li>
+          <li>Added <code>postversion</code> script for automatic documentation version sync</li>
+          </ul>
+          </li>
+          </ul>
+          <h3 class="category category-fixed">Fixed</h3>
+          <ul>
+          <li><strong>npm Package Installation</strong>
+          <ul>
+          <li>Fixed missing CLI entry point that prevented global installations from working</li>
+          </ul>
+          </li>
+          </ul>
+          <h3 class="category category-technical">Technical</h3>
+          <ul>
+          <li>Updated package.json with modern npm best practices</li>
+          <li>Improved <code>pack:test</code> script for better local testing workflow</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="release" id="v1-0-263">
+        <div class="release-header">
+          <h2><a href="#v1-0-263">v1.0.263</a></h2>
+          
+          <time datetime="2025-11-20">November 20, 2025</time>
+        </div>
+        <div class="release-body">
+          <h3 class="category category-security">Security</h3>
+          <ul>
+          <li><strong>Command Injection Prevention</strong>
+          <ul>
+          <li>Implemented robust sanitization for Git operations to prevent command injection vulnerabilities</li>
+          <li>Enhanced regex validation security</li>
+          </ul>
+          </li>
+          </ul>
+          <h3 class="category category-added">Added</h3>
+          <ul>
+          <li><strong>Team Metrics Enhancements</strong>
+          <ul>
+          <li>Implemented comprehensive updates for team metrics transparency and accuracy</li>
+          </ul>
+          </li>
+          <li><strong>CI Reliability</strong>
+          <ul>
+          <li>Added robust version fallback mechanism to enhance CI reliability</li>
+          </ul>
+          </li>
+          <li><strong>Project Hygiene</strong>
+          <ul>
+          <li>Updated ignore files to better exclude test, config, and IDE artifacts</li>
+          </ul>
+          </li>
+          </ul>
+          <h3 class="category category-fixed">Fixed</h3>
+          <ul>
+          <li><strong>Test Stability</strong>
+          <ul>
+          <li>Resolved flaky timestamp tests</li>
+          <li>Adjusted coverage thresholds to match CI environments</li>
+          </ul>
+          </li>
+          <li><strong>CI Workflow</strong>
+          <ul>
+          <li>Made macOS tests non-blocking to prevent false negatives in CI pipelines</li>
+          </ul>
+          </li>
+          </ul>
+          <h3 class="category category-technical">Technical</h3>
+          <ul>
+          <li>Added comprehensive test coverage for daily-trends and CSV exporters</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="release" id="v1-0-221">
+        <div class="release-header">
+          <h2><a href="#v1-0-221">v1.0.221</a></h2>
+          
+          <time datetime="2025-10-13">October 13, 2025</time>
+        </div>
+        <div class="release-body">
+          <h3 class="category category-added">Added</h3>
+          <ul>
+          <li><strong>Current Repository State Enhancements</strong>
+          <ul>
+          <li>Executive Summary-style metrics grid layout for consistency</li>
+          <li>Professional table layouts with data-table styling throughout</li>
+          <li>Repository filesystem statistics with extension, category, and directory breakdowns</li>
+          </ul>
+          </li>
+          <li><strong>GitIgnore Utility Testing</strong>
+          <ul>
+          <li>Added comprehensive test suite for GitIgnore utility functionality</li>
+          <li>Improved test coverage for ignore pattern matching and file filtering</li>
+          </ul>
+          </li>
+          </ul>
+          <h3 class="category category-fixed">Fixed</h3>
+          <ul>
+          <li><strong>Directory Counting Bug</strong>
+          <ul>
+          <li>Fixed &quot;N/A&quot; display for directory counts in Current Repository State section</li>
+          <li>Root cause: Interface mismatch between analyzer (<code>topDirectories</code>) and HTML template (<code>directoryBreakdown</code>)</li>
+          <li>Directory count now correctly displays actual numbers and detailed breakdown table</li>
+          <li>Updated HTML template field references to use correct analyzer data structure</li>
+          </ul>
+          </li>
+          </ul>
+          <h3 class="category category-changed">Changed</h3>
+          <ul>
+          <li><strong>Repository Organization</strong>
+          <ul>
+          <li>Cleaned up repository structure by removing 18 temporary test output folders</li>
+          <li>Removed clutter from root directory (test-<em>, demo-</em> folders)</li>
+          <li>Improved .gitignore patterns to prevent future test output pollution</li>
+          <li>Maintained all essential functionality while achieving cleaner project structure</li>
+          </ul>
+          </li>
+          <li><strong>Layout Improvements</strong>
+          <ul>
+          <li>Current Repository State section now matches Executive Summary styling</li>
+          <li>Consistent metric-card design across all summary sections</li>
+          <li>Enhanced table layouts with proper data-table CSS classes</li>
+          </ul>
+          </li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="release" id="v1-0-183">
+        <div class="release-header">
+          <h2><a href="#v1-0-183">v1.0.183</a></h2>
+          
+          <time datetime="2025-10-08">October 8, 2025</time>
+        </div>
+        <div class="release-body">
+          <h3 class="category category-fixed">Fixed</h3>
+          <ul>
+          <li>
+          <p><strong>HTML Report Meta Tag</strong></p>
+          <ul>
+          <li>Removed extra <code>&gt;</code> character in <code>og:description</code> meta tag causing validation error</li>
+          </ul>
+          </li>
+          <li>
+          <p><strong>Volume Trends Sparkline Visualization</strong></p>
+          <ul>
+          <li>Fixed completely flat sparklines that weren't reflecting data variation</li>
+          <li>Root cause: CSS flexbox <code>flex: 1</code> property was overriding height styles</li>
+          <li>Migrated from div-based flexbox implementation to SVG coordinate system for precise control</li>
+          </ul>
+          </li>
+          </ul>
+          <h3 class="category category-changed">Changed</h3>
+          <ul>
+          <li>
+          <p><strong>Volume Trends Layout</strong></p>
+          <ul>
+          <li>Made Volume Trends section full-width using <code>grid-column: 1 / -1</code></li>
+          <li>Matches layout style of Daily Commits and Active Authors sections</li>
+          <li>Improved visual consistency in Visual Trend Analysis section</li>
+          </ul>
+          </li>
+          <li>
+          <p><strong>Sparkline Implementation</strong></p>
+          <ul>
+          <li>Replaced CSS flexbox bars with SVG <code>&lt;rect&gt;</code> elements</li>
+          <li>Added gradient fills using <code>&lt;linearGradient&gt;</code> for visual enhancement</li>
+          <li>Implemented bottom-aligned coordinate positioning (<code>y = chartHeight - height</code>)</li>
+          <li>Data-driven height calculation now properly visualizes variations</li>
+          </ul>
+          </li>
+          </ul>
+          <h3 class="category category-technical">Technical</h3>
+          <ul>
+          <li>Updated <code>src/output/html.ts</code> - Complete sparkline rewrite using SVG (lines 2755-2825)</li>
+          <li>Modified CSS Grid layout for full-width sparklines (line 1567)</li>
+          <li>Removed flexbox sparkline styles, added SVG container styles (lines 1607-1615)</li>
+          <li>Updated <code>test/html-exporter.test.ts</code> - Changed test expectations from <code>.spark-bar</code> divs to <code>&lt;svg&gt;</code> elements</li>
+          <li>All 217 tests passing with new SVG implementation</li>
+          <li>Version bump from 1.0.175 to 1.0.183</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="release" id="v1-0-170">
+        <div class="release-header">
+          <h2><a href="#v1-0-170">v1.0.170</a></h2>
+          
+          <time datetime="2025-10-07">October 7, 2025</time>
+        </div>
+        <div class="release-body">
+          <h3 class="category category-fixed">Fixed</h3>
+          <ul>
+          <li>
+          <p><strong>Critical Bug: First Commit Date Detection</strong></p>
+          <ul>
+          <li>Fixed <code>getFirstCommitDate()</code> method that was returning incorrect dates</li>
+          <li>Removed problematic <code>--max-count=1</code> flag that limited results before reversing</li>
+          <li>Now uses <code>--all --reverse</code> to find true repository first commit across all branches</li>
+          <li>Resolves issue where <code>--days=300</code> returned 0 commits despite recent activity</li>
+          </ul>
+          </li>
+          <li>
+          <p><strong>Date Range Calculation</strong></p>
+          <ul>
+          <li>Added repository lifetime capping to prevent analysis periods before first commit</li>
+          <li>Implemented timezone-safe date handling by subtracting 1 day from first commit</li>
+          <li>Fixed analysis period display showing impossible dates (before repository creation)</li>
+          <li>Added comprehensive debug logging for date comparisons</li>
+          </ul>
+          </li>
+          </ul>
+          <h3 class="category category-changed">Changed</h3>
+          <ul>
+          <li><strong>HTML Report Navigation</strong>
+          <ul>
+          <li>Reorganized navigation menu to match visual section order</li>
+          <li>Final order: Summary → Authors → Team Patterns → Files → Author Details → Detailed Daily Tables → Limitations → Documentation → Metadata</li>
+          <li>Split &quot;Daily Activity Trends&quot; section for better organization:
+          <ul>
+          <li>Moved visualizations (Analysis Period Overview, Contributions Calendar, Visual Trend Analysis) to Team Patterns section</li>
+          <li>Kept detailed tables in separate &quot;Detailed Daily Tables&quot; section at bottom</li>
+          </ul>
+          </li>
+          <li>Positioned &quot;Detailed Daily Tables&quot; between Author Details and Limitations for logical flow</li>
+          </ul>
+          </li>
+          </ul>
+          <h3 class="category category-technical">Technical</h3>
+          <ul>
+          <li>Updated <code>src/utils/git.ts</code> - Complete rewrite of <code>getFirstCommitDate()</code> method</li>
+          <li>Enhanced <code>src/core/collector.ts</code> - Added repository lifetime capping with timezone safety</li>
+          <li>Modified <code>src/output/html.ts</code> - Navigation reordering and date display improvements</li>
+          <li>Updated <code>test/git-utils.test.ts</code> - Test expectations match new implementation</li>
+          <li>All 217 tests passing with updated logic</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="release" id="v1-0-0">
+        <div class="release-header">
+          <h2><a href="#v1-0-0">v1.0.0</a></h2>
+          
+          <time datetime="2025-09-29">September 29, 2025</time>
+        </div>
+        <div class="release-body">
+          <h3 class="category category-added">Added</h3>
+          <ul>
+          <li>
+          <p><strong>Core Analytics Engine</strong></p>
+          <ul>
+          <li>Repository health scoring with actionable recommendations</li>
+          <li>Team collaboration analysis and contribution patterns</li>
+          <li>Code quality metrics and risk assessment</li>
+          <li>Timeline visualization and trend analysis</li>
+          <li>Bus factor calculation for team resilience</li>
+          </ul>
+          </li>
+          <li>
+          <p><strong>Interactive HTML Reports</strong></p>
+          <ul>
+          <li>Multi-series timeline charts (commits, churn, active authors)</li>
+          <li>Risk factors bar chart with visual breakdown</li>
+          <li>Governance radar chart for commit quality assessment</li>
+          <li>Dark mode toggle with persistent preferences</li>
+          <li>One-click data export (JSON/CSV bundles)</li>
+          <li>Progressive table pagination for performance</li>
+          <li>Dataset toggles with live updates</li>
+          <li>Open Graph preview image generation</li>
+          <li>Accessibility enhancements (ARIA, keyboard navigation)</li>
+          <li>Security-first delivery (CSP, SRI, no unsafe-inline)</li>
+          </ul>
+          </li>
+          <li>
+          <p><strong>CLI Interface</strong></p>
+          <ul>
+          <li>Intuitive command-line tool with progress indicators</li>
+          <li>Comprehensive configuration options</li>
+          <li>Email redaction for privacy-sensitive audits</li>
+          <li>Heavy analysis mode with temporal coupling</li>
+          <li>Multiple output format support</li>
+          <li>Cross-platform shell scripts (PowerShell, Batch)</li>
+          </ul>
+          </li>
+          <li>
+          <p><strong>Programmatic API</strong></p>
+          <ul>
+          <li>TypeScript/JavaScript library for custom integrations</li>
+          <li>Streaming analysis for large repositories (100k+ commits)</li>
+          <li>Progress callbacks for UI integration</li>
+          <li>Memory optimization and buffer limits</li>
+          <li>Configurable chunking and caching</li>
+          </ul>
+          </li>
+          <li>
+          <p><strong>Enterprise Features</strong></p>
+          <ul>
+          <li>Input validation and security hardening</li>
+          <li>Safe Git operations with parameterized commands</li>
+          <li>Comprehensive error handling and logging</li>
+          <li>Configuration-driven analysis with <code>.git-spark.json</code></li>
+          <li>CI/CD integration with JSON output</li>
+          <li>Performance testing and benchmarking</li>
+          </ul>
+          </li>
+          </ul>
+          <h3 class="category category-technical">Technical</h3>
+          <ul>
+          <li>TypeScript 5.9+ with strict configuration</li>
+          <li>Jest testing framework with comprehensive coverage</li>
+          <li>ESLint + Prettier for code quality</li>
+          <li>Commander.js for CLI argument parsing</li>
+          <li>Chalk and Boxen for terminal output</li>
+          <li>Date-fns for date manipulation</li>
+          <li>Glob for file pattern matching</li>
+          <li>Node.js 18+ requirement</li>
+          </ul>
+          <h3 class="category category-documentation">Documentation</h3>
+          <ul>
+          <li>Comprehensive README with examples</li>
+          <li>TypeScript type definitions</li>
+          <li>Configuration schema documentation</li>
+          <li>Best practices and troubleshooting guides</li>
+          <li>API reference and usage examples</li>
+          </ul>
+          <h3 class="category category-security">Security</h3>
+          <ul>
+          <li>Input sanitization and validation</li>
+          <li>Path traversal protection</li>
+          <li>Buffer size limits for DoS prevention</li>
+          <li>Email redaction capabilities</li>
+          <li>Safe shell command execution</li>
+          <li>Security-focused HTML output (CSP headers)</li>
+          </ul>
+        </div>
+      </section>
+
+      <footer>
+        <p>
+          <a href="https://git-spark.makeboldspark.com">git-spark</a> —
+          built by <a href="https://markhazleton.com">Mark Hazleton</a> ·
+          <a href="https://makeboldsolutions.com">Make Bold Solutions</a>
+        </p>
+        <p>
+          <a href="https://github.com/MarkHazleton/git-spark" target="_blank" rel="noopener">GitHub</a> ·
+          <a href="https://www.npmjs.com/package/git-spark" target="_blank" rel="noopener">npm</a> ·
+          <a href="https://github.com/MarkHazleton/git-spark/issues" target="_blank" rel="noopener">Issues</a> ·
+          <a href="https://github.com/MarkHazleton/git-spark/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a>
+        </p>
+      </footer>
+    </div>
+  </body>
+</html>
