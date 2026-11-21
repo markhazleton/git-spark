@@ -8,6 +8,7 @@ import {
 import chalk from 'chalk';
 import { table } from 'table';
 import { createLogger } from '../utils/logger.js';
+import { busFactorShare } from '../core/analyzer-helpers.js';
 const logger = createLogger('console-exporter');
 
 /**
@@ -63,7 +64,7 @@ export class ConsoleExporter {
       ['Contributors', repository.totalAuthors.toString()],
       ['Files Changed', repository.totalFiles.toLocaleString()],
       ['Code Churn', repository.totalChurn.toLocaleString() + ' lines'],
-      ['Bus Factor', Math.round((repository.busFactor / repository.totalAuthors) * 100) + '%'],
+      ['Bus Factor', busFactorShare(repository.busFactor, repository.totalAuthors) + '%'],
       ['Active Days', repository.activeDays.toString()],
     ];
 

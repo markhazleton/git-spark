@@ -10,6 +10,7 @@ import { getVersion } from '../version-fallback.js';
 import { resolveOptionsWithConfig } from '../utils/config.js';
 import { executeHTMLReport, openHTMLReport } from './report-command.js';
 import { executePeriodsReport } from './periods-command.js';
+import { busFactorShare } from '../core/analyzer-helpers.js';
 import chalk from 'chalk';
 import boxen from 'boxen';
 import ora from 'ora';
@@ -153,8 +154,10 @@ export async function createCLI(): Promise<Command> {
     .command('analyze')
     .description('Run detailed analysis')
     .option('-r, --repo <path>', 'repository path', process.cwd())
-    .action(async options => {
-      await executeAnalysis({ ...options, repoPath: options.repo });
+    .action(async (options, command) => {
+      // Global options such as --days and --format are stored on the parent command
+      const parentOptions = command.parent?.opts() || {};
+      await executeAnalysis({ ...parentOptions, ...options });
     });
 
   program
@@ -404,7 +407,7 @@ async function validateEnvironment(): Promise<void> {
 
   // Check current directory is a Git repository
   try {
-    const { GitExecutor } = await import('../utils/git');
+    const { GitExecutor } = await import('../utils/git.js');
     const git = new GitExecutor(process.cwd());
     const isValid = await git.validateRepository();
 
@@ -466,7 +469,7 @@ function displaySummary(report: AnalysisReport, version: string): void {
           chalk.blue(`Active Contributors: ${repository.totalAuthors}\n`) +
           chalk.blue(`Files Changed: ${repository.totalFiles}\n`) +
           chalk.blue(
-            `Bus Factor: ${Math.round((repository.busFactor / repository.totalAuthors) * 100)}%`
+            `Bus Factor: ${busFactorShare(repository.busFactor, repository.totalAuthors)}%`
           ),
         {
           padding: 1,
@@ -504,7 +507,7 @@ function displayHealthSummary(report: AnalysisReport): void {
           chalk.blue(`Governance Score: ${Math.round(governance.score * 100)}%\n`) +
           chalk.blue(`Risk Level: ${report.risks.overallRisk.toUpperCase()}\n`) +
           chalk.blue(
-            `Bus Factor: ${Math.round((repository.busFactor / repository.totalAuthors) * 100)}%\n`
+            `Bus Factor: ${busFactorShare(repository.busFactor, repository.totalAuthors)}%\n`
           ) +
           chalk.blue(`Active Days: ${repository.activeDays}`),
         {
