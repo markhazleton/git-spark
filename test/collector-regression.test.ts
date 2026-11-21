@@ -55,9 +55,18 @@ describe('DataCollector streaming parser regression', () => {
   it('parses multiple commits via streaming parser', async () => {
     const collector = new DataCollector(tmp);
     const commits = await collector.collectCommits({ repoPath: tmp });
-    expect(commits.length).toBeGreaterThanOrEqual(2);
+    expect(commits.length).toBe(3);
     // Ensure subjects are captured and not empty
     expect(commits.every(c => c.subject.length > 0)).toBe(true);
+  });
+
+  it('keeps the oldest commit when its message has a multi-line body', async () => {
+    // git emits the oldest commit last; its record is parsed when the stream closes
+    const commits = await new DataCollector(tmp).collectCommits({ repoPath: tmp });
+    const first = commits.find(c => c.subject === 'feat: first commit');
+    expect(first).toBeTruthy();
+    expect(first?.body).toContain('line two of body with details');
+    expect(first?.files.map(f => f.path)).toEqual(['file1.txt']);
   });
 
   it('extracts file stats for each commit correctly', async () => {
@@ -72,6 +81,27 @@ describe('DataCollector streaming parser regression', () => {
     } else {
       fail('Expected to find second commit');
     }
+  });
+
+  it('filters commits with a glob path pattern', async () => {
+    const commits = await new DataCollector(tmp).collectCommits({ repoPath: tmp, path: 'dir/**' });
+    const subjects = commits.map(c => c.subject).sort();
+    expect(subjects).toEqual([
+      'chore: second commit with more changes',
+      'refactor: third commit touching multiple files',
+    ]);
+    expect(commits.every(c => c.files.every(f => f.path.startsWith('dir/')))).toBe(true);
+  });
+
+  it('applies the branch when combined with a path filter', async () => {
+    // The revision must precede `--`; after it, git reads the branch name as a path
+    execSync('git branch path-filter-base HEAD~1', { cwd: tmp });
+    const commits = await new DataCollector(tmp).collectCommits({
+      repoPath: tmp,
+      branch: 'path-filter-base',
+      path: 'dir/**',
+    });
+    expect(commits.map(c => c.subject)).toEqual(['chore: second commit with more changes']);
   });
 
   it('caps --days to the first commit with a full timestamp, not a bare date', async () => {
