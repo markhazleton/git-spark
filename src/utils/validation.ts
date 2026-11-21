@@ -2,6 +2,7 @@ import { GitSparkOptions, ValidationResult, ValidationError } from '../types/ind
 import { existsSync, statSync } from 'fs';
 import { resolve } from 'path';
 import * as semver from 'semver';
+import { validatePathString } from './input-validation.js';
 
 /**
  * Validates Git Spark CLI options for correctness and safety.
@@ -108,43 +109,16 @@ export function validateOptions(options: GitSparkOptions): ValidationResult {
     }
   }
 
-  // Validate path pattern
+  // Validate path pattern. It is passed to `git log -- <path>` as a Git pathspec (a glob such as
+  // `src/**` or `*.ts`), never compiled or executed as a regular expression.
   if (options.path) {
-    try {
-      // Sanitize input: limit length and check for balanced parentheses
-      if (options.path.length > 500) {
-        errors.push('Path pattern is too long (max 500 characters)');
+    if (options.path.length > 500) {
+      errors.push('Path pattern is too long (max 500 characters)');
+    } else {
+      const pathCheck = validatePathString(options.path);
+      if (!pathCheck.isValid) {
+        errors.push(`Path pattern is not allowed: ${pathCheck.error}`);
       }
-
-      // Check for balanced parentheses to prevent malformed regex
-      const openParens = (options.path.match(/\(/g) || []).length;
-      const closeParens = (options.path.match(/\)/g) || []).length;
-      if (openParens !== closeParens) {
-        errors.push('Path pattern has unbalanced parentheses');
-      }
-
-      // Check for potentially dangerous regex patterns that could cause ReDoS
-      // Detect these specific patterns in the user's input string
-      const hasNestedStarPlus = options.path.includes('(.*)+') || options.path.includes('(.*)*.js');
-      const hasRepeatedEscapedDot =
-        options.path.includes('\\.\\+\\.\\+') || options.path.includes('\\.\\*\\.\\*');
-      const hasNestedWordQuant = options.path.includes('(\\w+*)+');
-      const hasNestedCharClass = options.path.includes('([a-z]+)+');
-
-      if (hasNestedStarPlus || hasRepeatedEscapedDot || hasNestedWordQuant || hasNestedCharClass) {
-        errors.push(
-          'Path pattern contains potentially dangerous regex that could cause performance issues'
-        );
-      } else {
-        // Validate regex syntax only — never execute user-supplied patterns to prevent ReDoS
-        try {
-          new RegExp(options.path);
-        } catch (e) {
-          errors.push('Path pattern is not a valid regex pattern');
-        }
-      }
-    } catch (e) {
-      errors.push('Path pattern is not a valid regex pattern');
     }
   }
 

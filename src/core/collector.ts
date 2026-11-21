@@ -185,8 +185,9 @@ export class DataCollector {
     if (safeOptions.since) args.push('--since', safeOptions.since);
     if (safeOptions.until) args.push('--until', safeOptions.until);
     if (safeOptions.author) args.push('--author', safeOptions.author);
-    if (safeOptions.path) args.push('--', safeOptions.path);
+    // The revision must come before `--`; anything after it is read as a pathspec.
     if (safeOptions.branch) args.push(safeOptions.branch);
+    if (safeOptions.path) args.push('--', safeOptions.path);
 
     const { spawn } = await import('child_process');
     const child = spawn('git', args, { cwd: this.repoPath });

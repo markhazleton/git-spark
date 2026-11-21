@@ -94,38 +94,52 @@ describe('Validation Utils', () => {
       expect(result.warnings.some(w => w.includes('Author filter is very short'))).toBe(true);
     });
 
-    it('should reject invalid path pattern', () => {
+    it('should accept glob path patterns', () => {
+      const globPatterns = ['src/**', 'src/core/**', 'src/core/*.ts', '*.md', 'src/core', 'src/?ore'];
+
+      globPatterns.forEach(pattern => {
+        const result = validateOptions({ path: pattern });
+        expect(result.errors).toEqual([]);
+        expect(result.isValid).toBe(true);
+      });
+    });
+
+    it('should reject path patterns with disallowed characters', () => {
       const options: GitSparkOptions = {
-        path: '[invalid-regex',
+        path: '[invalid',
       };
 
       const result = validateOptions(options);
-      expect(result.errors.some(e => e.includes('Path pattern'))).toBe(true);
+      expect(result.errors.some(e => e.includes('Path pattern is not allowed'))).toBe(true);
       expect(result.isValid).toBe(false);
     });
 
-    it('should reject ReDoS patterns in path', () => {
-        const buildPattern = (...codes: number[]): string => String.fromCharCode(...codes);
+    it('should reject path patterns with directory traversal', () => {
+      const result = validateOptions({ path: '../outside/**' });
+      expect(result.errors.some(e => e.includes('directory traversal'))).toBe(true);
+      expect(result.isValid).toBe(false);
+    });
 
-        // Build test inputs at runtime so this test does not itself embed
-        // dangerous regex literals while still exercising the validator.
-      const dangerousPatterns = [
-          buildPattern(40, 46, 42, 41, 43, 116, 101, 115, 116),
-          buildPattern(40, 46, 42, 41, 42, 46, 106, 115),
-          buildPattern(92, 46, 92, 43, 92, 46, 92, 43, 92, 46, 92, 43),
-          buildPattern(92, 46, 92, 42, 92, 46, 92, 42, 92, 46, 92, 42),
-          buildPattern(40, 92, 119, 43, 42, 41, 43),
-          buildPattern(40, 91, 97, 45, 122, 93, 43, 41, 43),
+    it('should reject overly long path patterns', () => {
+      const result = validateOptions({ path: 'a'.repeat(501) });
+      expect(result.errors).toContain('Path pattern is too long (max 500 characters)');
+      expect(result.isValid).toBe(false);
+    });
+
+    it('should reject former regex-style path patterns', () => {
+      const buildPattern = (...codes: number[]): string => String.fromCharCode(...codes);
+
+      // Regex syntax such as groups and escapes is not valid in a path filter.
+      const regexPatterns = [
+        buildPattern(40, 46, 42, 41, 43, 116, 101, 115, 116),
+        buildPattern(92, 46, 92, 43, 92, 46, 92, 43, 92, 46, 92, 43),
+        buildPattern(40, 91, 97, 45, 122, 93, 43, 41, 43),
       ];
 
-      dangerousPatterns.forEach(pattern => {
-        const options: GitSparkOptions = {
-          path: pattern,
-        };
-
-        const result = validateOptions(options);
+      regexPatterns.forEach(pattern => {
+        const result = validateOptions({ path: pattern });
         expect(result.isValid).toBe(false);
-        expect(result.errors.some(e => e.includes('dangerous regex'))).toBe(true);
+        expect(result.errors.some(e => e.includes('Path pattern is not allowed'))).toBe(true);
       });
     });
 

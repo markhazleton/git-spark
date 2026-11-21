@@ -74,6 +74,27 @@ describe('DataCollector streaming parser regression', () => {
     }
   });
 
+  it('filters commits with a glob path pattern', async () => {
+    const commits = await new DataCollector(tmp).collectCommits({ repoPath: tmp, path: 'dir/**' });
+    const subjects = commits.map(c => c.subject).sort();
+    expect(subjects).toEqual([
+      'chore: second commit with more changes',
+      'refactor: third commit touching multiple files',
+    ]);
+    expect(commits.every(c => c.files.every(f => f.path.startsWith('dir/')))).toBe(true);
+  });
+
+  it('applies the branch when combined with a path filter', async () => {
+    // The revision must precede `--`; after it, git reads the branch name as a path
+    execSync('git branch path-filter-base HEAD~1', { cwd: tmp });
+    const commits = await new DataCollector(tmp).collectCommits({
+      repoPath: tmp,
+      branch: 'path-filter-base',
+      path: 'dir/**',
+    });
+    expect(commits.map(c => c.subject)).toEqual(['chore: second commit with more changes']);
+  });
+
   it('caps --days to the first commit with a full timestamp, not a bare date', async () => {
     // A bare YYYY-MM-DD makes git use the current time of day, which drops recent
     // commits whenever the local and UTC dates differ (e.g. US evenings)
