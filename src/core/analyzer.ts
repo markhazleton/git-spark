@@ -31,6 +31,7 @@ import { DailyTrendsAnalyzer } from './daily-trends.js';
 import { createLogger } from '../utils/logger.js';
 import { validateCommitMessage, sanitizeEmail } from '../utils/validation.js';
 import {
+  busFactorShare,
   calculateLongestStreak,
   detectCommitBursts,
   calculateCommitGaps,
@@ -1374,7 +1375,7 @@ export class GitAnalyzer {
       'Code Churn': repository.totalChurn,
       'Activity Index': Math.round(repository.healthScore * 100),
       'Governance Score': Math.round(governance.score * 100),
-      'Bus Factor': Math.round((repository.busFactor / repository.totalAuthors) * 100),
+      'Bus Factor': busFactorShare(repository.busFactor, repository.totalAuthors),
     };
 
     const insights = this.generateInsights(repository, authors, files, risks, governance);

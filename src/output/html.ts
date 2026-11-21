@@ -16,6 +16,7 @@ import {
 import { writeFileSync, mkdirSync } from 'fs';
 import { resolve, dirname, basename } from 'path';
 import { createLogger } from '../utils/logger.js';
+import { busFactorShare } from '../core/analyzer-helpers.js';
 import { createHash } from 'crypto';
 
 const logger = createLogger('html-exporter');
@@ -74,7 +75,7 @@ export class HTMLExporter {
       { label: 'Code Churn', value: compactFmt(report.repository.totalChurn) },
       {
         label: 'Bus Factor',
-        value: `${Math.round((report.repository.busFactor / report.repository.totalAuthors) * 100)}%`,
+        value: `${busFactorShare(report.repository.busFactor, report.repository.totalAuthors)}%`,
       },
     ];
 
@@ -292,7 +293,7 @@ export class HTMLExporter {
             </div>
             <div class="pattern-metric">
               <span class="metric-label">Bus Factor</span>
-              <span class="metric-value">${Math.round((report.repository.busFactor / report.repository.totalAuthors) * 100)}%</span>
+              <span class="metric-value">${busFactorShare(report.repository.busFactor, report.repository.totalAuthors)}%</span>
               <span class="metric-note">Percentage of authors for 50% of commits</span>
             </div>
           </div>

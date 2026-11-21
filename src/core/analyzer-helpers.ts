@@ -6,6 +6,14 @@
 import { CommitData } from '../types/index.js';
 
 /**
+ * Bus factor as a whole-number percentage of contributors. Returns 0 when there are no
+ * contributors (an empty analysis window) instead of NaN.
+ */
+export function busFactorShare(busFactor: number, totalAuthors: number): number {
+  return totalAuthors > 0 ? Math.round((busFactor / totalAuthors) * 100) : 0;
+}
+
+/**
  * Calculate the longest streak of active days (with up to 2-day gaps allowed)
  *
  * @param commits - Sorted commit data

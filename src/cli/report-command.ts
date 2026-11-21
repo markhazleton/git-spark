@@ -10,8 +10,13 @@ import { GitSparkOptions, OutputFormat, LogLevel } from '../types/index.js';
 import { validateOptions } from '../utils/validation.js';
 import { resolveOptionsWithConfig } from '../utils/config.js';
 import { createLogger } from '../utils/logger.js';
+import { busFactorShare } from '../core/analyzer-helpers.js';
+import type { Server } from 'http';
 
 const logger = createLogger('cli:report');
+
+/** The report server only listens on loopback so the report never reaches the network. */
+export const REPORT_SERVER_HOST = '127.0.0.1';
 
 interface HTMLReportCliOptions {
   repo?: string;
@@ -135,7 +140,7 @@ export async function executeHTMLReport(options: HTMLReportCliOptions): Promise<
             chalk.blue(`📁 Files Analyzed: ${report.repository.totalFiles}\n`) +
             chalk.blue(`📊 Activity Index: ${Math.round(report.repository.healthScore * 100)}%\n`) +
             chalk.blue(
-              `🚌 Bus Factor: ${Math.round((report.repository.busFactor / report.repository.totalAuthors) * 100)}%`
+              `🚌 Bus Factor: ${busFactorShare(report.repository.busFactor, report.repository.totalAuthors)}%`
             ),
           {
             padding: 1,
@@ -190,46 +195,46 @@ export async function executeHTMLReport(options: HTMLReportCliOptions): Promise<
  * @param reportPath - Path to the HTML report file
  * @param port - Port number to serve on
  */
+export async function createReportServer(reportPath: string): Promise<Server> {
+  const { createServer } = await import('http');
+  const { readFileSync } = await import('fs');
+
+  // No CORS headers: other origins must not be able to read the report
+  return createServer((req, res) => {
+    if (req.method !== 'GET' && req.method !== 'HEAD') {
+      res.writeHead(405, { 'Content-Type': 'text/plain', Allow: 'GET, HEAD' });
+      res.end('Method Not Allowed');
+      return;
+    }
+
+    if (req.url === '/' || req.url === '/index.html') {
+      try {
+        const htmlContent = readFileSync(reportPath, 'utf-8');
+        res.writeHead(200, { 'Content-Type': 'text/html' });
+        res.end(htmlContent);
+      } catch {
+        res.writeHead(404, { 'Content-Type': 'text/plain' });
+        res.end('Report not found');
+      }
+    } else {
+      res.writeHead(404, { 'Content-Type': 'text/plain' });
+      res.end('Not Found');
+    }
+  });
+}
+
 export async function startHTMLServer(reportPath: string, port: number): Promise<void> {
   const spinner = ora(`Starting HTTP server on port ${port}`).start();
 
   try {
-    const { createServer } = await import('http');
-    const { readFileSync } = await import('fs');
+    const server = await createReportServer(reportPath);
 
-    const server = createServer((req, res) => {
-      // Add CORS headers
-      res.setHeader('Access-Control-Allow-Origin', '*');
-      res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-      res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
-      if (req.method === 'OPTIONS') {
-        res.writeHead(200);
-        res.end();
-        return;
-      }
-
-      if (req.url === '/' || req.url === '/index.html') {
-        try {
-          const htmlContent = readFileSync(reportPath, 'utf-8');
-          res.writeHead(200, { 'Content-Type': 'text/html' });
-          res.end(htmlContent);
-        } catch (error) {
-          res.writeHead(404, { 'Content-Type': 'text/plain' });
-          res.end('Report not found');
-        }
-      } else {
-        res.writeHead(404, { 'Content-Type': 'text/plain' });
-        res.end('Not Found');
-      }
-    });
-
-    server.listen(port, () => {
+    server.listen(port, REPORT_SERVER_HOST, () => {
       spinner.succeed(`HTTP server started`);
       console.log(
         boxen(
           chalk.bold('🌐 HTML Report Server Running\n\n') +
-            chalk.green(`📊 Report URL: http://localhost:${port}\n`) +
+            chalk.green(`📊 Report URL: http://${REPORT_SERVER_HOST}:${port}\n`) +
             chalk.blue(`📁 Serving: ${reportPath}\n`) +
             chalk.yellow(`⚡ Press Ctrl+C to stop server`),
           {

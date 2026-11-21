@@ -2,6 +2,7 @@ import { AnalysisReport } from '../types/index.js';
 import { writeFileSync, mkdirSync } from 'fs';
 import { resolve, dirname } from 'path';
 import { createLogger } from '../utils/logger.js';
+import { busFactorShare } from '../core/analyzer-helpers.js';
 
 const logger = createLogger('markdown-exporter');
 
@@ -56,7 +57,7 @@ Generated on ${report.metadata.generatedAt.toLocaleDateString()}
 | Contributors | ${repository.totalAuthors} |
 | Files Changed | ${repository.totalFiles} |
 | Health Score | ${Math.round(repository.healthScore * 100)}% |
-| Bus Factor | ${Math.round((repository.busFactor / repository.totalAuthors) * 100)}% |
+| Bus Factor | ${busFactorShare(repository.busFactor, repository.totalAuthors)}% |
 
 ${
   summary.insights.length > 0

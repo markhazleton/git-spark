@@ -52,12 +52,12 @@ Priority order. Lower `order` comes first within a theme.
 
 Defects too small for a Prospective Spec. Each is independent and fits `/devspark-quickfix`.
 
+F1 to F4 (the `validate` import, the `html --serve` network exposure, `analyze` ignoring global
+options, and `NaN%` bus factor) were fixed on branch `chore/roadmap-and-cli-fixes` and are listed in
+CHANGELOG `[Unreleased]`.
+
 | # | Severity | Defect | Evidence |
 | - | -------- | ------ | -------- |
-| F1 | High | `git-spark validate` always prints "Failed to validate Git repository": the dynamic import omits the `.js` extension, which ESM cannot resolve. | `src/cli/commands.ts:407`; reproduced with installed 2.0.2 |
-| F2 | High | `html --serve` listens on every interface and sends `Access-Control-Allow-Origin: *`, exposing the report (names, emails, file paths) to the local network. Bind to `127.0.0.1` and drop CORS. | `src/cli/report-command.ts:202-227` |
-| F3 | Medium | `git-spark analyze` ignores the global options (`--days`, `--format`, `--path`, ...) because it never merges `command.parent.opts()` the way `html` does. | `src/cli/commands.ts:152-158` |
-| F4 | Medium | Bus Factor prints `NaN%` when the window has no commits (`busFactor / totalAuthors` with 0 authors). Appears in the CLI summary, health check, HTML command summary, and report `keyMetrics`. | `src/cli/commands.ts:469,507`, `src/cli/report-command.ts:138`, `src/core/analyzer.ts:1377` |
 | F5 | Low | The streaming collector ignores `git log`'s exit code and stderr, so a failing `git log` yields a partial or empty report instead of an error. | `src/core/collector.ts:265-274` |
 | F6 | Low | Finding the first commit date reads the entire `git log --all` into memory under a 60 s timeout; on very large repositories it times out and silently returns `null`, which disables range capping. `git log --all --max-parents=0` returns only root commits. | `src/utils/git.ts:212-232` |
 | F7 | Low | On Windows, `--open` runs `cmd.exe /c start "" <path>`; an output path containing `&` or `^` is interpreted by `cmd`. The path is user-supplied, so impact is self-inflicted. | `src/cli/report-command.ts:281-284` |
