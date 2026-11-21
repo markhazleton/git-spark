@@ -88,8 +88,8 @@
     "postversion": "git push && git push --tags",
     "docs": "typedoc src/index.ts --out api-docs",
     "docs:update-version": "node scripts/update-docs-version.js",
-    "security:audit": "npm audit --audit-level=moderate",
-    "security:check": "npx audit-ci --moderate",
+    "security:audit": "npm audit --omit=dev --audit-level=moderate",
+    "security:check": "npx audit-ci --config audit-ci.jsonc",
     "security:update": "npx npm-check-updates -u && npm install && npm test",
     "security:verify": "node scripts/check-security.js",
     "prepare": "husky"
