@@ -205,6 +205,49 @@ export class DataCollector {
       }
     };
 
+    // Parse one \x1e-delimited record. Returns false when the record is still incomplete.
+    // The header has 8 \x1f-separated fields (hash..parents); the body (%b) may contain
+    // newlines, so the header ends at the first newline after the 7th separator, not the
+    // first newline in the record. Numstat lines follow the header.
+    const processRecord = (record: string, isFinal: boolean): boolean => {
+      let sepIdx = -1;
+      let sepCount = 0;
+      for (let i = 0; i < record.length; i++) {
+        if (record.charCodeAt(i) === 0x1f && ++sepCount === 7) {
+          sepIdx = i;
+          break;
+        }
+      }
+      if (sepIdx === -1) {
+        if (isFinal) warnings.push('Malformed commit header encountered (insufficient fields)');
+        return isFinal;
+      }
+
+      let headerEnd = record.indexOf('\n', sepIdx + 1);
+      if (headerEnd === -1) {
+        // Parents field not terminated yet; at end of stream the record ends here
+        if (!isFinal) return false;
+        headerEnd = record.length;
+      }
+
+      currentCommit = this.parseCommitHeader(record.slice(0, headerEnd).split('\x1f'));
+      for (const line of record.slice(headerEnd + 1).split('\n')) {
+        if (!line.trim()) continue;
+        const fileChange = this.parseFileStats(line.replace(/\r$/, ''));
+        if (fileChange) {
+          currentCommit.files = currentCommit.files || [];
+          currentCommit.files.push(fileChange);
+        }
+      }
+      finalizeCurrent();
+      processed++;
+      if (processed % 200 === 0 || processed === totalCommits) {
+        const pct = totalCommits ? Math.min(100, Math.round((processed / totalCommits) * 70)) : 0;
+        this.reportProgress('Streaming commit collection', pct, 100);
+      }
+      return true;
+    };
+
     child.stdout.on('data', (chunk: Buffer) => {
       buffer += chunk.toString();
       // Split on record separator (each commit starts with \x1e)
@@ -212,74 +255,9 @@ export class DataCollector {
       buffer = records.pop() || '';
       for (const record of records) {
         if (!record.trim()) continue;
-
-        // We need 7 field separators (\x1f) to yield 8 header fields (hash..parents)
-        // The commit body (%b) may contain newlines, so the header can span multiple lines
-        // until the parents field is encountered. Only after the parents field do file
-        // change (numstat) lines begin on subsequent lines.
-        // Count field separators (0x1F) without regex to satisfy lint (no-control-regex)
-        let fieldSepCount = 0;
-        for (let i = 0; i < record.length; i++) {
-          if (record.charCodeAt(i) === 0x1f) fieldSepCount++;
-        }
-        if (fieldSepCount < 7) {
-          // Incomplete header (body truncated across chunk) - re-buffer
+        if (!processRecord(record, false)) {
+          // Incomplete record - re-buffer until more data arrives
           buffer = '\x1e' + record + buffer;
-          continue;
-        }
-
-        // Find the index of the 7th separator to know where parents field starts
-        let sepCount = 0;
-        let idx = -1;
-        for (let i = 0; i < record.length; i++) {
-          if (record[i] === '\x1f') {
-            sepCount++;
-            if (sepCount === 7) {
-              // after this comes the parents field value
-              // Find newline ending the parents field
-              const newlineAfterParents = record.indexOf('\n', i + 1);
-              if (newlineAfterParents === -1) {
-                // Parents field not terminated yet; wait for more data
-                buffer = '\x1e' + record + buffer;
-                idx = -1;
-              } else {
-                idx = newlineAfterParents; // header ends here
-              }
-              break;
-            }
-          }
-        }
-
-        if (idx === -1) {
-          continue; // wait for more data
-        }
-
-        const headerLine = record.slice(0, idx);
-        const parts = headerLine.split('\x1f');
-        if (parts.length < 8) {
-          warnings.push('Malformed commit header encountered (insufficient fields)');
-          continue;
-        }
-        currentCommit = this.parseCommitHeader(parts);
-
-        // Remainder after header newline are numstat lines (may contain blank line at end)
-        const remainder = record.slice(idx + 1);
-        if (remainder) {
-          const lines = remainder.split('\n');
-          for (const l of lines) {
-            if (!l.trim()) continue;
-            const fileChange = this.parseFileStats(l.replace(/\r$/, ''));
-            if (fileChange) {
-              currentCommit.files = currentCommit.files || [];
-              currentCommit.files.push(fileChange);
-            }
-          }
-        }
-        finalizeCurrent();
-        processed++;
-        if (processed % 200 === 0 || processed === totalCommits) {
-          const pct = totalCommits ? Math.min(100, Math.round((processed / totalCommits) * 70)) : 0;
-          this.reportProgress('Streaming commit collection', pct, 100);
         }
       }
     });
@@ -287,33 +265,9 @@ export class DataCollector {
     await new Promise<void>((resolve, reject) => {
       child.on('error', (e: Error) => reject(e));
       child.on('close', () => {
-        // Process any remaining buffered (partial) record
-        if (buffer.trim()) {
-          const newlineIdx = buffer.indexOf('\n');
-          if (newlineIdx !== -1) {
-            const headerLine = buffer.slice(0, newlineIdx);
-            let fieldSepCount = 0;
-            for (let i = 0; i < headerLine.length; i++) {
-              if (headerLine.charCodeAt(i) === 0x1f) fieldSepCount++;
-            }
-            if (fieldSepCount >= 7) {
-              const parts = headerLine.split('\x1f');
-              if (parts.length >= 8) {
-                currentCommit = this.parseCommitHeader(parts);
-                const remainder = buffer.slice(newlineIdx + 1);
-                const lines = remainder ? remainder.split('\n') : [];
-                for (const l of lines) {
-                  if (!l.trim()) continue;
-                  const fc = this.parseFileStats(l);
-                  if (fc) {
-                    currentCommit.files = currentCommit.files || [];
-                    currentCommit.files.push(fc);
-                  }
-                }
-                finalizeCurrent();
-              }
-            }
-          }
+        // The last record (the oldest commit) has no following \x1e, so it is still buffered
+        for (const record of buffer.split('\x1e')) {
+          if (record.trim()) processRecord(record, true);
         }
         resolve();
       });

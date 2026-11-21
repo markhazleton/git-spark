@@ -55,9 +55,18 @@ describe('DataCollector streaming parser regression', () => {
   it('parses multiple commits via streaming parser', async () => {
     const collector = new DataCollector(tmp);
     const commits = await collector.collectCommits({ repoPath: tmp });
-    expect(commits.length).toBeGreaterThanOrEqual(2);
+    expect(commits.length).toBe(3);
     // Ensure subjects are captured and not empty
     expect(commits.every(c => c.subject.length > 0)).toBe(true);
+  });
+
+  it('keeps the oldest commit when its message has a multi-line body', async () => {
+    // git emits the oldest commit last; its record is parsed when the stream closes
+    const commits = await new DataCollector(tmp).collectCommits({ repoPath: tmp });
+    const first = commits.find(c => c.subject === 'feat: first commit');
+    expect(first).toBeTruthy();
+    expect(first?.body).toContain('line two of body with details');
+    expect(first?.files.map(f => f.path)).toEqual(['file1.txt']);
   });
 
   it('extracts file stats for each commit correctly', async () => {

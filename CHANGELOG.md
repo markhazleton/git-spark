@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `--path` accepts Git glob patterns such as `src/**` and `src/core/*.ts`. It was validated as a regular expression, so `**` failed with "Path pattern is not a valid regex pattern" even though the value is passed to Git as a pathspec
 - `--branch` combined with `--path` now analyzes the requested branch. The branch was placed after Git's `--` separator, so Git read it as a second path and analyzed the current branch instead
+- The oldest commit in the analyzed range is no longer dropped when its message has a multi-line body. The last record of the Git log stream was parsed as if its header ended at the first newline, so a body spanning several lines made it look malformed and it was silently skipped, undercounting commits, churn, and files in any window or path filter whose oldest commit had a detailed message
 
 ## [2.0.2] - 2026-11-21
 
