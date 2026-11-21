@@ -24,4 +24,4 @@ src/utils/input-validation.ts   @MarkHazleton
 .github/dependabot.yml          @MarkHazleton
 
 # Governance and constitution
-.documentation/memory/          @MarkHazleton
+.knowledge/governance/          @MarkHazleton
