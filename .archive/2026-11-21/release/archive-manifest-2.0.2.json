@@ -1,0 +1,22 @@
+{
+  "archive_root": ".archive/2026-11-21",
+  "items": [
+    {
+      "archived": ".archive/2026-11-21/audit/2026-11-21_results.md",
+      "files": [
+        {
+          "path": "2026-11-21_results.md",
+          "sha256": "817e11e1bfde6a79dd442f21545a77cbf81eb6aa866d02a27e9b9bd518c18ab5"
+        }
+      ],
+      "in_release_window": null,
+      "is_file": true,
+      "kind": "work-product",
+      "last_commit": "",
+      "original": ".devspark.work/audit/2026-11-21_results.md"
+    }
+  ],
+  "release": "2.0.2",
+  "release_from": "v2.0.1",
+  "schema": 1
+}

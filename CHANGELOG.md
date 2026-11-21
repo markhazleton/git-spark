@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.2] - 2026-11-21
+
 ### Added
 
 - Release history page on the docs site (`docs/changelog.html`), generated from CHANGELOG.md by `scripts/generate-changelog-page.js` during `npm version` and linked from the landing page
@@ -17,6 +19,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated dependencies, including `ora` 10 (CLI spinners)
 - CI security audit: `npm audit` now checks production dependencies only, while `audit-ci` audits everything with an allowlist (`audit-ci.jsonc`) for two dev-only advisories that have no upstream fix yet (GHSA-3g3m-2fjr-6pw4 in glob, GHSA-g3hv-75wg-m249 in minimatch)
 - A failed npm publish now opens a GitHub issue instead of only logging a message
+
+### Fixed
+
+- README "Repo Story" link pointed at a file that no longer exists; it now links to a current repository story
 
 ## [2.0.1] - 2026-10-20
 

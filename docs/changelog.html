@@ -313,7 +313,7 @@
         <div class="logo">📜</div>
         <h1>Changelog</h1>
         <p class="subtitle">
-          Every published release of git-spark, newest first. Latest: <strong>v2.0.1</strong>.
+          Every published release of git-spark, newest first. Latest: <strong>v2.0.2</strong>.
           <br />
           Install with <a href="https://www.npmjs.com/package/git-spark" target="_blank" rel="noopener">npm</a>
           · Source: <a href="https://github.com/MarkHazleton/git-spark/blob/main/CHANGELOG.md" target="_blank" rel="noopener">CHANGELOG.md</a>
@@ -321,6 +321,7 @@
       </header>
 
       <nav class="version-index" aria-label="Releases">
+          <a href="#v2-0-2">v2.0.2</a>
           <a href="#v2-0-1">v2.0.1</a>
           <a href="#v2-0-0">v2.0.0</a>
           <a href="#v1-4-0">v1.4.0</a>
@@ -335,10 +336,35 @@
           <a href="#v1-0-0">v1.0.0</a>
       </nav>
 
+      <section class="release" id="v2-0-2">
+        <div class="release-header">
+          <h2><a href="#v2-0-2">v2.0.2</a></h2>
+          <span class="latest-badge">Latest</span>
+          <time datetime="2026-11-21">November 21, 2026</time>
+        </div>
+        <div class="release-body">
+          <h3 class="category category-added">Added</h3>
+          <ul>
+          <li>Release history page on the docs site (<code>docs/changelog.html</code>), generated from CHANGELOG.md by <code>scripts/generate-changelog-page.js</code> during <code>npm version</code> and linked from the landing page</li>
+          <li>GitHub Releases are now created automatically after a successful npm publish, using that version's CHANGELOG.md section as the release notes (<code>scripts/extract-release-notes.js</code>)</li>
+          </ul>
+          <h3 class="category category-changed">Changed</h3>
+          <ul>
+          <li>Updated dependencies, including <code>ora</code> 10 (CLI spinners)</li>
+          <li>CI security audit: <code>npm audit</code> now checks production dependencies only, while <code>audit-ci</code> audits everything with an allowlist (<code>audit-ci.jsonc</code>) for two dev-only advisories that have no upstream fix yet (GHSA-3g3m-2fjr-6pw4 in glob, GHSA-g3hv-75wg-m249 in minimatch)</li>
+          <li>A failed npm publish now opens a GitHub issue instead of only logging a message</li>
+          </ul>
+          <h3 class="category category-fixed">Fixed</h3>
+          <ul>
+          <li>README &quot;Repo Story&quot; link pointed at a file that no longer exists; it now links to a current repository story</li>
+          </ul>
+        </div>
+      </section>
+
       <section class="release" id="v2-0-1">
         <div class="release-header">
           <h2><a href="#v2-0-1">v2.0.1</a></h2>
-          <span class="latest-badge">Latest</span>
+          
           <time datetime="2026-10-20">October 20, 2026</time>
         </div>
         <div class="release-body">

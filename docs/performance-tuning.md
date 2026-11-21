@@ -355,5 +355,5 @@ If you experience persistent performance issues:
 
 ---
 
-**Last Updated:** October 2026
-**Git Spark Version:** 2.0.1+
+**Last Updated:** November 2026
+**Git Spark Version:** 2.0.2+
