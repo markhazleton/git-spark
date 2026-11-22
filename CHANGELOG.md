@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Renamed files are recorded under their real old and new paths. When a rename kept part of the path, Git abbreviates it as `dir/{old => new}/file`, and git-spark split that text on ` => `, recording paths such as `new}/file` and `dir/{old`. In this repository 110 of 134 renames were affected, which skewed hotspots, file counts, file types, and file ownership
+- Each file change's status (added, modified, deleted, renamed, copied) now comes from Git. It was guessed from line counts, so an edit that only added lines was reported as a new file and one that only removed lines as a deleted file
+- Non-ASCII filenames appear as their real names instead of Git's octal-escaped form (for example `"caf\303\251.txt"`)
+
 ## [2.0.3] - 2026-11-21
 
 ### Fixed

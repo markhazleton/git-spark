@@ -2,9 +2,27 @@ import { CommitData, FileChange, GitSparkOptions, ProgressCallback } from '../ty
 import { GitExecutor } from '../utils/git.js';
 import { validateGitOptions } from '../utils/input-validation.js';
 import { createLogger } from '../utils/logger.js';
+import { expandRenamePath, unquoteGitPath } from './git-paths.js';
 // import { validateCommitMessage } from '../utils/validation.js';
 
 const logger = createLogger('collector');
+
+/** A file entry from `git log --raw`: Git's change status and the full old/new paths. */
+interface RawChange {
+  status: FileChange['status'];
+  path: string;
+  oldPath?: string;
+}
+
+/** Git raw status letters. Type changes (T) and anything unrecognized count as modified. */
+const RAW_STATUS: Record<string, FileChange['status']> = {
+  A: 'added',
+  M: 'modified',
+  D: 'deleted',
+  R: 'renamed',
+  C: 'copied',
+  T: 'modified',
+};
 
 /**
  * Git repository data collection engine
@@ -174,10 +192,16 @@ export class DataCollector {
     const safeOptions = validation.sanitized!;
 
     // We prefix each commit with a record separator so we can split reliably even for large bodies.
-    // Format: \x1e<fields...> then numstat lines, then the next commit begins with \x1e
+    // Format: \x1e<fields...> then raw lines, then numstat lines; the next commit begins with \x1e.
+    // --raw supplies Git's own change status and full old/new paths (numstat abbreviates renames
+    // as `dir/{old => new}/file`); numstat supplies line counts in the same file order.
+    // core.quotePath=false keeps non-ASCII filenames readable instead of octal-escaped.
     const args: string[] = [
+      '-c',
+      'core.quotePath=false',
       'log',
       '--no-merges',
+      '--raw',
       '--numstat',
       `--pretty=format:%x1e%H%x1f%h%x1f%an%x1f%ae%x1f%ai%x1f%s%x1f%b%x1f%P`,
     ];
@@ -231,14 +255,25 @@ export class DataCollector {
       }
 
       currentCommit = this.parseCommitHeader(record.slice(0, headerEnd).split('\x1f'));
-      for (const line of record.slice(headerEnd + 1).split('\n')) {
+      const rawEntries: RawChange[] = [];
+      const statEntries: FileChange[] = [];
+      for (const rawLine of record.slice(headerEnd + 1).split('\n')) {
+        const line = rawLine.replace(/\r$/, '');
         if (!line.trim()) continue;
-        const fileChange = this.parseFileStats(line.replace(/\r$/, ''));
-        if (fileChange) {
-          currentCommit.files = currentCommit.files || [];
-          currentCommit.files.push(fileChange);
+        if (line.startsWith(':')) {
+          const raw = this.parseRawLine(line);
+          if (raw) rawEntries.push(raw);
+          continue;
         }
+        const fileChange = this.parseFileStats(line);
+        if (fileChange) statEntries.push(fileChange);
       }
+      currentCommit.files = this.mergeFileChanges(
+        rawEntries,
+        statEntries,
+        currentCommit.hash || '',
+        warnings
+      );
       finalizeCurrent();
       processed++;
       if (processed % 200 === 0 || processed === totalCommits) {
@@ -248,8 +283,10 @@ export class DataCollector {
       return true;
     };
 
-    child.stdout.on('data', (chunk: Buffer) => {
-      buffer += chunk.toString();
+    // Decode as a stream so a multi-byte UTF-8 character split across chunks stays intact
+    child.stdout.setEncoding('utf8');
+    child.stdout.on('data', (chunk: string) => {
+      buffer += chunk;
       // Split on record separator (each commit starts with \x1e)
       const records = buffer.split('\x1e');
       buffer = records.pop() || '';
@@ -318,44 +355,83 @@ export class DataCollector {
     };
   }
 
+  /**
+   * Parse a `--raw` line: `:<srcmode> <dstmode> <srcsha> <dstsha> <status>[score]\t<path>[\t<path>]`.
+   * Renames and copies carry the old path then the new path.
+   */
+  private parseRawLine(line: string): RawChange | null {
+    const tab = line.indexOf('\t');
+    if (tab === -1) return null;
+    const meta = line.slice(1, tab).split(' ');
+    const code = meta[4]?.charAt(0);
+    if (!code) return null;
+    const paths = line
+      .slice(tab + 1)
+      .split('\t')
+      .map(p => unquoteGitPath(p));
+
+    const status = RAW_STATUS[code] ?? 'modified';
+    if ((status === 'renamed' || status === 'copied') && paths.length >= 2) {
+      return { status, path: paths[1], oldPath: paths[0] };
+    }
+    return { status, path: paths[0] };
+  }
+
+  /**
+   * Parse a `--numstat` line for its line counts. The path is only used as a fallback when raw
+   * entries are unavailable; rename forms (`old => new`, `dir/{old => new}/file`) are expanded.
+   */
   private parseFileStats(line: string): FileChange | null {
-    const match = line.match(/^(\d+|\-)\s+(\d+|\-)\s+(.+)$/);
+    const match = line.match(/^(\d+|-)\t(\d+|-)\t(.+)$/);
     if (!match) return null;
 
     const [, insertions, deletions, path] = match;
 
-    // Handle binary files
+    // Binary files report '-' for both counts
     const ins = insertions === '-' ? 0 : parseInt(insertions, 10);
     const dels = deletions === '-' ? 0 : parseInt(deletions, 10);
 
-    // Determine file status and handle renames
-    let status: FileChange['status'] = 'modified';
-    let filePath = path;
-    let oldPath: string | undefined;
-
-    if (path.includes(' => ')) {
-      status = 'renamed';
-      const parts = path.split(' => ');
-      oldPath = parts[0].trim();
-      filePath = parts[1].trim();
-    } else if (ins > 0 && dels === 0) {
-      status = 'added';
-    } else if (ins === 0 && dels > 0) {
-      status = 'deleted';
-    }
-
+    const rename = expandRenamePath(path);
     const result: FileChange = {
-      path: filePath,
+      path: rename ? rename.path : unquoteGitPath(path),
       insertions: ins,
       deletions: dels,
-      status,
+      status: rename ? 'renamed' : 'modified',
     };
-
-    if (oldPath) {
-      result.oldPath = oldPath;
-    }
-
+    if (rename) result.oldPath = rename.oldPath;
     return result;
+  }
+
+  /**
+   * Combine Git's raw entries (status and paths) with numstat entries (line counts). Git emits
+   * both for the same files in the same order. If the counts ever disagree, keep the numstat
+   * entries, whose status is limited to renamed/modified, and record a warning.
+   */
+  private mergeFileChanges(
+    rawEntries: RawChange[],
+    statEntries: FileChange[],
+    hash: string,
+    warnings: string[]
+  ): FileChange[] {
+    if (rawEntries.length !== statEntries.length) {
+      if (statEntries.length > 0) {
+        warnings.push(
+          `File status unavailable for ${hash.slice(0, 7)}: ${rawEntries.length} raw vs ${statEntries.length} numstat entries`
+        );
+      }
+      return statEntries;
+    }
+    return statEntries.map((stat, i) => {
+      const raw = rawEntries[i];
+      const merged: FileChange = {
+        path: raw.path,
+        insertions: stat.insertions,
+        deletions: stat.deletions,
+        status: raw.status,
+      };
+      if (raw.oldPath) merged.oldPath = raw.oldPath;
+      return merged;
+    });
   }
 
   private finalizeCommit(commit: Partial<CommitData>): CommitData {
