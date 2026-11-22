@@ -87,7 +87,7 @@ Enterprise-focused, accessible, and secure analytics dashboard:
 - **Open Graph Preview Image** – Auto‑generated SVG summary for social sharing & link unfurling
 - **Accessibility Enhancements** – ARIA live region announcements for sorting; keyboard focus management; reduced‑motion compliance
 - **Security‑First Delivery** – Strict CSP with SHA‑256 hashed inline script & style blocks (no `unsafe-inline`), native SVG charts (no external chart library), fully self-contained reports
-- **Email Redaction Option** – Controlled via CLI flag (`--redact-emails`) for privacy sensitive audits
+- **Email Redaction Option** – Controlled via `output.redactEmails` in `.git-spark.json` for privacy sensitive audits (see [Configuration](#configuration))
 - **Transparent Metrics Documentation** – Every team metric includes comprehensive limitations and data source explanations
 
 > **Analytical Integrity**: All analytics data are embedded (no external calls) ensuring the report is a self-contained artifact suitable for air‑gapped review workflows. Every metric includes honest explanations of what Git data can and cannot reveal.
@@ -160,15 +160,18 @@ Options:
   -c, --config <path>        configuration file
   -b, --branch <name>        analyze specific branch
   -a, --author <name>        filter by author
-  -p, --path <glob>          filter by file path pattern
-  --heavy                    enable expensive analyses
+  -p, --path <glob>          filter by file path pattern (directory or Git glob, e.g. "src/**")
+  --open                     open HTML report in browser after generation
   --log-level <level>        logging verbosity (error|warn|info|debug|verbose)
-  --no-cache                 disable caching
   --timezone <tz>            IANA timezone for daily trends (e.g., America/Chicago)
-  --redact-emails            redact email addresses in reports
   --exclude-extensions <ext> comma-separated list of file extensions to exclude (e.g., .md,.txt)
+  --teamwork                 focus on team success - removes individual contributor sections
   -h, --help                 display help for command
 ```
+
+> **Accepted but not yet applied:** `--heavy`, `--no-cache`, and `--redact-emails` are accepted
+> for compatibility but currently have no effect. To redact emails, set `output.redactEmails` in
+> `.git-spark.json` instead.
 
 #### `git-spark analyze`
 
@@ -242,8 +245,9 @@ Options:
   --open                     open HTML report in browser after generation
   --serve                    start HTTP server to serve the report
   --port <number>            port for HTTP server (default: 3000)
-  --heavy                    enable expensive analyses for detailed insights
 ```
+
+`--serve` listens on `127.0.0.1` only, so the report is not reachable from other machines.
 
 Examples:
 
@@ -257,8 +261,8 @@ git-spark html --days=30 --open
 # Generate and serve on local web server
 git-spark html --days=60 --serve --port=8080
 
-# Heavy analysis with detailed insights
-git-spark html --days=90 --heavy --output=./detailed-reports
+# Write a 90-day report to a custom directory
+git-spark html --days=90 --output=./detailed-reports
 ```
 
 #### `git-spark validate`
@@ -316,8 +320,8 @@ git-spark --days=60 --format=html --output=./reports
 # Generate JSON with complete daily trends data for external processing
 git-spark --days=30 --format=json --output=./data
 
-# Heavy analysis with all features including detailed daily patterns
-git-spark --days=30 --heavy --format=html
+# Daily trends bucketed in a specific timezone
+git-spark --days=30 --timezone=America/Chicago --format=html
 ```
 
 #### File Exclusion Examples
@@ -346,57 +350,28 @@ git-spark init
 
 Alternatively, create the file manually. If `--config` is not provided, git-spark will look for `.git-spark.json` in the repository root.
 
-> **Note**: Configuration file support is available for basic analysis options. The configuration system supports custom thresholds, weights, and exclusion patterns for fine-tuned analysis.
+These are the keys git-spark currently applies. A command-line option always wins over the file.
 
 ```json
 {
   "version": "1.0",
   "analysis": {
-    "excludePaths": [
-      "node_modules/**",
-      "dist/**",
-      "build/**",
-      ".git/**"
-    ],
-    "excludeExtensions": [
-      ".md",
-      ".txt"
-    ],
-    "timezone": "America/Chicago",
-    "excludeAuthors": [
-      "dependabot[bot]",
-      "github-actions[bot]"
-    ],
-    "thresholds": {
-      "largeCommitLines": 500,
-      "smallCommitLines": 50,
-      "staleBranchDays": 30,
-      "largeFileKB": 300,
-      "hotspotAuthorThreshold": 3
-    },
-    "weights": {
-      "risk": {
-        "churn": 0.35,
-        "recency": 0.25,
-        "ownership": 0.20,
-        "entropy": 0.10,
-        "coupling": 0.10
-      }
-    }
+    "excludeExtensions": [".md", ".txt"],
+    "timezone": "America/Chicago"
   },
   "output": {
     "defaultFormat": "html",
     "outputDir": "./reports",
     "redactEmails": false
-  },
-  "performance": {
-    "maxBuffer": 200,
-    "enableCaching": true,
-    "cacheDir": ".git-spark-cache",
-    "chunkSize": 1000
   }
 }
 ```
+
+> **Accepted but not yet applied:** files written by `git-spark init` may also contain
+> `analysis.excludePaths`, `analysis.excludeAuthors`, `analysis.includeAuthors`,
+> `analysis.thresholds`, `analysis.weights`, and a `performance` block. They are read without
+> error but do not change the report yet. To narrow the files analyzed today, use `--path` or
+> `excludeExtensions`.
 
 ### API Reference
 
@@ -428,9 +403,10 @@ interface GitSparkOptions {
   output?: string;             // Output directory
   config?: string;             // Config file path
   timezone?: string;           // IANA timezone for daily trends
-  heavy?: boolean;             // Enable expensive analyses
+  heavy?: boolean;             // Accepted; currently no effect
   logLevel?: LogLevel;         // Log level
-  noCache?: boolean;           // Disable caching
+  noCache?: boolean;           // Accepted; currently no effect
+  redactEmails?: boolean;      // Redact author emails in reports
 }
 ```
 
